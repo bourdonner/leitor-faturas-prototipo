@@ -1,0 +1,423 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Leitor de Faturas · Detalhe</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300..600,0..1,0&display=block" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1c1917; --mid:#78716c; --s400:#a8a29e; --border:#d6d3d1; --s200:#e7e5e4; --s100:#f5f5f4; --s50:#fafaf9; --white:#fff;
+    --brand:#71902f; --success:#5ea500; --alert:#f97316; --alert-bg:#fff7ed; --danger:#ef4444;
+    --r:16px; --shadow:0 12px 40px rgba(0,0,0,.10),0 2px 6px rgba(0,0,0,.05);
+  }
+  .ms{font-family:"Material Symbols Rounded";font-weight:400;font-style:normal;font-size:18px;line-height:1;letter-spacing:normal;text-transform:none;display:inline-block;white-space:nowrap;direction:ltr;-webkit-font-smoothing:antialiased;font-variation-settings:"FILL" 0,"wght" 400,"GRAD" 0,"opsz" 20;user-select:none}
+  .ms.f{font-variation-settings:"FILL" 1,"wght" 400,"GRAD" 0,"opsz" 24}
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{font-family:Inter,system-ui,sans-serif;color:var(--ink);background:var(--s100);font-size:14px;-webkit-font-smoothing:antialiased;overflow:hidden}
+  button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;padding:0}
+  svg{display:block}
+  .app{display:grid;grid-template-columns:64px 1fr;height:100vh}
+  /* sidebar */
+  .side{display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 0}
+  .side .logo{width:32px;height:32px;border-radius:10px;display:grid;place-items:center;color:var(--brand);font-weight:700;margin-bottom:12px}
+  .side a{width:32px;height:32px;border-radius:8px;display:grid;place-items:center;color:var(--ink)}
+  .side a.on{background:var(--s200)}
+  .side .sp{flex:1}
+  .side .av{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,#9bbf5a,#71902f)}
+  .main{display:flex;flex-direction:column;min-width:0;padding:16px 16px 16px 0}
+  .top{display:flex;align-items:center;gap:12px;height:36px;padding:0 12px;color:var(--mid)}
+  .top .crumb b{color:var(--brand);font-weight:500}
+  .sheet{flex:1;min-height:0;background:var(--white);border-radius:24px;margin-top:12px;padding:28px 40px 24px;display:flex;flex-direction:column;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+  /* header */
+  .head{display:flex;align-items:flex-start;gap:16px}
+  .head h1{font-family:Poppins,Inter,sans-serif;font-weight:600;font-size:24px;color:var(--brand);margin:0 0 12px}
+  .chips{display:flex;gap:8px;flex-wrap:wrap}
+  .chip{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 12px;border-radius:999px;background:var(--s100);font-weight:600;font-size:12px}
+  .chip.alert .ms{color:var(--alert)} .chip.ok .ms{color:var(--success)} .chip.info .ms{color:var(--mid)}
+  .head .actions{margin-left:auto;display:flex;gap:8px}
+  .btn{height:36px;padding:0 16px;border-radius:8px;font-weight:500;display:inline-flex;align-items:center;gap:8px}
+  .btn.primary{background:var(--ink);color:#fff}
+  .btn.primary:disabled{opacity:.35;cursor:not-allowed}
+  .btn.outline{border:1px solid var(--border);background:#fff}
+  /* columns */
+  .cols{flex:1;min-height:0;display:flex;gap:24px;margin-top:20px;position:relative}
+  .panel{background:var(--s100);border-radius:var(--r);display:flex;flex-direction:column;min-width:0;min-height:0;transition:flex-basis .35s ease,opacity .25s ease,margin .35s ease}
+  .p-pdf{flex:1 1 0}
+  .p-det{flex:0 0 690px}
+  .p-act{flex:0 0 284px}
+  .panel.min{flex-basis:0!important;opacity:0;margin-left:-24px;overflow:hidden;pointer-events:none}
+  .bar{display:flex;align-items:center;gap:8px;padding:12px 16px;min-height:60px}
+  .bar .file{font-weight:500} .bar .meta{color:var(--mid);font-size:12px}
+  .bar .sp{flex:1}
+  .ib{width:28px;height:28px;border-radius:8px;display:grid;place-items:center;color:var(--ink)}
+  .ib:hover{background:var(--s200)}
+  .ib.sq{background:var(--white)}
+  /* pdf */
+  .pdf-scroll{flex:1;overflow:auto;padding:8px 24px 24px;display:flex;justify-content:center}
+  .pdf-page{width:560px;transition:width .2s ease;box-shadow:0 1px 3px rgba(0,0,0,.08);background:#fff;align-self:flex-start}
+  .pdf-page img{width:100%;display:block}
+  .pager{display:flex;justify-content:center;align-items:center;gap:8px;padding:10px;border-top:1px solid var(--s200);color:var(--mid);font-size:12px;background:var(--white);border-radius:0 0 var(--r) var(--r)}
+  /* tabs */
+  .tabs{display:flex;gap:4px}
+  .tab{height:33px;padding:0 12px;border-radius:8px;color:var(--mid);display:inline-flex;align-items:center;gap:6px;font-weight:500}
+  .tab.on{background:var(--white);color:var(--brand);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+  .tab .warn{width:18px;height:18px;border-radius:5px;background:var(--alert);color:#fff;display:grid;place-items:center}
+  .content{flex:1;overflow:auto;padding:4px 24px 120px;display:flex;flex-direction:column;gap:16px}
+  .sec-t{font-family:Poppins,Inter,sans-serif;font-weight:600;font-size:14px;color:var(--brand);margin-top:6px}
+  .grid{display:grid;gap:16px}
+  .g2{grid-template-columns:1fr 1fr} .g3{grid-template-columns:1fr 1fr 1fr}
+  .full{grid-column:1/-1}
+  /* data card */
+  .card{background:var(--s50);border-radius:12px;padding:14px 16px;border:1px solid transparent;transition:box-shadow .3s,border-color .3s}
+  .card .ct{display:flex;align-items:center;gap:8px;font-weight:700}
+  .card .ct .sp{flex:1}
+  .card .row{display:flex;align-items:center;gap:6px;margin-top:8px;font-size:13px}
+  .card .row .l{color:var(--mid)}
+  .card .row .sp{flex:1}
+  .card .cp{color:var(--mid);opacity:.8}
+  .card.pend{border-color:var(--alert);background:#fff}
+  .card.pend .hint{color:var(--mid);font-size:13px;margin-top:8px}
+  .card.flash{box-shadow:0 0 0 4px rgba(249,115,22,.25)}
+  .card.done{border-color:var(--success)}
+  .badge{width:20px;height:20px;border-radius:6px;background:var(--alert);color:#fff;display:grid;place-items:center;flex:none}
+  .input{width:100%;height:40px;border:1px solid var(--border);border-radius:8px;padding:0 12px;font:inherit;background:var(--s50);color:var(--ink)}
+  .input:focus{outline:2px solid var(--brand);outline-offset:0;background:#fff}
+  .card .in{margin-top:10px}
+  .card .edit-actions{display:flex;gap:6px;margin-left:auto}
+  .locked .card .ib.edit{display:none}
+  /* chart */
+  .chart{display:flex;align-items:flex-end;gap:6px;height:160px}
+  .chart div{flex:1;background:var(--border);border-radius:2px}
+  .chart div:last-child{background:var(--success)}
+  .axis{display:flex;justify-content:space-between;font-size:11px;font-weight:500;color:var(--mid);margin-top:8px}
+  .axis b{color:var(--success);font-weight:500}
+  /* items */
+  .item{border:1px solid var(--border);border-radius:16px;overflow:hidden}
+  .item-h{display:flex;align-items:center;gap:12px;padding:14px 16px;width:100%;text-align:left}
+  .item-h .n{flex:1;font-weight:500}
+  .item-h .v{color:var(--mid)}
+  .item-b{padding:0 16px 14px;display:none}
+  .item.open .item-b{display:grid}
+  .item .chev{transition:transform .2s}
+  .item.open .chev{transform:rotate(180deg)}
+  /* table */
+  .tbl{background:var(--s50);border:1px solid var(--border);border-radius:16px;overflow:hidden}
+  .tbl table{width:100%;border-collapse:collapse;font-size:13px}
+  .tbl th{font-weight:400;color:var(--mid);font-size:12px;text-align:right;padding:10px 16px;border-bottom:1px solid var(--border)}
+  .tbl td{text-align:right;padding:10px 16px;border-bottom:1px solid var(--border)}
+  .tbl tr:last-child td{border-bottom:0}
+  .tbl th:first-child,.tbl td:first-child{text-align:left}
+  .medt{font-weight:500;font-size:13px}
+  /* activity */
+  .act-h{display:flex;align-items:center;gap:8px;padding:16px 16px 8px}
+  .act-h .ph{width:20px;height:20px;border-radius:6px;background:var(--brand);color:#fff;display:grid;place-items:center}
+  .act-h .t{flex:1}
+  .act-list{flex:1;overflow:auto;padding:8px 16px 120px}
+  .ev{background:var(--white);border-radius:12px;padding:14px;position:relative}
+  .ev .i{width:20px;height:20px;border-radius:6px;display:grid;place-items:center;color:#fff}
+  .ev .n{margin-top:12px}
+  .ev .d{font-size:11px;color:var(--mid);margin-top:4px}
+  .ev.new{animation:pop .5s ease}
+  @keyframes pop{from{transform:translateY(-6px);opacity:0}to{transform:none;opacity:1}}
+  .link{width:1px;height:16px;background:var(--border);margin:0 auto}
+  .c-def{background:var(--ink)} .c-alert{background:var(--alert)} .c-ok{background:var(--success)} .c-edit{background:var(--mid)}
+  /* floating */
+  .float{position:fixed;left:50%;transform:translateX(-50%);z-index:30}
+  .pend-card{bottom:124px;width:403px;background:var(--s50);border-radius:16px;box-shadow:var(--shadow);padding:16px;transition:opacity .2s,transform .25s}
+  .pend-card.hide{opacity:0;transform:translate(-50%,12px);pointer-events:none}
+  .pc-h{display:flex;align-items:center;gap:8px}
+  .pc-h .nav{display:flex;align-items:center;gap:4px;color:var(--ink)}
+  .pc-h .nav button:disabled{opacity:.3;cursor:default}
+  .pc-h .sp{flex:1}
+  .pc-b{background:#fff;border-radius:12px;padding:12px;margin-top:16px;display:flex;flex-direction:column;gap:10px}
+  .pc-b label{font-size:14px}
+  .pc-b .act{display:flex;justify-content:flex-end;gap:8px}
+  .pc-b .go{font-size:12px;color:var(--brand);text-decoration:underline;align-self:flex-start}
+  /* tab bar (Luma style) */
+  .tabbar{bottom:28px;background:var(--white);border-radius:999px;box-shadow:0 10px 15px rgba(0,0,0,.10),0 4px 6px rgba(0,0,0,.10);padding:8px;display:flex;gap:8px}
+  .tb{width:124px;padding:8px 16px;border-radius:999px;display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--s400);transition:background .2s,color .2s}
+  .tb span{font-size:13px;font-weight:500;color:var(--mid)}
+  .tb.on{background:var(--s100);color:var(--ink)}
+  .tb.on span{color:var(--ink);font-weight:600}
+  .tb .ic{position:relative}
+  .tb .cnt{position:absolute;top:-6px;left:15px;min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:var(--alert);color:#fff;font-size:10px;font-weight:600;display:grid;place-items:center;box-shadow:0 0 0 2px #fff}
+  .tb[hidden]{display:none}
+  .toast{position:fixed;top:24px;left:50%;transform:translate(-50%,-20px);background:var(--ink);color:#fff;padding:10px 16px;border-radius:10px;opacity:0;transition:.25s;z-index:50;font-size:13px}
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+  .note{position:fixed;right:16px;top:12px;font-size:11px;color:var(--mid);background:var(--white);border:1px solid var(--s200);padding:4px 8px;border-radius:999px;z-index:40}
+</style>
+</head>
+<body>
+<div class="app">
+  <nav class="side" aria-label="Navegação">
+    <div class="logo" aria-hidden="true"><span class="ms f" style="font-size:22px" aria-hidden="true">bolt</span></div>
+    <a href="#" aria-label="Início"><span class="ms f" aria-hidden="true">home</span></a>
+    <a href="index.html" class="on" aria-label="Leitor de faturas"><span class="ms f" aria-hidden="true">description</span></a>
+    <a href="#" aria-label="Financeiro"><span class="ms f" aria-hidden="true">payments</span></a>
+    <a href="#" aria-label="Consumidores"><span class="ms f" aria-hidden="true">group</span></a>
+    <div class="sp"></div>
+    <div class="av" aria-hidden="true"></div>
+  </nav>
+
+  <div class="main">
+    <div class="top"><span class="ms" style="font-size:16px" aria-hidden="true">dock_to_right</span><span class="crumb"><a href="index.html" style="color:inherit;text-decoration:none">Leitor de Faturas</a> &nbsp;›&nbsp; <b>Padaria Estrela do Sul Ltda · fatura-luzdovale-a4-mar25.pdf</b></span></div>
+
+    <section class="sheet">
+      <div class="head">
+        <div>
+          <h1>Padaria Estrela do Sul Ltda · fatura-luzdovale-a4-mar25.pdf</h1>
+          <div class="chips">
+            <span class="chip info"><span class="ms f" style="font-size:16px" aria-hidden="true">calendar_today</span>Março de 2025</span>
+            <span class="chip info"><span class="ms f" style="font-size:16px" aria-hidden="true">electric_meter</span>Luz do Vale</span>
+            <span class="chip info"><span class="ms f" style="font-size:16px" aria-hidden="true">electrical_services</span>UC 3014567890</span>
+            <span class="chip alert" id="stChip"></span>
+          </div>
+        </div>
+        <div class="actions" id="headActions"></div>
+      </div>
+
+      <div class="cols" id="cols">
+        <!-- PDF -->
+        <div class="panel p-pdf">
+          <div class="bar">
+            <span class="file">fatura-luzdovale-a4-mar25.pdf</span><span class="meta">1 página · 840 KB</span>
+            <span class="sp"></span>
+            <button class="ib" id="zOut" aria-label="Diminuir zoom"><span class="ms" aria-hidden="true">zoom_out</span></button>
+            <button class="ib" id="zIn" aria-label="Aumentar zoom"><span class="ms" aria-hidden="true">zoom_in</span></button>
+            <a class="ib" href="assets/fatura-grupo-a.png" target="_blank" aria-label="Abrir em nova aba"><span class="ms" aria-hidden="true">open_in_new</span></a>
+            <a class="ib" href="assets/fatura-grupo-a.png" download aria-label="Baixar"><span class="ms" aria-hidden="true">download</span></a>
+          </div>
+          <div class="pdf-scroll"><div class="pdf-page" id="page"><img src="assets/fatura-grupo-a.png" alt="Fatura fictícia (Luz do Vale) — Padaria Estrela do Sul, março de 2025"></div></div>
+          <div class="pager"><span class="ms" aria-hidden="true">chevron_left</span> Página 1 de 1 <span class="ms" aria-hidden="true">chevron_right</span></div>
+        </div>
+
+        <!-- Detalhes -->
+        <div class="panel p-det" id="pDet">
+          <div class="bar">
+            <div class="tabs" role="tablist" id="tabs"></div>
+            <span class="sp"></span>
+            <button class="ib sq" data-toggle="det" aria-label="Minimizar detalhes"><span class="ms" aria-hidden="true">hide</span></button>
+          </div>
+          <div class="content" id="content"></div>
+        </div>
+
+        <!-- Atividade -->
+        <div class="panel p-act" id="pAct">
+          <div class="act-h"><span class="ph"><span class="ms" style="font-size:14px" aria-hidden="true">history</span></span><span class="t">Atividade</span>
+            <button class="ib sq" data-toggle="act" aria-label="Minimizar atividade"><span class="ms" aria-hidden="true">hide</span></button></div>
+          <div class="act-list" id="acts"></div>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<!-- Pendências (flutuante) -->
+<div class="float pend-card" id="pendCard" role="dialog" aria-label="Pendências">
+  <div class="pc-h">
+    <span class="badge"><span class="ms f" style="font-size:14px" aria-hidden="true">warning</span></span>
+    <span>Pendências</span>
+    <span class="nav"><button id="pPrev" aria-label="Anterior"><span class="ms" aria-hidden="true">chevron_left</span></button><span id="pPos"></span><button id="pNext" aria-label="Próxima"><span class="ms" aria-hidden="true">chevron_right</span></button></span>
+    <span class="sp"></span>
+    <button class="ib" data-toggle="pend" aria-label="Minimizar pendências"><span class="ms" aria-hidden="true">hide</span></button>
+  </div>
+  <div class="pc-b" id="pendBody"></div>
+</div>
+
+<!-- Tab bar -->
+<nav class="float tabbar" id="tabbar" aria-label="Painéis">
+  <button class="tb" data-toggle="det"><span class="ic"><span class="ms f" style="font-size:26px" aria-hidden="true">description</span></span><span>Detalhes</span></button>
+  <button class="tb" data-toggle="act"><span class="ic"><span class="ms f" style="font-size:26px" aria-hidden="true">history</span></span><span>Atividade</span></button>
+  <button class="tb" data-toggle="pend" id="tbPend"><span class="ic"><span class="ms f" style="font-size:26px" aria-hidden="true">warning</span><b class="cnt" id="tbCnt">3</b></span><span>Pendências</span></button>
+</nav>
+
+<div class="toast" id="toast"></div>
+<div class="note">Protótipo · dados fictícios</div>
+
+<script>
+const MS=(n,s,f)=>'<span class="ms'+(f?' f':'')+'"'+(s?' style="font-size:'+s+'px"':'')+' aria-hidden="true">'+n+'</span>';
+const I = {
+  edit:MS('edit',16,1), copy:MS('content_copy',13), warn:MS('warning',13,1), chev:'<span class="chev">'+MS('expand_more',20)+'</span>',
+  check:MS('check',14), pen:MS('edit',13,1), dot:MS('radio_button_checked',12,1), inbox:MS('inbox',13,1), hour:MS('hourglass_top',13,1), doc:MS('description',13,1)
+};
+const $ = s=>document.querySelector(s);
+
+/* ---------- estado ---------- */
+const S = {
+  tab:'Resumo', open:{det:true,act:true,pend:true}, status:'revisar', locked:false, pIdx:0,
+  pend:[
+    {id:'cofins', tab:'Resumo', title:'COFINS', label:'COFINS (alíquota)', kind:'Percentual', ph:'0,00 %', legend:'R$ 146,75', done:null, act:'COFINS corrigido'},
+    {id:'leit', tab:'Consumo', title:'Leitura atual', label:'Leitura atual ponta (kWh)', kind:'Número', ph:'0', legend:'11/03/2025', done:null, act:'Leitura atual corrigida'},
+    {id:'mod', tab:'Identificação', title:'Modalidade tarifária', label:'Modalidade tarifária', kind:'Seleção', ph:'Selecione', options:['Convencional','Horária verde','Horária azul','Branca'], done:null, act:'Modalidade corrigida'}
+  ],
+  acts:[['Para revisar','alert','10:42'],['Lida','def','10:42'],['Lendo fatura','def','10:41'],['Recebida','def','10:40']]
+};
+const openPend = ()=>S.pend.filter(p=>!p.done);
+
+/* ---------- cards ---------- */
+function card(t, v, l, v2, l2, opts={}){
+  const p = opts.pend && S.pend.find(x=>x.id===opts.pend);
+  if (p && !p.done){
+    return `<div class="card pend ${opts.cls||''}" id="c-${p.id}">
+      <div class="ct"><span class="badge">${I.warn}</span>${t}<span class="sp"></span></div>
+      <div class="in">${fieldHTML(p,'in-'+p.id)}</div>
+      <div class="hint">Não encontrado na fatura</div></div>`;
+  }
+  const val = p ? p.done : v;
+  return `<div class="card ${p?'done':''} ${opts.cls||''}" ${p?`id="c-${p.id}"`:''} data-edit="${t}">
+    <div class="ct">${t}<span class="sp"></span><button class="ib edit" aria-label="Editar ${t}">${I.edit}</button></div>
+    <div class="row"><span class="v">${val}</span> <span class="l">${l||''}</span><span class="sp"></span><span class="cp">${I.copy}</span></div>
+    ${v2?`<div class="row"><span class="v">${v2}</span> <span class="l">${l2||''}</span><span class="sp"></span><span class="cp">${I.copy}</span></div>`:''}
+  </div>`;
+}
+function fieldHTML(p,id){
+  if (p.kind==='Seleção') return `<select class="input" id="${id}"><option value="">${p.ph}</option>${p.options.map(o=>`<option>${o}</option>`).join('')}</select>`;
+  return `<input class="input" id="${id}" placeholder="${p.ph}" inputmode="${p.kind==='Número'||p.kind==='Percentual'?'decimal':'text'}">`;
+}
+const sec = t=>`<div class="sec-t">${t}</div>`;
+
+/* ---------- abas ---------- */
+const TABS = {
+  Resumo(){
+    const bars=[6620,6400,6210,5980,6050,6230,6450,6880,7010,6340,6120,6500], mx=Math.max(...bars);
+    return sec('Resumo')+`<div class="grid g2">
+      ${card('Crédito injetado fora ponta','4.100 kWh','compensados','R$ 1.837,46','abatidos')}
+      ${card('Crédito injetado ponta','0 kWh','compensados','R$ 0,00','abatidos')}
+      ${card('Consumo','5.960 kWh','fora ponta','540 kWh','ponta')}
+      ${card('Demanda','68 kW','medida','75 kW','contratada')}
+      ${card('Saldo','1.250 kWh','fora ponta','0 kWh','ponta')}
+      ${card('Geração','—','unidade beneficiária')}</div>
+      <div><div style="font-weight:500;font-size:13px;margin-bottom:8px">Últimos 12 meses</div>
+      <div class="chart">${bars.map(b=>`<div style="height:${Math.round(150*b/mx)}px" title="${b.toLocaleString('pt-BR')} kWh"></div>`).join('')}</div>
+      <div class="axis"><span>abr/24</span><b>mar/25 · 6.500 kWh</b></div></div>`
+      +sec('Valores')+`<div class="grid g2">${card('Total a pagar','R$ 4.440,13')}${card('Vencimento','25/03/2025')}</div>`
+      +sec('Alíquotas')+`<div class="grid g3">${card('ICMS','18,00%','R$ 781,49')}${card('PIS/PASEP','0,73%','R$ 31,69')}${card('COFINS','','R$ 146,75',null,null,{pend:'cofins'})}</div>`
+      +sec('Datas')+`<div class="grid g2">${card('Leitura anterior','07/02/2025')}${card('Leitura atual','11/03/2025','32 dias')}${card('Próxima leitura','08/04/2025')}${card('Emissão','12/03/2025')}</div>`;
+  },
+  Itens(){
+    const it=[['Consumo ponta TUSD','R$ 800,35','540 kWh','R$ 1,48213','R$ 1,15443','R$ 32,89','R$ 144,06'],['Consumo ponta TE','R$ 276,68','540 kWh','R$ 0,51237','R$ 0,39909','R$ 11,37','R$ 49,80'],['Consumo fora ponta TUSD','R$ 705,96','5.960 kWh','R$ 0,11845','R$ 0,09226','R$ 29,02','R$ 127,07'],['Consumo fora ponta TE','R$ 1.965,07','5.960 kWh','R$ 0,32971','R$ 0,25681','R$ 80,76','R$ 353,71'],['Energia injetada fora ponta TUSD','−R$ 485,65','−4.100 kWh','R$ 0,11845','R$ 0,09226','−R$ 19,96','−R$ 87,42'],['Energia injetada fora ponta TE','−R$ 1.351,81','−4.100 kWh','R$ 0,32971','R$ 0,25681','−R$ 55,56','−R$ 243,33'],['Demanda','R$ 2.431,13','75 kW','R$ 32,41500','R$ 25,24804','R$ 99,92','R$ 437,60'],['Contrib. ilum. pública municipal','R$ 98,40','—','—','—','—','—']];
+    return sec('Totais')+`<div class="grid g3">${card('Total da fatura','R$ 4.440,13')}${card('PIS/COFINS','R$ 178,44','','R$ 4.341,73','base de cálculo')}${card('ICMS','R$ 781,49','','R$ 4.341,73','base de cálculo')}</div>`
+      +sec('Itens da nota fiscal')+it.map((r,i)=>`<div class="item ${i===0?'open':''}"><button class="item-h" data-acc><span class="n">${r[0]}</span><span class="v">${r[1]}</span>${I.chev}</button>
+        <div class="item-b grid g2">${card('Quantidade',r[2])}${card('Preço unitário',r[3],'com tributos',r[4],'tarifa sem tributos')}${card('Valor',r[1])}${card('Tributos',r[5],'PIS/COFINS',r[6],'ICMS 18%')}</div></div>`).join('');
+  },
+  Consumo(){
+    const h=[['mar/25','6.500','68','32'],['fev/25','6.120','66','28'],['jan/25','6.340','70','30'],['dez/24','7.010','74','33'],['nov/24','6.880','72','28'],['out/24','6.450','69','31'],['set/24','6.230','67','33'],['ago/24','6.050','65','29'],['jul/24','5.980','64','30'],['jun/24','6.210','66','33'],['mai/24','6.400','67','29'],['abr/24','6.620','70','29']];
+    return sec('Medições')
+      +`<div class="medt">Consumo ponta (kWh) · medidor ELO0045123</div><div class="grid g2">${card('Leitura anterior','12.480','07/02/2025')}${card('Leitura atual','','11/03/2025',null,null,{pend:'leit'})}${card('Constante','1')}${card('Consumo medido','540 kWh')}</div>`
+      +`<div class="medt">Consumo fora ponta (kWh) · medidor ELO0045123</div><div class="grid g2">${card('Leitura anterior','88.200','07/02/2025')}${card('Leitura atual','94.160','11/03/2025')}${card('Constante','1')}${card('Consumo medido','5.960 kWh')}</div>`
+      +`<div class="medt">Demanda (kW)</div><div class="grid g2">${card('Demanda medida','68 kW')}${card('Demanda contratada','75 kW')}${card('Demanda faturada','75 kW')}${card('Ultrapassagem','0 kW')}</div>`
+      +`<div class="medt">Energia injetada fora ponta (kWh)</div><div class="grid g2">${card('Leitura anterior','51.300','07/02/2025')}${card('Leitura atual','55.400','11/03/2025')}${card('Constante','1')}${card('Injetado no período','4.100 kWh')}</div>`
+      +sec('Histórico de consumo')+`<div class="grid g2">${card('Média de consumo','6.399 kWh','últimos 12 meses')}${card('Mediana de consumo','6.370 kWh','últimos 12 meses')}</div>`
+      +`<div class="tbl"><table><thead><tr><th>Mês</th><th>Consumo (kWh)</th><th>Demanda (kW)</th><th>Dias</th></tr></thead><tbody>${h.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+  },
+  'Identificação'(){
+    return sec('Fatura')+`<div class="grid g2">${card('Nota fiscal','247971120','série 000')}${card('Referência','Mar/2025')}${card('Emissão','12/03/2025')}${card('Débito automático','—')}${card('Chave de acesso','31250300000000000100660002479711201000000029',null,null,null,{cls:'full'})}${card('Código de barras','83610000044-2 40130138004-3 11989574712-4 30145678901-7',null,null,null,{cls:'full'})}</div>`
+      +sec('Unidade consumidora')+`<div class="grid g2">${card('Distribuidora','Luz do Vale Distribuição S.A.')}${card('Nº da instalação','3014567890')}${card('Classe','Comercial','subclasse comercial')}${card('Subgrupo tarifário','A4')}${card('Modalidade tarifária','',null,null,null,{pend:'mod'})}${card('Tipo de rede','Trifásico')}${card('Demanda contratada','75 kW')}${card('Tarifa social','Não')}</div>`
+      +sec('Titular')+`<div class="grid g2">${card('Razão social','Padaria Estrela do Sul Ltda')}${card('CNPJ','12.345.678/0001-90')}</div>`
+      +sec('Endereço')+`<div class="grid g3">${card('Logradouro','Avenida Brasil',null,null,null,{cls:'full'})}${card('Número','1200')}${card('Complemento','Loja 2')}${card('Bairro','Centro')}${card('Cidade','Ibirité')}${card('Estado','MG')}${card('CEP','32400-000')}</div>`;
+  }
+};
+
+/* ---------- render ---------- */
+function renderTabs(){
+  $('#tabs').innerHTML = Object.keys(TABS).map(t=>{
+    const warn = openPend().some(p=>p.tab===t);
+    return `<button role="tab" class="tab ${S.tab===t?'on':''}" data-tab="${t}" aria-selected="${S.tab===t}">${t}${warn?`<span class="warn">${I.warn}</span>`:''}</button>`;
+  }).join('');
+}
+function renderContent(){ $('#content').innerHTML = TABS[S.tab](); $('#pDet').classList.toggle('locked', S.locked); bindInline(); }
+function renderActs(){
+  $('#acts').innerHTML = S.acts.map((a,i)=>`${i?'<div class="link"></div>':''}<div class="ev ${a[3]?'new':''}"><span class="i c-${a[1]}">${a[1]==='edit'?I.pen:a[1]==='ok'?I.check:a[1]==='alert'?I.warn:a[0]==='Recebida'?I.inbox:a[0]==='Lendo fatura'?I.hour:a[0]==='Lida'?I.doc:I.dot}</span><div class="n">${a[0]}</div><div class="d">13/03 às ${a[2]}</div></div>`).join('');
+  S.acts.forEach(a=>a[3]=false);
+}
+function renderStatus(){
+  const n = openPend().length, chip=$('#stChip');
+  const map = {revisar:[`${n} pendência${n>1?'s':''}`,'alert'], pronta:['Sem pendências','ok'], aprovada:['Faturando','info'], faturada:['Faturada','ok']};
+  const [txt,cls] = map[S.status];
+  chip.className='chip '+cls;
+  chip.innerHTML = MS(cls==='alert'?'warning':cls==='ok'?'check_circle':'sync',16,1)+txt;
+  $('#headActions').innerHTML = S.status==='pronta' ? `<button class="btn primary" id="approve">Aprovar fatura</button>` : '';
+  const ab=$('#approve'); if(ab) ab.onclick=approve;
+}
+function renderPend(){
+  const list = openPend();
+  $('#tbPend').hidden = list.length===0;
+  $('#tbCnt').textContent = list.length;
+  if (!list.length){ $('#pendCard').classList.add('hide'); return; }
+  S.pIdx = Math.min(S.pIdx, list.length-1);
+  const p = list[S.pIdx];
+  $('#pPos').textContent = `${S.pIdx+1} de ${list.length}`;
+  $('#pPrev').disabled = S.pIdx===0; $('#pNext').disabled = S.pIdx===list.length-1;
+  $('#pendBody').innerHTML = `<label for="pf">${p.label}</label>${fieldHTML(p,'pf')}
+    <button class="go" id="pGo">Ver no painel · aba ${p.tab}</button>
+    <div class="act"><button class="btn primary" id="pOk" disabled>Confirmar</button></div>`;
+  const f=$('#pf'), ok=$('#pOk');
+  f.oninput = f.onchange = ()=>{ ok.disabled = !f.value.trim(); };
+  f.onkeydown = e=>{ if(e.key==='Enter' && f.value.trim()) resolve(p, f.value.trim()); };
+  ok.onclick = ()=>resolve(p, f.value.trim());
+  $('#pGo').onclick = ()=>focusPend(p);
+  $('#pendCard').classList.toggle('hide', !S.open.pend);
+}
+function renderPanels(){
+  $('#pDet').classList.toggle('min', !S.open.det);
+  $('#pAct').classList.toggle('min', !S.open.act);
+  document.querySelectorAll('.tb').forEach(b=>b.classList.toggle('on', !!S.open[b.dataset.toggle]));
+  if (openPend().length) $('#pendCard').classList.toggle('hide', !S.open.pend);
+}
+function render(){ renderTabs(); renderContent(); renderActs(); renderStatus(); renderPend(); renderPanels(); }
+
+/* ---------- ações ---------- */
+const now = ()=>new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+function fmt(p,v){ if(p.kind==='Percentual'){ v=v.replace('%','').trim(); return v.includes(',')||v.includes('.')? v.replace('.',',')+'%' : v+',00%'; } return v; }
+function resolve(p, v){
+  p.done = fmt(p,v);
+  S.acts.unshift([p.act,'edit',now(),true]);
+  toast(`${p.label}: ${p.done}`);
+  if (!openPend().length){ S.status='pronta'; S.acts.unshift(['Sem pendências','ok',now(),true]); }
+  render();
+  const c = document.getElementById('c-'+p.id); if (c){ c.classList.add('flash'); setTimeout(()=>c.classList.remove('flash'),900); }
+}
+function focusPend(p){
+  S.open.det=true; S.tab=p.tab; render();
+  const c = document.getElementById('c-'+p.id);
+  if (c){ c.scrollIntoView({behavior:'smooth',block:'center'}); c.classList.add('flash'); setTimeout(()=>c.classList.remove('flash'),1200); }
+}
+function approve(){
+  S.status='aprovada'; S.locked=true; S.acts.unshift(['Faturando','def',now(),true],['Aprovada','ok',now(),true]); render();
+  setTimeout(()=>{ S.status='faturada'; S.acts.unshift(['Faturada','ok',now(),true]); render(); toast('Fatura faturada'); }, 1800);
+}
+function bindInline(){
+  document.querySelectorAll('[data-acc]').forEach(b=>b.onclick=()=>b.parentElement.classList.toggle('open'));
+  S.pend.filter(p=>!p.done).forEach(p=>{
+    const f=document.getElementById('in-'+p.id); if(!f) return;
+    f.onkeydown=e=>{ if(e.key==='Enter'&&f.value.trim()) resolve(p,f.value.trim()); };
+    f.onchange=()=>{ if(p.kind==='Seleção'&&f.value) resolve(p,f.value); };
+  });
+  document.querySelectorAll('.card .ib.edit').forEach(b=>b.onclick=()=>{
+    const c=b.closest('.card'), v=c.querySelector('.row .v'); if(!v) return;
+    const old=v.textContent; const inp=document.createElement('input'); inp.className='input'; inp.value=old;
+    v.replaceWith(inp); inp.focus(); inp.select();
+    const done=(save)=>{ const s=document.createElement('span'); s.className='v'; s.textContent= save&&inp.value.trim()?inp.value.trim():old; inp.replaceWith(s);
+      if(save && inp.value.trim() && inp.value.trim()!==old){ S.acts.unshift([`${c.dataset.edit} editado`,'edit',now(),true]); renderActs(); toast(`${c.dataset.edit} atualizado`); } };
+    inp.onkeydown=e=>{ if(e.key==='Enter') done(true); if(e.key==='Escape') done(false); };
+    inp.onblur=()=>done(true);
+  });
+}
+function toast(t){ const el=$('#toast'); el.textContent=t; el.classList.add('show'); clearTimeout(el._t); el._t=setTimeout(()=>el.classList.remove('show'),1800); }
+
+document.addEventListener('click', e=>{
+  const t=e.target.closest('[data-tab]'); if(t){ S.tab=t.dataset.tab; renderTabs(); renderContent(); return; }
+  const g=e.target.closest('[data-toggle]'); if(g){ const k=g.dataset.toggle; S.open[k]=!S.open[k]; renderPanels(); }
+});
+$('#pPrev').onclick=()=>{ S.pIdx--; renderPend(); };
+$('#pNext').onclick=()=>{ S.pIdx++; renderPend(); };
+let z=560; $('#zIn').onclick=()=>{ z=Math.min(1100,z+80); $('#page').style.width=z+'px'; }; $('#zOut').onclick=()=>{ z=Math.max(400,z-80); $('#page').style.width=z+'px'; };
+render();
+</script>
+</body>
+</html>
