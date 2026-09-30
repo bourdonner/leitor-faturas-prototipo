@@ -334,7 +334,7 @@ const TABS = {
   },
   Itens(){
     const it=[['Consumo ponta TUSD','R$ 800,35','540 kWh','R$ 1,48213','R$ 1,15443','R$ 32,89','R$ 144,06'],['Consumo ponta TE','R$ 276,68','540 kWh','R$ 0,51237','R$ 0,39909','R$ 11,37','R$ 49,80'],['Consumo fora ponta TUSD','R$ 705,96','5.960 kWh','R$ 0,11845','R$ 0,09226','R$ 29,02','R$ 127,07'],['Consumo fora ponta TE','R$ 1.965,07','5.960 kWh','R$ 0,32971','R$ 0,25681','R$ 80,76','R$ 353,71'],['Energia injetada fora ponta TUSD','−R$ 485,65','−4.100 kWh','R$ 0,11845','R$ 0,09226','−R$ 19,96','−R$ 87,42'],['Energia injetada fora ponta TE','−R$ 1.351,81','−4.100 kWh','R$ 0,32971','R$ 0,25681','−R$ 55,56','−R$ 243,33'],['Demanda','R$ 2.431,13','75 kW','R$ 32,41500','R$ 25,24804','R$ 99,92','R$ 437,60'],['Contrib. ilum. pública municipal','R$ 98,40','—','—','—','—','—']];
-    return sec('Totais')+`<div class="grid g3">${card('Total da fatura','R$ 4.440,13')}${card('PIS/COFINS','R$ 178,44','','R$ 4.341,73','base de cálculo')}${card('ICMS','R$ 781,49','','R$ 4.341,73','base de cálculo')}</div>`
+    return sec('Totais')+`<div class="grid g2">${card('Total da fatura','R$ 4.440,13',null,null,null,{cls:'full'})}${card('PIS/COFINS','R$ 178,44','','R$ 4.341,73','base de cálculo')}${card('ICMS','R$ 781,49','','R$ 4.341,73','base de cálculo')}</div>`
       +sec('Itens da nota fiscal')+it.map((r,i)=>`<div class="item ${i===0?'open':''}"><button class="item-h" data-acc><span class="n">${r[0]}</span><span class="v">${r[1]}</span>${I.chev}</button>
         <div class="item-b grid g2">${card('Quantidade',r[2])}${card('Preço unitário',r[3],'com tributos',r[4],'tarifa sem tributos')}${card('Valor',r[1])}${card('Tributos',r[5],'PIS/COFINS',r[6],'ICMS 18%')}</div></div>`).join('');
   },
