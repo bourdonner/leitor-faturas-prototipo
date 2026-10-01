@@ -151,16 +151,25 @@
   .c-def{background:var(--ink)} .c-alert{background:var(--alert)} .c-ok{background:var(--success)} .c-edit{background:var(--mid)}
   /* floating */
   .float{position:fixed;left:50%;transform:translateX(-50%);z-index:30}
-  .pend-card{bottom:124px;width:403px;background:var(--s50);border-radius:16px;box-shadow:var(--shadow);padding:16px;transition:opacity .2s,transform .25s}
+  .pend-card{bottom:124px;width:403px;background:#fff;border-radius:16px;box-shadow:0 10px 15px -3px rgba(0,0,0,.10),0 4px 6px -4px rgba(0,0,0,.10);padding:16px;display:flex;flex-direction:column;gap:16px;transition:opacity .2s,transform .25s}
   .pend-card.hide{opacity:0;transform:translate(-50%,12px);pointer-events:none}
-  .pc-h{display:flex;align-items:center;gap:8px}
-  .pc-h .nav{display:flex;align-items:center;gap:4px;color:var(--ink)}
-  .pc-h .nav button:disabled{opacity:.3;cursor:default}
+  .pc-h{display:flex;align-items:center;gap:8px;height:28px}
   .pc-h .sp{flex:1}
-  .pc-b{background:#fff;border-radius:12px;padding:12px;margin-top:16px;display:flex;flex-direction:column;gap:10px}
-  .pc-b label{font-size:14px}
-  .pc-b .act{display:flex;justify-content:flex-end;gap:8px}
-  .pc-b .go{font-size:12px;color:var(--brand);text-decoration:underline;align-self:flex-start}
+  .bxs{height:28px;padding:0 8px;border-radius:6px;background:var(--s50);display:inline-flex;align-items:center;font-size:12px;line-height:16px;color:var(--ink)}
+  .bxs .tx{padding:0 4px}
+  .pc-h .ib{background:var(--s50);border-radius:6px}
+  .bxs:hover,.pc-h .ib:hover{background:var(--s100)}
+  .pc-b{background:var(--s50);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:12px}
+  .pc-b .fl{display:flex;flex-direction:column;gap:8px}
+  .pc-b label{font-size:14px;line-height:24px}
+  .pc-b .acts{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .pc-b .nav{display:flex;align-items:center;gap:4px;line-height:24px}
+  .pc-b .nav button{width:20px;height:20px;border-radius:6px;background:var(--s50);display:grid;place-items:center}
+  .pc-b .nav button:hover:not(:disabled){background:var(--s100)}
+  .pc-b .nav button:disabled{color:var(--s400);cursor:default}
+  .pc-b .nav .ms{font-size:16px}
+  .pc-b .btn{height:36px;padding:0 12px;border-radius:6px;font-weight:400}
+  .pc-b .btn.primary:disabled{opacity:1;background:#8a8988;cursor:not-allowed}
   /* tab bar (Luma style) */
   .tabbar{bottom:28px;background:var(--white);border-radius:999px;box-shadow:0 10px 15px rgba(0,0,0,.10),0 4px 6px rgba(0,0,0,.10);padding:8px;display:flex;gap:8px}
   .tb{width:124px;padding:8px 16px;border-radius:999px;display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--s400);transition:background .2s,color .2s}
@@ -255,9 +264,9 @@
   <div class="pc-h">
     <span class="badge"><span class="ms f" style="font-size:14px" aria-hidden="true">warning</span></span>
     <span>Pendências</span>
-    <span class="nav"><button id="pPrev" aria-label="Anterior"><span class="ms" aria-hidden="true">chevron_left</span></button><span id="pPos"></span><button id="pNext" aria-label="Próxima"><span class="ms" aria-hidden="true">chevron_right</span></button></span>
     <span class="sp"></span>
-    <button class="ib" data-toggle="pend" aria-label="Minimizar pendências"><span class="ms" aria-hidden="true">hide</span></button>
+    <button class="bxs" id="pGo"><span class="tx">Ver no Campo</span><span class="ms" style="font-size:16px" aria-hidden="true">open_in_new</span></button>
+    <button class="ib" data-toggle="pend" aria-label="Minimizar pendências"><span class="ms" style="font-size:16px" aria-hidden="true">close_fullscreen</span></button>
   </div>
   <div class="pc-b" id="pendBody"></div>
 </div>
@@ -384,11 +393,13 @@ function renderPend(){
   if (!list.length){ $('#pendCard').classList.add('hide'); return; }
   S.pIdx = Math.min(S.pIdx, list.length-1);
   const p = list[S.pIdx];
-  $('#pPos').textContent = `${S.pIdx+1} de ${list.length}`;
-  $('#pPrev').disabled = S.pIdx===0; $('#pNext').disabled = S.pIdx===list.length-1;
-  $('#pendBody').innerHTML = `<label for="pf">${p.label}</label>${fieldHTML(p,'pf')}
-    <button class="go" id="pGo">Ver no painel · aba ${p.tab}</button>
-    <div class="act"><button class="btn primary" id="pOk" disabled>Confirmar</button></div>`;
+  $('#pendBody').innerHTML = `<div class="fl"><label for="pf">${p.label}</label>${fieldHTML(p,'pf')}</div>
+    <div class="acts">
+      <span class="nav"><button id="pPrev" aria-label="Anterior" ${S.pIdx===0?'disabled':''}><span class="ms" aria-hidden="true">chevron_left</span></button><span>${S.pIdx+1} de ${list.length}</span><button id="pNext" aria-label="Próxima" ${S.pIdx===list.length-1?'disabled':''}><span class="ms" aria-hidden="true">chevron_right</span></button></span>
+      <button class="btn primary" id="pOk" disabled>Confirmar</button>
+    </div>`;
+  $('#pPrev').onclick=()=>{ S.pIdx--; renderPend(); };
+  $('#pNext').onclick=()=>{ S.pIdx++; renderPend(); };
   const f=$('#pf'), ok=$('#pOk');
   f.oninput = f.onchange = ()=>{ ok.disabled = !f.value.trim(); };
   f.onkeydown = e=>{ if(e.key==='Enter' && f.value.trim()) resolve(p, f.value.trim()); };
@@ -447,8 +458,6 @@ document.addEventListener('click', e=>{
   const t=e.target.closest('[data-tab]'); if(t){ S.tab=t.dataset.tab; renderTabs(); renderContent(); return; }
   const g=e.target.closest('[data-toggle]'); if(g){ const k=g.dataset.toggle; S.open[k]=!S.open[k]; renderPanels(); }
 });
-$('#pPrev').onclick=()=>{ S.pIdx--; renderPend(); };
-$('#pNext').onclick=()=>{ S.pIdx++; renderPend(); };
 let z=560; $('#zIn').onclick=()=>{ z=Math.min(1100,z+80); $('#page').style.width=z+'px'; }; $('#zOut').onclick=()=>{ z=Math.max(400,z-80); $('#page').style.width=z+'px'; };
 /* tooltips da barra lateral */
 const tip=$('#sbTip');
