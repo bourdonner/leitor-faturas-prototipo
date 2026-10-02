@@ -67,10 +67,10 @@
   /* columns */
   .cols{flex:1;min-height:0;display:flex;gap:24px;margin-top:20px;position:relative}
   .panel{background:var(--s100);border-radius:var(--r);display:flex;flex-direction:column;min-width:0;min-height:0;transition:flex-basis .35s ease,opacity .25s ease,margin .35s ease,transform .35s ease}
-  .p-pdf{flex:1 1 0}
+  .p-pdf{flex:0 1 440px}
   .p-pdf{min-width:400px}
-  .p-det{flex:0 1 690px;min-width:520px}
-  .cols.no-pdf .p-det{flex:1 1 0}
+  .p-det{flex:1 1 690px;min-width:520px}
+  .cols.no-pdf .p-det,.cols.no-det .p-pdf{flex:1 1 0}
   .p-act{flex:0 0 284px}
   .panel.min{flex:0 0 0!important;min-width:0!important;opacity:0;margin-left:-24px;overflow:hidden;pointer-events:none}
   .p-pdf.min{margin-left:0;margin-right:-24px}
@@ -83,7 +83,7 @@
   .ib.sq{background:var(--white)}
   /* pdf */
   .pdf-scroll{flex:1;overflow:auto;padding:8px 24px 24px;display:flex;justify-content:center}
-  .pdf-page{width:560px;transition:width .2s ease;box-shadow:0 1px 3px rgba(0,0,0,.08);background:#fff;align-self:flex-start}
+  .pdf-page{width:352px;transition:width .2s ease;box-shadow:0 1px 3px rgba(0,0,0,.08);background:#fff;align-self:flex-start}
   .pdf-page img{width:100%;display:block}
   .pager{display:flex;justify-content:center;align-items:center;gap:8px;padding:10px;border-top:1px solid var(--s200);color:var(--mid);font-size:12px;background:var(--white);border-radius:0 0 var(--r) var(--r)}
   /* tabs */
@@ -98,30 +98,33 @@
   .g2{grid-template-columns:1fr 1fr} .g3{grid-template-columns:1fr 1fr 1fr}
   .full{grid-column:1/-1}
   /* data card — um valor + unidade; mesma altura em visualização e edição */
-  .card{background:var(--s50);border-radius:12px;padding:12px 16px;border:1px solid transparent;transition:box-shadow .3s,border-color .3s,background .2s;min-width:0}
-  .card .ct{display:flex;align-items:center;gap:8px;font-weight:700;min-height:28px;line-height:1.3}
+  .card{background:var(--s50);border-radius:8px;padding:12px;border:1px solid transparent;transition:box-shadow .3s,border-color .3s,background .2s;min-width:0}
+  .card .ct{display:flex;align-items:center;gap:8px;font-weight:700;min-height:24px;line-height:1.4}
+  .card .ct .ib.edit{width:20px;height:20px;border-radius:4px}
+  .card .ct .badge{width:16px;height:16px;border-radius:5px}
+  .card .ct .badge .ms{font-size:12px!important}
   .card .ct .sp{flex:1}
-  .card .row{display:flex;align-items:center;gap:8px;height:40px;margin-top:8px;font-size:14px;border:1px solid transparent}
-  .card .row .val{display:flex;align-items:baseline;gap:6px;min-width:0}
+  .card .row{display:flex;align-items:center;gap:8px;margin-top:4px;font-size:14px}
+  .card .row .val{flex:1;display:flex;align-items:center;gap:8px;min-width:0;height:40px;padding:0 12px;border:1px solid transparent;border-radius:6px;background:rgba(245,245,244,.4);color:#0c0a09}
   .card .row .v{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
   .card .u{color:var(--mid);white-space:nowrap}
-  .card .row .sp{flex:1}
-  .card .cp{color:var(--mid);width:24px;height:24px;border-radius:6px;display:grid;place-items:center;flex:none}
+  .card .row .sp{display:none}
+  .card .cp{color:var(--mid);width:40px;height:40px;border-radius:8px;display:grid;place-items:center;flex:none}
   .card .cp:hover{background:var(--s200);color:var(--ink)}
-  .card.pend{border-color:var(--alert);background:#fff}
-  .card.pend .hint{color:var(--mid);font-size:12px;margin-top:6px}
+  .card.pend{border-color:var(--alert)}
+  .card.pend .hint{color:var(--mid);font-size:14px;margin-top:8px}
   .card.flash{box-shadow:0 0 0 4px rgba(249,115,22,.25)}
   .card.done{border-color:var(--success)}
   .badge{width:20px;height:20px;border-radius:6px;background:var(--alert);color:#fff;display:grid;place-items:center;flex:none}
   .input{width:100%;height:40px;border:1px solid var(--border);border-radius:6px;padding:0 12px;font:inherit;font-size:14px;background:var(--s50);color:var(--ink)}
   .input:focus{outline:2px solid var(--brand);outline-offset:0;background:#fff}
-  .card .in{margin-top:8px}
-  .card.editing{background:var(--s100)}
+  .card .in{margin-top:4px}
+  .card.editing{background:var(--s50)}
   .card .ca{display:flex;align-items:center;gap:4px}
-  .card .ca button{width:24px;height:24px;display:grid;place-items:center;border-radius:6px;color:var(--ink)}
+  .card .ca button{width:20px;height:20px;display:grid;place-items:center;border-radius:4px;color:var(--ink)}
   .card .ca button:hover{background:var(--s200)}
   .card .ca .sv{color:var(--brand)}
-  .card .fld{display:flex;align-items:center;gap:6px;height:40px;margin-top:8px;padding:0 12px;border:1px solid var(--border);border-radius:6px;background:var(--s50);font-size:14px;cursor:text}
+  .card .fld{display:flex;align-items:center;gap:8px;height:40px;margin-top:4px;padding:0 12px;border:1px solid var(--border);border-radius:6px;background:var(--s50);font-size:14px;cursor:text}
   .card .fld:focus-within{outline:2px solid var(--brand);background:#fff}
   .card .fld input{border:0;padding:0;background:transparent;font:inherit;color:#0c0a09;outline:0;flex:1;min-width:0}
   .locked .card .ib.edit{display:none}
@@ -173,6 +176,11 @@
   .grade td.ed{padding:0}
   .grade td.ed input{width:100%;height:38px;border:0;padding:0 12px;text-align:right;font:inherit;background:#fff;outline:2px solid var(--brand);outline-offset:-2px}
   .grade td.chg{background:#f7fee7}
+  .grade td.pend{background:#fff7ed!important;box-shadow:inset 0 0 0 1.5px var(--alert);text-align:center}
+  .grade td.pend.sel{box-shadow:inset 0 0 0 2px var(--alert)}
+  .grade td.pend .pw{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:5px;background:var(--alert);color:#fff;vertical-align:middle}
+  .grade td.flash{animation:cellFlash 1.2s ease}
+  @keyframes cellFlash{0%,60%{box-shadow:inset 0 0 0 1.5px var(--alert),0 0 0 4px rgba(249,115,22,.3)}}
   .grade tfoot td{font-weight:600;background:var(--s50);border-bottom:0}
   .grade tfoot .stk{background:var(--s50)}
   .grade .unit{color:var(--mid);text-align:left}
@@ -344,8 +352,8 @@
 <script>
 const MS=(n,s,f)=>'<span class="ms'+(f?' f':'')+'"'+(s?' style="font-size:'+s+'px"':'')+' aria-hidden="true">'+n+'</span>';
 const I = {
-  edit:MS('edit',16,1), copy:MS('content_copy',13), warn:MS('warning',13,1), chev:'<span class="chev">'+MS('expand_more',20)+'</span>',
-  save:MS('save',14,1), close:MS('close',14,1),
+  edit:MS('edit',12,1), copy:MS('content_copy',16,1), warn:MS('warning',13,1), chev:'<span class="chev">'+MS('expand_more',20)+'</span>',
+  save:MS('save',12,1), close:MS('close',12,1),
   check:MS('check',14), pen:MS('edit',13,1), dot:MS('radio_button_checked',12,1), inbox:MS('inbox',13,1), hour:MS('hourglass_top',13,1), doc:MS('description',13,1)
 };
 const $ = s=>document.querySelector(s);
@@ -359,10 +367,11 @@ const who = u=>u&&u.sys
 /* ---------- estado ---------- */
 const S = {
   tab:'Resumo', open:{pdf:true,det:true,act:true,pend:true}, status:'revisar', locked:false, pIdx:0, ov:{}, chartSel:null, itemChg:{},
-  items:[['Consumo ponta TUSD','kWh','540','1,48213','1,15443','32,89','144,06','800,35'],['Consumo ponta TE','kWh','540','0,51237','0,39909','11,37','49,80','276,68'],['Consumo fora ponta TUSD','kWh','5.960','0,11845','0,09226','29,02','127,07','705,96'],['Consumo fora ponta TE','kWh','5.960','0,32971','0,25681','80,76','353,71','1.965,07'],['Energia injetada fora ponta TUSD','kWh','−4.100','0,11845','0,09226','−19,96','−87,42','−485,65'],['Energia injetada fora ponta TE','kWh','−4.100','0,32971','0,25681','−55,56','−243,33','−1.351,81'],['Demanda','kW','75','32,41500','25,24804','99,92','437,60','2.431,13'],['Contrib. ilum. pública municipal','—','—','—','—','—','—','98,40']],
+  items:[['Consumo ponta TUSD','kWh','540','1,48213','1,15443','32,89','144,06','800,35'],['Consumo ponta TE','kWh','540','0,51237','0,39909','11,37','49,80','276,68'],['Consumo fora ponta TUSD','kWh','5.960','0,11845','0,09226','29,02','127,07','705,96'],['Consumo fora ponta TE','kWh','5.960','0,32971','0,25681','80,76','353,71','1.965,07'],['Energia injetada fora ponta TUSD','kWh','−4.100','0,11845','0,09226','−19,96','−87,42','−485,65'],['Energia injetada fora ponta TE','kWh','−4.100','0,32971','0,25681','−55,56','−243,33','−1.351,81'],['Demanda','kW','75','32,41500','25,24804','99,92','','2.431,13'],['Contrib. ilum. pública municipal','—','—','—','—','—','—','98,40']],
   pend:[
     {id:'cofins', tab:'Resumo', title:'COFINS', label:'COFINS (alíquota)', kind:'Percentual', unit:'%', ph:'0,00', legend:'R$ 146,75', done:null, act:'COFINS corrigido'},
     {id:'leit', tab:'Consumo', title:'Leitura atual', label:'Leitura atual ponta (kWh)', kind:'Número', unit:'kWh', ph:'0', legend:'kWh', done:null, act:'Leitura atual corrigida'},
+    {id:'item', tab:'Itens', title:'ICMS · Demanda', label:'ICMS do item Demanda', kind:'Moeda', unit:'R$', ph:'0,00', cell:[6,6], done:null, act:'ICMS do item corrigido'},
     {id:'mod', tab:'Identificação', title:'Modalidade tarifária', label:'Modalidade tarifária', kind:'Seleção', ph:'Selecione', options:['Convencional','Horária verde','Horária azul','Branca'], done:null, act:'Modalidade corrigida'}
   ],
   acts:[['Para revisar','alert','10:42'],['Lida','def','10:42'],['Lendo fatura','def','10:41'],['Recebida','def','10:40']]
@@ -392,7 +401,7 @@ function card(t, v, u, opts={}){
 function fieldHTML(p,id){
   if (p.kind==='Seleção') return `<select class="input" id="${id}"><option value="">${p.ph}</option>${p.options.map(o=>`<option>${o}</option>`).join('')}</select>`;
   const u=p.unit?`<span class="u">${p.unit}</span>`:'';
-  return `<label class="ufld">${p.unit&&isPre(p.unit)?u:''}<input id="${id}" placeholder="${p.ph}" data-mask="${{Percentual:'pct',Número:'int'}[p.kind]||'text'}">${p.unit&&!isPre(p.unit)?u:''}</label>`;
+  return `<label class="ufld">${p.unit&&isPre(p.unit)?u:''}<input id="${id}" placeholder="${p.ph}" data-mask="${{Percentual:'pct',Número:'int',Moeda:'money'}[p.kind]||'text'}">${p.unit&&!isPre(p.unit)?u:''}</label>`;
 }
 const sec = t=>`<div class="sec-t">${t}</div>`;
 
@@ -488,11 +497,14 @@ const COLS=['Unid.','Quant.','Preço c/ tributos','Tarifa s/ tributos','PIS/COFI
 const COLK={2:'int',3:'dec5',4:'dec5',5:'money',6:'money',7:'money'}; // quantidade e valores aceitam negativo (créditos)
 const pn = t=>parseFloat(String(t).replace(/[^\d,−-]/g,'').replace(/\./g,'').replace(',','.').replace('−','-'));
 const money = n=>(n<0?'−':'')+Math.abs(n).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+const cellPend=(r,c)=>openPend().find(p=>p.cell&&p.cell[0]===r&&p.cell[1]===c);
 function sheetHTML(){
   const tot=S.items.reduce((a,r)=>a+(pn(r[7])||0),0);
   return `<div class="grade-h"><span>Valores em R$ · clique duas vezes numa célula para editar</span></div>
   <div class="grade" id="sheet"><table><thead><tr><th class="stk">Item</th>${COLS.map(c=>`<th>${c}</th>`).join('')}</tr></thead>
-  <tbody>${S.items.map((r,ri)=>`<tr><td class="stk">${r[0]}</td><td class="unit">${r[1]}</td>${r.slice(2).map((c,ci)=>`<td class="num ${String(c).startsWith('−')?'neg':''} ${S.itemChg[ri+'-'+(ci+2)]?'chg':''}" data-r="${ri}" data-c="${ci+2}" tabindex="-1">${c}</td>`).join('')}</tr>`).join('')}</tbody>
+  <tbody>${S.items.map((r,ri)=>`<tr><td class="stk">${r[0]}</td><td class="unit">${r[1]}</td>${r.slice(2).map((c,ci)=>{ const p=cellPend(ri,ci+2);
+    return p ? `<td class="num pend" id="c-${p.id}" data-r="${ri}" data-c="${ci+2}" data-pend="${p.id}" tabindex="-1" title="Não encontrado na fatura"><span class="pw">${I.warn}</span></td>`
+      : `<td class="num ${String(c).startsWith('−')?'neg':''} ${S.itemChg[ri+'-'+(ci+2)]?'chg':''}" data-r="${ri}" data-c="${ci+2}" tabindex="-1">${c}</td>`; }).join('')}</tr>`).join('')}</tbody>
   <tfoot><tr><td class="stk">Total</td><td colspan="6"></td><td>${money(tot)}</td></tr></tfoot></table></div>`;
 }
 function bindSheet(){
@@ -507,6 +519,8 @@ function bindSheet(){
     const kind=COLK[c]; attachMask(inp, kind, {signed:c!==3&&c!==4});
     const done=save=>{ const nv=inp.value.trim();
       if(save && nv && nv!==old && invalid(inp, kind)) return;
+      if(td.dataset.pend){ const p=S.pend.find(x=>x.id===td.dataset.pend); td.classList.remove('ed','err');
+        if(save && nv){ resolve(p, nv); const n=at(r,c); if(n) select(n); } else { td.innerHTML=`<span class="pw">${I.warn}</span>`; select(td); } return; }
       td.classList.remove('ed','err');
       if(save && nv && nv!==old){ S.items[r][c]=nv; S.itemChg[r+'-'+c]=1; S.acts.unshift([`${S.items[r][0]} editado`,'edit',now(),true,ME]); renderActs(); toast(`${S.items[r][0]} atualizado`);
         renderContent(); const n=at(r,c); if(n) select(n); return; }
@@ -629,6 +643,7 @@ function renderPanels(){
   S.vis_ready = true;
   PRI.forEach(k=>$(PANEL[k]).classList.toggle('min', !S.vis.includes(k)));
   $('#cols').classList.toggle('no-pdf', !S.vis.includes('pdf'));
+  $('#cols').classList.toggle('no-det', !S.vis.includes('det'));
   document.querySelectorAll('.tb').forEach(b=>{ const k=b.dataset.toggle; b.classList.toggle('on', k==='pend' ? !!S.open.pend : S.vis.includes(k)); });
   if (openPend().length) $('#pendCard').classList.toggle('hide', !S.open.pend);
 }
@@ -641,6 +656,7 @@ function resolve(p, v){
   const f=document.getElementById('pf')?.value.trim()===v ? $('#pf') : document.getElementById('in-'+p.id);
   if (p.kind!=='Seleção' && f && invalid(f, f.dataset.mask)) return;
   p.done = fmt(p,v);
+  if (p.cell){ S.items[p.cell[0]][p.cell[1]] = p.done; S.itemChg[p.cell.join('-')] = 1; }
   S.acts.unshift([p.act,'edit',now(),true,ME]);
   toast(`${p.label}: ${p.done}`);
   if (!openPend().length){ S.status='pronta'; S.acts.unshift(['Sem pendências','ok',now(),true]); }
@@ -698,7 +714,7 @@ document.addEventListener('click', e=>{
   const t=e.target.closest('[data-tab]'); if(t){ S.tab=t.dataset.tab; renderTabs(); renderContent(); return; }
   const g=e.target.closest('[data-toggle]'); if(g){ const k=g.dataset.toggle; if(k==='pend'){ S.open.pend=!S.open.pend; const tb=document.querySelector('.tb[data-toggle=pend]'); const cls=S.open.pend?'opening':'closing'; tb.classList.remove('opening','closing'); void tb.offsetWidth; tb.classList.add(cls); setTimeout(()=>tb.classList.remove(cls),450); } else togglePanel(k); renderPanels(); }
 });
-let z=560; $('#zIn').onclick=()=>{ z=Math.min(1100,z+80); $('#page').style.width=z+'px'; }; $('#zOut').onclick=()=>{ z=Math.max(400,z-80); $('#page').style.width=z+'px'; };
+let z=352; $('#zIn').onclick=()=>{ z=Math.min(1100,z+80); $('#page').style.width=z+'px'; }; $('#zOut').onclick=()=>{ z=Math.max(240,z-80); $('#page').style.width=z+'px'; };
 /* tooltips da barra lateral */
 const tip=$('#sbTip');
 document.querySelectorAll('.sidebar [data-tip]').forEach(a=>{ a.setAttribute('aria-label',a.dataset.tip);
