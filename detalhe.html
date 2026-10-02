@@ -67,9 +67,9 @@
   /* columns */
   .cols{flex:1;min-height:0;display:flex;gap:24px;margin-top:20px;position:relative}
   .panel{background:var(--s100);border-radius:var(--r);display:flex;flex-direction:column;min-width:0;min-height:0;transition:flex-basis .35s ease,opacity .25s ease,margin .35s ease,transform .35s ease}
-  .p-pdf{flex:0 1 440px}
+  .p-pdf{flex:1 1 0}
   .p-pdf{min-width:400px}
-  .p-det{flex:1 1 690px;min-width:520px}
+  .p-det{flex:0 1 690px;min-width:520px}
   .cols.no-pdf .p-det,.cols.no-det .p-pdf{flex:1 1 0}
   .p-act{flex:0 0 284px}
   .panel.min{flex:0 0 0!important;min-width:0!important;opacity:0;margin-left:-24px;overflow:hidden;pointer-events:none}
@@ -83,7 +83,7 @@
   .ib.sq{background:var(--white)}
   /* pdf */
   .pdf-scroll{flex:1;overflow:auto;padding:8px 24px 24px;display:flex;justify-content:center}
-  .pdf-page{width:352px;transition:width .2s ease;box-shadow:0 1px 3px rgba(0,0,0,.08);background:#fff;align-self:flex-start}
+  .pdf-page{width:560px;transition:width .2s ease;box-shadow:0 1px 3px rgba(0,0,0,.08);background:#fff;align-self:flex-start}
   .pdf-page img{width:100%;display:block}
   .pager{display:flex;justify-content:center;align-items:center;gap:8px;padding:10px;border-top:1px solid var(--s200);color:var(--mid);font-size:12px;background:var(--white);border-radius:0 0 var(--r) var(--r)}
   /* tabs */
@@ -249,6 +249,17 @@
   @media (prefers-reduced-motion:reduce){.tb::before,.panel{transition:none}.tb .ic,.panel.opening{animation:none!important}}
   .toast{position:fixed;top:24px;left:50%;transform:translate(-50%,-20px);background:var(--ink);color:#fff;padding:10px 16px;border-radius:10px;opacity:0;transition:.25s;z-index:50;font-size:13px}
   .toast.show{opacity:1;transform:translate(-50%,0)}
+  /* tab bar: no desktop é uma pílula só; no tablet e no mobile, Pendências vira um botão à parte */
+  .tb-main{display:contents}
+  [data-mode=tablet] .tabbar,[data-mode=mobile] .tabbar{background:none;box-shadow:none;padding:0;gap:10px;align-items:stretch}
+  [data-mode=tablet] .tb-main,[data-mode=mobile] .tb-main{display:flex;gap:8px;padding:8px;background:var(--white);border-radius:999px;box-shadow:0 10px 15px rgba(0,0,0,.10),0 4px 6px rgba(0,0,0,.10)}
+  [data-mode=tablet] #tbPend,[data-mode=mobile] #tbPend{background:var(--white)!important;border-radius:999px;box-shadow:0 10px 15px rgba(0,0,0,.10),0 4px 6px rgba(0,0,0,.10);padding:14px 20px}
+  [data-mode=tablet] #tbPend::before,[data-mode=mobile] #tbPend::before{inset:8px}
+  [data-mode=mobile] .tabbar{gap:8px}
+  [data-mode=mobile] .tb-main{flex:1;min-width:0;padding:6px;gap:4px}
+  [data-mode=mobile] #tbPend{flex:none;width:84px;padding:12px 4px}
+  [data-mode=mobile] #tbPend::before{inset:6px}
+
   /* lista de pendências (tela própria no mobile) */
   .p-plist{display:none}
   .plist{flex:1;overflow:auto;padding:4px 12px 120px;display:flex;flex-direction:column;gap:12px}
@@ -410,9 +421,11 @@
 
 <!-- Tab bar -->
 <nav class="float tabbar" id="tabbar" aria-label="Painéis">
+  <span class="tb-main">
   <button class="tb" data-toggle="pdf"><span class="ic"><span class="ms f" style="font-size:26px" aria-hidden="true">picture_as_pdf</span></span><span>Fatura</span></button>
   <button class="tb" data-toggle="det"><span class="ic"><span class="ms f" style="font-size:26px" aria-hidden="true">description</span></span><span>Detalhes</span></button>
   <button class="tb" data-toggle="act"><span class="ic"><span class="ms f" style="font-size:26px" aria-hidden="true">history</span></span><span>Atividade</span></button>
+  </span>
   <button class="tb" data-toggle="pend" id="tbPend"><span class="ic"><span class="ms f" style="font-size:26px" aria-hidden="true">warning</span><b class="cnt" id="tbCnt">3</b></span><span>Pendências</span></button>
 </nav>
 
@@ -818,7 +831,7 @@ document.addEventListener('click', e=>{
   const t=e.target.closest('[data-tab]'); if(t){ S.tab=t.dataset.tab; renderTabs(); renderContent(); return; }
   const g=e.target.closest('[data-toggle]'); if(g){ const k=g.dataset.toggle; if(k==='pend' && modeOf()!=='mobile'){ S.open.pend=!S.open.pend; if(S.open.pend && modeOf()==='tablet') S.side=null; const tb=document.querySelector('.tb[data-toggle=pend]'); const cls=S.open.pend?'opening':'closing'; tb.classList.remove('opening','closing'); void tb.offsetWidth; tb.classList.add(cls); setTimeout(()=>tb.classList.remove(cls),450); } else { if(modeOf()==='mobile' && g.classList.contains('tb')){ g.classList.remove('opening'); void g.offsetWidth; g.classList.add('opening'); setTimeout(()=>g.classList.remove('opening'),450); } togglePanel(k); } renderPanels(); }
 });
-let z=352; $('#zIn').onclick=()=>{ z=Math.min(1100,z+80); $('#page').style.width=z+'px'; }; $('#zOut').onclick=()=>{ z=Math.max(240,z-80); $('#page').style.width=z+'px'; };
+let z=560; $('#zIn').onclick=()=>{ z=Math.min(1100,z+80); $('#page').style.width=z+'px'; }; $('#zOut').onclick=()=>{ z=Math.max(400,z-80); $('#page').style.width=z+'px'; };
 /* tooltips da barra lateral */
 const tip=$('#sbTip');
 document.querySelectorAll('.sidebar [data-tip]').forEach(a=>{ a.setAttribute('aria-label',a.dataset.tip);
