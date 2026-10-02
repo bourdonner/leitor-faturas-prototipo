@@ -189,7 +189,8 @@
   @keyframes cellFlash{0%,60%{box-shadow:inset 0 0 0 1.5px var(--alert),0 0 0 4px rgba(249,115,22,.3)}}
   .grade tfoot td{font-weight:600;background:var(--s50);border-bottom:0}
   .grade tfoot .stk{background:var(--s50)}
-  .grade .unit{color:var(--mid);text-align:left}
+  .grade .cu{color:var(--mid);font-size:12px}
+  .grade td.neg .cu{color:inherit;opacity:.7}
   .medt{font-weight:500;font-size:13px}
   /* activity */
   .act-h{display:flex;align-items:center;gap:8px;padding:16px 16px 8px}
@@ -726,19 +727,26 @@ function bindChart(){
 }
 
 /* ---------- planilha de itens ---------- */
-const COLS=['Unid.','Quant.','Preço c/ tributos','Tarifa s/ tributos','PIS/COFINS','ICMS','Valor'];
+const COLS=['Quant.','Preço c/ tributos','Tarifa s/ tributos','PIS/COFINS','ICMS','Valor'];
+// a unidade fica dentro da célula: quantidade na unidade do item, preço e tarifa por unidade, valores em R$
+const cellUnit=(r,c)=> c===2 ? [r[1],0] : (c===3||c===4) ? ['R$/'+r[1],0] : ['R$',1];
+function cellHTML(r,c){
+  const v=S.items[r][c]; if(!v || v==='—' || (c<5 && S.items[r][1]==='—')) return v||'';
+  const [u,pre]=cellUnit(S.items[r],c);
+  return pre ? `<span class="cu">${u}</span> ${v}` : `${v} <span class="cu">${u}</span>`;
+}
 const COLK={2:'int',3:'dec5',4:'dec5',5:'money',6:'money',7:'money'}; // quantidade e valores aceitam negativo (créditos)
 const pn = t=>parseFloat(String(t).replace(/[^\d,−-]/g,'').replace(/\./g,'').replace(',','.').replace('−','-'));
 const money = n=>(n<0?'−':'')+Math.abs(n).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
 const cellPend=(r,c)=>openPend().find(p=>p.cell&&p.cell[0]===r&&p.cell[1]===c);
 function sheetHTML(){
   const tot=S.items.reduce((a,r)=>a+(pn(r[7])||0),0);
-  return `<div class="grade-h"><span>Valores em R$ · clique duas vezes numa célula para editar</span></div>
+  return `<div class="grade-h"><span>Clique duas vezes numa célula para editar</span></div>
   <div class="grade" id="sheet"><table><thead><tr><th class="stk">Item</th>${COLS.map(c=>`<th>${c}</th>`).join('')}</tr></thead>
-  <tbody>${S.items.map((r,ri)=>`<tr><td class="stk">${r[0]}</td><td class="unit">${r[1]}</td>${r.slice(2).map((c,ci)=>{ const p=cellPend(ri,ci+2);
+  <tbody>${S.items.map((r,ri)=>`<tr><td class="stk">${r[0]}</td>${r.slice(2).map((c,ci)=>{ const p=cellPend(ri,ci+2);
     return p ? `<td class="num pend" id="c-${p.id}" data-r="${ri}" data-c="${ci+2}" data-pend="${p.id}" tabindex="-1" title="Não encontrado na fatura"><span class="pw">${I.warn}</span></td>`
-      : `<td class="num ${String(c).startsWith('−')?'neg':''} ${S.itemChg[ri+'-'+(ci+2)]?'chg':''}" data-r="${ri}" data-c="${ci+2}" tabindex="-1">${c}</td>`; }).join('')}</tr>`).join('')}</tbody>
-  <tfoot><tr><td class="stk">Total</td><td colspan="6"></td><td>${money(tot)}</td></tr></tfoot></table></div>`;
+      : `<td class="num ${String(c).startsWith('−')?'neg':''} ${S.itemChg[ri+'-'+(ci+2)]?'chg':''}" data-r="${ri}" data-c="${ci+2}" tabindex="-1">${cellHTML(ri,ci+2)}</td>`; }).join('')}</tr>`).join('')}</tbody>
+  <tfoot><tr><td class="stk">Total</td><td colspan="5"></td><td><span class="cu">R$</span> ${money(tot)}</td></tr></tfoot></table></div>`;
 }
 function bindSheet(){
   const sh=$('#sheet'); if(!sh) return;
@@ -757,7 +765,7 @@ function bindSheet(){
       td.classList.remove('ed','err');
       if(save && nv && nv!==old){ S.items[r][c]=nv; S.itemChg[r+'-'+c]=1; S.acts.unshift([`${S.items[r][0]} editado`,'edit',now(),true,ME]); renderActs(); toast(`${S.items[r][0]} atualizado`);
         renderContent(); const n=at(r,c); if(n) select(n); return; }
-      td.textContent=old; select(td); };
+      td.innerHTML=cellHTML(r,c); select(td); };
     inp.onkeydown=e=>{ if(e.key==='Enter'){e.preventDefault();done(true);} if(e.key==='Escape'){e.preventDefault();done(false);} e.stopPropagation(); };
     inp.onblur=()=>{ if(td.classList.contains('ed')) done(true); };
   };
@@ -802,7 +810,7 @@ const TABS = {
       +med('Demanda')+`${card('Demanda medida','68','kW')}${card('Demanda contratada','75','kW')}${card('Demanda faturada','75','kW')}${card('Ultrapassagem','0','kW')}</div>`
       +med('Energia injetada fora ponta')+`${card('Leitura anterior','51.300','kWh')}${card('Data da leitura anterior','07/02/2025')}${card('Leitura atual','55.400','kWh')}${card('Data da leitura atual','11/03/2025')}${card('Constante','1')}${card('Injetado no período','4.100','kWh')}</div>`
       +sec('Histórico de consumo')+`<div class="grid g2">${card('Média de consumo (12 meses)','6.399','kWh')}${card('Mediana de consumo (12 meses)','6.370','kWh')}</div>`
-      +`<div class="grade"><table><thead><tr><th class="stk">Mês</th><th>Consumo (kWh)</th><th>Demanda (kW)</th><th>Dias</th></tr></thead><tbody>${h.map(r=>`<tr><td class="stk">${r[0]}</td>${r.slice(1).map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+      +`<div class="grade"><table><thead><tr><th class="stk">Mês</th><th>Consumo</th><th>Demanda</th><th>Dias</th></tr></thead><tbody>${h.map(r=>`<tr><td class="stk">${r[0]}</td>${r.slice(1).map((c,k)=>`<td>${c} <span class="cu">${['kWh','kW','dias'][k]}</span></td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
   },
   'Identificação'(){
     return sec('Fatura')+`<div class="grid g2">${card('Nota fiscal','247971120')}${card('Série','000')}${card('Referência','Mar/2025')}${card('Emissão','12/03/2025')}${card('Débito automático','—')}${card('Chave de acesso','31250300000000000100660002479711201000000029',null,{cls:'full'})}${card('Código de barras','83610000044-2 40130138004-3 11989574712-4 30145678901-7',null,{cls:'full'})}</div>`
