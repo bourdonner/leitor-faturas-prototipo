@@ -315,11 +315,9 @@
   @keyframes offPing{0%{opacity:.7;transform:scale(.85)}100%{opacity:0;transform:scale(1.35)}}
   @media (prefers-reduced-motion:reduce){.offi,.offi .b::after{animation:none!important}}
 
-  /* Fatura no mobile: sem zoom por botão (pinça), sem abrir em nova aba; baixar vai para o lado da tab bar */
-  #tbDl{display:none;text-decoration:none}
-  [data-mode=mobile].scr-pdf #tbDl{display:flex;background:var(--white)!important;border-radius:999px;box-shadow:0 10px 15px rgba(0,0,0,.10),0 4px 6px rgba(0,0,0,.10);flex:none;width:56px;padding:12px 4px}
-  [data-mode=mobile] #tbDl::before{inset:6px}
-  [data-mode=mobile] #zIn,[data-mode=mobile] #zOut,[data-mode=mobile] .p-pdf .bar a.ib{display:none}
+  /* Fatura no mobile: sem zoom por botão (pinça), sem abrir em nova aba; baixar fica ao lado do nome do arquivo */
+  [data-mode=mobile] #zIn,[data-mode=mobile] #zOut,[data-mode=mobile] .p-pdf .bar a.ib[target]{display:none}
+  [data-mode=mobile] .p-pdf .bar a.ib[download]{width:46px;height:46px;flex:none;border-radius:8px;background:rgba(245,245,244,.4);border:1px solid var(--s100)}
   [data-mode=mobile] .pdf-scroll{justify-content:normal;touch-action:pan-x pan-y;overscroll-behavior:contain}
   [data-mode=mobile] .pdf-page{margin:0 auto;transition:none;flex:none}
 
@@ -384,14 +382,14 @@
   [data-mode=mobile] .tabbar{left:12px;right:12px;transform:none;bottom:calc(12px + env(safe-area-inset-bottom));padding:6px;gap:4px}
   [data-mode=mobile] .tb{flex:1;width:auto;padding:6px 4px;min-width:0}
   [data-mode=mobile] .tb span{font-size:11px}
-  [data-mode=mobile] .tb .ms{font-size:22px!important}
+  [data-mode=mobile] .tb .ms{font-size:26px!important}
   /* tab bar no mobile: só ícones (o nome continua para leitores de tela) */
   [data-mode=mobile] .tb > span:not(.ic){position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-  [data-mode=mobile] .tb{padding:12px 4px}
-  [data-mode=mobile] #tbPend{width:56px;padding:12px 4px}
-  [data-mode=mobile] #tbPend,[data-mode=mobile] #tbDl{justify-content:center}
+  [data-mode=mobile] .tb{padding:15px 4px}
+  [data-mode=mobile] #tbPend{width:68px;padding:15px 4px}
+  [data-mode=mobile] #tbPend{justify-content:center}
   [data-mode=mobile] .tb-main{flex:0 1 auto;width:auto}
-  [data-mode=mobile] .tb-main .tb{width:64px;flex:none}
+  [data-mode=mobile] .tb-main .tb{width:76px;flex:none}
   [data-mode=mobile] .tabbar{left:50%;right:auto;transform:translateX(-50%)}
 
   /* header mobile — Figma 1815:29980 */
@@ -549,7 +547,6 @@
   <button class="tb" data-toggle="det"><span class="ic"><span class="ms f" style="font-size:26px" aria-hidden="true">description</span></span><span>Detalhes</span></button>
   <button class="tb" data-toggle="act"><span class="ic"><span class="ms f" style="font-size:26px" aria-hidden="true">history</span></span><span>Atividade</span></button>
   </span>
-  <a class="tb" id="tbDl" href="assets/fatura-grupo-a.png" download aria-label="Baixar fatura"><span class="ic"><span class="ms f" style="font-size:26px" aria-hidden="true">download</span></span><span>Baixar</span></a>
   <button class="tb" data-toggle="pend" id="tbPend"><span class="ic"><span class="ms f" style="font-size:26px" aria-hidden="true">warning</span><b class="cnt" id="tbCnt">3</b></span><span>Pendências</span></button>
 </nav>
 
@@ -891,7 +888,6 @@ function renderPanels(){
     el.classList.remove('opening'); void el.offsetWidth; el.classList.add('opening'); setTimeout(()=>el.classList.remove('opening'),450);
   }
   S.prevScreen=S.screen; setTimeout(()=>offSoon(), 400);
-  document.documentElement.classList.toggle('scr-pdf', md==='mobile' && S.screen==='pdf');
   // animação de abrir/fechar: o item da barra pula, o painel sobe a partir da barra
   PRI.forEach(k=>{
     const was=prev.includes(k), is=S.vis.includes(k); if(!S.vis_ready || was===is) return;
