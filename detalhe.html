@@ -68,11 +68,14 @@
   .cols{flex:1;min-height:0;display:flex;gap:24px;margin-top:20px;position:relative}
   .panel{background:var(--s100);border-radius:var(--r);display:flex;flex-direction:column;min-width:0;min-height:0;transition:flex-basis .35s ease,opacity .25s ease,margin .35s ease}
   .p-pdf{flex:1 1 0}
-  .p-det{flex:0 0 690px}
+  .p-pdf{min-width:400px}
+  .p-det{flex:0 1 690px;min-width:520px}
+  .cols.no-pdf .p-det{flex:1 1 0}
   .p-act{flex:0 0 284px}
-  .panel.min{flex-basis:0!important;opacity:0;margin-left:-24px;overflow:hidden;pointer-events:none}
+  .panel.min{flex:0 0 0!important;min-width:0!important;opacity:0;margin-left:-24px;overflow:hidden;pointer-events:none}
+  .p-pdf.min{margin-left:0;margin-right:-24px}
   .bar{display:flex;align-items:center;gap:8px;padding:12px 16px;min-height:60px}
-  .bar .file{font-weight:500} .bar .meta{color:var(--mid);font-size:12px}
+  .bar .file{font-weight:500;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis} .bar .meta{color:var(--mid);font-size:12px;white-space:nowrap}
   .bar .sp{flex:1}
   .ib{width:28px;height:28px;border-radius:8px;display:grid;place-items:center;color:var(--ink)}
   a.ib{text-decoration:none}
@@ -153,6 +156,9 @@
   .ev{background:var(--white);border-radius:12px;padding:14px;position:relative}
   .ev .i{width:20px;height:20px;border-radius:6px;display:grid;place-items:center;color:#fff}
   .ev .n{margin-top:12px}
+  .ev .who{position:absolute;top:12px;right:12px;width:24px;height:24px;border-radius:999px;background:linear-gradient(140deg,#c7d9a4,#71902f);color:#fff;font:600 10px Inter;display:grid;place-items:center;cursor:default}
+  .ev .who::after{content:attr(data-name);position:absolute;right:0;top:calc(100% + 6px);background:var(--ink);color:#fff;font:500 12px Inter;padding:4px 8px;border-radius:6px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .15s;z-index:5}
+  .ev .who:hover::after{opacity:1}
   .ev .d{font-size:11px;color:var(--mid);margin-top:4px}
   .ev.new{animation:pop .5s ease}
   @keyframes pop{from{transform:translateY(-6px);opacity:0}to{transform:none;opacity:1}}
@@ -234,7 +240,7 @@
 
       <div class="cols" id="cols">
         <!-- PDF -->
-        <div class="panel p-pdf">
+        <div class="panel p-pdf" id="pPdf">
           <div class="bar">
             <span class="file">fatura-luzdovale-a4-mar25.pdf</span><span class="meta">1 página · 840 KB</span>
             <span class="sp"></span>
@@ -242,6 +248,7 @@
             <button class="ib" id="zIn" aria-label="Aumentar zoom"><span class="ms" aria-hidden="true">zoom_in</span></button>
             <a class="ib" href="assets/fatura-grupo-a.png" target="_blank" aria-label="Abrir em nova aba"><span class="ms" aria-hidden="true">open_in_new</span></a>
             <a class="ib" href="assets/fatura-grupo-a.png" download aria-label="Baixar"><span class="ms" aria-hidden="true">download</span></a>
+            <button class="ib sq" data-toggle="pdf" aria-label="Minimizar fatura"><span class="ms" aria-hidden="true">hide</span></button>
           </div>
           <div class="pdf-scroll"><div class="pdf-page" id="page"><img src="assets/fatura-grupo-a.png" alt="Fatura fictícia (Luz do Vale) — Padaria Estrela do Sul, março de 2025"></div></div>
           <div class="pager"><span class="ms" aria-hidden="true">chevron_left</span> Página 1 de 1 <span class="ms" aria-hidden="true">chevron_right</span></div>
@@ -282,6 +289,7 @@
 
 <!-- Tab bar -->
 <nav class="float tabbar" id="tabbar" aria-label="Painéis">
+  <button class="tb" data-toggle="pdf"><span class="ic"><span class="ms f" style="font-size:26px" aria-hidden="true">picture_as_pdf</span></span><span>Fatura</span></button>
   <button class="tb" data-toggle="det"><span class="ic"><span class="ms f" style="font-size:26px" aria-hidden="true">description</span></span><span>Detalhes</span></button>
   <button class="tb" data-toggle="act"><span class="ic"><span class="ms f" style="font-size:26px" aria-hidden="true">history</span></span><span>Atividade</span></button>
   <button class="tb" data-toggle="pend" id="tbPend"><span class="ic"><span class="ms f" style="font-size:26px" aria-hidden="true">warning</span><b class="cnt" id="tbCnt">3</b></span><span>Pendências</span></button>
@@ -298,10 +306,12 @@ const I = {
   check:MS('check',14), pen:MS('edit',13,1), dot:MS('radio_button_checked',12,1), inbox:MS('inbox',13,1), hour:MS('hourglass_top',13,1), doc:MS('description',13,1)
 };
 const $ = s=>document.querySelector(s);
+const ME = {ini:'EM', name:'Eduardo Moreira'};
+const who = u=>u?`<span class="who" data-name="${u.name}" aria-label="Editado por ${u.name}">${u.ini}</span>`:'';
 
 /* ---------- estado ---------- */
 const S = {
-  tab:'Resumo', open:{det:true,act:true,pend:true}, status:'revisar', locked:false, pIdx:0,
+  tab:'Resumo', open:{pdf:true,det:true,act:true,pend:true}, status:'revisar', locked:false, pIdx:0,
   pend:[
     {id:'cofins', tab:'Resumo', title:'COFINS', label:'COFINS (alíquota)', kind:'Percentual', ph:'0,00 %', legend:'R$ 146,75', done:null, act:'COFINS corrigido'},
     {id:'leit', tab:'Consumo', title:'Leitura atual', label:'Leitura atual ponta (kWh)', kind:'Número', ph:'0', legend:'kWh', done:null, act:'Leitura atual corrigida'},
@@ -384,7 +394,7 @@ function renderTabs(){
 }
 function renderContent(){ $('#content').innerHTML = TABS[S.tab](); $('#pDet').classList.toggle('locked', S.locked); bindInline(); }
 function renderActs(){
-  $('#acts').innerHTML = S.acts.map((a,i)=>`${i?'<div class="link"></div>':''}<div class="ev ${a[3]?'new':''}"><span class="i c-${a[1]}">${a[1]==='edit'?I.pen:a[1]==='ok'?I.check:a[1]==='alert'?I.warn:a[0]==='Recebida'?I.inbox:a[0]==='Lendo fatura'?I.hour:a[0]==='Lida'?I.doc:I.dot}</span><div class="n">${a[0]}</div><div class="d">13/03 às ${a[2]}</div></div>`).join('');
+  $('#acts').innerHTML = S.acts.map((a,i)=>`${i?'<div class="link"></div>':''}<div class="ev ${a[3]?'new':''}"><span class="i c-${a[1]}">${a[1]==='edit'?I.pen:a[1]==='ok'?I.check:a[1]==='alert'?I.warn:a[0]==='Recebida'?I.inbox:a[0]==='Lendo fatura'?I.hour:a[0]==='Lida'?I.doc:I.dot}</span>${who(a[4])}<div class="n">${a[0]}</div><div class="d">13/03 às ${a[2]}</div></div>`).join('');
   S.acts.forEach(a=>a[3]=false);
 }
 function renderStatus(){
@@ -415,10 +425,21 @@ function renderPend(){
   $('#pGo').onclick = ()=>focusPend(p);
   $('#pendCard').classList.toggle('hide', !S.open.pend);
 }
+/* painéis: na falta de espaço fica o de maior prioridade — 1. detalhes, 2. fatura, 3. atividade */
+const PRI=['det','pdf','act'], MINW={det:520,pdf:400,act:284}, GAP=24, PANEL={det:'#pDet',pdf:'#pPdf',act:'#pAct'};
+const fits=set=>set.reduce((w,k)=>w+MINW[k],0)+GAP*Math.max(0,set.length-1) <= $('#cols').clientWidth;
+function visibleSet(){ const v=[]; PRI.forEach(k=>{ if(S.open[k] && fits([...v,k])) v.push(k); }); return v; }
+function togglePanel(k){
+  if (S.vis.includes(k)) { S.open[k]=false; return; }
+  S.open[k]=true;
+  // abrir algo que não cabe fecha os outros, do menos prioritário para o mais
+  for (const o of [...PRI].reverse().filter(x=>x!==k)) { if (visibleSet().includes(k)) break; S.open[o]=false; }
+}
 function renderPanels(){
-  $('#pDet').classList.toggle('min', !S.open.det);
-  $('#pAct').classList.toggle('min', !S.open.act);
-  document.querySelectorAll('.tb').forEach(b=>b.classList.toggle('on', !!S.open[b.dataset.toggle]));
+  S.vis = visibleSet();
+  PRI.forEach(k=>$(PANEL[k]).classList.toggle('min', !S.vis.includes(k)));
+  $('#cols').classList.toggle('no-pdf', !S.vis.includes('pdf'));
+  document.querySelectorAll('.tb').forEach(b=>{ const k=b.dataset.toggle; b.classList.toggle('on', k==='pend' ? !!S.open.pend : S.vis.includes(k)); });
   if (openPend().length) $('#pendCard').classList.toggle('hide', !S.open.pend);
 }
 function render(){ renderTabs(); renderContent(); renderActs(); renderStatus(); renderPend(); renderPanels(); }
@@ -428,7 +449,7 @@ const now = ()=>new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-
 function fmt(p,v){ if(p.kind==='Percentual'){ v=v.replace('%','').trim(); return v.includes(',')||v.includes('.')? v.replace('.',',')+'%' : v+',00%'; } return v; }
 function resolve(p, v){
   p.done = fmt(p,v);
-  S.acts.unshift([p.act,'edit',now(),true]);
+  S.acts.unshift([p.act,'edit',now(),true,ME]);
   toast(`${p.label}: ${p.done}`);
   if (!openPend().length){ S.status='pronta'; S.acts.unshift(['Sem pendências','ok',now(),true]); }
   render();
@@ -474,7 +495,7 @@ function editCard(c, btn){
       if(save && nv && nv!==olds[k]){ f._row.querySelector('.v').textContent=nv; changed=true; }
       f.replaceWith(f._row); });
     acts.replaceWith(btn); c.classList.remove('editing');
-    if(changed){ S.acts.unshift([`${c.dataset.edit} editado`,'edit',now(),true]); renderActs(); toast(`${c.dataset.edit} atualizado`); }
+    if(changed){ S.acts.unshift([`${c.dataset.edit} editado`,'edit',now(),true,ME]); renderActs(); toast(`${c.dataset.edit} atualizado`); }
   };
   acts.children[0].onclick=()=>finish(true);
   acts.children[1].onclick=()=>finish(false);
@@ -482,9 +503,10 @@ function editCard(c, btn){
 }
 function toast(t){ const el=$('#toast'); el.textContent=t; el.classList.add('show'); clearTimeout(el._t); el._t=setTimeout(()=>el.classList.remove('show'),1800); }
 
+window.addEventListener('resize', ()=>renderPanels());
 document.addEventListener('click', e=>{
   const t=e.target.closest('[data-tab]'); if(t){ S.tab=t.dataset.tab; renderTabs(); renderContent(); return; }
-  const g=e.target.closest('[data-toggle]'); if(g){ const k=g.dataset.toggle; S.open[k]=!S.open[k]; renderPanels(); }
+  const g=e.target.closest('[data-toggle]'); if(g){ const k=g.dataset.toggle; if(k==='pend') S.open.pend=!S.open.pend; else togglePanel(k); renderPanels(); }
 });
 let z=560; $('#zIn').onclick=()=>{ z=Math.min(1100,z+80); $('#page').style.width=z+'px'; }; $('#zOut').onclick=()=>{ z=Math.max(400,z-80); $('#page').style.width=z+'px'; };
 /* tooltips da barra lateral */
