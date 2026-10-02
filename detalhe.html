@@ -315,6 +315,14 @@
   @keyframes offPing{0%{opacity:.7;transform:scale(.85)}100%{opacity:0;transform:scale(1.35)}}
   @media (prefers-reduced-motion:reduce){.offi,.offi .b::after{animation:none!important}}
 
+  /* Fatura no mobile: sem zoom por botão (pinça), sem abrir em nova aba; baixar vai para o lado da tab bar */
+  #tbDl{display:none;text-decoration:none}
+  [data-mode=mobile].scr-pdf #tbDl{display:flex;background:var(--white)!important;border-radius:999px;box-shadow:0 10px 15px rgba(0,0,0,.10),0 4px 6px rgba(0,0,0,.10);flex:none;width:56px;padding:12px 4px}
+  [data-mode=mobile] #tbDl::before{inset:6px}
+  [data-mode=mobile] #zIn,[data-mode=mobile] #zOut,[data-mode=mobile] .p-pdf .bar a.ib{display:none}
+  [data-mode=mobile] .pdf-scroll{justify-content:normal;touch-action:pan-x pan-y;overscroll-behavior:contain}
+  [data-mode=mobile] .pdf-page{margin:0 auto;transition:none;flex:none}
+
   /* lista de pendências (tela própria no mobile) */
   .p-plist{display:none}
   .plist{flex:1;overflow:auto;padding:4px 12px 120px;display:flex;flex-direction:column;gap:12px}
@@ -540,6 +548,7 @@
   <button class="tb" data-toggle="det"><span class="ic"><span class="ms f" style="font-size:26px" aria-hidden="true">description</span></span><span>Detalhes</span></button>
   <button class="tb" data-toggle="act"><span class="ic"><span class="ms f" style="font-size:26px" aria-hidden="true">history</span></span><span>Atividade</span></button>
   </span>
+  <a class="tb" id="tbDl" href="assets/fatura-grupo-a.png" download aria-label="Baixar fatura"><span class="ic"><span class="ms f" style="font-size:26px" aria-hidden="true">download</span></span><span>Baixar</span></a>
   <button class="tb" data-toggle="pend" id="tbPend"><span class="ic"><span class="ms f" style="font-size:26px" aria-hidden="true">warning</span><b class="cnt" id="tbCnt">3</b></span><span>Pendências</span></button>
 </nav>
 
@@ -870,7 +879,7 @@ function togglePanel(k){
 }
 function renderPanels(){
   const md=modeOf(); document.documentElement.dataset.mode=md;
-  if (md!==S.mode){ S.mode=md; S.screen='det'; S.side=null; S.vis_ready=false; }
+  if (md!==S.mode){ S.mode=md; S.screen='det'; S.side=null; S.vis_ready=false; if (typeof z!=='undefined'){ const pg=$('#page'); pg.style.width=z+'px'; pg.style.maxWidth=''; } }
   if (md==='mobile' && S.screen==='act') S.screen='det';
   const prev = S.vis || [], prevScreen=S.prevScreen;
   S.vis = md==='mobile' ? (S.screen==='pend' ? [] : [S.screen]) : md==='tablet' ? ['det', ...(S.side?[S.side]:[])] : visibleSet();
@@ -881,6 +890,7 @@ function renderPanels(){
     el.classList.remove('opening'); void el.offsetWidth; el.classList.add('opening'); setTimeout(()=>el.classList.remove('opening'),450);
   }
   S.prevScreen=S.screen; setTimeout(()=>offSoon(), 400);
+  document.documentElement.classList.toggle('scr-pdf', md==='mobile' && S.screen==='pdf');
   // animação de abrir/fechar: o item da barra pula, o painel sobe a partir da barra
   PRI.forEach(k=>{
     const was=prev.includes(k), is=S.vis.includes(k); if(!S.vis_ready || was===is) return;
@@ -962,6 +972,35 @@ document.addEventListener('click', e=>{
   const t=e.target.closest('[data-tab]'); if(t){ S.tab=t.dataset.tab; renderTabs(); renderContent(); return; }
   const g=e.target.closest('[data-toggle]'); if(g){ const k=g.dataset.toggle; if(k==='pend' && modeOf()!=='mobile'){ S.open.pend=!S.open.pend; if(S.open.pend && modeOf()==='tablet') S.side=null; const tb=document.querySelector('.tb[data-toggle=pend]'); const cls=S.open.pend?'opening':'closing'; tb.classList.remove('opening','closing'); void tb.offsetWidth; tb.classList.add(cls); setTimeout(()=>tb.classList.remove(cls),450); } else { if(modeOf()==='mobile' && g.classList.contains('tb')){ g.classList.remove('opening'); void g.offsetWidth; g.classList.add('opening'); setTimeout(()=>g.classList.remove('opening'),450); } togglePanel(k); } renderPanels(); }
 });
+/* fatura no mobile: pinça para zoom (mantém o ponto entre os dedos), toque duplo alterna entre caber na tela e 2x */
+(function(){
+  const sc=$('.pdf-scroll'), pg=$('#page'); let t0=null, lastTap=0;
+  const fit=()=>{ const cs=getComputedStyle(sc); return sc.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight); };
+  const dist=t=>Math.hypot(t[0].clientX-t[1].clientX, t[0].clientY-t[1].clientY);
+  const zoomTo=(w,cx,cy,base)=>{
+    const f=fit(); w=Math.max(f, Math.min(f*4, w));
+    const r=sc.getBoundingClientRect(), fx=cx-r.left, fy=cy-r.top, k=w/base.w;
+    pg.style.maxWidth='none'; pg.style.width=w+'px';
+    sc.scrollLeft=(base.sl+fx)*k-fx; sc.scrollTop=(base.st+fy)*k-fy;
+  };
+  sc.addEventListener('touchstart',e=>{
+    if(modeOf()!=='mobile') return;
+    if(e.touches.length===2){ t0={d:dist(e.touches), w:pg.offsetWidth, sl:sc.scrollLeft, st:sc.scrollTop}; }
+  },{passive:true});
+  sc.addEventListener('touchmove',e=>{
+    if(!t0 || e.touches.length!==2) return; e.preventDefault();
+    const cx=(e.touches[0].clientX+e.touches[1].clientX)/2, cy=(e.touches[0].clientY+e.touches[1].clientY)/2;
+    zoomTo(t0.w*dist(e.touches)/t0.d, cx, cy, t0);
+  },{passive:false});
+  sc.addEventListener('touchend',e=>{
+    if(modeOf()!=='mobile') return;
+    if(e.touches.length<2) t0=null;
+    if(e.touches.length || e.changedTouches.length!==1) return;
+    const now=Date.now(), t=e.changedTouches[0];
+    if(now-lastTap<300){ const base={w:pg.offsetWidth, sl:sc.scrollLeft, st:sc.scrollTop}; zoomTo(base.w > fit()*1.05 ? fit() : fit()*2, t.clientX, t.clientY, base); lastTap=0; }
+    else lastTap=now;
+  });
+})();
 let z=560; $('#zIn').onclick=()=>{ z=Math.min(1100,z+80); $('#page').style.width=z+'px'; }; $('#zOut').onclick=()=>{ z=Math.max(400,z-80); $('#page').style.width=z+'px'; };
 /* ---------- pendência fora da área visível ---------- */
 const clipRect=(a,b)=>({left:Math.max(a.left,b.left),right:Math.min(a.right,b.right),top:Math.max(a.top,b.top),bottom:Math.min(a.bottom,b.bottom)});
