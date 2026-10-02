@@ -156,6 +156,8 @@
   .cc-b:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
   .cc-tip{position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;font-size:11px;padding:3px 7px;border-radius:6px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .12s;z-index:2}
   .cc-b:hover .cc-tip,.cc-b:focus-visible .cc-tip{opacity:1}
+  .cc-b:nth-child(-n+3) .cc-tip{left:0;transform:none}
+  .cc-b:nth-last-child(-n+2) .cc-tip{left:auto;right:0;transform:none}
   .cc-x{display:flex;gap:6px;margin-top:8px}
   .cc-x span{flex:1;text-align:center;font-size:10px;color:var(--mid)}
   .cc-x span.on{color:var(--ink);font-weight:600}
@@ -247,6 +249,68 @@
   @media (prefers-reduced-motion:reduce){.tb::before,.panel{transition:none}.tb .ic,.panel.opening{animation:none!important}}
   .toast{position:fixed;top:24px;left:50%;transform:translate(-50%,-20px);background:var(--ink);color:#fff;padding:10px 16px;border-radius:10px;opacity:0;transition:.25s;z-index:50;font-size:13px}
   .toast.show{opacity:1;transform:translate(-50%,0)}
+  /* lista de pendências (tela própria no mobile) */
+  .p-plist{display:none}
+  .plist{flex:1;overflow:auto;padding:4px 12px 120px;display:flex;flex-direction:column;gap:12px}
+  .pl-item{background:#fff;border:1px solid var(--alert);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:10px}
+  .pl-h{display:flex;align-items:center;gap:8px;font-weight:700}
+  .pl-h .badge{width:16px;height:16px;border-radius:5px}
+  .pl-h .badge .ms{font-size:12px!important}
+  .pl-m{font-size:12px;color:var(--mid);margin-top:-6px}
+  .pl-a{display:flex;align-items:center;justify-content:space-between;gap:8px}
+  .pl-a .btn{height:36px;padding:0 12px;border-radius:6px;font-weight:400}
+  .pl-a .btn.primary:disabled{opacity:1;background:#8a8988;cursor:not-allowed}
+  .pl-empty{margin:auto;text-align:center;color:var(--mid);display:flex;flex-direction:column;align-items:center;gap:8px;padding:48px 24px}
+  .pl-empty .ms{font-size:40px;color:var(--success)}
+  .pl-empty b{color:var(--ink);font-size:16px}
+
+  /* ===== tablet (768–1199): Detalhes fixo; Fatura e Atividade abrem como gaveta ===== */
+  [data-mode=tablet] .sheet{padding:24px}
+  [data-mode=tablet] .cols{overflow:hidden}
+  [data-mode=tablet] .p-det{flex:1 1 0!important;min-width:0!important;margin:0!important;opacity:1!important;transform:none!important;pointer-events:auto!important}
+  [data-mode=tablet] .p-det .bar .ib.sq{display:none}
+  [data-mode=tablet] .p-pdf,[data-mode=tablet] .p-act{position:absolute;top:0;right:0;bottom:0;width:min(440px,62%);z-index:6;margin:0!important;flex:none!important;min-width:0!important;box-shadow:-16px 0 40px rgba(0,0,0,.12);opacity:1;transform:none;transition:transform .35s cubic-bezier(.2,.9,.3,1),opacity .2s}
+  [data-mode=tablet] .p-act{width:min(340px,50%)}
+  [data-mode=tablet] .p-pdf.min,[data-mode=tablet] .p-act.min{transform:translateX(calc(100% + 40px));opacity:0;pointer-events:none}
+  [data-mode=tablet] .p-pdf.opening,[data-mode=tablet] .p-act.opening{animation:none}
+  [data-mode=tablet] .g3{grid-template-columns:1fr 1fr}
+  [data-mode=tablet] .pdf-page{max-width:100%}
+  [data-mode=tablet] .pdf-scroll{padding-bottom:110px}
+
+  /* ===== mobile (<768): uma tela por vez, a tab bar troca de tela ===== */
+  [data-mode=mobile] .sidebar,[data-mode=mobile] .sb-tip,[data-mode=mobile] .note,[data-mode=mobile] #pendCard{display:none!important}
+  [data-mode=mobile] .app{grid-template-columns:1fr;height:100dvh}
+  [data-mode=mobile] .app > [aria-hidden]{display:none}
+  [data-mode=mobile] .main{padding:0;gap:0}
+  [data-mode=mobile] .topbar{height:48px;padding:8px 12px}
+  [data-mode=mobile] .crumb .rp{display:none}
+  [data-mode=mobile] .sheet{border-radius:0;padding:4px 12px 0;box-shadow:none}
+  [data-mode=mobile] .head h1{font-size:17px;line-height:1.35;margin-bottom:10px;overflow-wrap:anywhere}
+  [data-mode=mobile] .chips{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:0 -12px;padding:0 12px}
+  [data-mode=mobile] .chips::-webkit-scrollbar{display:none}
+  [data-mode=mobile] .chip{flex:none}
+  [data-mode=mobile] .head > div:first-child{min-width:0;flex:1}
+  [data-mode=mobile] .head .actions:empty{display:none}
+  [data-mode=mobile] .cols{margin:12px -12px 0;gap:0}
+  [data-mode=mobile] .panel{flex:1 1 0!important;min-width:0!important;margin:0!important;border-radius:16px 16px 0 0;opacity:1;transform:none}
+  [data-mode=mobile] .panel.min{display:none!important}
+  [data-mode=mobile] .p-plist{display:flex}
+  [data-mode=mobile] .panel .ib.sq,[data-mode=mobile] .p-pdf [data-toggle=pdf]{display:none}
+  [data-mode=mobile] .content{padding:4px 12px 120px}
+  [data-mode=mobile] .g2,[data-mode=mobile] .g3{grid-template-columns:minmax(0,1fr)}
+  [data-mode=mobile] .tabs{overflow-x:auto;scrollbar-width:none;flex:1;min-width:0}
+  [data-mode=mobile] .tabs::-webkit-scrollbar{display:none}
+  [data-mode=mobile] .tab{flex:none}
+  [data-mode=mobile] .bar{padding:10px 12px;min-height:52px}
+  [data-mode=mobile] .bar .meta{display:none}
+  [data-mode=mobile] .pdf-scroll{padding:8px 12px 110px}
+  [data-mode=mobile] .pdf-page{max-width:100%}
+  [data-mode=mobile] .pager{display:none}
+  [data-mode=mobile] .act-list{padding:8px 12px 120px}
+  [data-mode=mobile] .tabbar{left:12px;right:12px;transform:none;bottom:calc(12px + env(safe-area-inset-bottom));padding:6px;gap:4px}
+  [data-mode=mobile] .tb{flex:1;width:auto;padding:6px 4px;min-width:0}
+  [data-mode=mobile] .tb span{font-size:11px}
+  [data-mode=mobile] .tb .ms{font-size:22px!important}
   .note{position:fixed;right:16px;top:12px;font-size:11px;color:var(--mid);background:var(--white);border:1px solid var(--s200);padding:4px 8px;border-radius:999px;z-index:40}
 </style>
 </head>
@@ -313,6 +377,12 @@
             <button class="ib sq" data-toggle="det" aria-label="Minimizar detalhes"><span class="ms" aria-hidden="true">hide</span></button>
           </div>
           <div class="content" id="content"></div>
+        </div>
+
+        <!-- Pendências em lista (mobile) -->
+        <div class="panel p-plist min" id="pPList">
+          <div class="act-h"><span class="badge"><span class="ms f" style="font-size:14px" aria-hidden="true">warning</span></span><span class="t">Pendências</span><span id="plCnt" style="color:var(--mid);font-size:12px"></span></div>
+          <div class="plist" id="plist"></div>
         </div>
 
         <!-- Atividade -->
@@ -624,15 +694,49 @@ function renderPend(){
 const PRI=['det','pdf','act'], MINW={det:520,pdf:400,act:284}, GAP=24, PANEL={det:'#pDet',pdf:'#pPdf',act:'#pAct'};
 const fits=set=>set.reduce((w,k)=>w+MINW[k],0)+GAP*Math.max(0,set.length-1) <= $('#cols').clientWidth;
 function visibleSet(){ const v=[]; PRI.forEach(k=>{ if(S.open[k] && fits([...v,k])) v.push(k); }); return v; }
+/* breakpoints: mobile < 768 ≤ tablet < 1200 ≤ desktop */
+const modeOf = ()=> innerWidth < 768 ? 'mobile' : innerWidth < 1200 ? 'tablet' : 'desk';
+function renderPendList(){
+  const list=openPend(), TABN={Resumo:'Resumo',Itens:'Itens',Consumo:'Consumo','Identificação':'Identificação'};
+  $('#plCnt').textContent = list.length ? `${list.length} para conferir` : '';
+  $('#plist').innerHTML = list.length ? list.map(p=>`<div class="pl-item" id="pl-item-${p.id}">
+      <div class="pl-h"><span class="badge">${I.warn}</span>${p.label}</div>
+      <div class="pl-m">${TABN[p.tab]} · Não encontrado na fatura</div>
+      ${fieldHTML(p,'pl-'+p.id)}
+      <div class="pl-a"><button class="bxs" data-plgo="${p.id}"><span class="tx">Ver no Campo</span><span class="ms" style="font-size:16px" aria-hidden="true">open_in_new</span></button>
+        <button class="btn primary" data-plok="${p.id}" disabled>Confirmar</button></div></div>`).join('')
+    : `<div class="pl-empty"><span class="ms f" aria-hidden="true">check_circle</span><b>Sem pendências</b>Todos os dados da fatura foram conferidos.</div>`;
+  list.forEach(p=>{
+    const f=document.getElementById('pl-'+p.id), ok=document.querySelector(`[data-plok="${p.id}"]`);
+    if (f.dataset.mask) attachMask(f, f.dataset.mask);
+    const upd=()=>{ ok.disabled=!f.value.trim(); };
+    f.addEventListener('input',upd); f.addEventListener('change',upd);
+    f.addEventListener('keydown',e=>{ if(e.key==='Enter'&&f.value.trim()) resolve(p,f.value.trim()); });
+    ok.onclick=()=>resolve(p,f.value.trim());
+    document.querySelector(`[data-plgo="${p.id}"]`).onclick=()=>focusPend(p);
+  });
+}
 function togglePanel(k){
+  const md=modeOf();
+  if (md==='mobile'){ S.screen=k; return; }
+  if (md==='tablet'){ S.side = (k==='det' || S.side===k) ? null : k; if (S.side) S.open.pend=false; return; } // gaveta e card de pendências não disputam o espaço
   if (S.vis.includes(k)) { S.open[k]=false; return; }
   S.open[k]=true;
   // abrir algo que não cabe fecha os outros, do menos prioritário para o mais
   for (const o of [...PRI].reverse().filter(x=>x!==k)) { if (visibleSet().includes(k)) break; S.open[o]=false; }
 }
 function renderPanels(){
-  const prev = S.vis || [];
-  S.vis = visibleSet();
+  const md=modeOf(); document.documentElement.dataset.mode=md;
+  if (md!==S.mode){ S.mode=md; S.screen='det'; S.side=null; S.vis_ready=false; }
+  const prev = S.vis || [], prevScreen=S.prevScreen;
+  S.vis = md==='mobile' ? (S.screen==='pend' ? [] : [S.screen]) : md==='tablet' ? ['det', ...(S.side?[S.side]:[])] : visibleSet();
+  const onTab = k => md==='mobile' ? S.screen===k : k==='pend' ? !!S.open.pend : md==='tablet' ? (k==='det' ? !S.side : S.side===k) : S.vis.includes(k);
+  $('#pPList').classList.toggle('min', !(md==='mobile' && S.screen==='pend'));
+  if (md==='mobile' && S.vis_ready && prevScreen!==S.screen){
+    const el = S.screen==='pend' ? $('#pPList') : $(PANEL[S.screen]);
+    el.classList.remove('opening'); void el.offsetWidth; el.classList.add('opening'); setTimeout(()=>el.classList.remove('opening'),450);
+  }
+  S.prevScreen=S.screen;
   // animação de abrir/fechar: o item da barra pula, o painel sobe a partir da barra
   PRI.forEach(k=>{
     const was=prev.includes(k), is=S.vis.includes(k); if(!S.vis_ready || was===is) return;
@@ -644,16 +748,16 @@ function renderPanels(){
   PRI.forEach(k=>$(PANEL[k]).classList.toggle('min', !S.vis.includes(k)));
   $('#cols').classList.toggle('no-pdf', !S.vis.includes('pdf'));
   $('#cols').classList.toggle('no-det', !S.vis.includes('det'));
-  document.querySelectorAll('.tb').forEach(b=>{ const k=b.dataset.toggle; b.classList.toggle('on', k==='pend' ? !!S.open.pend : S.vis.includes(k)); });
+  document.querySelectorAll('.tb').forEach(b=>b.classList.toggle('on', onTab(b.dataset.toggle)));
   if (openPend().length) $('#pendCard').classList.toggle('hide', !S.open.pend);
 }
-function render(){ renderTabs(); renderContent(); renderActs(); renderStatus(); renderPend(); renderPanels(); }
+function render(){ renderTabs(); renderContent(); renderActs(); renderStatus(); renderPend(); renderPendList(); renderPanels(); }
 
 /* ---------- ações ---------- */
 const now = ()=>new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
 function fmt(p,v){ if(p.kind==='Percentual'){ v=v.replace('%','').trim(); return v.includes(',')||v.includes('.')? v.replace('.',',') : v+',00'; } return v; }
 function resolve(p, v){
-  const f=document.getElementById('pf')?.value.trim()===v ? $('#pf') : document.getElementById('in-'+p.id);
+  const f=[$('#pf'), document.getElementById('in-'+p.id), document.getElementById('pl-'+p.id)].find(x=>x && x.value.trim()===v);
   if (p.kind!=='Seleção' && f && invalid(f, f.dataset.mask)) return;
   p.done = fmt(p,v);
   if (p.cell){ S.items[p.cell[0]][p.cell[1]] = p.done; S.itemChg[p.cell.join('-')] = 1; }
@@ -664,7 +768,7 @@ function resolve(p, v){
   const c = document.getElementById('c-'+p.id); if (c){ c.classList.add('flash'); setTimeout(()=>c.classList.remove('flash'),900); }
 }
 function focusPend(p){
-  S.open.det=true; S.tab=p.tab; render();
+  S.open.det=true; S.screen='det'; S.tab=p.tab; render();
   const c = document.getElementById('c-'+p.id);
   if (c){ c.scrollIntoView({behavior:'smooth',block:'center'}); c.classList.add('flash'); setTimeout(()=>c.classList.remove('flash'),1200); }
 }
@@ -712,7 +816,7 @@ function toast(t){ const el=$('#toast'); el.textContent=t; el.classList.add('sho
 window.addEventListener('resize', ()=>renderPanels());
 document.addEventListener('click', e=>{
   const t=e.target.closest('[data-tab]'); if(t){ S.tab=t.dataset.tab; renderTabs(); renderContent(); return; }
-  const g=e.target.closest('[data-toggle]'); if(g){ const k=g.dataset.toggle; if(k==='pend'){ S.open.pend=!S.open.pend; const tb=document.querySelector('.tb[data-toggle=pend]'); const cls=S.open.pend?'opening':'closing'; tb.classList.remove('opening','closing'); void tb.offsetWidth; tb.classList.add(cls); setTimeout(()=>tb.classList.remove(cls),450); } else togglePanel(k); renderPanels(); }
+  const g=e.target.closest('[data-toggle]'); if(g){ const k=g.dataset.toggle; if(k==='pend' && modeOf()!=='mobile'){ S.open.pend=!S.open.pend; if(S.open.pend && modeOf()==='tablet') S.side=null; const tb=document.querySelector('.tb[data-toggle=pend]'); const cls=S.open.pend?'opening':'closing'; tb.classList.remove('opening','closing'); void tb.offsetWidth; tb.classList.add(cls); setTimeout(()=>tb.classList.remove(cls),450); } else { if(modeOf()==='mobile' && g.classList.contains('tb')){ g.classList.remove('opening'); void g.offsetWidth; g.classList.add('opening'); setTimeout(()=>g.classList.remove('opening'),450); } togglePanel(k); } renderPanels(); }
 });
 let z=352; $('#zIn').onclick=()=>{ z=Math.min(1100,z+80); $('#page').style.width=z+'px'; }; $('#zOut').onclick=()=>{ z=Math.max(240,z-80); $('#page').style.width=z+'px'; };
 /* tooltips da barra lateral */
