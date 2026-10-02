@@ -602,15 +602,18 @@ const I = {
 };
 const $ = s=>document.querySelector(s);
 const ME = {ini:'EM', name:'Eduardo Moreira'};
+// outras pessoas da equipe (fictícias), para popular a Atividade
+const ANA = {ini:'AR', name:'Ana Ribeiro', c:'linear-gradient(140deg,#fcd9bd,#ea580c)'};
+const CAR = {ini:'CM', name:'Carlos Mendes', c:'linear-gradient(140deg,#bae6fd,#0369a1)'};
 const SYS = {sys:true, name:'Sistema'};
 let LOGO = '';
 const who = u=>u&&u.sys
   ? `<span class="who sys" data-name="Sistema" aria-label="Feito pelo sistema">${LOGO}</span>`
-  : `<span class="who" data-name="${u.name}" aria-label="Editado por ${u.name}">${u.ini}</span>`;
+  : `<span class="who" data-name="${u.name}" aria-label="Editado por ${u.name}"${u.c?` style="background:${u.c}"`:''}>${u.ini}</span>`;
 
 /* ---------- estado ---------- */
 const S = {
-  tab:'Resumo', open:{pdf:true,det:true,act:true,pend:true}, status:'revisar', locked:false, pIdx:0, ov:{}, chartSel:null, itemChg:{},
+  tab:'Resumo', open:{pdf:true,det:true,act:true,pend:true}, status:'revisar', locked:false, pIdx:0, ov:{}, chartSel:null, itemChg:{'7-7':1},
   items:[['Consumo ponta TUSD','kWh','540','1,48213','1,15443','32,89','144,06','800,35'],['Consumo ponta TE','kWh','540','0,51237','0,39909','11,37','49,80','276,68'],['Consumo fora ponta TUSD','kWh','5.960','0,11845','0,09226','29,02','127,07','705,96'],['Consumo fora ponta TE','kWh','5.960','0,32971','0,25681','80,76','353,71','1.965,07'],['Energia injetada fora ponta TUSD','kWh','−4.100','0,11845','0,09226','−19,96','−87,42','−485,65'],['Energia injetada fora ponta TE','kWh','−4.100','0,32971','0,25681','−55,56','−243,33','−1.351,81'],['Demanda','kW','75','32,41500','25,24804','99,92','','2.431,13'],['Contrib. ilum. pública municipal','—','—','—','—','—','—','98,40']],
   pend:[
     {id:'cofins', tab:'Resumo', title:'COFINS', label:'COFINS (alíquota)', kind:'Percentual', unit:'%', ph:'0,00', legend:'R$ 146,75', done:null, act:'COFINS corrigido'},
@@ -618,7 +621,11 @@ const S = {
     {id:'item', tab:'Itens', title:'ICMS · Demanda', label:'ICMS do item Demanda', kind:'Moeda', unit:'R$', ph:'0,00', cell:[6,6], done:null, act:'ICMS do item corrigido'},
     {id:'mod', tab:'Identificação', title:'Modalidade tarifária', label:'Modalidade tarifária', kind:'Seleção', ph:'Selecione', options:['Convencional','Horária verde','Horária azul','Branca'], done:null, act:'Modalidade corrigida'}
   ],
-  acts:[['Para revisar','alert','10:42'],['Lida','def','10:42'],['Lendo fatura','def','10:41'],['Recebida','def','10:40']]
+  acts:[
+    ['Contrib. ilum. pública municipal editado','edit','11:20',false,ANA,{from:'R$ 89,40',to:'R$ 98,40'}],
+    ['Demanda contratada editado','edit','11:05',false,CAR,{from:'70 kW',to:'75 kW'}],
+    ['Vencimento editado','edit','10:51',false,ANA,{from:'24/03/2025',to:'25/03/2025'}],
+    ['Para revisar','alert','10:42'],['Lida','def','10:42'],['Lendo fatura','def','10:41'],['Recebida','def','10:40']]
 };
 const openPend = ()=>S.pend.filter(p=>!p.done);
 
