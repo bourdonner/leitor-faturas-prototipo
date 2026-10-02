@@ -346,6 +346,13 @@
   [data-mode=mobile] .card .ct .ib.edit .ms,[data-mode=mobile] .card .ca .ms{font-size:18px!important}
 
 
+  /* desktop sem nenhum painel aberto */
+  .cols-empty{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center;color:var(--mid);background:var(--s50);border-radius:var(--r);animation:pop .3s ease}
+  .cols-empty[hidden]{display:none}
+  .cols-empty .ms{font-size:40px;color:var(--s400)}
+  .cols-empty b{font-size:16px;color:var(--ink)}
+  .cols-empty .btn{margin-top:8px}
+
   /* lista de pendências (tela própria no mobile) */
   .p-plist{display:none}
   .plist{flex:1;overflow:auto;padding:4px 12px 120px;display:flex;flex-direction:column;gap:12px}
@@ -503,6 +510,13 @@
       </div>
 
       <div class="cols" id="cols">
+        <!-- nenhum painel aberto (desktop) -->
+        <div class="cols-empty" id="colsEmpty" hidden>
+          <span class="ms" aria-hidden="true">view_column</span>
+          <b>Nenhum painel aberto</b>
+          <span>Abra um painel pela barra abaixo ou volte à visualização padrão.</span>
+          <button class="btn primary" id="colsReset">Voltar ao padrão</button>
+        </div>
         <!-- PDF -->
         <div class="panel p-pdf" id="pPdf">
           <div class="bar">
@@ -932,6 +946,7 @@ function renderPanels(){
   $('#cols').classList.toggle('no-pdf', !S.vis.includes('pdf'));
   $('#cols').classList.toggle('no-det', !S.vis.includes('det'));
   document.querySelectorAll('.tb').forEach(b=>b.classList.toggle('on', onTab(b.dataset.toggle)));
+  $('#colsEmpty').hidden = !(md==='desk' && S.vis.length===0);
   if (openPend().length) $('#pendCard').classList.toggle('hide', !S.open.pend);
 }
 function render(){ renderTabs(); renderContent(); renderActs(); renderStatus(); renderPend(); renderPendList(); renderPanels(); }
@@ -997,6 +1012,7 @@ function editCard(c, btn){
 function toast(t){ const el=$('#toast'); el.textContent=t; el.classList.add('show'); clearTimeout(el._t); el._t=setTimeout(()=>el.classList.remove('show'),1800); }
 
 window.addEventListener('resize', ()=>renderPanels());
+$('#colsReset').onclick=()=>{ S.open.pdf=S.open.det=S.open.act=true; renderPanels(); };
 document.addEventListener('click', e=>{
   const t=e.target.closest('[data-tab]'); if(t){ S.tab=t.dataset.tab; renderTabs(); renderContent(); return; }
   const g=e.target.closest('[data-toggle]'); if(g){ const k=g.dataset.toggle; if(k==='pend' && modeOf()!=='mobile'){ S.open.pend=!S.open.pend; const tb=document.querySelector('.tb[data-toggle=pend]'); const cls=S.open.pend?'opening':'closing'; tb.classList.remove('opening','closing'); void tb.offsetWidth; tb.classList.add(cls); setTimeout(()=>tb.classList.remove(cls),450); } else { if(modeOf()==='mobile' && g.classList.contains('tb')){ g.classList.remove('opening'); void g.offsetWidth; g.classList.add('opening'); setTimeout(()=>g.classList.remove('opening'),450); } togglePanel(k); } renderPanels(); }

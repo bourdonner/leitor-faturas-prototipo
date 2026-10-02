@@ -35,7 +35,7 @@ O modo é recalculado a cada `resize`. Ao mudar de modo, a tela volta para Detal
 2. **Fatura**
 3. **Atividade**
 
-O painel de menor prioridade sai primeiro. Se a pessoa abre um painel que não cabe, os outros fecham do menos para o mais prioritário até ele caber.
+O painel de menor prioridade sai primeiro. Se a pessoa fechar todos, aparece "Nenhum painel aberto" com o botão **Voltar ao padrão** (reabre Fatura, Detalhes e Atividade, respeitando a largura). Se a pessoa abre um painel que não cabe, os outros fecham do menos para o mais prioritário até ele caber.
 
 ### Tab bar
 - Pílula branca com **Fatura · Detalhes · Atividade** (ícone + nome).
