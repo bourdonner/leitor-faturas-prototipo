@@ -206,6 +206,16 @@
   .ev .who::after{content:attr(data-name);position:absolute;right:0;top:calc(100% + 6px);background:var(--ink);color:#fff;font:500 12px Inter;padding:4px 8px;border-radius:6px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .15s;z-index:5}
   .ev .who:hover::after{opacity:1}
   .ev .d{font-size:11px;color:var(--mid);margin-top:4px}
+  /* edição: hover (ou foco/toque) mostra de → para */
+  .ev.has-dif{cursor:default;outline:none;transition:box-shadow .15s}
+  .ev.has-dif:hover,.ev.has-dif:focus-visible{box-shadow:0 0 0 1px var(--s200),0 4px 10px rgba(0,0,0,.06)}
+  .ev .dif{display:flex;align-items:center;flex-wrap:wrap;gap:6px;font-size:12px;max-height:0;opacity:0;overflow:hidden;transition:max-height .2s ease,opacity .15s,margin-top .2s}
+  .ev.has-dif:hover .dif,.ev.has-dif:focus .dif,.ev.has-dif:focus-within .dif{max-height:60px;opacity:1;margin-top:10px}
+  .ev .dif .o{color:var(--mid);text-decoration:line-through;padding:2px 6px;border-radius:6px;background:var(--s100)}
+  .ev .dif .o.none{text-decoration:none;font-style:italic}
+  .ev .dif .t{color:var(--ink);font-weight:600;padding:2px 6px;border-radius:6px;background:#f7fee7}
+  .ev .dif .ms{font-size:14px;color:var(--mid)}
+  @media (prefers-reduced-motion:reduce){.ev .dif{transition:none}}
   .ev.new{animation:pop .5s ease}
   @keyframes pop{from{transform:translateY(-6px);opacity:0}to{transform:none;opacity:1}}
   .link{width:1px;height:16px;background:var(--border);margin:0 auto}
@@ -762,7 +772,7 @@ function bindSheet(){
       if(td.dataset.pend){ const p=S.pend.find(x=>x.id===td.dataset.pend); td.classList.remove('ed','err');
         if(save && nv){ resolve(p, nv); const n=at(r,c); if(n) select(n); } else { td.innerHTML=`<span class="pw">${I.warn}</span>`; select(td); } return; }
       td.classList.remove('ed','err');
-      if(save && nv && nv!==old){ S.items[r][c]=nv; S.itemChg[r+'-'+c]=1; S.acts.unshift([`${S.items[r][0]} editado`,'edit',now(),true,ME]); renderActs(); toast(`${S.items[r][0]} atualizado`);
+      if(save && nv && nv!==old){ S.items[r][c]=nv; S.itemChg[r+'-'+c]=1; S.acts.unshift([`${S.items[r][0]} editado`,'edit',now(),true,ME,{from:old==='—'?'':withUnit(old,cellUnit(S.items[r],c)[0]),to:withUnit(nv,cellUnit(S.items[r],c)[0])}]); renderActs(); toast(`${S.items[r][0]} atualizado`);
         renderContent(); const n=at(r,c); if(n) select(n); return; }
       td.innerHTML=cellHTML(r,c); select(td); };
     inp.onkeydown=e=>{ if(e.key==='Enter'){e.preventDefault();done(true);} if(e.key==='Escape'){e.preventDefault();done(false);} e.stopPropagation(); };
@@ -827,8 +837,10 @@ function renderTabs(){
   }).join('');
 }
 function renderContent(){ CK=0; $('#content').innerHTML = TABS[S.tab](); fitStk(); setTimeout(()=>offSoon()); $('#pDet').classList.toggle('locked', S.locked); bindInline(); }
+const withUnit=(v,u)=>!v||v==='—'||!u ? v : (u==='R$' ? 'R$ '+v : v+' '+u);
+const difHTML=d=>`<div class="dif" aria-hidden="true"><span class="o ${d.from?'':'none'}">${d.from||'não encontrado'}</span><span class="ms" aria-hidden="true">arrow_forward</span><span class="t">${d.to}</span></div>`;
 function renderActs(){
-  $('#acts').innerHTML = S.acts.map((a,i)=>`${i?'<div class="link"></div>':''}<div class="ev ${a[3]?'new':''}"><span class="i c-${a[1]}">${a[1]==='edit'?I.pen:a[1]==='ok'?I.check:a[1]==='alert'?I.warn:a[0]==='Recebida'?I.inbox:a[0]==='Lendo fatura'?I.hour:a[0]==='Lida'?I.doc:I.dot}</span>${who(a[4]||SYS)}<div class="n">${a[0]}</div><div class="d">13/03 às ${a[2]}</div></div>`).join('');
+  $('#acts').innerHTML = S.acts.map((a,i)=>`${i?'<div class="link"></div>':''}<div class="ev ${a[3]?'new':''} ${a[5]?'has-dif':''}" ${a[5]?`tabindex="0" aria-label="${a[0]}: de ${a[5].from||'vazio'} para ${a[5].to}"`:''}><span class="i c-${a[1]}">${a[1]==='edit'?I.pen:a[1]==='ok'?I.check:a[1]==='alert'?I.warn:a[0]==='Recebida'?I.inbox:a[0]==='Lendo fatura'?I.hour:a[0]==='Lida'?I.doc:I.dot}</span>${who(a[4]||SYS)}<div class="n">${a[0]}</div><div class="d">13/03 às ${a[2]}</div>${a[5]?difHTML(a[5]):''}</div>`).join('');
   if (S.mView==='act') $('#mBody').innerHTML = mActHTML();
   S.acts.forEach(a=>a[3]=false);
 }
@@ -937,7 +949,7 @@ function resolve(p, v){
   if (p.kind!=='Seleção' && f && invalid(f, f.dataset.mask)) return;
   p.done = fmt(p,v);
   if (p.cell){ S.items[p.cell[0]][p.cell[1]] = p.done; S.itemChg[p.cell.join('-')] = 1; }
-  S.acts.unshift([p.act,'edit',now(),true,ME]);
+  S.acts.unshift([p.act,'edit',now(),true,ME,{from:'',to:withUnit(p.done,p.unit)}]);
   toast(`${p.label}: ${p.done}`);
   if (!openPend().length){ S.status='pronta'; S.acts.unshift(['Sem pendências','ok',now(),true]); }
   render();
@@ -981,7 +993,7 @@ function editCard(c, btn){
     if(save && nv && nv!==old && invalid(inp, kind)) return;
     f.replaceWith(row); acts.replaceWith(btn); c.classList.remove('editing');
     if(save && nv && nv!==old){ row.querySelector('.v').textContent=nv; S.ov[c.dataset.k]=nv;
-      S.acts.unshift([`${c.dataset.edit} editado`,'edit',now(),true,ME]); renderActs(); toast(`${c.dataset.edit} atualizado`); }
+      S.acts.unshift([`${c.dataset.edit} editado`,'edit',now(),true,ME,{from:withUnit(old,c.dataset.u),to:withUnit(nv,c.dataset.u)}]); renderActs(); toast(`${c.dataset.edit} atualizado`); }
   };
   acts.children[0].onclick=()=>finish(true);
   acts.children[1].onclick=()=>finish(false);
