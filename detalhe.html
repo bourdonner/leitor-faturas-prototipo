@@ -411,7 +411,10 @@
   .m-bd.alert{background:var(--alert)} .m-bd.ok{background:#65a30d} .m-bd.ink{background:var(--ink)} .m-bd.brand{background:var(--brand)}
   .m-bd .n{position:absolute;top:-4px;right:-2px;min-width:16px;height:16px;padding:0 4px;border-radius:999px;background:#fff;color:var(--alert);font:600 10px/16px Inter;box-shadow:0 0 0 1px var(--alert)}
   .m-pill{display:flex;align-items:center;gap:4px;height:34px;padding:0 10px 0 16px;border-radius:999px;background:var(--s100);font:600 12px/1.5 Poppins,sans-serif;color:var(--ink);position:relative}
-  .m-pill .mss{font-size:12px}
+  .m-pill{z-index:2;box-shadow:-2px 0 0 #fff}
+  .m-pill .msr{font-size:16px}
+  .m-pill.alert .msr{color:var(--alert)} .m-pill.ok .msr{color:#65a30d}
+  .m-bd.uc{background:#44403c}
   /* conteúdo no mobile: fundo branco, 24px de margem, barra de navegação em caixa clara */
   [data-mode=mobile] .sheet{padding:0}
   [data-mode=mobile] .cols{margin:0}
@@ -470,10 +473,10 @@
         <button class="m-menu" id="mMenu" aria-label="Menu"><span class="mss" aria-hidden="true">menu</span></button>
         <div class="m-tt"><b>Padaria Estrela do Sul Ltda</b><span>Fatura · Mar/2025</span></div>
         <div class="m-badges">
-          <button class="m-bd" id="mSt" data-info=""></button>
+          <button class="m-bd uc" data-info="UC 3014567890" aria-label="Unidade consumidora 3014567890"><span class="msr fill" aria-hidden="true">electrical_services</span></button>
           <button class="m-bd ink" data-info="Distribuidora: Luz do Vale" aria-label="Distribuidora: Luz do Vale"><span class="msr fill" aria-hidden="true">electric_meter</span></button>
           <button class="m-bd brand" data-info="Março de 2025" aria-label="Referência: março de 2025"><span class="msr fill" aria-hidden="true">calendar_today</span></button>
-          <button class="m-pill" data-info="UC 3014567890" aria-label="Unidade consumidora 3014567890"><span class="mss" aria-hidden="true">electrical_services</span>UC</button>
+          <button class="m-pill" id="mSt" data-info=""></button>
         </div>
       </header>
       <div class="head">
@@ -819,8 +822,9 @@ function renderStatus(){
   const [txt,cls] = map[S.status];
   chip.className='chip '+cls;
   chip.innerHTML = MS(cls==='alert'?'warning':cls==='ok'?'check_circle':'sync',16,1)+txt;
-  const b=$('#mSt'); b.className='m-bd '+cls; b.dataset.info=txt; b.setAttribute('aria-label',txt);
-  b.innerHTML=`<span class="msr fill" aria-hidden="true">${cls==='alert'?'warning':'check_circle'}</span>`;
+  // pílula de pendências no header mobile, por cima dos outros badges
+  const b=$('#mSt'); b.className='m-pill '+cls; b.dataset.info=txt; b.setAttribute('aria-label',txt);
+  b.innerHTML=`<span class="msr fill" aria-hidden="true">${cls==='alert'?'warning':'check_circle'}</span>${n||''}`;
 }
 function renderPend(){
   const list = openPend();
