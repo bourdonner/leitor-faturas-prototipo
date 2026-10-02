@@ -304,7 +304,7 @@ const S = {
   tab:'Resumo', open:{det:true,act:true,pend:true}, status:'revisar', locked:false, pIdx:0,
   pend:[
     {id:'cofins', tab:'Resumo', title:'COFINS', label:'COFINS (alíquota)', kind:'Percentual', ph:'0,00 %', legend:'R$ 146,75', done:null, act:'COFINS corrigido'},
-    {id:'leit', tab:'Consumo', title:'Leitura atual', label:'Leitura atual ponta (kWh)', kind:'Número', ph:'0', legend:'11/03/2025', done:null, act:'Leitura atual corrigida'},
+    {id:'leit', tab:'Consumo', title:'Leitura atual', label:'Leitura atual ponta (kWh)', kind:'Número', ph:'0', legend:'kWh', done:null, act:'Leitura atual corrigida'},
     {id:'mod', tab:'Identificação', title:'Modalidade tarifária', label:'Modalidade tarifária', kind:'Seleção', ph:'Selecione', options:['Convencional','Horária verde','Horária azul','Branca'], done:null, act:'Modalidade corrigida'}
   ],
   acts:[['Para revisar','alert','10:42'],['Lida','def','10:42'],['Lendo fatura','def','10:41'],['Recebida','def','10:40']]
@@ -360,10 +360,10 @@ const TABS = {
   Consumo(){
     const h=[['mar/25','6.500','68','32'],['fev/25','6.120','66','28'],['jan/25','6.340','70','30'],['dez/24','7.010','74','33'],['nov/24','6.880','72','28'],['out/24','6.450','69','31'],['set/24','6.230','67','33'],['ago/24','6.050','65','29'],['jul/24','5.980','64','30'],['jun/24','6.210','66','33'],['mai/24','6.400','67','29'],['abr/24','6.620','70','29']];
     return sec('Medições')
-      +`<div class="medt">Consumo ponta (kWh) · medidor ELO0045123</div><div class="grid g2">${card('Leitura anterior','12.480','07/02/2025')}${card('Leitura atual','','11/03/2025',null,null,{pend:'leit'})}${card('Constante','1')}${card('Consumo medido','540 kWh')}</div>`
-      +`<div class="medt">Consumo fora ponta (kWh) · medidor ELO0045123</div><div class="grid g2">${card('Leitura anterior','88.200','07/02/2025')}${card('Leitura atual','94.160','11/03/2025')}${card('Constante','1')}${card('Consumo medido','5.960 kWh')}</div>`
+      +`<div class="medt">Consumo ponta (kWh) · medidor ELO0045123</div><div class="grid g2">${card('Leitura anterior','12.480','kWh')}${card('Data da leitura anterior','07/02/2025')}${card('Leitura atual','','kWh',null,null,{pend:'leit'})}${card('Data da leitura atual','11/03/2025')}${card('Constante','1')}${card('Consumo medido','540 kWh')}</div>`
+      +`<div class="medt">Consumo fora ponta (kWh) · medidor ELO0045123</div><div class="grid g2">${card('Leitura anterior','88.200','kWh')}${card('Data da leitura anterior','07/02/2025')}${card('Leitura atual','94.160','kWh')}${card('Data da leitura atual','11/03/2025')}${card('Constante','1')}${card('Consumo medido','5.960 kWh')}</div>`
       +`<div class="medt">Demanda (kW)</div><div class="grid g2">${card('Demanda medida','68 kW')}${card('Demanda contratada','75 kW')}${card('Demanda faturada','75 kW')}${card('Ultrapassagem','0 kW')}</div>`
-      +`<div class="medt">Energia injetada fora ponta (kWh)</div><div class="grid g2">${card('Leitura anterior','51.300','07/02/2025')}${card('Leitura atual','55.400','11/03/2025')}${card('Constante','1')}${card('Injetado no período','4.100 kWh')}</div>`
+      +`<div class="medt">Energia injetada fora ponta (kWh)</div><div class="grid g2">${card('Leitura anterior','51.300','kWh')}${card('Data da leitura anterior','07/02/2025')}${card('Leitura atual','55.400','kWh')}${card('Data da leitura atual','11/03/2025')}${card('Constante','1')}${card('Injetado no período','4.100 kWh')}</div>`
       +sec('Histórico de consumo')+`<div class="grid g2">${card('Média de consumo','6.399 kWh','últimos 12 meses')}${card('Mediana de consumo','6.370 kWh','últimos 12 meses')}</div>`
       +`<div class="tbl"><table><thead><tr><th>Mês</th><th>Consumo (kWh)</th><th>Demanda (kW)</th><th>Dias</th></tr></thead><tbody>${h.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
   },
