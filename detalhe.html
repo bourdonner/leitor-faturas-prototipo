@@ -753,7 +753,7 @@ function bindSheet(){
     inp.onblur=()=>{ if(td.classList.contains('ed')) done(true); };
   };
   cells.forEach(td=>{
-    td.onclick=()=>select(td);
+    td.onclick=()=>{ if(modeOf()==='mobile' && td.classList.contains('pend')) edit(td); else select(td); }; // no mobile a pendência abre com um toque
     td.ondblclick=()=>edit(td);
     td.onkeydown=e=>{
       const r=+td.dataset.r, c=+td.dataset.c;
