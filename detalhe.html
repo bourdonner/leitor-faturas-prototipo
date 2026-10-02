@@ -345,6 +345,22 @@
   [data-mode=mobile] .card .ca{gap:0;margin-right:-10px}
   [data-mode=mobile] .card .ct .ib.edit .ms,[data-mode=mobile] .card .ca .ms{font-size:18px!important}
 
+  /* tablet: topo compacto; rolar para baixo esconde o topo e a tab bar, rolar para cima traz de volta */
+  [data-mode=tablet] .main{padding:8px 16px 12px 0;gap:4px}
+  [data-mode=tablet] .topbar{height:40px;padding:6px 12px}
+  [data-mode=tablet] .sheet{padding:16px 20px;overflow:hidden}
+  [data-mode=tablet] .head h1{font-size:18px;line-height:1.35;margin-bottom:8px}
+  [data-mode=tablet] .head > div:first-child{min-width:0;flex:1}
+  [data-mode=tablet] .chips{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+  [data-mode=tablet] .chip{height:26px;flex:none}
+  [data-mode=tablet] .cols{margin-top:12px}
+  [data-mode=tablet] .topbar,[data-mode=tablet] .head{transition:margin-top .28s ease}
+  [data-mode=tablet].chrome-hide .topbar{margin-top:calc(var(--th,40px) * -1 - 4px)}
+  [data-mode=tablet].chrome-hide .head{margin-top:calc(var(--hh,60px) * -1 - 12px)}
+  [data-mode=tablet] .tabbar{transition:transform .28s ease}
+  [data-mode=tablet].chrome-hide .tabbar{transform:translate(-50%, calc(100% + 40px))}
+  @media (prefers-reduced-motion:reduce){[data-mode=tablet] .topbar,[data-mode=tablet] .head,[data-mode=tablet] .tabbar{transition:none}}
+
   /* lista de pendências (tela própria no mobile) */
   .p-plist{display:none}
   .plist{flex:1;overflow:auto;padding:4px 12px 120px;display:flex;flex-direction:column;gap:12px}
@@ -1074,16 +1090,18 @@ document.fonts?.ready.then(()=>fitStk());
 /* ---------- mobile: header e tab bar somem ao rolar para baixo ---------- */
 const lastTop=new WeakMap();
 const setChrome=show=>document.documentElement.classList.toggle('chrome-hide', !show);
-function measureHead(){ const h=$('.m-head'); if(h && h.offsetHeight) document.documentElement.style.setProperty('--mh', h.offsetHeight+'px'); }
+function measureHead(){ const st=document.documentElement.style;
+  const h=$('.m-head'); if(h && h.offsetHeight) st.setProperty('--mh', h.offsetHeight+'px');
+  const tb=$('.topbar'), hd=$('.head'); if(tb && tb.offsetHeight) st.setProperty('--th', tb.offsetHeight+'px'); if(hd && hd.offsetHeight) st.setProperty('--hh', hd.offsetHeight+'px'); }
 document.addEventListener('scroll', e=>{
   const el=e.target; if(!(el instanceof Element)) return;
   const t=el.scrollTop, p=lastTop.get(el); lastTop.set(el,t);
-  if (modeOf()!=='mobile' || p===undefined || el.closest('.m-ov')) return;
+  if (modeOf()==='desk' || p===undefined || el.closest('.m-ov')) return;   // mobile e tablet
   const d=t-p; if (Math.abs(d)<4) return;           // rolagem lateral não muda scrollTop
   if (t<8) return setChrome(true);
   setChrome(d<0);
 }, true);
-addEventListener('resize', ()=>{ measureHead(); if(modeOf()!=='mobile') setChrome(true); });
+addEventListener('resize', ()=>{ measureHead(); if(modeOf()==='desk') setChrome(true); });
 document.fonts?.ready.then(measureHead);
 /* ---------- pendência fora da área visível ---------- */
 const clipRect=(a,b)=>({left:Math.max(a.left,b.left),right:Math.min(a.right,b.right),top:Math.max(a.top,b.top),bottom:Math.min(a.bottom,b.bottom)});

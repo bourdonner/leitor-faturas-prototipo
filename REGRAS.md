@@ -51,6 +51,8 @@ O painel de menor prioridade sai primeiro. Se a pessoa abre um painel que não c
 - Tocar de novo no item (ou no botão da gaveta) fecha.
 - Gaveta e card flutuante de Pendências são **exclusivos**: abrir um fecha o outro.
 - Grades de 3 colunas viram 2.
+- Topo compacto: breadcrumb de 40 px, título 18 px, chips em uma linha só (rolam de lado).
+- Rolar para baixo esconde o topo (breadcrumb + título + chips) e a tab bar; rolar para cima, chegar ao topo ou trocar de tela traz de volta.
 - Tab bar igual ao desktop (pílula + botão Pendências separado).
 
 ---
@@ -162,7 +164,7 @@ Inválido → borda vermelha + aviso, não salva. No iOS os campos usam 16 px pa
 | Item da tab bar | fechar | 350 ms | ease | ícone encolhe para .78 |
 | Pílula ativa da tab bar | ativar | 350 ms | cubic-bezier(.3,1.5,.5,1) | escala .55 → 1 |
 | Gaveta (tablet) | abrir/fechar | 350 ms | cubic-bezier(.2,.9,.3,1) | desliza da direita |
-| Header / tab bar (mobile) | rolar | 280 ms | ease | header sobe, tab bar desce |
+| Header / tab bar (mobile e tablet) | rolar | 280 ms | ease | header sobe, tab bar desce |
 | Painel do header (mobile) | abrir | 200 / 250 ms | ease / cubic-bezier(.2,.9,.3,1.1) | fundo aparece; painel desce 8 px e escala .98 → 1 |
 | Menu do select | abrir | 120 ms | ease | desce 4 px |
 | Marcador de pendência | contínuo | 1 s / 1,4 s | ease-in-out / ease-out | balança 4 px na direção da seta + anel pulsando |
