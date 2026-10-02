@@ -325,6 +325,19 @@
   [data-mode=mobile] .grade th,[data-mode=mobile] .grade td{padding:0 10px}
   [data-mode=mobile] .grade .stk{min-width:0;width:var(--stkw,50%);max-width:var(--stkw,50%);overflow:hidden;white-space:nowrap}
 
+  /* mobile: rolar para baixo esconde o header (sobe) e a tab bar (desce); rolar para cima traz de volta */
+  [data-mode=mobile] .m-head{transition:margin-top .28s ease}
+  [data-mode=mobile].chrome-hide .m-head{margin-top:calc(var(--mh,89px) * -1)}
+  [data-mode=mobile] .tabbar{transition:transform .28s ease}
+  [data-mode=mobile].chrome-hide .tabbar{transform:translate(-50%, calc(100% + 40px))}
+  @media (prefers-reduced-motion:reduce){[data-mode=mobile] .m-head,[data-mode=mobile] .tabbar{transition:none}}
+
+  /* mobile: editar, salvar e fechar dos cards com área de toque de 40px (ícone maior), sem aumentar o card */
+  [data-mode=mobile] .card .ct .ib.edit,[data-mode=mobile] .card .ca button{width:40px;height:40px;border-radius:8px;margin:-8px 0}
+  [data-mode=mobile] .card .ct .ib.edit{margin-right:-10px;width:80px;display:flex;align-items:center;justify-content:flex-end;padding-right:11px}
+  [data-mode=mobile] .card .ca{gap:0;margin-right:-10px}
+  [data-mode=mobile] .card .ct .ib.edit .ms,[data-mode=mobile] .card .ca .ms{font-size:18px!important}
+
   /* lista de pendências (tela própria no mobile) */
   .p-plist{display:none}
   .plist{flex:1;overflow:auto;padding:4px 12px 120px;display:flex;flex-direction:column;gap:12px}
@@ -897,7 +910,8 @@ function renderPanels(){
     const el = S.screen==='pend' ? $('#pPList') : $(PANEL[S.screen]);
     el.classList.remove('opening'); void el.offsetWidth; el.classList.add('opening'); setTimeout(()=>el.classList.remove('opening'),450);
   }
-  S.prevScreen=S.screen; setTimeout(()=>offSoon(), 400);
+  if (prevScreen!==S.screen) setChrome(true);
+  S.prevScreen=S.screen; setTimeout(()=>offSoon(), 400); measureHead();
   // animação de abrir/fechar: o item da barra pula, o painel sobe a partir da barra
   PRI.forEach(k=>{
     const was=prev.includes(k), is=S.vis.includes(k); if(!S.vis_ready || was===is) return;
@@ -1036,6 +1050,20 @@ function fitStk(){
 }
 addEventListener('resize', ()=>fitStk());
 document.fonts?.ready.then(()=>fitStk());
+/* ---------- mobile: header e tab bar somem ao rolar para baixo ---------- */
+const lastTop=new WeakMap();
+const setChrome=show=>document.documentElement.classList.toggle('chrome-hide', !show);
+function measureHead(){ const h=$('.m-head'); if(h && h.offsetHeight) document.documentElement.style.setProperty('--mh', h.offsetHeight+'px'); }
+document.addEventListener('scroll', e=>{
+  const el=e.target; if(!(el instanceof Element)) return;
+  const t=el.scrollTop, p=lastTop.get(el); lastTop.set(el,t);
+  if (modeOf()!=='mobile' || p===undefined || el.closest('.m-ov')) return;
+  const d=t-p; if (Math.abs(d)<4) return;           // rolagem lateral não muda scrollTop
+  if (t<8) return setChrome(true);
+  setChrome(d<0);
+}, true);
+addEventListener('resize', ()=>{ measureHead(); if(modeOf()!=='mobile') setChrome(true); });
+document.fonts?.ready.then(measureHead);
 /* ---------- pendência fora da área visível ---------- */
 const clipRect=(a,b)=>({left:Math.max(a.left,b.left),right:Math.min(a.right,b.right),top:Math.max(a.top,b.top),bottom:Math.min(a.bottom,b.bottom)});
 function offUpdate(){
