@@ -322,6 +322,14 @@
   [data-mode=mobile] .tb{flex:1;width:auto;padding:6px 4px;min-width:0}
   [data-mode=mobile] .tb span{font-size:11px}
   [data-mode=mobile] .tb .ms{font-size:22px!important}
+  /* tab bar no mobile: só ícones (o nome continua para leitores de tela) */
+  [data-mode=mobile] .tb > span:not(.ic){position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  [data-mode=mobile] .tb{padding:12px 4px}
+  [data-mode=mobile] #tbPend{width:56px;padding:12px 4px}
+  [data-mode=mobile] .tb-main{flex:0 1 auto;width:auto}
+  [data-mode=mobile] .tb-main .tb{width:64px;flex:none}
+  [data-mode=mobile] .tabbar{left:50%;right:auto;transform:translateX(-50%)}
+
   /* header mobile — Figma 1815:29980 */
   .m-head{display:none}
   [data-mode=mobile] .topbar,[data-mode=mobile] .head{display:none}
