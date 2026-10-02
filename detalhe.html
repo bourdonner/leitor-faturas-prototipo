@@ -125,6 +125,12 @@
   .card .fld:focus-within{outline:2px solid var(--brand);background:#fff}
   .card .fld input{border:0;padding:0;background:transparent;font:inherit;color:#0c0a09;outline:0;flex:1;min-width:0}
   .locked .card .ib.edit{display:none}
+  .ufld{display:flex;align-items:center;gap:6px;height:40px;border:1px solid var(--border);border-radius:6px;padding:0 12px;background:var(--s50);cursor:text}
+  .ufld:focus-within{outline:2px solid var(--brand);background:#fff}
+  .ufld input{border:0;outline:0;padding:0;background:transparent;font:inherit;font-size:14px;color:var(--ink);flex:1;min-width:0}
+  .ufld .u{color:var(--mid);white-space:nowrap}
+  .fld.err,.ufld.err{border-color:var(--danger)!important;outline-color:var(--danger)!important}
+  .grade td.ed.err input{outline-color:var(--danger)}
   /* gráfico interativo */
   .ccard{background:var(--s50);border-radius:12px;padding:16px}
   .cc-h{display:flex;align-items:flex-start;gap:12px}
@@ -355,8 +361,8 @@ const S = {
   tab:'Resumo', open:{pdf:true,det:true,act:true,pend:true}, status:'revisar', locked:false, pIdx:0, ov:{}, chartSel:null, itemChg:{},
   items:[['Consumo ponta TUSD','kWh','540','1,48213','1,15443','32,89','144,06','800,35'],['Consumo ponta TE','kWh','540','0,51237','0,39909','11,37','49,80','276,68'],['Consumo fora ponta TUSD','kWh','5.960','0,11845','0,09226','29,02','127,07','705,96'],['Consumo fora ponta TE','kWh','5.960','0,32971','0,25681','80,76','353,71','1.965,07'],['Energia injetada fora ponta TUSD','kWh','−4.100','0,11845','0,09226','−19,96','−87,42','−485,65'],['Energia injetada fora ponta TE','kWh','−4.100','0,32971','0,25681','−55,56','−243,33','−1.351,81'],['Demanda','kW','75','32,41500','25,24804','99,92','437,60','2.431,13'],['Contrib. ilum. pública municipal','—','—','—','—','—','—','98,40']],
   pend:[
-    {id:'cofins', tab:'Resumo', title:'COFINS', label:'COFINS (alíquota)', kind:'Percentual', ph:'0,00 %', legend:'R$ 146,75', done:null, act:'COFINS corrigido'},
-    {id:'leit', tab:'Consumo', title:'Leitura atual', label:'Leitura atual ponta (kWh)', kind:'Número', ph:'0', legend:'kWh', done:null, act:'Leitura atual corrigida'},
+    {id:'cofins', tab:'Resumo', title:'COFINS', label:'COFINS (alíquota)', kind:'Percentual', unit:'%', ph:'0,00', legend:'R$ 146,75', done:null, act:'COFINS corrigido'},
+    {id:'leit', tab:'Consumo', title:'Leitura atual', label:'Leitura atual ponta (kWh)', kind:'Número', unit:'kWh', ph:'0', legend:'kWh', done:null, act:'Leitura atual corrigida'},
     {id:'mod', tab:'Identificação', title:'Modalidade tarifária', label:'Modalidade tarifária', kind:'Seleção', ph:'Selecione', options:['Convencional','Horária verde','Horária azul','Branca'], done:null, act:'Modalidade corrigida'}
   ],
   acts:[['Para revisar','alert','10:42'],['Lida','def','10:42'],['Lendo fatura','def','10:41'],['Recebida','def','10:40']]
@@ -385,9 +391,65 @@ function card(t, v, u, opts={}){
 }
 function fieldHTML(p,id){
   if (p.kind==='Seleção') return `<select class="input" id="${id}"><option value="">${p.ph}</option>${p.options.map(o=>`<option>${o}</option>`).join('')}</select>`;
-  return `<input class="input" id="${id}" placeholder="${p.ph}" inputmode="${p.kind==='Número'||p.kind==='Percentual'?'decimal':'text'}">`;
+  const u=p.unit?`<span class="u">${p.unit}</span>`:'';
+  return `<label class="ufld">${p.unit&&isPre(p.unit)?u:''}<input id="${id}" placeholder="${p.ph}" data-mask="${{Percentual:'pct',Número:'int'}[p.kind]||'text'}">${p.unit&&!isPre(p.unit)?u:''}</label>`;
 }
 const sec = t=>`<div class="sec-t">${t}</div>`;
+
+/* ---------- máscaras: o campo mantém a formatação enquanto se digita ---------- */
+const PAT = {date:'##/##/####', cnpj:'##.###.###/####-##', cep:'#####-###', barcode:'###########-# ###########-# ###########-# ###########-#'};
+const NUM = {money:{dec:2}, pct:{dec:2}, int:{dec:0}, dec5:{dec:5}};
+function kindOf(v,u,t){
+  if (u==='R$') return 'money';
+  if (u==='%') return 'pct';
+  if (['kWh','kW','dias'].includes(u)) return 'int';
+  if (t==='Constante') return 'dec';
+  if (/^\d{2}\/\d{2}\/\d{4}$/.test(v)) return 'date';
+  if (/^\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}$/.test(v)) return 'cnpj';
+  if (/^\d{5}-\d{3}$/.test(v)) return 'cep';
+  if (/^(\d{11}-\d ?){4}$/.test(v)) return 'barcode';
+  if (/^\d+$/.test(v)) return 'digits';
+  return 'text';
+}
+const fmtPat = (d,pat)=>{ let o='',j=0; for(const ch of pat){ if(j>=d.length) break; o += ch==='#' ? d[j++] : ch; } return o; };
+function applyMask(kind, raw, opt={}){
+  const d = raw.replace(/\D/g,'');
+  if (NUM[kind]){
+    if (!d) return opt.signed && ((raw.match(/[-−]/g)||[]).length % 2 === 1) ? '−' : '';
+    const dec=NUM[kind].dec, neg = opt.signed && ((raw.match(/[-−]/g)||[]).length % 2 === 1);
+    let n = d.replace(/^0+(?=\d)/,'');
+    let out;
+    if (dec){ n=n.padStart(dec+1,'0'); out = Number(n.slice(0,-dec)).toLocaleString('pt-BR')+','+n.slice(-dec); }
+    else out = Number(n).toLocaleString('pt-BR');
+    return (neg && /[1-9]/.test(d) ? '−' : '') + out;
+  }
+  if (PAT[kind]) return fmtPat(d, PAT[kind]);
+  if (kind==='digits') return d.slice(0, opt.max||99);
+  if (kind==='dec'){ const v=raw.replace(/[^\d,]/g,''); const i=v.indexOf(','); return i<0 ? v : v.slice(0,i+1)+v.slice(i+1).replace(/,/g,''); }
+  return raw;
+}
+function validMask(kind, v){
+  if (!v || (NUM[kind] && !/\d/.test(v))) return 'Preencha o valor';
+  if (kind==='date'){ const [dd,mm,yy]=v.split('/').map(Number); const dt=new Date(yy,mm-1,dd);
+    if (v.length!==10 || dt.getFullYear()!==yy || dt.getMonth()!==mm-1 || dt.getDate()!==dd) return 'Data inválida'; }
+  if (PAT[kind] && kind!=='date' && v.length!==PAT[kind].length) return ({cnpj:'CNPJ incompleto',cep:'CEP incompleto',barcode:'Código de barras incompleto'})[kind];
+  return '';
+}
+function attachMask(inp, kind, opt={}){
+  if (!kind || kind==='text') return;
+  inp.inputMode = NUM[kind] ? 'decimal' : 'numeric';
+  if (PAT[kind]) inp.maxLength = PAT[kind].length;
+  inp.addEventListener('input', ()=>{
+    const nv = applyMask(kind, inp.value, opt);
+    if (nv!==inp.value){ inp.value=nv; inp.setSelectionRange(nv.length, nv.length); }
+    inp.closest('.fld,.ufld,td')?.classList.remove('err');
+  });
+}
+function invalid(inp, kind){
+  const msg = validMask(kind, inp.value.trim());
+  if (msg){ inp.closest('.fld,.ufld,td')?.classList.add('err'); toast(msg); inp.focus(); }
+  return !!msg;
+}
 
 /* ---------- gráfico ---------- */
 const HIST = {m:['abr/24','mai/24','jun/24','jul/24','ago/24','set/24','out/24','nov/24','dez/24','jan/25','fev/25','mar/25'], v:[6620,6400,6210,5980,6050,6230,6450,6880,7010,6340,6120,6500]};
@@ -423,6 +485,7 @@ function bindChart(){
 
 /* ---------- planilha de itens ---------- */
 const COLS=['Unid.','Quant.','Preço c/ tributos','Tarifa s/ tributos','PIS/COFINS','ICMS','Valor'];
+const COLK={2:'int',3:'dec5',4:'dec5',5:'money',6:'money',7:'money'}; // quantidade e valores aceitam negativo (créditos)
 const pn = t=>parseFloat(String(t).replace(/[^\d,−-]/g,'').replace(/\./g,'').replace(',','.').replace('−','-'));
 const money = n=>(n<0?'−':'')+Math.abs(n).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
 function sheetHTML(){
@@ -440,8 +503,11 @@ function bindSheet(){
   const edit=td=>{
     if(td.classList.contains('ed')) return;
     const r=+td.dataset.r, c=+td.dataset.c, old=S.items[r][c];
-    td.classList.add('ed'); td.innerHTML='<input>'; const inp=td.firstChild; inp.value=old; inp.focus(); inp.select();
-    const done=save=>{ const nv=inp.value.trim(); td.classList.remove('ed');
+    td.classList.add('ed'); td.innerHTML='<input>'; const inp=td.firstChild; inp.value=old==='—'?'':old; inp.focus(); inp.select();
+    const kind=COLK[c]; attachMask(inp, kind, {signed:c!==3&&c!==4});
+    const done=save=>{ const nv=inp.value.trim();
+      if(save && nv && nv!==old && invalid(inp, kind)) return;
+      td.classList.remove('ed','err');
       if(save && nv && nv!==old){ S.items[r][c]=nv; S.itemChg[r+'-'+c]=1; S.acts.unshift([`${S.items[r][0]} editado`,'edit',now(),true,ME]); renderActs(); toast(`${S.items[r][0]} atualizado`);
         renderContent(); const n=at(r,c); if(n) select(n); return; }
       td.textContent=old; select(td); };
@@ -533,6 +599,7 @@ function renderPend(){
   $('#pPrev').onclick=()=>{ S.pIdx--; renderPend(); };
   $('#pNext').onclick=()=>{ S.pIdx++; renderPend(); };
   const f=$('#pf'), ok=$('#pOk');
+  attachMask(f, f.dataset.mask);
   f.oninput = f.onchange = ()=>{ ok.disabled = !f.value.trim(); };
   f.onkeydown = e=>{ if(e.key==='Enter' && f.value.trim()) resolve(p, f.value.trim()); };
   ok.onclick = ()=>resolve(p, f.value.trim());
@@ -571,6 +638,8 @@ function render(){ renderTabs(); renderContent(); renderActs(); renderStatus(); 
 const now = ()=>new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
 function fmt(p,v){ if(p.kind==='Percentual'){ v=v.replace('%','').trim(); return v.includes(',')||v.includes('.')? v.replace('.',',') : v+',00'; } return v; }
 function resolve(p, v){
+  const f=document.getElementById('pf')?.value.trim()===v ? $('#pf') : document.getElementById('in-'+p.id);
+  if (p.kind!=='Seleção' && f && invalid(f, f.dataset.mask)) return;
   p.done = fmt(p,v);
   S.acts.unshift([p.act,'edit',now(),true,ME]);
   toast(`${p.label}: ${p.done}`);
@@ -588,6 +657,7 @@ function bindInline(){
   document.querySelectorAll('.card .cp').forEach(b=>b.onclick=()=>{ const v=b.closest('.card').querySelector('.v').textContent; navigator.clipboard?.writeText(v).catch(()=>{}); toast(`Copiado: ${v}`); });
   S.pend.filter(p=>!p.done).forEach(p=>{
     const f=document.getElementById('in-'+p.id); if(!f) return;
+    attachMask(f, f.dataset.mask);
     f.onkeydown=e=>{ if(e.key==='Enter'&&f.value.trim()) resolve(p,f.value.trim()); };
     f.onchange=()=>{ if(p.kind==='Seleção'&&f.value) resolve(p,f.value); };
     const sv=document.querySelector(`[data-psave="${p.id}"]`), cl=document.querySelector(`[data-pclear="${p.id}"]`);
@@ -605,12 +675,14 @@ function editCard(c, btn){
   acts.innerHTML=`<button class="sv" aria-label="Salvar ${c.dataset.edit}">${I.save}</button><button aria-label="Fechar edição">${I.close}</button>`;
   btn.replaceWith(acts);
   const f=document.createElement('label'); f.className='fld';
-  const inp=document.createElement('input'); inp.value=old; inp.setAttribute('aria-label',c.dataset.edit);
+  const inp=document.createElement('input'); inp.value=old==='—'?'':old; inp.setAttribute('aria-label',c.dataset.edit);
+  const kind=kindOf(old,u,c.dataset.edit); attachMask(inp, kind, {max:old.length});
   const us=document.createElement('span'); us.className='u'; us.textContent=u;
   if(u && isPre(u)) f.append(us,inp); else if(u) f.append(inp,us); else f.append(inp);
   row.replaceWith(f); inp.focus(); inp.select();
   const finish=save=>{
     const nv=inp.value.trim();
+    if(save && nv && nv!==old && invalid(inp, kind)) return;
     f.replaceWith(row); acts.replaceWith(btn); c.classList.remove('editing');
     if(save && nv && nv!==old){ row.querySelector('.v').textContent=nv; S.ov[c.dataset.k]=nv;
       S.acts.unshift([`${c.dataset.edit} editado`,'edit',now(),true,ME]); renderActs(); toast(`${c.dataset.edit} atualizado`); }
