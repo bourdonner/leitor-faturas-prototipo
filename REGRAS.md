@@ -129,7 +129,7 @@ Inválido → borda vermelha + aviso, não salva. No iOS os campos usam 16 px pa
 ### Atividade
 - Todo evento mostra o autor no canto: **sistema** = círculo preto com a marca Enershare; **pessoa** = iniciais com cor própria; nome no hover.
 - Status do sistema em 1–2 palavras + data.
-- Evento de edição: no hover (ou foco/toque) mostra **de → para** (antigo riscado, novo em negrito sobre verde-claro). Pendência resolvida: "não encontrado → valor".
+- Evento de edição: no hover (ou foco/toque) mostra **de → para** (antigo riscado, novo em negrito sobre verde-claro). Pendência resolvida: "pendente → valor".
 
 ### Pendência fora da área visível (Figma 1823:30676)
 - Quando o item pendente está escondido pela rolagem, aparece na borda do container um **marcador laranja + seta** apontando para ele.

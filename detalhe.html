@@ -851,9 +851,9 @@ function renderTabs(){
 }
 function renderContent(){ CK=0; $('#content').innerHTML = TABS[S.tab](); fitStk(); setTimeout(()=>offSoon()); $('#pDet').classList.toggle('locked', S.locked); bindInline(); }
 const withUnit=(v,u)=>!v||v==='—'||!u ? v : (u==='R$' ? 'R$ '+v : v+' '+u);
-const difHTML=d=>`<div class="dif" aria-hidden="true"><span class="o ${d.from?'':'none'}">${d.from||'não encontrado'}</span><span class="ms" aria-hidden="true">arrow_forward</span><span class="t">${d.to}</span></div>`;
+const difHTML=d=>`<div class="dif" aria-hidden="true"><span class="o ${d.from?'':'none'}">${d.from||'pendente'}</span><span class="ms" aria-hidden="true">arrow_forward</span><span class="t">${d.to}</span></div>`;
 function renderActs(){
-  $('#acts').innerHTML = S.acts.map((a,i)=>`${i?'<div class="link"></div>':''}<div class="ev ${a[3]?'new':''} ${a[5]?'has-dif':''}" ${a[5]?`tabindex="0" aria-label="${a[0]}: de ${a[5].from||'vazio'} para ${a[5].to}"`:''}><span class="i c-${a[1]}">${a[1]==='edit'?I.pen:a[1]==='ok'?I.check:a[1]==='alert'?I.warn:a[0]==='Recebida'?I.inbox:a[0]==='Lendo fatura'?I.hour:a[0]==='Lida'?I.doc:I.dot}</span>${who(a[4]||SYS)}<div class="n">${a[0]}</div><div class="d">13/03 às ${a[2]}</div>${a[5]?difHTML(a[5]):''}</div>`).join('');
+  $('#acts').innerHTML = S.acts.map((a,i)=>`${i?'<div class="link"></div>':''}<div class="ev ${a[3]?'new':''} ${a[5]?'has-dif':''}" ${a[5]?`tabindex="0" aria-label="${a[0]}: de ${a[5].from||'pendente'} para ${a[5].to}"`:''}><span class="i c-${a[1]}">${a[1]==='edit'?I.pen:a[1]==='ok'?I.check:a[1]==='alert'?I.warn:a[0]==='Recebida'?I.inbox:a[0]==='Lendo fatura'?I.hour:a[0]==='Lida'?I.doc:I.dot}</span>${who(a[4]||SYS)}<div class="n">${a[0]}</div><div class="d">13/03 às ${a[2]}</div>${a[5]?difHTML(a[5]):''}</div>`).join('');
   if (S.mView==='act') $('#mBody').innerHTML = mActHTML();
   S.acts.forEach(a=>a[3]=false);
 }
