@@ -157,6 +157,8 @@
   .proto{position:fixed;right:16px;top:14px;z-index:30;display:flex;align-items:center;gap:6px;font:500 11px/16px Inter;color:var(--mid);background:#fff;border:1px solid var(--s100);border-radius:999px;padding:3px 3px 3px 10px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
   .proto button{padding:2px 8px;border-radius:999px;color:var(--mid)}
   .proto button.on{background:var(--ink);color:#fff}
+  /* iOS Safari dá zoom em campo com fonte < 16px: só lá os campos sobem para 16px (a pinça continua liberada) */
+  @supports (-webkit-touch-callout:none){ input,select,textarea{font-size:16px!important} }
 </style>
 </head>
 <body>

@@ -441,6 +441,8 @@
   [data-mode=mobile] .plist{padding:0 24px 120px}
 
   .note{position:fixed;right:16px;top:12px;font-size:11px;color:var(--mid);background:var(--white);border:1px solid var(--s200);padding:4px 8px;border-radius:999px;z-index:40}
+  /* iOS Safari dá zoom em campo com fonte < 16px: só lá os campos sobem para 16px (a pinça continua liberada) */
+  @supports (-webkit-touch-callout:none){ input,select,textarea{font-size:16px!important} }
 </style>
 </head>
 <body>
