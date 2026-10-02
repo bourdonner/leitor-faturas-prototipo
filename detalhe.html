@@ -320,7 +320,7 @@
 
   /* planilha no mobile: coluna Item ocupa no máximo metade da tabela; nomes longos cortados no meio (estilo macOS) */
   [data-mode=mobile] .grade th,[data-mode=mobile] .grade td{padding:0 10px}
-  [data-mode=mobile] .grade .stk{min-width:0;width:var(--stkw,50%);max-width:var(--stkw,50%);overflow:hidden;white-space:nowrap}
+  [data-mode=mobile] .grade .stk{position:static;min-width:0;width:var(--stkw,50%);max-width:var(--stkw,50%);overflow:hidden;white-space:nowrap}
 
   /* mobile: rolar para baixo esconde o header (sobe) e a tab bar (desce); rolar para cima traz de volta */
   [data-mode=mobile] .m-head{transition:margin-top .28s ease}
@@ -1081,7 +1081,7 @@ function offUpdate(){
         let dir=null, x, y;
         const grade=el.closest('.grade');
         if (grade){
-          const g=grade.getBoundingClientRect(), stk=grade.querySelector('.stk')?.getBoundingClientRect().width||0;
+          const g=grade.getBoundingClientRect(), stkEl=grade.querySelector('.stk'), stk=stkEl && getComputedStyle(stkEl).position==='sticky' ? stkEl.getBoundingClientRect().width : 0;
           const gv=clipRect({left:g.left+stk, right:g.right, top:g.top, bottom:g.bottom}, view);
           const inRows = r.bottom>gv.top && r.top<gv.bottom;
           if (inRows && r.left >= gv.right-4){ dir='r'; x=gv.right-18; y=(r.top+r.bottom)/2; }
