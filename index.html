@@ -136,6 +136,7 @@
   .dlg .db{padding:0 24px 24px;display:flex;flex-direction:column;gap:16px}
   .dlg label{display:flex;flex-direction:column;gap:8px;color:var(--ink2)}
   .dlg .sel{position:relative}
+  .dlg .sel:has(.cs) > .mss{display:none}
   .dlg select,.dlg textarea{width:100%;font:400 14px/24px Inter;color:var(--ink);background:var(--s50);border:1px solid var(--border);border-radius:6px;padding:8px 12px;outline:none}
   .dlg select{height:40px;appearance:none;padding-right:40px}
   .dlg select:invalid{color:var(--mid)}
@@ -339,7 +340,7 @@ document.addEventListener('click',e=>{ if(!e.target.closest('.dd')) closeMenus()
 document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeMenus(); closeDlg(); } });
 /* modal recusar */
 let dlgRow=null;
-function openDlg(r){ dlgRow=r; $('#dlgD').textContent = `A fatura de ${r.tit}${r.uc!=='—'?` (UC ${r.uc.split(' · ')[0]}, ${r.ref})`:''} não será faturada. Informe o motivo para quem consultar depois.`; $('#motivo').value=''; $('#obs').value=''; $('#confirm').disabled=true; $('#ov').classList.add('show'); $('#motivo').focus(); }
+function openDlg(r){ dlgRow=r; $('#dlgD').textContent = `A fatura de ${r.tit}${r.uc!=='—'?` (UC ${r.uc.split(' · ')[0]}, ${r.ref})`:''} não será faturada. Informe o motivo para quem consultar depois.`; $('#motivo').value=''; $('#obs').value=''; $('#confirm').disabled=true; $('#ov').classList.add('show'); window.csRefresh&&csRefresh(); ($('#motivo').closest('.cs')?.querySelector('.cs-trig')||$('#motivo')).focus(); }
 function closeDlg(){ $('#ov').classList.remove('show'); dlgRow=null; }
 $('#motivo').onchange=()=>{ $('#confirm').disabled=!$('#motivo').value; };
 $('#cancel').onclick=closeDlg; $('#close').onclick=closeDlg;
@@ -360,5 +361,6 @@ function toast(t){ const el=$('#toast'); el.textContent=t; el.classList.add('sho
 /* carga inicial */
 syncProto(); render(); setTimeout(()=>{ S.view='lista'; syncProto(); render(); }, 900);
 </script>
+<script src="assets/select.js"></script>
 </body>
 </html>
