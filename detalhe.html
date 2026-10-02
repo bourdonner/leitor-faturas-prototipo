@@ -321,6 +321,10 @@
   [data-mode=mobile] .pdf-scroll{justify-content:normal;touch-action:pan-x pan-y;overscroll-behavior:contain}
   [data-mode=mobile] .pdf-page{margin:0 auto;transition:none;flex:none}
 
+  /* planilha no mobile: coluna Item ocupa no máximo metade da tabela; nomes longos cortados no meio (estilo macOS) */
+  [data-mode=mobile] .grade th,[data-mode=mobile] .grade td{padding:0 10px}
+  [data-mode=mobile] .grade .stk{min-width:0;width:var(--stkw,50%);max-width:var(--stkw,50%);overflow:hidden;white-space:nowrap}
+
   /* lista de pendências (tela própria no mobile) */
   .p-plist{display:none}
   .plist{flex:1;overflow:auto;padding:4px 12px 120px;display:flex;flex-direction:column;gap:12px}
@@ -803,7 +807,7 @@ function renderTabs(){
     return `<button role="tab" class="tab ${S.tab===t?'on':''}" data-tab="${t}" aria-selected="${S.tab===t}">${t}${warn?`<span class="warn">${I.warn}</span>`:''}</button>`;
   }).join('');
 }
-function renderContent(){ CK=0; $('#content').innerHTML = TABS[S.tab](); setTimeout(()=>offSoon()); $('#pDet').classList.toggle('locked', S.locked); bindInline(); }
+function renderContent(){ CK=0; $('#content').innerHTML = TABS[S.tab](); fitStk(); setTimeout(()=>offSoon()); $('#pDet').classList.toggle('locked', S.locked); bindInline(); }
 function renderActs(){
   $('#acts').innerHTML = S.acts.map((a,i)=>`${i?'<div class="link"></div>':''}<div class="ev ${a[3]?'new':''}"><span class="i c-${a[1]}">${a[1]==='edit'?I.pen:a[1]==='ok'?I.check:a[1]==='alert'?I.warn:a[0]==='Recebida'?I.inbox:a[0]==='Lendo fatura'?I.hour:a[0]==='Lida'?I.doc:I.dot}</span>${who(a[4]||SYS)}<div class="n">${a[0]}</div><div class="d">13/03 às ${a[2]}</div></div>`).join('');
   if (S.mView==='act') $('#mBody').innerHTML = mActHTML();
@@ -999,6 +1003,33 @@ document.addEventListener('click', e=>{
   });
 })();
 let z=560; $('#zIn').onclick=()=>{ z=Math.min(1100,z+80); $('#page').style.width=z+'px'; }; $('#zOut').onclick=()=>{ z=Math.max(400,z-80); $('#page').style.width=z+'px'; };
+/* ---------- nome do item no mobile: começo + … + fim, como o macOS ---------- */
+const _cv=document.createElement('canvas').getContext('2d');
+function midFit(t,max){
+  const w=x=>_cv.measureText(x).width;
+  if (w(t)<=max) return t;
+  let lo=2, hi=t.length-1, best=t.slice(0,1)+'…';
+  while(lo<=hi){ const n=(lo+hi)>>1, a=Math.ceil(n/2), x=t.slice(0,a).trimEnd()+'…'+t.slice(t.length-(n-a)).trimStart();
+    if (w(x)<=max){ best=x; lo=n+1; } else hi=n-1; }
+  return best;
+}
+function fitStk(){
+  const mob=modeOf()==='mobile';
+  document.querySelectorAll('.grade').forEach(g=>{
+    const half=Math.floor(g.clientWidth/2);
+    g.style.setProperty('--stkw', mob ? half+'px' : '');
+    g.querySelectorAll('tbody td.stk').forEach(td=>{
+      const full=td.dataset.full ?? td.textContent; td.dataset.full=full;
+      if (!mob){ td.textContent=full; td.removeAttribute('title'); td.removeAttribute('aria-label'); return; }
+      const cs=getComputedStyle(td); _cv.font=`${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
+      const shown=midFit(full, half-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight)-2);
+      td.textContent=shown;
+      if (shown!==full){ td.title=full; td.setAttribute('aria-label',full); } else { td.removeAttribute('title'); td.removeAttribute('aria-label'); }
+    });
+  });
+}
+addEventListener('resize', ()=>fitStk());
+document.fonts?.ready.then(()=>fitStk());
 /* ---------- pendência fora da área visível ---------- */
 const clipRect=(a,b)=>({left:Math.max(a.left,b.left),right:Math.min(a.right,b.right),top:Math.max(a.top,b.top),bottom:Math.min(a.bottom,b.bottom)});
 function offUpdate(){
