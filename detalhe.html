@@ -267,6 +267,54 @@
   [data-mode=mobile] #tbPend{flex:none;width:84px;padding:12px 4px}
   [data-mode=mobile] #tbPend::before{inset:6px}
 
+  /* painel do header — Figma 1823:29368 e 1823:29509 */
+  .m-ov{position:fixed;inset:0;z-index:45;background:rgba(245,245,244,.4);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);display:flex;justify-content:center;align-items:flex-start;padding:72px 24px 24px;animation:mOvIn .2s ease}
+  .m-ov[hidden]{display:none}
+  .m-sheet{width:100%;max-width:360px;max-height:100%;display:flex;flex-direction:column;background:#fff;border:1px solid var(--s100);border-radius:12px;padding:4px;box-shadow:0 10px 15px -3px rgba(0,0,0,.08),0 4px 6px -4px rgba(0,0,0,.08);animation:mSheetIn .25s cubic-bezier(.2,.9,.3,1.1)}
+  .m-nav{display:flex;align-items:center;gap:8px;padding:4px;background:rgba(245,245,244,.4);border:1px solid var(--s100);border-radius:8px;flex:none}
+  .m-nav b{flex:1;min-width:0;font-size:14px;line-height:1.7;color:#0c0a09;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .m-nb{width:36px;height:36px;display:grid;place-items:center;border-radius:6px;color:var(--ink);flex:none}
+  .m-nb .msr{font-size:20px}
+  .m-nb[hidden]{display:block;visibility:hidden}
+  .m-body{overflow:auto;min-height:0}
+  .m-sec{display:flex;flex-direction:column;align-items:flex-start;gap:12px;padding:24px;border-top:1px solid var(--s100)}
+  .m-row{display:flex;align-items:center;gap:12px}
+  .m-hb{display:inline-flex;align-items:center;gap:12px;padding:12px 16px 12px 12px;border-radius:999px;background:rgba(245,245,244,.4);font:600 14px/1.24 Poppins,sans-serif;color:var(--ink);white-space:nowrap}
+  .m-hb .msr{font-size:20px}
+  .m-hb.alert .msr{color:var(--alert)} .m-hb.ok .msr{color:#65a30d} .m-hb.brand .msr{color:var(--brand)}
+  .m-go{width:40px;height:40px;border-radius:8px;background:var(--ink);color:#fafaf9;display:grid;place-items:center}
+  .m-go .mss{font-size:16px}
+  .m-acts{display:flex;gap:8px;padding:0 24px 24px}
+  .m-ab{width:56px;height:56px;border-radius:11px;background:var(--s50);display:grid;place-items:center;color:var(--ink)}
+  .m-ab .mss{font-size:22px}
+  a.m-ab{text-decoration:none}
+  .m-ab:active,.m-go:active{transform:scale(.96)}
+  .m-actlist{padding:24px 12px 12px;border-top:1px solid var(--s100)}
+  .m-actlist .ev{background:rgba(245,245,244,.4);border:1px solid var(--s100)}
+  @keyframes mOvIn{from{opacity:0}to{opacity:1}}
+  @keyframes mSheetIn{from{opacity:0;transform:translateY(-8px) scale(.98)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){.m-ov,.m-sheet{animation:none}}
+  /* Atividade sai da tab bar no mobile: fica no painel do header */
+  [data-mode=mobile] .tb[data-toggle=act]{display:none}
+
+  /* pendência fora da área visível: marcador na borda apontando para ela, animado como objetivo de jogo */
+  #offLayer{position:fixed;inset:0;pointer-events:none;z-index:25}
+  .offi{position:absolute;pointer-events:auto;display:flex;align-items:center;gap:2px;padding:0;color:var(--alert);transform:translate(-50%,-50%)}
+  .offi .b{width:22px;height:22px;border-radius:6px;background:var(--alert);color:#fff;display:grid;place-items:center;box-shadow:0 2px 6px rgba(249,115,22,.45);position:relative}
+  .offi .b::after{content:'';position:absolute;inset:-3px;border-radius:8px;border:2px solid var(--alert);opacity:0;animation:offPing 1.4s ease-out infinite}
+  .offi .b .ms{font-size:14px}
+  .offi .a{font-size:16px;line-height:1}
+  .offi.r{flex-direction:row} .offi.l{flex-direction:row-reverse}
+  .offi.d{flex-direction:column} .offi.u{flex-direction:column-reverse}
+  .offi.r{animation:offR 1s ease-in-out infinite} .offi.l{animation:offL 1s ease-in-out infinite}
+  .offi.d{animation:offD 1s ease-in-out infinite} .offi.u{animation:offU 1s ease-in-out infinite}
+  @keyframes offR{50%{transform:translate(calc(-50% + 4px),-50%)}}
+  @keyframes offL{50%{transform:translate(calc(-50% - 4px),-50%)}}
+  @keyframes offD{50%{transform:translate(-50%,calc(-50% + 4px))}}
+  @keyframes offU{50%{transform:translate(-50%,calc(-50% - 4px))}}
+  @keyframes offPing{0%{opacity:.7;transform:scale(.85)}100%{opacity:0;transform:scale(1.35)}}
+  @media (prefers-reduced-motion:reduce){.offi,.offi .b::after{animation:none!important}}
+
   /* lista de pendências (tela própria no mobile) */
   .p-plist{display:none}
   .plist{flex:1;overflow:auto;padding:4px 12px 120px;display:flex;flex-direction:column;gap:12px}
@@ -495,6 +543,19 @@
   <button class="tb" data-toggle="pend" id="tbPend"><span class="ic"><span class="ms f" style="font-size:26px" aria-hidden="true">warning</span><b class="cnt" id="tbCnt">3</b></span><span>Pendências</span></button>
 </nav>
 
+<!-- Painel do header (mobile): resumo da fatura e atividade -->
+<div class="m-ov" id="mOv" hidden>
+  <div class="m-sheet" role="dialog" aria-modal="true" aria-labelledby="mSheetT">
+    <div class="m-nav">
+      <button class="m-nb" id="mBack" aria-label="Voltar"><span class="msr fill" aria-hidden="true">chevron_left</span></button>
+      <b id="mSheetT">Padaria Estrela do Sul Ltda</b>
+      <button class="m-nb" id="mClose" aria-label="Fechar"><span class="msr" aria-hidden="true">close</span></button>
+    </div>
+    <div class="m-body" id="mBody"></div>
+  </div>
+</div>
+<!-- indicadores de pendência fora da área visível (Figma 1823:30676) -->
+<div id="offLayer" aria-live="polite"></div>
 <div class="toast" id="toast"></div>
 <div class="note">Protótipo · dados fictícios</div>
 
@@ -735,9 +796,10 @@ function renderTabs(){
     return `<button role="tab" class="tab ${S.tab===t?'on':''}" data-tab="${t}" aria-selected="${S.tab===t}">${t}${warn?`<span class="warn">${I.warn}</span>`:''}</button>`;
   }).join('');
 }
-function renderContent(){ CK=0; $('#content').innerHTML = TABS[S.tab](); $('#pDet').classList.toggle('locked', S.locked); bindInline(); }
+function renderContent(){ CK=0; $('#content').innerHTML = TABS[S.tab](); setTimeout(()=>offSoon()); $('#pDet').classList.toggle('locked', S.locked); bindInline(); }
 function renderActs(){
   $('#acts').innerHTML = S.acts.map((a,i)=>`${i?'<div class="link"></div>':''}<div class="ev ${a[3]?'new':''}"><span class="i c-${a[1]}">${a[1]==='edit'?I.pen:a[1]==='ok'?I.check:a[1]==='alert'?I.warn:a[0]==='Recebida'?I.inbox:a[0]==='Lendo fatura'?I.hour:a[0]==='Lida'?I.doc:I.dot}</span>${who(a[4]||SYS)}<div class="n">${a[0]}</div><div class="d">13/03 às ${a[2]}</div></div>`).join('');
+  if (S.mView==='act') $('#mBody').innerHTML = mActHTML();
   S.acts.forEach(a=>a[3]=false);
 }
 function renderStatus(){
@@ -809,6 +871,7 @@ function togglePanel(k){
 function renderPanels(){
   const md=modeOf(); document.documentElement.dataset.mode=md;
   if (md!==S.mode){ S.mode=md; S.screen='det'; S.side=null; S.vis_ready=false; }
+  if (md==='mobile' && S.screen==='act') S.screen='det';
   const prev = S.vis || [], prevScreen=S.prevScreen;
   S.vis = md==='mobile' ? (S.screen==='pend' ? [] : [S.screen]) : md==='tablet' ? ['det', ...(S.side?[S.side]:[])] : visibleSet();
   const onTab = k => md==='mobile' ? S.screen===k : k==='pend' ? !!S.open.pend : md==='tablet' ? (k==='det' ? !S.side : S.side===k) : S.vis.includes(k);
@@ -817,7 +880,7 @@ function renderPanels(){
     const el = S.screen==='pend' ? $('#pPList') : $(PANEL[S.screen]);
     el.classList.remove('opening'); void el.offsetWidth; el.classList.add('opening'); setTimeout(()=>el.classList.remove('opening'),450);
   }
-  S.prevScreen=S.screen;
+  S.prevScreen=S.screen; setTimeout(()=>offSoon(), 400);
   // animação de abrir/fechar: o item da barra pula, o painel sobe a partir da barra
   PRI.forEach(k=>{
     const was=prev.includes(k), is=S.vis.includes(k); if(!S.vis_ready || was===is) return;
@@ -900,8 +963,86 @@ document.addEventListener('click', e=>{
   const g=e.target.closest('[data-toggle]'); if(g){ const k=g.dataset.toggle; if(k==='pend' && modeOf()!=='mobile'){ S.open.pend=!S.open.pend; if(S.open.pend && modeOf()==='tablet') S.side=null; const tb=document.querySelector('.tb[data-toggle=pend]'); const cls=S.open.pend?'opening':'closing'; tb.classList.remove('opening','closing'); void tb.offsetWidth; tb.classList.add(cls); setTimeout(()=>tb.classList.remove(cls),450); } else { if(modeOf()==='mobile' && g.classList.contains('tb')){ g.classList.remove('opening'); void g.offsetWidth; g.classList.add('opening'); setTimeout(()=>g.classList.remove('opening'),450); } togglePanel(k); } renderPanels(); }
 });
 let z=560; $('#zIn').onclick=()=>{ z=Math.min(1100,z+80); $('#page').style.width=z+'px'; }; $('#zOut').onclick=()=>{ z=Math.max(400,z-80); $('#page').style.width=z+'px'; };
+/* ---------- pendência fora da área visível ---------- */
+const clipRect=(a,b)=>({left:Math.max(a.left,b.left),right:Math.min(a.right,b.right),top:Math.max(a.top,b.top),bottom:Math.min(a.bottom,b.bottom)});
+function offUpdate(){
+  const layer=$('#offLayer'), content=$('#content');
+  const items=[];
+  if (content && !$('#pDet').classList.contains('min') && content.offsetParent){
+    const cr=content.getBoundingClientRect(), tb=$('#tabbar').getBoundingClientRect();
+    const view={left:cr.left, right:cr.right, top:cr.top, bottom:(tb.height && tb.top<cr.bottom) ? Math.min(cr.bottom, tb.top-8) : cr.bottom};
+    if (view.right-view.left > 40 && view.bottom-view.top > 40){
+      openPend().forEach(p=>{
+        const el=document.getElementById('c-'+p.id); if(!el) return;
+        const r=el.getBoundingClientRect();
+        let dir=null, x, y;
+        const grade=el.closest('.grade');
+        if (grade){
+          const g=grade.getBoundingClientRect(), stk=grade.querySelector('.stk')?.getBoundingClientRect().width||0;
+          const gv=clipRect({left:g.left+stk, right:g.right, top:g.top, bottom:g.bottom}, view);
+          const inRows = r.bottom>gv.top && r.top<gv.bottom;
+          if (inRows && r.left >= gv.right-4){ dir='r'; x=gv.right-18; y=(r.top+r.bottom)/2; }
+          else if (inRows && r.right <= gv.left+4){ dir='l'; x=gv.left+18; y=(r.top+r.bottom)/2; }
+        }
+        if (!dir){
+          if (r.top >= view.bottom-4){ dir='d'; y=view.bottom-22; }
+          else if (r.bottom <= view.top+4){ dir='u'; y=view.top+22; }
+          if (dir) x=Math.min(Math.max((r.left+r.right)/2, view.left+20), view.right-20);
+        }
+        if (dir) items.push({p,dir,x,y});
+      });
+    }
+  }
+  const ARW={r:'arrow_right',l:'arrow_left',d:'arrow_drop_down',u:'arrow_drop_up'};
+  layer.innerHTML = items.map(o=>`<button class="offi ${o.dir}" data-off="${o.p.id}" style="left:${o.x}px;top:${o.y}px" aria-label="Ir para a pendência: ${o.p.label}"><span class="b">${I.warn}</span><span class="ms f a" aria-hidden="true">${ARW[o.dir]}</span></button>`).join('');
+  layer.querySelectorAll('[data-off]').forEach(b=>b.onclick=()=>{
+    const el=document.getElementById('c-'+b.dataset.off); if(!el) return;
+    el.scrollIntoView({behavior:'smooth',block:'center',inline:'center'});
+    el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash'); setTimeout(()=>el.classList.remove('flash'),1200);
+  });
+}
+let offT=0; const offSoon=()=>{ clearTimeout(offT); offT=setTimeout(offUpdate,16); };
+document.addEventListener('scroll', offSoon, true);
+addEventListener('resize', offSoon);
+document.addEventListener('transitionend', e=>{ if(e.target.classList?.contains('panel')) offSoon(); });
+new ResizeObserver(offSoon).observe(document.body);
 /* header mobile: badges mostram o que significam; menu fica fora do protótipo */
-document.querySelectorAll('.m-head [data-info]').forEach(b=>b.onclick=()=>toast(b.dataset.info));
+let mTrigger=null;
+function mInfoHTML(){
+  const n=openPend().length;
+  const st = n ? `<span class="m-hb alert"><span class="msr fill" aria-hidden="true">warning</span>${n} pendência${n>1?'s':''}</span>`
+               : `<span class="m-hb ok"><span class="msr fill" aria-hidden="true">check_circle</span>Sem pendências</span>`;
+  return `<div class="m-sec">${st}
+      <span class="m-hb brand"><span class="msr fill" aria-hidden="true">calendar_today</span>Março de 2025</span>
+      <div class="m-row"><span class="m-hb"><span class="msr fill" aria-hidden="true">electric_meter</span>Luz do Vale</span><button class="m-go" data-mgo="Distribuidora" aria-label="Abrir distribuidora"><span class="mss" aria-hidden="true">open_in_new</span></button></div>
+      <div class="m-row"><span class="m-hb"><span class="msr fill" aria-hidden="true">electrical_services</span>UC 3014567890</span><button class="m-go" data-mgo="Unidade consumidora" aria-label="Abrir unidade consumidora"><span class="mss" aria-hidden="true">open_in_new</span></button></div>
+    </div>
+    <div class="m-acts">
+      <button class="m-ab" id="mHist" aria-label="Atividade"><span class="mss" aria-hidden="true">history</span></button>
+      <a class="m-ab" href="assets/fatura-grupo-a.png" download aria-label="Baixar fatura"><span class="mss" aria-hidden="true">download</span></a>
+      <a class="m-ab" href="assets/fatura-grupo-a.png" target="_blank" aria-label="Abrir fatura em nova aba"><span class="mss" aria-hidden="true">open_in_new</span></a>
+    </div>`;
+}
+const mActHTML = ()=>`<div class="m-actlist">${$('#acts').innerHTML}</div>`;
+function mShow(view){
+  S.mView=view;
+  $('#mSheetT').textContent = view==='act' ? 'Atividade' : 'Padaria Estrela do Sul Ltda';
+  $('#mBack').hidden = view!=='act';
+  $('#mBody').innerHTML = view==='act' ? mActHTML() : mInfoHTML();
+  $('#mBody').scrollTop = 0;
+  if (view==='info'){
+    $('#mHist').onclick=()=>mShow('act');
+    document.querySelectorAll('[data-mgo]').forEach(b=>b.onclick=()=>toast(`${b.dataset.mgo} fora do escopo do protótipo.`));
+  }
+}
+function mOpen(view, trigger){ mTrigger=trigger||null; $('#mOv').hidden=false; mShow(view); $('#mClose').focus(); }
+function mCloseSheet(){ $('#mOv').hidden=true; S.mView=null; mTrigger?.focus(); }
+document.querySelectorAll('.m-head [data-info]').forEach(b=>b.onclick=()=>mOpen('info', b));
+$('#mBack').onclick=()=>mShow('info');
+$('#mClose').onclick=mCloseSheet;
+$('#mOv').addEventListener('click',e=>{ if(e.target===$('#mOv')) mCloseSheet(); });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape' && !$('#mOv').hidden){ if(S.mView==='act') mShow('info'); else mCloseSheet(); } });
+addEventListener('resize',()=>{ if(modeOf()!=='mobile' && !$('#mOv').hidden) mCloseSheet(); });
 $('#mMenu').onclick=()=>toast('Menu fora do escopo do protótipo.');
 /* tooltips da barra lateral */
 const tip=$('#sbTip');
