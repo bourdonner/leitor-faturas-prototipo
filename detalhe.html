@@ -322,6 +322,47 @@
   [data-mode=mobile] .tb{flex:1;width:auto;padding:6px 4px;min-width:0}
   [data-mode=mobile] .tb span{font-size:11px}
   [data-mode=mobile] .tb .ms{font-size:22px!important}
+  /* header mobile — Figma 1815:29980 */
+  .m-head{display:none}
+  [data-mode=mobile] .topbar,[data-mode=mobile] .head{display:none}
+  [data-mode=mobile] .m-head{display:flex;align-items:center;gap:8px;padding:16px 24px 16px 8px;background:#fff;border-bottom:1px solid var(--s200)}
+  .m-menu{width:56px;height:56px;border-radius:11px;display:grid;place-items:center;flex:none;color:var(--ink)}
+  .m-menu .mss{font-size:22px}
+  .m-tt{flex:1;min-width:0;display:flex;flex-direction:column;color:#44403c}
+  .m-tt b{font-size:16px;line-height:1.5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .m-tt span{font-size:10px;line-height:1.32;text-transform:uppercase;letter-spacing:.2px}
+  .m-badges{display:flex;align-items:center;flex:none}
+  .m-bd{width:34px;height:34px;border-radius:999px;display:grid;place-items:center;color:#fff;margin-right:-12px;position:relative}
+  .m-bd .msr{font-size:18px}
+  .m-bd.alert{background:var(--alert)} .m-bd.ok{background:#65a30d} .m-bd.ink{background:var(--ink)} .m-bd.brand{background:var(--brand)}
+  .m-bd .n{position:absolute;top:-4px;right:-2px;min-width:16px;height:16px;padding:0 4px;border-radius:999px;background:#fff;color:var(--alert);font:600 10px/16px Inter;box-shadow:0 0 0 1px var(--alert)}
+  .m-pill{display:flex;align-items:center;gap:4px;height:34px;padding:0 10px 0 16px;border-radius:999px;background:var(--s100);font:600 12px/1.5 Poppins,sans-serif;color:var(--ink);position:relative}
+  .m-pill .mss{font-size:12px}
+  /* conteúdo no mobile: fundo branco, 24px de margem, barra de navegação em caixa clara */
+  [data-mode=mobile] .sheet{padding:0}
+  [data-mode=mobile] .cols{margin:0}
+  [data-mode=mobile] .panel{background:#fff;border-radius:0}
+  [data-mode=mobile] .p-det .bar,[data-mode=mobile] .p-pdf .bar{padding:12px 24px 16px;min-height:0;background:linear-gradient(to top,rgba(255,255,255,0) 2.5%,#fff 12.25%)}
+  [data-mode=mobile] .p-det .tabs{flex:1;background:rgba(245,245,244,.4);border:1px solid var(--s100);border-radius:8px;padding:4px;gap:4px}
+  [data-mode=mobile] .p-det .tab{height:36px;padding:0 10px;border-radius:6px;font-weight:700;color:var(--mid)}
+  [data-mode=mobile] .p-det .tab.on{background:#fff;color:#0c0a09;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+  [data-mode=mobile] .p-pdf .bar{gap:4px}
+  [data-mode=mobile] .p-det .bar .sp{display:none}
+  [data-mode=mobile] .p-pdf .bar .file{flex:1;font-weight:700;color:#0c0a09;background:rgba(245,245,244,.4);border:1px solid var(--s100);border-radius:8px;padding:0 12px;height:46px;line-height:44px}
+  [data-mode=mobile] .p-pdf .bar .sp{display:none}
+  [data-mode=mobile] .act-h{margin:12px 24px 16px;padding:4px 12px;min-height:46px;background:rgba(245,245,244,.4);border:1px solid var(--s100);border-radius:8px;font-weight:700;color:#0c0a09}
+  [data-mode=mobile] .content{padding:0 24px 120px;gap:20px}
+  [data-mode=mobile] .sec-t{font-size:20px;line-height:1.2;letter-spacing:.15px;margin-top:4px}
+  [data-mode=mobile] .card{background:rgba(245,245,244,.4);border-color:var(--s100);border-radius:12px;padding:16px}
+  [data-mode=mobile] .card.pend{border-color:var(--alert)}
+  [data-mode=mobile] .card.done{border-color:var(--success)}
+  [data-mode=mobile] .ccard{background:rgba(245,245,244,.4);border:1px solid var(--s100)}
+  [data-mode=mobile] .grade{border-color:var(--s100)}
+  [data-mode=mobile] .pdf-scroll{padding:0 24px 110px}
+  [data-mode=mobile] .act-list{padding:0 24px 120px}
+  [data-mode=mobile] .ev{background:rgba(245,245,244,.4);border:1px solid var(--s100)}
+  [data-mode=mobile] .plist{padding:0 24px 120px}
+
   .note{position:fixed;right:16px;top:12px;font-size:11px;color:var(--mid);background:var(--white);border:1px solid var(--s200);padding:4px 8px;border-radius:999px;z-index:40}
 </style>
 </head>
@@ -351,6 +392,16 @@
     <div class="topbar"><nav class="crumb" aria-label="Você está em"><span class="rp"><button class="ibtn" aria-label="Recolher menu"><span class="msr">vertical_split</span></button><span class="vsep"></span></span><a href="index.html">Leitor de Faturas</a><span class="mss" style="color:#0c0a09">chevron_right</span><span class="cur">Padaria Estrela do Sul Ltda · fatura-luzdovale-a4-mar25.pdf</span></nav></div>
 
     <section class="sheet">
+      <header class="m-head" aria-label="Fatura">
+        <button class="m-menu" id="mMenu" aria-label="Menu"><span class="mss" aria-hidden="true">menu</span></button>
+        <div class="m-tt"><b>Padaria Estrela do Sul Ltda</b><span>Fatura · Mar/2025</span></div>
+        <div class="m-badges">
+          <button class="m-bd" id="mSt" data-info=""></button>
+          <button class="m-bd ink" data-info="Distribuidora: Luz do Vale" aria-label="Distribuidora: Luz do Vale"><span class="msr fill" aria-hidden="true">electric_meter</span></button>
+          <button class="m-bd brand" data-info="Março de 2025" aria-label="Referência: março de 2025"><span class="msr fill" aria-hidden="true">calendar_today</span></button>
+          <button class="m-pill" data-info="UC 3014567890" aria-label="Unidade consumidora 3014567890"><span class="mss" aria-hidden="true">electrical_services</span>UC</button>
+        </div>
+      </header>
       <div class="head">
         <div>
           <h1>Padaria Estrela do Sul Ltda · fatura-luzdovale-a4-mar25.pdf</h1>
@@ -680,6 +731,8 @@ function renderStatus(){
   const [txt,cls] = map[S.status];
   chip.className='chip '+cls;
   chip.innerHTML = MS(cls==='alert'?'warning':cls==='ok'?'check_circle':'sync',16,1)+txt;
+  const b=$('#mSt'); b.className='m-bd '+cls; b.dataset.info=txt; b.setAttribute('aria-label',txt);
+  b.innerHTML=`<span class="msr fill" aria-hidden="true">${cls==='alert'?'warning':'check_circle'}</span>`;
 }
 function renderPend(){
   const list = openPend();
@@ -832,6 +885,9 @@ document.addEventListener('click', e=>{
   const g=e.target.closest('[data-toggle]'); if(g){ const k=g.dataset.toggle; if(k==='pend' && modeOf()!=='mobile'){ S.open.pend=!S.open.pend; if(S.open.pend && modeOf()==='tablet') S.side=null; const tb=document.querySelector('.tb[data-toggle=pend]'); const cls=S.open.pend?'opening':'closing'; tb.classList.remove('opening','closing'); void tb.offsetWidth; tb.classList.add(cls); setTimeout(()=>tb.classList.remove(cls),450); } else { if(modeOf()==='mobile' && g.classList.contains('tb')){ g.classList.remove('opening'); void g.offsetWidth; g.classList.add('opening'); setTimeout(()=>g.classList.remove('opening'),450); } togglePanel(k); } renderPanels(); }
 });
 let z=560; $('#zIn').onclick=()=>{ z=Math.min(1100,z+80); $('#page').style.width=z+'px'; }; $('#zOut').onclick=()=>{ z=Math.max(400,z-80); $('#page').style.width=z+'px'; };
+/* header mobile: badges mostram o que significam; menu fica fora do protótipo */
+document.querySelectorAll('.m-head [data-info]').forEach(b=>b.onclick=()=>toast(b.dataset.info));
+$('#mMenu').onclick=()=>toast('Menu fora do escopo do protótipo.');
 /* tooltips da barra lateral */
 const tip=$('#sbTip');
 document.querySelectorAll('.sidebar [data-tip]').forEach(a=>{ a.setAttribute('aria-label',a.dataset.tip);
