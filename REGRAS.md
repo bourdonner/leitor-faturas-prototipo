@@ -7,17 +7,18 @@ Base visual: Style Guide Enershare. Dados do protótipo são fictícios.
 
 ## 1. Breakpoints
 
+Um breakpoint só, em **768 px**.
+
 | Variante | Largura da janela | Ideia central |
 |---|---|---|
-| **Desktop** | ≥ 1200 px | Até 3 painéis lado a lado: Fatura · Detalhes · Atividade |
-| **Tablet** | 768 – 1199 px | Detalhes fixo; Fatura e Atividade abrem como gaveta à direita |
+| **Desktop** | ≥ 768 px | Até 3 painéis lado a lado: Fatura · Detalhes · Atividade; na falta de largura, vale a prioridade dos painéis |
 | **Mobile** | < 768 px | Uma tela por vez; a tab bar troca de tela |
 
-O modo é recalculado a cada `resize`. Ao mudar de modo, a tela volta para Detalhes e as gavetas fecham.
+O modo é recalculado a cada `resize`. Ao mudar de modo, a tela volta para Detalhes.
 
 ---
 
-## 2. Desktop (≥ 1200 px)
+## 2. Desktop (≥ 768 px)
 
 ### Painéis
 | Painel | Largura | Mínimo |
@@ -44,20 +45,7 @@ O painel de menor prioridade sai primeiro. Se a pessoa abre um painel que não c
 
 ---
 
-## 3. Tablet (768 – 1199 px)
-
-- **Detalhes** ocupa toda a área e não fecha.
-- **Fatura** (até 440 px / 62 %) e **Atividade** (até 340 px / 50 %) abrem como **gaveta** à direita, uma de cada vez.
-- Tocar de novo no item (ou no botão da gaveta) fecha.
-- Gaveta e card flutuante de Pendências são **exclusivos**: abrir um fecha o outro.
-- Grades de 3 colunas viram 2.
-- Topo compacto: breadcrumb de 40 px, título 18 px, chips em uma linha só (rolam de lado).
-- Rolar para baixo esconde o topo (breadcrumb + título + chips) e a tab bar; rolar para cima, chegar ao topo ou trocar de tela traz de volta.
-- Tab bar igual ao desktop (pílula + botão Pendências separado).
-
----
-
-## 4. Mobile (< 768 px)
+## 3. Mobile (< 768 px)
 
 ### Estrutura (Figma 1815:29980)
 - **Header**: menu (56 px) · nome (Inter Bold 16) + subtítulo (10 px, caixa alta) · badges.
@@ -94,7 +82,7 @@ O painel de menor prioridade sai primeiro. Se a pessoa abre um painel que não c
 
 ---
 
-## 5. Componentes e estados
+## 4. Componentes e estados
 
 ### Card de dado (Figma 1754:743)
 - **Um rótulo + um valor + unidade.** Precisa de legenda? Vira outro card (ex.: "ICMS (alíquota)" e "ICMS (valor)").
@@ -127,7 +115,7 @@ Inválido → borda vermelha + aviso, não salva. No iOS os campos usam 16 px pa
 - Teclado: setas, Enter, Esc, letra pula para a opção. Abre para cima se não couber.
 
 ### Planilha (Itens da nota fiscal)
-- Coluna Item fixa (desktop/tablet); **no mobile rola com as demais** e ocupa no máximo **metade** da tabela, com nome longo cortado no meio ("Energia in…onta TUSD").
+- Coluna Item fixa no desktop; **no mobile rola com as demais** e ocupa no máximo **metade** da tabela, com nome longo cortado no meio ("Energia in…onta TUSD").
 - **Unidade dentro da célula**, em cinza: "540 kWh", "1,48213 R$/kWh", "R$ 800,35". Sem coluna "Unid.".
 - Duplo clique (ou Enter/F2) edita; setas navegam; total recalcula. No mobile, célula **pendente** abre com **um toque**.
 - Célula alterada: fundo verde-claro. Célula pendente: fundo laranja-claro + ícone.
@@ -150,11 +138,11 @@ Inválido → borda vermelha + aviso, não salva. No iOS os campos usam 16 px pa
 
 ### Fatura (PDF)
 - Páginas empilhadas em **rolagem contínua** (sem "Página 1 de N").
-- Desktop/tablet: zoom por botões, abrir, baixar, minimizar.
+- Desktop: zoom por botões, abrir, baixar, minimizar.
 
 ---
 
-## 6. Animações
+## 5. Animações
 
 | Elemento | Gatilho | Duração | Curva | Movimento |
 |---|---|---|---|---|
@@ -163,8 +151,7 @@ Inválido → borda vermelha + aviso, não salva. No iOS os campos usam 16 px pa
 | Item da tab bar | abrir | 450 ms | cubic-bezier(.3,1.5,.5,1) | ícone pula 6 px e escala 1,12 |
 | Item da tab bar | fechar | 350 ms | ease | ícone encolhe para .78 |
 | Pílula ativa da tab bar | ativar | 350 ms | cubic-bezier(.3,1.5,.5,1) | escala .55 → 1 |
-| Gaveta (tablet) | abrir/fechar | 350 ms | cubic-bezier(.2,.9,.3,1) | desliza da direita |
-| Header / tab bar (mobile e tablet) | rolar | 280 ms | ease | header sobe, tab bar desce |
+| Header / tab bar (mobile) | rolar | 280 ms | ease | header sobe, tab bar desce |
 | Painel do header (mobile) | abrir | 200 / 250 ms | ease / cubic-bezier(.2,.9,.3,1.1) | fundo aparece; painel desce 8 px e escala .98 → 1 |
 | Menu do select | abrir | 120 ms | ease | desce 4 px |
 | Marcador de pendência | contínuo | 1 s / 1,4 s | ease-in-out / ease-out | balança 4 px na direção da seta + anel pulsando |
@@ -176,7 +163,7 @@ Com **reduzir movimento** ativado no sistema, as animações são desligadas.
 
 ---
 
-## 7. Textos fixos
+## 6. Textos fixos
 
 - Ajuda da planilha: "Clique duas vezes numa célula para editar".
 - Pendente: "Não encontrado na fatura".
