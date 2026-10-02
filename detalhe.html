@@ -124,6 +124,9 @@
   .card .ca button{width:20px;height:20px;display:grid;place-items:center;border-radius:4px;color:var(--ink)}
   .card .ca button:hover{background:var(--s200)}
   .card .ca .sv{color:var(--brand)}
+  .card .erow{display:flex;align-items:center;gap:8px;margin-top:4px}
+  .card .erow > :first-child{flex:1;min-width:0;margin-top:0}
+  .card .cp.send{color:var(--brand)}
   .card .fld{display:flex;align-items:center;gap:8px;height:40px;margin-top:4px;padding:0 12px;border:1px solid var(--border);border-radius:6px;background:var(--s50);font-size:14px;cursor:text}
   .card .fld:focus-within{outline:2px solid var(--brand);background:#fff}
   .card .fld input{border:0;padding:0;background:transparent;font:inherit;color:#0c0a09;outline:0;flex:1;min-width:0}
@@ -600,7 +603,7 @@
 const MS=(n,s,f)=>'<span class="ms'+(f?' f':'')+'"'+(s?' style="font-size:'+s+'px"':'')+' aria-hidden="true">'+n+'</span>';
 const I = {
   edit:MS('edit',12,1), copy:MS('content_copy',16,1), warn:MS('warning',13,1), chev:'<span class="chev">'+MS('expand_more',20)+'</span>',
-  save:MS('save',12,1), close:MS('close',12,1),
+  save:MS('save',12,1), close:MS('close',12,1), send:MS('send',16,1),
   check:MS('check',14), pen:MS('edit',13,1), dot:MS('radio_button_checked',12,1), inbox:MS('inbox',13,1), hour:MS('hourglass_top',13,1), doc:MS('description',13,1)
 };
 const $ = s=>document.querySelector(s);
@@ -642,8 +645,8 @@ function card(t, v, u, opts={}){
   const p = opts.pend && S.pend.find(x=>x.id===opts.pend);
   if (p && !p.done){
     return `<div class="card pend ${opts.cls||''}" id="c-${p.id}">
-      <div class="ct"><span class="badge">${I.warn}</span>${t}<span class="sp"></span><span class="ca"><button class="sv" data-psave="${p.id}" aria-label="Salvar ${t}">${I.save}</button><button data-pclear="${p.id}" aria-label="Limpar ${t}">${I.close}</button></span></div>
-      <div class="in">${fieldHTML(p,'in-'+p.id)}</div>
+      <div class="ct"><span class="badge">${I.warn}</span>${t}<span class="sp"></span><span class="ca"><button data-pclear="${p.id}" aria-label="Limpar ${t}">${I.close}</button></span></div>
+      <div class="in erow">${fieldHTML(p,'in-'+p.id)}<button class="cp send" data-psave="${p.id}" aria-label="Enviar ${t}">${I.send}</button></div>
       <div class="hint">Não encontrado na fatura</div></div>`;
   }
   const val = S.ov[k] ?? (p ? p.done : v);
@@ -990,23 +993,26 @@ function editCard(c, btn){
   const old=row.querySelector('.v').textContent, u=c.dataset.u;
   c.classList.add('editing');
   const acts=document.createElement('span'); acts.className='ca';
-  acts.innerHTML=`<button class="sv" aria-label="Salvar ${c.dataset.edit}">${I.save}</button><button aria-label="Fechar edição">${I.close}</button>`;
+  acts.innerHTML=`<button aria-label="Fechar edição">${I.close}</button>`;
   btn.replaceWith(acts);
   const f=document.createElement('label'); f.className='fld';
   const inp=document.createElement('input'); inp.value=old==='—'?'':old; inp.setAttribute('aria-label',c.dataset.edit);
   const kind=kindOf(old,u,c.dataset.edit); attachMask(inp, kind, {max:old.length});
   const us=document.createElement('span'); us.className='u'; us.textContent=u;
   if(u && isPre(u)) f.append(us,inp); else if(u) f.append(inp,us); else f.append(inp);
-  row.replaceWith(f); inp.focus(); inp.select();
+  // enviar fica ao lado do campo (como o copiar na visualização)
+  const er=document.createElement('div'); er.className='erow';
+  const send=document.createElement('button'); send.className='cp send'; send.setAttribute('aria-label','Enviar '+c.dataset.edit); send.innerHTML=I.send;
+  er.append(f,send); row.replaceWith(er); inp.focus(); inp.select();
   const finish=save=>{
     const nv=inp.value.trim();
     if(save && nv && nv!==old && invalid(inp, kind)) return;
-    f.replaceWith(row); acts.replaceWith(btn); c.classList.remove('editing');
+    er.replaceWith(row); acts.replaceWith(btn); c.classList.remove('editing');
     if(save && nv && nv!==old){ row.querySelector('.v').textContent=nv; S.ov[c.dataset.k]=nv;
       S.acts.unshift([`${c.dataset.edit} editado`,'edit',now(),true,ME,{from:withUnit(old,c.dataset.u),to:withUnit(nv,c.dataset.u)}]); renderActs(); toast(`${c.dataset.edit} atualizado`); }
   };
-  acts.children[0].onclick=()=>finish(true);
-  acts.children[1].onclick=()=>finish(false);
+  send.onclick=()=>finish(true);
+  acts.children[0].onclick=()=>finish(false);
   inp.onkeydown=e=>{ if(e.key==='Enter') finish(true); if(e.key==='Escape') finish(false); };
 }
 function toast(t){ const el=$('#toast'); el.textContent=t; el.classList.add('show'); clearTimeout(el._t); el._t=setTimeout(()=>el.classList.remove('show'),1800); }

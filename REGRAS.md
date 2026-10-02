@@ -91,7 +91,7 @@ O painel de menor prioridade sai primeiro. Se a pessoa fechar todos, aparece "Ne
 - `R$` antes do valor; demais unidades depois.
 - Estados:
   - **Visualização**: lápis no cabeçalho.
-  - **Edição**: campo com borda, unidade dentro do campo, **salvar** (verde) e **fechar** no cabeçalho. Enter salva, Esc cancela.
+  - **Edição**: campo com borda e unidade dentro; **enviar** ao lado do campo (como o copiar) e **fechar** no cabeçalho. Enter envia, Esc cancela.
   - **Pendente**: borda laranja, badge de alerta, campo vazio, "Não encontrado na fatura", salvar/limpar.
   - **Corrigido**: borda verde.
 - Visualização e edição têm a **mesma altura**.
