@@ -254,12 +254,11 @@
   @media (prefers-reduced-motion:reduce){.tb::before,.panel{transition:none}.tb .ic,.panel.opening{animation:none!important}}
   .toast{position:fixed;top:24px;left:50%;transform:translate(-50%,-20px);background:var(--ink);color:#fff;padding:10px 16px;border-radius:10px;opacity:0;transition:.25s;z-index:50;font-size:13px}
   .toast.show{opacity:1;transform:translate(-50%,0)}
-  /* tab bar: no desktop é uma pílula só; no tablet e no mobile, Pendências vira um botão à parte */
-  .tb-main{display:contents}
-  [data-mode=tablet] .tabbar,[data-mode=mobile] .tabbar{background:none;box-shadow:none;padding:0;gap:10px;align-items:stretch}
-  [data-mode=tablet] .tb-main,[data-mode=mobile] .tb-main{display:flex;gap:8px;padding:8px;background:var(--white);border-radius:999px;box-shadow:0 10px 15px rgba(0,0,0,.10),0 4px 6px rgba(0,0,0,.10)}
-  [data-mode=tablet] #tbPend,[data-mode=mobile] #tbPend{background:var(--white)!important;border-radius:999px;box-shadow:0 10px 15px rgba(0,0,0,.10),0 4px 6px rgba(0,0,0,.10);padding:14px 20px}
-  [data-mode=tablet] #tbPend::before,[data-mode=mobile] #tbPend::before{inset:8px}
+  /* tab bar: Pendências é um botão à parte, ao lado da pílula Fatura/Detalhes/Atividade (todos os tamanhos) */
+  .tabbar{background:none;box-shadow:none;padding:0;gap:10px;align-items:stretch}
+  .tb-main{display:flex;gap:8px;padding:8px;background:var(--white);border-radius:999px;box-shadow:0 10px 15px rgba(0,0,0,.10),0 4px 6px rgba(0,0,0,.10)}
+  #tbPend{justify-content:center;background:var(--white)!important;border-radius:999px;box-shadow:0 10px 15px rgba(0,0,0,.10),0 4px 6px rgba(0,0,0,.10);padding:14px 20px}
+  #tbPend::before{inset:8px}
   [data-mode=mobile] .tabbar{gap:8px}
   [data-mode=mobile] .tb-main{flex:1;min-width:0;padding:6px;gap:4px}
   [data-mode=mobile] #tbPend{flex:none;width:84px;padding:12px 4px}
