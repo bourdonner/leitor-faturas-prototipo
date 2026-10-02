@@ -66,7 +66,7 @@
   .btn.outline{border:1px solid var(--border);background:#fff}
   /* columns */
   .cols{flex:1;min-height:0;display:flex;gap:24px;margin-top:20px;position:relative}
-  .panel{background:var(--s100);border-radius:var(--r);display:flex;flex-direction:column;min-width:0;min-height:0;transition:flex-basis .35s ease,opacity .25s ease,margin .35s ease}
+  .panel{background:var(--s100);border-radius:var(--r);display:flex;flex-direction:column;min-width:0;min-height:0;transition:flex-basis .35s ease,opacity .25s ease,margin .35s ease,transform .35s ease}
   .p-pdf{flex:1 1 0}
   .p-pdf{min-width:400px}
   .p-det{flex:0 1 690px;min-width:520px}
@@ -97,56 +97,79 @@
   .grid{display:grid;gap:16px}
   .g2{grid-template-columns:1fr 1fr} .g3{grid-template-columns:1fr 1fr 1fr}
   .full{grid-column:1/-1}
-  /* data card */
-  .card{background:var(--s50);border-radius:12px;padding:14px 16px;border:1px solid transparent;transition:box-shadow .3s,border-color .3s}
-  .card .ct{display:flex;align-items:center;gap:8px;font-weight:700}
+  /* data card — um valor + unidade; mesma altura em visualização e edição */
+  .card{background:var(--s50);border-radius:12px;padding:12px 16px;border:1px solid transparent;transition:box-shadow .3s,border-color .3s,background .2s;min-width:0}
+  .card .ct{display:flex;align-items:center;gap:8px;font-weight:700;min-height:28px;line-height:1.3}
   .card .ct .sp{flex:1}
-  .card .row{display:flex;align-items:center;gap:6px;margin-top:8px;font-size:13px}
-  .card .row .v{white-space:nowrap}
-  .card .row .l{color:var(--mid)}
+  .card .row{display:flex;align-items:center;gap:8px;height:40px;margin-top:8px;font-size:14px;border:1px solid transparent}
+  .card .row .val{display:flex;align-items:baseline;gap:6px;min-width:0}
+  .card .row .v{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+  .card .u{color:var(--mid);white-space:nowrap}
   .card .row .sp{flex:1}
-  .card .cp{color:var(--mid);opacity:.8}
+  .card .cp{color:var(--mid);width:24px;height:24px;border-radius:6px;display:grid;place-items:center;flex:none}
+  .card .cp:hover{background:var(--s200);color:var(--ink)}
   .card.pend{border-color:var(--alert);background:#fff}
-  .card.pend .hint{color:var(--mid);font-size:13px;margin-top:8px}
+  .card.pend .hint{color:var(--mid);font-size:12px;margin-top:6px}
   .card.flash{box-shadow:0 0 0 4px rgba(249,115,22,.25)}
   .card.done{border-color:var(--success)}
   .badge{width:20px;height:20px;border-radius:6px;background:var(--alert);color:#fff;display:grid;place-items:center;flex:none}
-  .input{width:100%;height:40px;border:1px solid var(--border);border-radius:8px;padding:0 12px;font:inherit;background:var(--s50);color:var(--ink)}
+  .input{width:100%;height:40px;border:1px solid var(--border);border-radius:6px;padding:0 12px;font:inherit;font-size:14px;background:var(--s50);color:var(--ink)}
   .input:focus{outline:2px solid var(--brand);outline-offset:0;background:#fff}
-  .card .in{margin-top:10px}
-  .card .edit-actions{display:flex;gap:6px;margin-left:auto}
+  .card .in{margin-top:8px}
   .card.editing{background:var(--s100)}
   .card .ca{display:flex;align-items:center;gap:4px}
-  .card .ca button{width:20px;height:20px;display:grid;place-items:center;border-radius:4px;color:var(--ink)}
+  .card .ca button{width:24px;height:24px;display:grid;place-items:center;border-radius:6px;color:var(--ink)}
   .card .ca button:hover{background:var(--s200)}
   .card .ca .sv{color:var(--brand)}
-  .card .fld{display:flex;align-items:center;gap:8px;height:40px;margin-top:8px;padding:0 12px;border:1px solid var(--border);border-radius:6px;background:var(--s50);font-size:14px;cursor:text}
+  .card .fld{display:flex;align-items:center;gap:6px;height:40px;margin-top:8px;padding:0 12px;border:1px solid var(--border);border-radius:6px;background:var(--s50);font-size:14px;cursor:text}
   .card .fld:focus-within{outline:2px solid var(--brand);background:#fff}
-  .card .fld input{border:0;padding:0;background:transparent;font:inherit;color:#0c0a09;outline:0;min-width:1ch;max-width:70%;field-sizing:content}
-  .card .fld .l{flex:1;min-width:0;color:var(--mid);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .card .fld input{border:0;padding:0;background:transparent;font:inherit;color:#0c0a09;outline:0;flex:1;min-width:0}
   .locked .card .ib.edit{display:none}
-  /* chart */
-  .chart{display:flex;align-items:flex-end;gap:6px;height:160px}
-  .chart div{flex:1;background:var(--border);border-radius:2px}
-  .chart div:last-child{background:var(--success)}
-  .axis{display:flex;justify-content:space-between;font-size:11px;font-weight:500;color:var(--mid);margin-top:8px}
-  .axis b{color:var(--success);font-weight:500}
-  /* items */
-  .item{border:1px solid var(--border);border-radius:16px;overflow:hidden}
-  .item-h{display:flex;align-items:center;gap:12px;padding:14px 16px;width:100%;text-align:left}
-  .item-h .n{flex:1;font-weight:500}
-  .item-h .v{color:var(--mid)}
-  .item-b{padding:0 16px 14px;display:none}
-  .item.open .item-b{display:grid}
-  .item .chev{transition:transform .2s}
-  .item.open .chev{transform:rotate(180deg)}
-  /* table */
-  .tbl{background:var(--s50);border:1px solid var(--border);border-radius:16px;overflow:hidden}
-  .tbl table{width:100%;border-collapse:collapse;font-size:13px}
-  .tbl th{font-weight:400;color:var(--mid);font-size:12px;text-align:right;padding:10px 16px;border-bottom:1px solid var(--border)}
-  .tbl td{text-align:right;padding:10px 16px;border-bottom:1px solid var(--border)}
-  .tbl tr:last-child td{border-bottom:0}
-  .tbl th:first-child,.tbl td:first-child{text-align:left}
+  /* gráfico interativo */
+  .ccard{background:var(--s50);border-radius:12px;padding:16px}
+  .cc-h{display:flex;align-items:flex-start;gap:12px}
+  .cc-t{font-weight:700}
+  .cc-v{margin-top:4px;font-size:13px;color:var(--mid);display:flex;align-items:baseline;gap:6px;flex-wrap:wrap}
+  .cc-v b{font-size:20px;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
+  .cc-d{font-size:12px;padding:1px 6px;border-radius:999px;background:var(--s200);color:var(--ink)}
+  .cc-d.up{background:#fff7ed;color:#c2410c} .cc-d.down{background:#f0fdf4;color:#3f6212}
+  .cc-leg{margin-left:auto;display:flex;align-items:center;gap:6px;font-size:12px;color:var(--mid);white-space:nowrap}
+  .cc-leg i{width:14px;border-top:1.5px dashed var(--mid)}
+  .cc-plot{position:relative;height:160px;margin-top:16px;display:flex;align-items:flex-end;gap:6px}
+  .cc-avg{position:absolute;left:0;right:0;border-top:1.5px dashed var(--s400);pointer-events:none;z-index:1}
+  .cc-b{flex:1;height:100%;display:flex;align-items:flex-end;padding:0;border-radius:4px;position:relative}
+  .cc-b span{display:block;width:100%;background:var(--border);border-radius:3px 3px 0 0;transition:background .15s,transform .15s;transform-origin:bottom}
+  .cc-b.cur span{background:var(--success)}
+  .cc-b:hover span,.cc-b:focus-visible span{background:var(--s400)}
+  .cc-b.cur:hover span,.cc-b.cur:focus-visible span{background:#4d8a00}
+  .cc-b.sel span{background:var(--ink)}
+  .cc-b.cur.sel span{background:#3f6212}
+  .cc-b:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+  .cc-tip{position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;font-size:11px;padding:3px 7px;border-radius:6px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .12s;z-index:2}
+  .cc-b:hover .cc-tip,.cc-b:focus-visible .cc-tip{opacity:1}
+  .cc-x{display:flex;gap:6px;margin-top:8px}
+  .cc-x span{flex:1;text-align:center;font-size:10px;color:var(--mid)}
+  .cc-x span.on{color:var(--ink);font-weight:600}
+  /* planilha */
+  .grade-h{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--mid)}
+  .grade-h .sp{flex:1}
+  .grade{background:#fff;border:1px solid var(--border);border-radius:12px;overflow:auto;max-width:100%}
+  .grade table{border-collapse:separate;border-spacing:0;width:100%;font-size:13px;font-variant-numeric:tabular-nums}
+  .grade th,.grade td{padding:0 12px;height:40px;text-align:right;white-space:nowrap;border-bottom:1px solid var(--s200);border-right:1px solid var(--s200)}
+  .grade th:last-child,.grade td:last-child{border-right:0}
+  .grade thead th{position:sticky;top:0;background:var(--s50);color:var(--mid);font-weight:500;font-size:12px;z-index:2}
+  .grade .stk{position:sticky;left:0;text-align:left;background:#fff;z-index:1;min-width:200px}
+  .grade thead .stk{background:var(--s50);z-index:3}
+  .grade tbody tr:hover td{background:var(--s50)}
+  .grade td.num{cursor:cell}
+  .grade td.neg{color:#3f6212}
+  .grade td.sel{box-shadow:inset 0 0 0 2px var(--brand);background:#fff!important}
+  .grade td.ed{padding:0}
+  .grade td.ed input{width:100%;height:38px;border:0;padding:0 12px;text-align:right;font:inherit;background:#fff;outline:2px solid var(--brand);outline-offset:-2px}
+  .grade td.chg{background:#f7fee7}
+  .grade tfoot td{font-weight:600;background:var(--s50);border-bottom:0}
+  .grade tfoot .stk{background:var(--s50)}
+  .grade .unit{color:var(--mid);text-align:left}
   .medt{font-weight:500;font-size:13px}
   /* activity */
   .act-h{display:flex;align-items:center;gap:8px;padding:16px 16px 8px}
@@ -156,7 +179,9 @@
   .ev{background:var(--white);border-radius:12px;padding:14px;position:relative}
   .ev .i{width:20px;height:20px;border-radius:6px;display:grid;place-items:center;color:#fff}
   .ev .n{margin-top:12px}
-  .ev .who{position:absolute;top:12px;right:12px;width:24px;height:24px;border-radius:999px;background:linear-gradient(140deg,#c7d9a4,#71902f);color:#fff;font:600 10px Inter;display:grid;place-items:center;cursor:default}
+  .ev .who{position:absolute;top:12px;right:12px;width:20px;height:20px;border-radius:999px;background:linear-gradient(140deg,#c7d9a4,#71902f);color:#fff;font:600 9px Inter;display:grid;place-items:center;cursor:default}
+  .ev .who.sys{background:var(--ink);color:var(--s50)}
+  .ev .who.sys svg{width:12px;height:12px}
   .ev .who::after{content:attr(data-name);position:absolute;right:0;top:calc(100% + 6px);background:var(--ink);color:#fff;font:500 12px Inter;padding:4px 8px;border-radius:6px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .15s;z-index:5}
   .ev .who:hover::after{opacity:1}
   .ev .d{font-size:11px;color:var(--mid);margin-top:4px}
@@ -194,6 +219,18 @@
   .tb .ic{position:relative}
   .tb .cnt{position:absolute;top:-6px;left:15px;min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:var(--alert);color:#fff;font-size:10px;font-weight:600;display:grid;place-items:center;box-shadow:0 0 0 2px #fff}
   .tb[hidden]{display:none}
+  .tb{position:relative;background:none!important;isolation:isolate}
+  .tb::before{content:'';position:absolute;inset:0;border-radius:999px;background:var(--s100);transform:scale(.55);opacity:0;transition:transform .35s cubic-bezier(.3,1.5,.5,1),opacity .2s;z-index:-1}
+  .tb.on::before{transform:scale(1);opacity:1}
+  .tb.opening .ic{animation:tbOpen .45s cubic-bezier(.3,1.5,.5,1)}
+  .tb.closing .ic{animation:tbClose .35s ease}
+  @keyframes tbOpen{0%{transform:translateY(0) scale(1)}40%{transform:translateY(-6px) scale(1.12)}100%{transform:none}}
+  @keyframes tbClose{0%{transform:scale(1)}45%{transform:scale(.78) translateY(3px)}100%{transform:none}}
+  .panel{transform-origin:50% 100%}
+  .panel.min{transform:translateY(24px) scale(.96)}
+  .panel.opening{animation:panelIn .4s cubic-bezier(.2,.9,.3,1.1)}
+  @keyframes panelIn{from{opacity:0;transform:translateY(32px) scale(.95)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){.tb::before,.panel{transition:none}.tb .ic,.panel.opening{animation:none!important}}
   .toast{position:fixed;top:24px;left:50%;transform:translate(-50%,-20px);background:var(--ink);color:#fff;padding:10px 16px;border-radius:10px;opacity:0;transition:.25s;z-index:50;font-size:13px}
   .toast.show{opacity:1;transform:translate(-50%,0)}
   .note{position:fixed;right:16px;top:12px;font-size:11px;color:var(--mid);background:var(--white);border:1px solid var(--s200);padding:4px 8px;border-radius:999px;z-index:40}
@@ -307,11 +344,16 @@ const I = {
 };
 const $ = s=>document.querySelector(s);
 const ME = {ini:'EM', name:'Eduardo Moreira'};
-const who = u=>u?`<span class="who" data-name="${u.name}" aria-label="Editado por ${u.name}">${u.ini}</span>`:'';
+const SYS = {sys:true, name:'Sistema'};
+let LOGO = '';
+const who = u=>u&&u.sys
+  ? `<span class="who sys" data-name="Sistema" aria-label="Feito pelo sistema">${LOGO}</span>`
+  : `<span class="who" data-name="${u.name}" aria-label="Editado por ${u.name}">${u.ini}</span>`;
 
 /* ---------- estado ---------- */
 const S = {
-  tab:'Resumo', open:{pdf:true,det:true,act:true,pend:true}, status:'revisar', locked:false, pIdx:0,
+  tab:'Resumo', open:{pdf:true,det:true,act:true,pend:true}, status:'revisar', locked:false, pIdx:0, ov:{}, chartSel:null, itemChg:{},
+  items:[['Consumo ponta TUSD','kWh','540','1,48213','1,15443','32,89','144,06','800,35'],['Consumo ponta TE','kWh','540','0,51237','0,39909','11,37','49,80','276,68'],['Consumo fora ponta TUSD','kWh','5.960','0,11845','0,09226','29,02','127,07','705,96'],['Consumo fora ponta TE','kWh','5.960','0,32971','0,25681','80,76','353,71','1.965,07'],['Energia injetada fora ponta TUSD','kWh','−4.100','0,11845','0,09226','−19,96','−87,42','−485,65'],['Energia injetada fora ponta TE','kWh','−4.100','0,32971','0,25681','−55,56','−243,33','−1.351,81'],['Demanda','kW','75','32,41500','25,24804','99,92','437,60','2.431,13'],['Contrib. ilum. pública municipal','—','—','—','—','—','—','98,40']],
   pend:[
     {id:'cofins', tab:'Resumo', title:'COFINS', label:'COFINS (alíquota)', kind:'Percentual', ph:'0,00 %', legend:'R$ 146,75', done:null, act:'COFINS corrigido'},
     {id:'leit', tab:'Consumo', title:'Leitura atual', label:'Leitura atual ponta (kWh)', kind:'Número', ph:'0', legend:'kWh', done:null, act:'Leitura atual corrigida'},
@@ -322,7 +364,12 @@ const S = {
 const openPend = ()=>S.pend.filter(p=>!p.done);
 
 /* ---------- cards ---------- */
-function card(t, v, l, v2, l2, opts={}){
+// card = um rótulo, um valor e sua unidade. Precisa de legenda? vira outro card.
+let CK = 0; // chave estável por ordem de render, para manter as edições
+const isPre = u => u==='R$';
+const valHTML = (v,u)=>`<span class="val">${u&&isPre(u)?`<span class="u">${u}</span>`:''}<span class="v">${v}</span>${u&&!isPre(u)?`<span class="u">${u}</span>`:''}</span>`;
+function card(t, v, u, opts={}){
+  const k = S.tab+'#'+(CK++);
   const p = opts.pend && S.pend.find(x=>x.id===opts.pend);
   if (p && !p.done){
     return `<div class="card pend ${opts.cls||''}" id="c-${p.id}">
@@ -330,11 +377,10 @@ function card(t, v, l, v2, l2, opts={}){
       <div class="in">${fieldHTML(p,'in-'+p.id)}</div>
       <div class="hint">Não encontrado na fatura</div></div>`;
   }
-  const val = p ? p.done : v;
-  return `<div class="card ${p?'done':''} ${opts.cls||''}" ${p?`id="c-${p.id}"`:''} data-edit="${t}">
+  const val = S.ov[k] ?? (p ? p.done : v);
+  return `<div class="card ${p?'done':''} ${opts.cls||''}" ${p?`id="c-${p.id}"`:''} data-k="${k}" data-edit="${t}" data-u="${u||''}">
     <div class="ct">${t}<span class="sp"></span><button class="ib edit" aria-label="Editar ${t}">${I.edit}</button></div>
-    <div class="row"><span class="v">${val}</span> <span class="l">${l||''}</span><span class="sp"></span><span class="cp">${I.copy}</span></div>
-    ${v2?`<div class="row"><span class="v">${v2}</span> <span class="l">${l2||''}</span><span class="sp"></span><span class="cp">${I.copy}</span></div>`:''}
+    <div class="row">${valHTML(val,u)}<span class="sp"></span><button class="cp" aria-label="Copiar valor de ${t}">${I.copy}</button></div>
   </div>`;
 }
 function fieldHTML(p,id){
@@ -343,45 +389,113 @@ function fieldHTML(p,id){
 }
 const sec = t=>`<div class="sec-t">${t}</div>`;
 
+/* ---------- gráfico ---------- */
+const HIST = {m:['abr/24','mai/24','jun/24','jul/24','ago/24','set/24','out/24','nov/24','dez/24','jan/25','fev/25','mar/25'], v:[6620,6400,6210,5980,6050,6230,6450,6880,7010,6340,6120,6500]};
+const nf = n=>n.toLocaleString('pt-BR');
+function chartHTML(){
+  const {m,v}=HIST, mx=Math.max(...v)*1.08, avg=Math.round(v.reduce((a,b)=>a+b,0)/v.length), last=v.length-1;
+  return `<div class="ccard" id="chart">
+    <div class="cc-h"><div><div class="cc-t">Consumo dos últimos 12 meses</div><div class="cc-v" id="ccV"></div></div>
+      <div class="cc-leg"><i></i>média ${nf(avg)} kWh</div></div>
+    <div class="cc-plot" role="group" aria-label="Consumo mensal"><div class="cc-avg" style="bottom:${avg/mx*100}%"></div>
+      ${v.map((x,i)=>`<button class="cc-b ${i===last?'cur':''}" data-i="${i}" aria-label="${m[i]}: ${nf(x)} kWh"><span style="height:${x/mx*100}%"></span><em class="cc-tip">${m[i]} · ${nf(x)} kWh</em></button>`).join('')}
+    </div>
+    <div class="cc-x">${m.map((x,i)=>`<span data-i="${i}">${x.split('/')[0]}</span>`).join('')}</div></div>`;
+}
+function bindChart(){
+  const el=$('#chart'); if(!el) return;
+  const {m,v}=HIST, avg=v.reduce((a,b)=>a+b,0)/v.length;
+  const show=i=>{
+    const d=i>0?(v[i]-v[i-1])/v[i-1]*100:null;
+    $('#ccV').innerHTML=`<b>${nf(v[i])}</b> kWh · ${m[i]}${d===null?'':` <span class="cc-d ${d>0?'up':'down'}">${d>0?'+':''}${d.toFixed(1).replace('.',',').replace('-','−')}% vs ${m[i-1]}</span>`} <span>${v[i]>=avg?'acima':'abaixo'} da média</span>`;
+    el.querySelectorAll('.cc-x span').forEach(s=>s.classList.toggle('on',+s.dataset.i===i));
+  };
+  const bars=[...el.querySelectorAll('.cc-b')];
+  const pick=i=>{ S.chartSel=i; bars.forEach(b=>b.classList.toggle('sel',+b.dataset.i===i)); show(i); };
+  bars.forEach(b=>{ const i=+b.dataset.i;
+    b.onmouseenter=b.onfocus=()=>show(i);
+    b.onmouseleave=b.onblur=()=>show(S.chartSel);
+    b.onclick=()=>pick(i);
+    b.onkeydown=e=>{ const n=e.key==='ArrowRight'?i+1:e.key==='ArrowLeft'?i-1:null; if(n!==null&&bars[n]){ e.preventDefault(); bars[n].focus(); pick(n);} };
+  });
+  pick(S.chartSel ?? v.length-1);
+}
+
+/* ---------- planilha de itens ---------- */
+const COLS=['Unid.','Quant.','Preço c/ tributos','Tarifa s/ tributos','PIS/COFINS','ICMS','Valor'];
+const pn = t=>parseFloat(String(t).replace(/[^\d,−-]/g,'').replace(/\./g,'').replace(',','.').replace('−','-'));
+const money = n=>(n<0?'−':'')+Math.abs(n).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+function sheetHTML(){
+  const tot=S.items.reduce((a,r)=>a+(pn(r[7])||0),0);
+  return `<div class="grade-h"><span>Valores em R$ · clique duas vezes numa célula para editar</span></div>
+  <div class="grade" id="sheet"><table><thead><tr><th class="stk">Item</th>${COLS.map(c=>`<th>${c}</th>`).join('')}</tr></thead>
+  <tbody>${S.items.map((r,ri)=>`<tr><td class="stk">${r[0]}</td><td class="unit">${r[1]}</td>${r.slice(2).map((c,ci)=>`<td class="num ${String(c).startsWith('−')?'neg':''} ${S.itemChg[ri+'-'+(ci+2)]?'chg':''}" data-r="${ri}" data-c="${ci+2}" tabindex="-1">${c}</td>`).join('')}</tr>`).join('')}</tbody>
+  <tfoot><tr><td class="stk">Total</td><td colspan="6"></td><td>${money(tot)}</td></tr></tfoot></table></div>`;
+}
+function bindSheet(){
+  const sh=$('#sheet'); if(!sh) return;
+  const cells=[...sh.querySelectorAll('td.num')];
+  const at=(r,c)=>sh.querySelector(`td[data-r="${r}"][data-c="${c}"]`);
+  const select=td=>{ sh.querySelectorAll('td.sel').forEach(x=>x.classList.remove('sel')); td.classList.add('sel'); td.focus(); };
+  const edit=td=>{
+    if(td.classList.contains('ed')) return;
+    const r=+td.dataset.r, c=+td.dataset.c, old=S.items[r][c];
+    td.classList.add('ed'); td.innerHTML='<input>'; const inp=td.firstChild; inp.value=old; inp.focus(); inp.select();
+    const done=save=>{ const nv=inp.value.trim(); td.classList.remove('ed');
+      if(save && nv && nv!==old){ S.items[r][c]=nv; S.itemChg[r+'-'+c]=1; S.acts.unshift([`${S.items[r][0]} editado`,'edit',now(),true,ME]); renderActs(); toast(`${S.items[r][0]} atualizado`);
+        renderContent(); const n=at(r,c); if(n) select(n); return; }
+      td.textContent=old; select(td); };
+    inp.onkeydown=e=>{ if(e.key==='Enter'){e.preventDefault();done(true);} if(e.key==='Escape'){e.preventDefault();done(false);} e.stopPropagation(); };
+    inp.onblur=()=>{ if(td.classList.contains('ed')) done(true); };
+  };
+  cells.forEach(td=>{
+    td.onclick=()=>select(td);
+    td.ondblclick=()=>edit(td);
+    td.onkeydown=e=>{
+      const r=+td.dataset.r, c=+td.dataset.c;
+      const mv={ArrowUp:[r-1,c],ArrowDown:[r+1,c],ArrowLeft:[r,c-1],ArrowRight:[r,c+1]}[e.key];
+      if(mv){ const n=at(...mv); if(n){ e.preventDefault(); select(n);} }
+      else if(e.key==='Enter'||e.key==='F2'){ e.preventDefault(); edit(td); }
+    };
+  });
+}
+
 /* ---------- abas ---------- */
 const TABS = {
   Resumo(){
-    const bars=[6620,6400,6210,5980,6050,6230,6450,6880,7010,6340,6120,6500], mx=Math.max(...bars);
-    return sec('Resumo')+`<div class="grid g2">
-      ${card('Crédito injetado fora ponta','4.100 kWh','compensados','R$ 1.837,46','abatidos')}
-      ${card('Crédito injetado ponta','0 kWh','compensados','R$ 0,00','abatidos')}
-      ${card('Consumo','5.960 kWh','fora ponta','540 kWh','ponta')}
-      ${card('Demanda','68 kW','medida','75 kW','contratada')}
-      ${card('Saldo','1.250 kWh','fora ponta','0 kWh','ponta')}
-      ${card('Geração','—','unidade beneficiária')}</div>
-      <div><div style="font-weight:500;font-size:13px;margin-bottom:8px">Últimos 12 meses</div>
-      <div class="chart">${bars.map(b=>`<div style="height:${Math.round(150*b/mx)}px" title="${b.toLocaleString('pt-BR')} kWh"></div>`).join('')}</div>
-      <div class="axis"><span>abr/24</span><b>mar/25 · 6.500 kWh</b></div></div>`
-      +sec('Valores')+`<div class="grid g2">${card('Total a pagar','R$ 4.440,13')}${card('Vencimento','25/03/2025')}</div>`
-      +sec('Alíquotas')+`<div class="grid g3">${card('ICMS','18,00%','R$ 781,49')}${card('PIS/PASEP','0,73%','R$ 31,69')}${card('COFINS','','R$ 146,75',null,null,{pend:'cofins'})}</div>`
-      +sec('Datas')+`<div class="grid g2">${card('Leitura anterior','07/02/2025')}${card('Leitura atual','11/03/2025','32 dias')}${card('Próxima leitura','08/04/2025')}${card('Emissão','12/03/2025')}</div>`;
+    return sec('Créditos')+`<div class="grid g2">
+      ${card('Crédito compensado fora ponta','4.100','kWh')}${card('Crédito abatido fora ponta','1.837,46','R$')}
+      ${card('Crédito compensado ponta','0','kWh')}${card('Crédito abatido ponta','0,00','R$')}
+      ${card('Saldo fora ponta','1.250','kWh')}${card('Saldo ponta','0','kWh')}</div>`
+      +sec('Consumo e demanda')+`<div class="grid g2">
+      ${card('Consumo fora ponta','5.960','kWh')}${card('Consumo ponta','540','kWh')}
+      ${card('Demanda medida','68','kW')}${card('Demanda contratada','75','kW')}
+      ${card('Tipo de unidade','Beneficiária')}${card('Geração','—')}</div>`
+      +chartHTML()
+      +sec('Valores')+`<div class="grid g2">${card('Total a pagar','4.440,13','R$')}${card('Vencimento','25/03/2025')}</div>`
+      +sec('Alíquotas')+`<div class="grid g2">${card('ICMS (alíquota)','18,00','%')}${card('ICMS (valor)','781,49','R$')}${card('PIS/PASEP (alíquota)','0,73','%')}${card('PIS/PASEP (valor)','31,69','R$')}${card('COFINS (alíquota)','','%',{pend:'cofins'})}${card('COFINS (valor)','146,75','R$')}</div>`
+      +sec('Datas')+`<div class="grid g2">${card('Leitura anterior','07/02/2025')}${card('Leitura atual','11/03/2025')}${card('Dias de leitura','32','dias')}${card('Próxima leitura','08/04/2025')}${card('Emissão','12/03/2025')}</div>`;
   },
   Itens(){
-    const it=[['Consumo ponta TUSD','R$ 800,35','540 kWh','R$ 1,48213','R$ 1,15443','R$ 32,89','R$ 144,06'],['Consumo ponta TE','R$ 276,68','540 kWh','R$ 0,51237','R$ 0,39909','R$ 11,37','R$ 49,80'],['Consumo fora ponta TUSD','R$ 705,96','5.960 kWh','R$ 0,11845','R$ 0,09226','R$ 29,02','R$ 127,07'],['Consumo fora ponta TE','R$ 1.965,07','5.960 kWh','R$ 0,32971','R$ 0,25681','R$ 80,76','R$ 353,71'],['Energia injetada fora ponta TUSD','−R$ 485,65','−4.100 kWh','R$ 0,11845','R$ 0,09226','−R$ 19,96','−R$ 87,42'],['Energia injetada fora ponta TE','−R$ 1.351,81','−4.100 kWh','R$ 0,32971','R$ 0,25681','−R$ 55,56','−R$ 243,33'],['Demanda','R$ 2.431,13','75 kW','R$ 32,41500','R$ 25,24804','R$ 99,92','R$ 437,60'],['Contrib. ilum. pública municipal','R$ 98,40','—','—','—','—','—']];
-    return sec('Totais')+`<div class="grid g2">${card('Total da fatura','R$ 4.440,13',null,null,null,{cls:'full'})}${card('PIS/COFINS','R$ 178,44','','R$ 4.341,73','base de cálculo')}${card('ICMS','R$ 781,49','','R$ 4.341,73','base de cálculo')}</div>`
-      +sec('Itens da nota fiscal')+it.map((r,i)=>`<div class="item ${i===0?'open':''}"><button class="item-h" data-acc><span class="n">${r[0]}</span><span class="v">${r[1]}</span>${I.chev}</button>
-        <div class="item-b grid g2">${card('Quantidade',r[2])}${card('Preço unitário',r[3],'com tributos',r[4],'tarifa sem tributos')}${card('Valor',r[1])}${card('Tributos',r[5],'PIS/COFINS',r[6],'ICMS 18%')}</div></div>`).join('');
+    return sec('Totais')+`<div class="grid g2">${card('Total da fatura','4.440,13','R$',{cls:'full'})}${card('PIS/COFINS (valor)','178,44','R$')}${card('PIS/COFINS (base de cálculo)','4.341,73','R$')}${card('ICMS (valor)','781,49','R$')}${card('ICMS (base de cálculo)','4.341,73','R$')}</div>`
+      +sec('Itens da nota fiscal')+sheetHTML();
   },
   Consumo(){
     const h=[['mar/25','6.500','68','32'],['fev/25','6.120','66','28'],['jan/25','6.340','70','30'],['dez/24','7.010','74','33'],['nov/24','6.880','72','28'],['out/24','6.450','69','31'],['set/24','6.230','67','33'],['ago/24','6.050','65','29'],['jul/24','5.980','64','30'],['jun/24','6.210','66','33'],['mai/24','6.400','67','29'],['abr/24','6.620','70','29']];
+    const med=t=>`<div class="medt">${t}</div><div class="grid g2">`;
     return sec('Medições')
-      +`<div class="medt">Consumo ponta (kWh) · medidor ELO0045123</div><div class="grid g2">${card('Leitura anterior','12.480','kWh')}${card('Data da leitura anterior','07/02/2025')}${card('Leitura atual','','kWh',null,null,{pend:'leit'})}${card('Data da leitura atual','11/03/2025')}${card('Constante','1')}${card('Consumo medido','540 kWh')}</div>`
-      +`<div class="medt">Consumo fora ponta (kWh) · medidor ELO0045123</div><div class="grid g2">${card('Leitura anterior','88.200','kWh')}${card('Data da leitura anterior','07/02/2025')}${card('Leitura atual','94.160','kWh')}${card('Data da leitura atual','11/03/2025')}${card('Constante','1')}${card('Consumo medido','5.960 kWh')}</div>`
-      +`<div class="medt">Demanda (kW)</div><div class="grid g2">${card('Demanda medida','68 kW')}${card('Demanda contratada','75 kW')}${card('Demanda faturada','75 kW')}${card('Ultrapassagem','0 kW')}</div>`
-      +`<div class="medt">Energia injetada fora ponta (kWh)</div><div class="grid g2">${card('Leitura anterior','51.300','kWh')}${card('Data da leitura anterior','07/02/2025')}${card('Leitura atual','55.400','kWh')}${card('Data da leitura atual','11/03/2025')}${card('Constante','1')}${card('Injetado no período','4.100 kWh')}</div>`
-      +sec('Histórico de consumo')+`<div class="grid g2">${card('Média de consumo','6.399 kWh','últimos 12 meses')}${card('Mediana de consumo','6.370 kWh','últimos 12 meses')}</div>`
-      +`<div class="tbl"><table><thead><tr><th>Mês</th><th>Consumo (kWh)</th><th>Demanda (kW)</th><th>Dias</th></tr></thead><tbody>${h.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+      +med('Consumo ponta · medidor ELO0045123')+`${card('Leitura anterior','12.480','kWh')}${card('Data da leitura anterior','07/02/2025')}${card('Leitura atual','','kWh',{pend:'leit'})}${card('Data da leitura atual','11/03/2025')}${card('Constante','1')}${card('Consumo medido','540','kWh')}</div>`
+      +med('Consumo fora ponta · medidor ELO0045123')+`${card('Leitura anterior','88.200','kWh')}${card('Data da leitura anterior','07/02/2025')}${card('Leitura atual','94.160','kWh')}${card('Data da leitura atual','11/03/2025')}${card('Constante','1')}${card('Consumo medido','5.960','kWh')}</div>`
+      +med('Demanda')+`${card('Demanda medida','68','kW')}${card('Demanda contratada','75','kW')}${card('Demanda faturada','75','kW')}${card('Ultrapassagem','0','kW')}</div>`
+      +med('Energia injetada fora ponta')+`${card('Leitura anterior','51.300','kWh')}${card('Data da leitura anterior','07/02/2025')}${card('Leitura atual','55.400','kWh')}${card('Data da leitura atual','11/03/2025')}${card('Constante','1')}${card('Injetado no período','4.100','kWh')}</div>`
+      +sec('Histórico de consumo')+`<div class="grid g2">${card('Média de consumo (12 meses)','6.399','kWh')}${card('Mediana de consumo (12 meses)','6.370','kWh')}</div>`
+      +`<div class="grade"><table><thead><tr><th class="stk">Mês</th><th>Consumo (kWh)</th><th>Demanda (kW)</th><th>Dias</th></tr></thead><tbody>${h.map(r=>`<tr><td class="stk">${r[0]}</td>${r.slice(1).map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
   },
   'Identificação'(){
-    return sec('Fatura')+`<div class="grid g2">${card('Nota fiscal','247971120','série 000')}${card('Referência','Mar/2025')}${card('Emissão','12/03/2025')}${card('Débito automático','—')}${card('Chave de acesso','31250300000000000100660002479711201000000029',null,null,null,{cls:'full'})}${card('Código de barras','83610000044-2 40130138004-3 11989574712-4 30145678901-7',null,null,null,{cls:'full'})}</div>`
-      +sec('Unidade consumidora')+`<div class="grid g2">${card('Distribuidora','Luz do Vale Distribuição S.A.')}${card('Nº da instalação','3014567890')}${card('Classe','Comercial','subclasse comercial')}${card('Subgrupo tarifário','A4')}${card('Modalidade tarifária','',null,null,null,{pend:'mod'})}${card('Tipo de rede','Trifásico')}${card('Demanda contratada','75 kW')}${card('Tarifa social','Não')}</div>`
+    return sec('Fatura')+`<div class="grid g2">${card('Nota fiscal','247971120')}${card('Série','000')}${card('Referência','Mar/2025')}${card('Emissão','12/03/2025')}${card('Débito automático','—')}${card('Chave de acesso','31250300000000000100660002479711201000000029',null,{cls:'full'})}${card('Código de barras','83610000044-2 40130138004-3 11989574712-4 30145678901-7',null,{cls:'full'})}</div>`
+      +sec('Unidade consumidora')+`<div class="grid g2">${card('Distribuidora','Luz do Vale Distribuição S.A.')}${card('Nº da instalação','3014567890')}${card('Classe','Comercial')}${card('Subclasse','Comercial')}${card('Subgrupo tarifário','A4')}${card('Modalidade tarifária','',null,{pend:'mod'})}${card('Tipo de rede','Trifásico')}${card('Demanda contratada','75','kW')}${card('Tarifa social','Não')}</div>`
       +sec('Titular')+`<div class="grid g2">${card('Razão social','Padaria Estrela do Sul Ltda')}${card('CNPJ','12.345.678/0001-90')}</div>`
-      +sec('Endereço')+`<div class="grid g3">${card('Logradouro','Avenida Brasil',null,null,null,{cls:'full'})}${card('Número','1200')}${card('Complemento','Loja 2')}${card('Bairro','Centro')}${card('Cidade','Ibirité')}${card('Estado','MG')}${card('CEP','32400-000')}</div>`;
+      +sec('Endereço')+`<div class="grid g3">${card('Logradouro','Avenida Brasil',null,{cls:'full'})}${card('Número','1200')}${card('Complemento','Loja 2')}${card('Bairro','Centro')}${card('Cidade','Ibirité')}${card('Estado','MG')}${card('CEP','32400-000')}</div>`;
   }
 };
 
@@ -392,9 +506,9 @@ function renderTabs(){
     return `<button role="tab" class="tab ${S.tab===t?'on':''}" data-tab="${t}" aria-selected="${S.tab===t}">${t}${warn?`<span class="warn">${I.warn}</span>`:''}</button>`;
   }).join('');
 }
-function renderContent(){ $('#content').innerHTML = TABS[S.tab](); $('#pDet').classList.toggle('locked', S.locked); bindInline(); }
+function renderContent(){ CK=0; $('#content').innerHTML = TABS[S.tab](); $('#pDet').classList.toggle('locked', S.locked); bindInline(); }
 function renderActs(){
-  $('#acts').innerHTML = S.acts.map((a,i)=>`${i?'<div class="link"></div>':''}<div class="ev ${a[3]?'new':''}"><span class="i c-${a[1]}">${a[1]==='edit'?I.pen:a[1]==='ok'?I.check:a[1]==='alert'?I.warn:a[0]==='Recebida'?I.inbox:a[0]==='Lendo fatura'?I.hour:a[0]==='Lida'?I.doc:I.dot}</span>${who(a[4])}<div class="n">${a[0]}</div><div class="d">13/03 às ${a[2]}</div></div>`).join('');
+  $('#acts').innerHTML = S.acts.map((a,i)=>`${i?'<div class="link"></div>':''}<div class="ev ${a[3]?'new':''}"><span class="i c-${a[1]}">${a[1]==='edit'?I.pen:a[1]==='ok'?I.check:a[1]==='alert'?I.warn:a[0]==='Recebida'?I.inbox:a[0]==='Lendo fatura'?I.hour:a[0]==='Lida'?I.doc:I.dot}</span>${who(a[4]||SYS)}<div class="n">${a[0]}</div><div class="d">13/03 às ${a[2]}</div></div>`).join('');
   S.acts.forEach(a=>a[3]=false);
 }
 function renderStatus(){
@@ -436,7 +550,16 @@ function togglePanel(k){
   for (const o of [...PRI].reverse().filter(x=>x!==k)) { if (visibleSet().includes(k)) break; S.open[o]=false; }
 }
 function renderPanels(){
+  const prev = S.vis || [];
   S.vis = visibleSet();
+  // animação de abrir/fechar: o item da barra pula, o painel sobe a partir da barra
+  PRI.forEach(k=>{
+    const was=prev.includes(k), is=S.vis.includes(k); if(!S.vis_ready || was===is) return;
+    const tb=document.querySelector(`.tb[data-toggle="${k}"]`), pnl=$(PANEL[k]);
+    const cls=is?'opening':'closing';
+    [tb,pnl].forEach(el=>{ if(!el) return; el.classList.remove('opening','closing'); void el.offsetWidth; el.classList.add(cls); setTimeout(()=>el.classList.remove(cls),450); });
+  });
+  S.vis_ready = true;
   PRI.forEach(k=>$(PANEL[k]).classList.toggle('min', !S.vis.includes(k)));
   $('#cols').classList.toggle('no-pdf', !S.vis.includes('pdf'));
   document.querySelectorAll('.tb').forEach(b=>{ const k=b.dataset.toggle; b.classList.toggle('on', k==='pend' ? !!S.open.pend : S.vis.includes(k)); });
@@ -446,7 +569,7 @@ function render(){ renderTabs(); renderContent(); renderActs(); renderStatus(); 
 
 /* ---------- ações ---------- */
 const now = ()=>new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
-function fmt(p,v){ if(p.kind==='Percentual'){ v=v.replace('%','').trim(); return v.includes(',')||v.includes('.')? v.replace('.',',')+'%' : v+',00%'; } return v; }
+function fmt(p,v){ if(p.kind==='Percentual'){ v=v.replace('%','').trim(); return v.includes(',')||v.includes('.')? v.replace('.',',') : v+',00'; } return v; }
 function resolve(p, v){
   p.done = fmt(p,v);
   S.acts.unshift([p.act,'edit',now(),true,ME]);
@@ -461,7 +584,8 @@ function focusPend(p){
   if (c){ c.scrollIntoView({behavior:'smooth',block:'center'}); c.classList.add('flash'); setTimeout(()=>c.classList.remove('flash'),1200); }
 }
 function bindInline(){
-  document.querySelectorAll('[data-acc]').forEach(b=>b.onclick=()=>b.parentElement.classList.toggle('open'));
+  bindChart(); bindSheet();
+  document.querySelectorAll('.card .cp').forEach(b=>b.onclick=()=>{ const v=b.closest('.card').querySelector('.v').textContent; navigator.clipboard?.writeText(v).catch(()=>{}); toast(`Copiado: ${v}`); });
   S.pend.filter(p=>!p.done).forEach(p=>{
     const f=document.getElementById('in-'+p.id); if(!f) return;
     f.onkeydown=e=>{ if(e.key==='Enter'&&f.value.trim()) resolve(p,f.value.trim()); };
@@ -472,41 +596,35 @@ function bindInline(){
   });
   document.querySelectorAll('.card .ib.edit').forEach(b=>b.onclick=()=>editCard(b.closest('.card'), b));
 }
-/* edição: cada linha vira um campo com a legenda dentro; salvar e fechar no cabeçalho */
+/* edição: o valor vira campo com a unidade dentro; salvar e fechar no cabeçalho; mesma altura da visualização */
 function editCard(c, btn){
-  const rows=[...c.querySelectorAll('.row')]; if(!rows.length || c.classList.contains('editing')) return;
-  const olds=rows.map(r=>r.querySelector('.v').textContent);
+  const row=c.querySelector('.row'); if(!row || c.classList.contains('editing')) return;
+  const old=row.querySelector('.v').textContent, u=c.dataset.u;
   c.classList.add('editing');
   const acts=document.createElement('span'); acts.className='ca';
   acts.innerHTML=`<button class="sv" aria-label="Salvar ${c.dataset.edit}">${I.save}</button><button aria-label="Fechar edição">${I.close}</button>`;
   btn.replaceWith(acts);
-  const flds=rows.map((r,k)=>{
-    const f=document.createElement('label'); f.className='fld';
-    const inp=document.createElement('input'); inp.value=olds[k]; inp.size=Math.max(olds[k].length,1);
-    inp.oninput=()=>{ inp.size=Math.max(inp.value.length,1); };
-    const l=document.createElement('span'); l.className='l'; l.textContent=r.querySelector('.l').textContent;
-    f.append(inp,l); f._row=r; r.replaceWith(f); return f;
-  });
-  const inps=flds.map(f=>f.querySelector('input'));
-  inps[0].focus(); inps[0].select();
+  const f=document.createElement('label'); f.className='fld';
+  const inp=document.createElement('input'); inp.value=old; inp.setAttribute('aria-label',c.dataset.edit);
+  const us=document.createElement('span'); us.className='u'; us.textContent=u;
+  if(u && isPre(u)) f.append(us,inp); else if(u) f.append(inp,us); else f.append(inp);
+  row.replaceWith(f); inp.focus(); inp.select();
   const finish=save=>{
-    let changed=false;
-    flds.forEach((f,k)=>{ const nv=inps[k].value.trim();
-      if(save && nv && nv!==olds[k]){ f._row.querySelector('.v').textContent=nv; changed=true; }
-      f.replaceWith(f._row); });
-    acts.replaceWith(btn); c.classList.remove('editing');
-    if(changed){ S.acts.unshift([`${c.dataset.edit} editado`,'edit',now(),true,ME]); renderActs(); toast(`${c.dataset.edit} atualizado`); }
+    const nv=inp.value.trim();
+    f.replaceWith(row); acts.replaceWith(btn); c.classList.remove('editing');
+    if(save && nv && nv!==old){ row.querySelector('.v').textContent=nv; S.ov[c.dataset.k]=nv;
+      S.acts.unshift([`${c.dataset.edit} editado`,'edit',now(),true,ME]); renderActs(); toast(`${c.dataset.edit} atualizado`); }
   };
   acts.children[0].onclick=()=>finish(true);
   acts.children[1].onclick=()=>finish(false);
-  inps.forEach(i=>i.onkeydown=e=>{ if(e.key==='Enter') finish(true); if(e.key==='Escape') finish(false); });
+  inp.onkeydown=e=>{ if(e.key==='Enter') finish(true); if(e.key==='Escape') finish(false); };
 }
 function toast(t){ const el=$('#toast'); el.textContent=t; el.classList.add('show'); clearTimeout(el._t); el._t=setTimeout(()=>el.classList.remove('show'),1800); }
 
 window.addEventListener('resize', ()=>renderPanels());
 document.addEventListener('click', e=>{
   const t=e.target.closest('[data-tab]'); if(t){ S.tab=t.dataset.tab; renderTabs(); renderContent(); return; }
-  const g=e.target.closest('[data-toggle]'); if(g){ const k=g.dataset.toggle; if(k==='pend') S.open.pend=!S.open.pend; else togglePanel(k); renderPanels(); }
+  const g=e.target.closest('[data-toggle]'); if(g){ const k=g.dataset.toggle; if(k==='pend'){ S.open.pend=!S.open.pend; const tb=document.querySelector('.tb[data-toggle=pend]'); const cls=S.open.pend?'opening':'closing'; tb.classList.remove('opening','closing'); void tb.offsetWidth; tb.classList.add(cls); setTimeout(()=>tb.classList.remove(cls),450); } else togglePanel(k); renderPanels(); }
 });
 let z=560; $('#zIn').onclick=()=>{ z=Math.min(1100,z+80); $('#page').style.width=z+'px'; }; $('#zOut').onclick=()=>{ z=Math.max(400,z-80); $('#page').style.width=z+'px'; };
 /* tooltips da barra lateral */
@@ -516,6 +634,7 @@ document.querySelectorAll('.sidebar [data-tip]').forEach(a=>{ a.setAttribute('ar
   a.addEventListener('mouseleave',()=>tip.style.opacity=0);
   if(!a.classList.contains('on')) a.addEventListener('click',e=>{ e.preventDefault(); toast(`${a.dataset.tip} fora do escopo do protótipo.`); });
 });
+LOGO = (document.querySelector('.sb-brand svg')?.outerHTML||'').replace(/fill="#[0-9A-Fa-f]+"/g,'fill="currentColor"');
 render();
 </script>
 </body>
