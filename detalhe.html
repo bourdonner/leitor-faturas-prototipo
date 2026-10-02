@@ -112,6 +112,15 @@
   .input:focus{outline:2px solid var(--brand);outline-offset:0;background:#fff}
   .card .in{margin-top:10px}
   .card .edit-actions{display:flex;gap:6px;margin-left:auto}
+  .card.editing{background:var(--s100)}
+  .card .ca{display:flex;align-items:center;gap:4px}
+  .card .ca button{width:20px;height:20px;display:grid;place-items:center;border-radius:4px;color:var(--ink)}
+  .card .ca button:hover{background:var(--s200)}
+  .card .ca .sv{color:var(--brand)}
+  .card .fld{display:flex;align-items:center;gap:8px;height:40px;margin-top:8px;padding:0 12px;border:1px solid var(--border);border-radius:6px;background:var(--s50);font-size:14px;cursor:text}
+  .card .fld:focus-within{outline:2px solid var(--brand);background:#fff}
+  .card .fld input{border:0;padding:0;background:transparent;font:inherit;color:#0c0a09;outline:0;min-width:1ch;max-width:70%;field-sizing:content}
+  .card .fld .l{flex:1;min-width:0;color:var(--mid);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .locked .card .ib.edit{display:none}
   /* chart */
   .chart{display:flex;align-items:flex-end;gap:6px;height:160px}
@@ -285,6 +294,7 @@
 const MS=(n,s,f)=>'<span class="ms'+(f?' f':'')+'"'+(s?' style="font-size:'+s+'px"':'')+' aria-hidden="true">'+n+'</span>';
 const I = {
   edit:MS('edit',16,1), copy:MS('content_copy',13), warn:MS('warning',13,1), chev:'<span class="chev">'+MS('expand_more',20)+'</span>',
+  save:MS('save',14,1), close:MS('close',14,1),
   check:MS('check',14), pen:MS('edit',13,1), dot:MS('radio_button_checked',12,1), inbox:MS('inbox',13,1), hour:MS('hourglass_top',13,1), doc:MS('description',13,1)
 };
 const $ = s=>document.querySelector(s);
@@ -306,7 +316,7 @@ function card(t, v, l, v2, l2, opts={}){
   const p = opts.pend && S.pend.find(x=>x.id===opts.pend);
   if (p && !p.done){
     return `<div class="card pend ${opts.cls||''}" id="c-${p.id}">
-      <div class="ct"><span class="badge">${I.warn}</span>${t}<span class="sp"></span></div>
+      <div class="ct"><span class="badge">${I.warn}</span>${t}<span class="sp"></span><span class="ca"><button class="sv" data-psave="${p.id}" aria-label="Salvar ${t}">${I.save}</button><button data-pclear="${p.id}" aria-label="Limpar ${t}">${I.close}</button></span></div>
       <div class="in">${fieldHTML(p,'in-'+p.id)}</div>
       <div class="hint">Não encontrado na fatura</div></div>`;
   }
@@ -441,16 +451,40 @@ function bindInline(){
     const f=document.getElementById('in-'+p.id); if(!f) return;
     f.onkeydown=e=>{ if(e.key==='Enter'&&f.value.trim()) resolve(p,f.value.trim()); };
     f.onchange=()=>{ if(p.kind==='Seleção'&&f.value) resolve(p,f.value); };
+    const sv=document.querySelector(`[data-psave="${p.id}"]`), cl=document.querySelector(`[data-pclear="${p.id}"]`);
+    if(sv) sv.onclick=()=>{ if(f.value.trim()) resolve(p,f.value.trim()); else f.focus(); };
+    if(cl) cl.onclick=()=>{ f.value=''; f.focus(); };
   });
-  document.querySelectorAll('.card .ib.edit').forEach(b=>b.onclick=()=>{
-    const c=b.closest('.card'), v=c.querySelector('.row .v'); if(!v) return;
-    const old=v.textContent; const inp=document.createElement('input'); inp.className='input'; inp.value=old;
-    v.replaceWith(inp); inp.focus(); inp.select();
-    const done=(save)=>{ const s=document.createElement('span'); s.className='v'; s.textContent= save&&inp.value.trim()?inp.value.trim():old; inp.replaceWith(s);
-      if(save && inp.value.trim() && inp.value.trim()!==old){ S.acts.unshift([`${c.dataset.edit} editado`,'edit',now(),true]); renderActs(); toast(`${c.dataset.edit} atualizado`); } };
-    inp.onkeydown=e=>{ if(e.key==='Enter') done(true); if(e.key==='Escape') done(false); };
-    inp.onblur=()=>done(true);
+  document.querySelectorAll('.card .ib.edit').forEach(b=>b.onclick=()=>editCard(b.closest('.card'), b));
+}
+/* edição: cada linha vira um campo com a legenda dentro; salvar e fechar no cabeçalho */
+function editCard(c, btn){
+  const rows=[...c.querySelectorAll('.row')]; if(!rows.length || c.classList.contains('editing')) return;
+  const olds=rows.map(r=>r.querySelector('.v').textContent);
+  c.classList.add('editing');
+  const acts=document.createElement('span'); acts.className='ca';
+  acts.innerHTML=`<button class="sv" aria-label="Salvar ${c.dataset.edit}">${I.save}</button><button aria-label="Fechar edição">${I.close}</button>`;
+  btn.replaceWith(acts);
+  const flds=rows.map((r,k)=>{
+    const f=document.createElement('label'); f.className='fld';
+    const inp=document.createElement('input'); inp.value=olds[k]; inp.size=Math.max(olds[k].length,1);
+    inp.oninput=()=>{ inp.size=Math.max(inp.value.length,1); };
+    const l=document.createElement('span'); l.className='l'; l.textContent=r.querySelector('.l').textContent;
+    f.append(inp,l); f._row=r; r.replaceWith(f); return f;
   });
+  const inps=flds.map(f=>f.querySelector('input'));
+  inps[0].focus(); inps[0].select();
+  const finish=save=>{
+    let changed=false;
+    flds.forEach((f,k)=>{ const nv=inps[k].value.trim();
+      if(save && nv && nv!==olds[k]){ f._row.querySelector('.v').textContent=nv; changed=true; }
+      f.replaceWith(f._row); });
+    acts.replaceWith(btn); c.classList.remove('editing');
+    if(changed){ S.acts.unshift([`${c.dataset.edit} editado`,'edit',now(),true]); renderActs(); toast(`${c.dataset.edit} atualizado`); }
+  };
+  acts.children[0].onclick=()=>finish(true);
+  acts.children[1].onclick=()=>finish(false);
+  inps.forEach(i=>i.onkeydown=e=>{ if(e.key==='Enter') finish(true); if(e.key==='Escape') finish(false); });
 }
 function toast(t){ const el=$('#toast'); el.textContent=t; el.classList.add('show'); clearTimeout(el._t); el._t=setTimeout(()=>el.classList.remove('show'),1800); }
 
