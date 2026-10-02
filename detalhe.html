@@ -82,10 +82,10 @@
   .ib:hover{background:var(--s200)}
   .ib.sq{background:var(--white)}
   /* pdf */
-  .pdf-scroll{flex:1;overflow:auto;padding:8px 24px 24px;display:flex;justify-content:center}
-  .pdf-page{width:560px;transition:width .2s ease;box-shadow:0 1px 3px rgba(0,0,0,.08);background:#fff;align-self:flex-start}
+  /* páginas da fatura empilhadas em rolagem contínua; margin auto centraliza sem cortar quando o zoom passa da largura */
+  .pdf-scroll{flex:1;overflow:auto;padding:8px 24px 24px;display:flex;flex-direction:column;align-items:flex-start;gap:16px}
+  .pdf-page{width:560px;flex:none;margin:0 auto;transition:width .2s ease;box-shadow:0 1px 3px rgba(0,0,0,.08);background:#fff}
   .pdf-page img{width:100%;display:block}
-  .pager{display:flex;justify-content:center;align-items:center;gap:8px;padding:10px;border-top:1px solid var(--s200);color:var(--mid);font-size:12px;background:var(--white);border-radius:0 0 var(--r) var(--r)}
   /* tabs */
   .tabs{display:flex;gap:4px}
   .tab{height:33px;padding:0 12px;border-radius:8px;color:var(--mid);display:inline-flex;align-items:center;gap:6px;font-weight:500}
@@ -135,17 +135,14 @@
   .fld.err,.ufld.err{border-color:var(--danger)!important;outline-color:var(--danger)!important}
   .grade td.ed.err input{outline-color:var(--danger)}
   /* gráfico interativo */
-  .ccard{background:var(--s50);border-radius:12px;padding:16px}
-  .cc-h{display:flex;align-items:flex-start;gap:12px}
+  .ccard{background:var(--s50);border-radius:12px;padding:20px 20px 16px}
+  .cc-h{display:flex;flex-direction:column;gap:6px}
   .cc-t{font-weight:700}
-  .cc-v{margin-top:4px;font-size:13px;color:var(--mid);display:flex;align-items:baseline;gap:6px;flex-wrap:wrap}
+  .cc-v{font-size:13px;color:var(--mid);display:flex;align-items:baseline;gap:6px;flex-wrap:wrap}
   .cc-v b{font-size:20px;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
   .cc-d{font-size:12px;padding:1px 6px;border-radius:999px;background:var(--s200);color:var(--ink)}
   .cc-d.up{background:#fff7ed;color:#c2410c} .cc-d.down{background:#f0fdf4;color:#3f6212}
-  .cc-leg{margin-left:auto;display:flex;align-items:center;gap:6px;font-size:12px;color:var(--mid);white-space:nowrap}
-  .cc-leg i{width:14px;border-top:1.5px dashed var(--mid)}
-  .cc-plot{position:relative;height:160px;margin-top:16px;display:flex;align-items:flex-end;gap:6px}
-  .cc-avg{position:absolute;left:0;right:0;border-top:1.5px dashed var(--s400);pointer-events:none;z-index:1}
+  .cc-plot{position:relative;height:160px;margin-top:24px;display:flex;align-items:flex-end;gap:8px}
   .cc-b{flex:1;height:100%;display:flex;align-items:flex-end;padding:0;border-radius:4px;position:relative}
   .cc-b span{display:block;width:100%;background:var(--border);border-radius:3px 3px 0 0;transition:background .15s,transform .15s;transform-origin:bottom}
   .cc-b.cur span{background:var(--success)}
@@ -156,9 +153,9 @@
   .cc-b:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
   .cc-tip{position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;font-size:11px;padding:3px 7px;border-radius:6px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .12s;z-index:2}
   .cc-b:hover .cc-tip,.cc-b:focus-visible .cc-tip{opacity:1}
-  .cc-b:nth-child(-n+3) .cc-tip{left:0;transform:none}
+  .cc-b:nth-child(-n+2) .cc-tip{left:0;transform:none}
   .cc-b:nth-last-child(-n+2) .cc-tip{left:auto;right:0;transform:none}
-  .cc-x{display:flex;gap:6px;margin-top:8px}
+  .cc-x{display:flex;gap:8px;margin-top:10px;padding-top:8px;border-top:1px solid var(--s200)}
   .cc-x span{flex:1;text-align:center;font-size:10px;color:var(--mid)}
   .cc-x span.on{color:var(--ink);font-weight:600}
   /* planilha */
@@ -318,7 +315,7 @@
   /* Fatura no mobile: sem zoom por botão (pinça), sem abrir em nova aba; baixar fica ao lado do nome do arquivo */
   [data-mode=mobile] #zIn,[data-mode=mobile] #zOut,[data-mode=mobile] .p-pdf .bar a.ib[target]{display:none}
   [data-mode=mobile] .p-pdf .bar a.ib[download]{width:46px;height:46px;flex:none;border-radius:8px;background:rgba(245,245,244,.4);border:1px solid var(--s100)}
-  [data-mode=mobile] .pdf-scroll{justify-content:normal;touch-action:pan-x pan-y;overscroll-behavior:contain}
+  [data-mode=mobile] .pdf-scroll{touch-action:pan-x pan-y;overscroll-behavior:contain}
   [data-mode=mobile] .pdf-page{margin:0 auto;transition:none;flex:none}
 
   /* planilha no mobile: coluna Item ocupa no máximo metade da tabela; nomes longos cortados no meio (estilo macOS) */
@@ -394,7 +391,6 @@
   [data-mode=mobile] .bar .meta{display:none}
   [data-mode=mobile] .pdf-scroll{padding:8px 12px 110px}
   [data-mode=mobile] .pdf-page{max-width:100%}
-  [data-mode=mobile] .pager{display:none}
   [data-mode=mobile] .act-list{padding:8px 12px 120px}
   [data-mode=mobile] .tabbar{left:12px;right:12px;transform:none;bottom:calc(12px + env(safe-area-inset-bottom));padding:6px;gap:4px}
   [data-mode=mobile] .tb{flex:1;width:auto;padding:6px 4px;min-width:0}
@@ -520,7 +516,6 @@
             <button class="ib sq" data-toggle="pdf" aria-label="Minimizar fatura"><span class="ms" aria-hidden="true">hide</span></button>
           </div>
           <div class="pdf-scroll"><div class="pdf-page" id="page"><img src="assets/fatura-grupo-a.png" alt="Fatura fictícia (Luz do Vale) — Padaria Estrela do Sul, março de 2025"></div></div>
-          <div class="pager"><span class="ms" aria-hidden="true">chevron_left</span> Página 1 de 1 <span class="ms" aria-hidden="true">chevron_right</span></div>
         </div>
 
         <!-- Detalhes -->
@@ -703,21 +698,20 @@ function invalid(inp, kind){
 const HIST = {m:['abr/24','mai/24','jun/24','jul/24','ago/24','set/24','out/24','nov/24','dez/24','jan/25','fev/25','mar/25'], v:[6620,6400,6210,5980,6050,6230,6450,6880,7010,6340,6120,6500]};
 const nf = n=>n.toLocaleString('pt-BR');
 function chartHTML(){
-  const {m,v}=HIST, mx=Math.max(...v)*1.08, avg=Math.round(v.reduce((a,b)=>a+b,0)/v.length), last=v.length-1;
+  const {m,v}=HIST, mx=Math.max(...v)*1.08, last=v.length-1;
   return `<div class="ccard" id="chart">
-    <div class="cc-h"><div><div class="cc-t">Consumo dos últimos 12 meses</div><div class="cc-v" id="ccV"></div></div>
-      <div class="cc-leg"><i></i>média ${nf(avg)} kWh</div></div>
-    <div class="cc-plot" role="group" aria-label="Consumo mensal"><div class="cc-avg" style="bottom:${avg/mx*100}%"></div>
+    <div class="cc-h"><div class="cc-t">Consumo dos últimos 12 meses</div><div class="cc-v" id="ccV"></div></div>
+    <div class="cc-plot" role="group" aria-label="Consumo mensal">
       ${v.map((x,i)=>`<button class="cc-b ${i===last?'cur':''}" data-i="${i}" aria-label="${m[i]}: ${nf(x)} kWh"><span style="height:${x/mx*100}%"></span><em class="cc-tip">${m[i]} · ${nf(x)} kWh</em></button>`).join('')}
     </div>
     <div class="cc-x">${m.map((x,i)=>`<span data-i="${i}">${x.split('/')[0]}</span>`).join('')}</div></div>`;
 }
 function bindChart(){
   const el=$('#chart'); if(!el) return;
-  const {m,v}=HIST, avg=v.reduce((a,b)=>a+b,0)/v.length;
+  const {m,v}=HIST;
   const show=i=>{
     const d=i>0?(v[i]-v[i-1])/v[i-1]*100:null;
-    $('#ccV').innerHTML=`<b>${nf(v[i])}</b> kWh · ${m[i]}${d===null?'':` <span class="cc-d ${d>0?'up':'down'}">${d>0?'+':''}${d.toFixed(1).replace('.',',').replace('-','−')}% vs ${m[i-1]}</span>`} <span>${v[i]>=avg?'acima':'abaixo'} da média</span>`;
+    $('#ccV').innerHTML=`<b>${nf(v[i])}</b> kWh · ${m[i]}${d===null?'':` <span class="cc-d ${d>0?'up':'down'}">${d>0?'+':''}${d.toFixed(1).replace('.',',').replace('-','−')}% vs ${m[i-1]}</span>`}`;
     el.querySelectorAll('.cc-x span').forEach(s=>s.classList.toggle('on',+s.dataset.i===i));
   };
   const bars=[...el.querySelectorAll('.cc-b')];
@@ -900,7 +894,7 @@ function togglePanel(k){
 }
 function renderPanels(){
   const md=modeOf(); document.documentElement.dataset.mode=md;
-  if (md!==S.mode){ S.mode=md; S.screen='det'; S.side=null; S.vis_ready=false; if (typeof z!=='undefined'){ const pg=$('#page'); pg.style.width=z+'px'; pg.style.maxWidth=''; } }
+  if (md!==S.mode){ S.mode=md; S.screen='det'; S.side=null; S.vis_ready=false; if (typeof z!=='undefined') setPages(z+'px',''); }
   if (md==='mobile' && S.screen==='act') S.screen='det';
   const prev = S.vis || [], prevScreen=S.prevScreen;
   S.vis = md==='mobile' ? (S.screen==='pend' ? [] : [S.screen]) : md==='tablet' ? ['det', ...(S.side?[S.side]:[])] : visibleSet();
@@ -995,13 +989,13 @@ document.addEventListener('click', e=>{
 });
 /* fatura no mobile: pinça para zoom (mantém o ponto entre os dedos), toque duplo alterna entre caber na tela e 2x */
 (function(){
-  const sc=$('.pdf-scroll'), pg=$('#page'); let t0=null, lastTap=0;
+  const sc=$('.pdf-scroll'), pg=$('#page'); let t0=null, lastTap=0; // #page = primeira página, referência de largura
   const fit=()=>{ const cs=getComputedStyle(sc); return sc.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight); };
   const dist=t=>Math.hypot(t[0].clientX-t[1].clientX, t[0].clientY-t[1].clientY);
   const zoomTo=(w,cx,cy,base)=>{
     const f=fit(); w=Math.max(f, Math.min(f*4, w));
     const r=sc.getBoundingClientRect(), fx=cx-r.left, fy=cy-r.top, k=w/base.w;
-    pg.style.maxWidth='none'; pg.style.width=w+'px';
+    setPages(w+'px','none');
     sc.scrollLeft=(base.sl+fx)*k-fx; sc.scrollTop=(base.st+fy)*k-fy;
   };
   sc.addEventListener('touchstart',e=>{
@@ -1022,7 +1016,8 @@ document.addEventListener('click', e=>{
     else lastTap=now;
   });
 })();
-let z=560; $('#zIn').onclick=()=>{ z=Math.min(1100,z+80); $('#page').style.width=z+'px'; }; $('#zOut').onclick=()=>{ z=Math.max(400,z-80); $('#page').style.width=z+'px'; };
+function setPages(w, maxW){ document.querySelectorAll('.pdf-page').forEach(p=>{ p.style.width=w; if(maxW!==undefined) p.style.maxWidth=maxW; }); }
+let z=560; $('#zIn').onclick=()=>{ z=Math.min(1100,z+80); setPages(z+'px'); }; $('#zOut').onclick=()=>{ z=Math.max(400,z-80); setPages(z+'px'); };
 /* ---------- nome do item no mobile: começo + … + fim, como o macOS ---------- */
 const _cv=document.createElement('canvas').getContext('2d');
 function midFit(t,max){
