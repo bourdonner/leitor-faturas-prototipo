@@ -389,12 +389,10 @@ function renderActs(){
 }
 function renderStatus(){
   const n = openPend().length, chip=$('#stChip');
-  const map = {revisar:[`${n} pendência${n>1?'s':''}`,'alert'], pronta:['Sem pendências','ok'], aprovada:['Faturando','info'], faturada:['Faturada','ok']};
+  const map = {revisar:[`${n} pendência${n>1?'s':''}`,'alert'], pronta:['Sem pendências','ok']};
   const [txt,cls] = map[S.status];
   chip.className='chip '+cls;
   chip.innerHTML = MS(cls==='alert'?'warning':cls==='ok'?'check_circle':'sync',16,1)+txt;
-  $('#headActions').innerHTML = S.status==='pronta' ? `<button class="btn primary" id="approve">Aprovar fatura</button>` : '';
-  const ab=$('#approve'); if(ab) ab.onclick=approve;
 }
 function renderPend(){
   const list = openPend();
@@ -440,10 +438,6 @@ function focusPend(p){
   S.open.det=true; S.tab=p.tab; render();
   const c = document.getElementById('c-'+p.id);
   if (c){ c.scrollIntoView({behavior:'smooth',block:'center'}); c.classList.add('flash'); setTimeout(()=>c.classList.remove('flash'),1200); }
-}
-function approve(){
-  S.status='aprovada'; S.locked=true; S.acts.unshift(['Faturando','def',now(),true],['Aprovada','ok',now(),true]); render();
-  setTimeout(()=>{ S.status='faturada'; S.acts.unshift(['Faturada','ok',now(),true]); render(); toast('Fatura faturada'); }, 1800);
 }
 function bindInline(){
   document.querySelectorAll('[data-acc]').forEach(b=>b.onclick=()=>b.parentElement.classList.toggle('open'));
