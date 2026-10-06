@@ -23,12 +23,13 @@ O modo é recalculado a cada `resize`. Ao mudar de modo, a tela volta para Detal
 ### Painéis
 | Painel | Largura | Mínimo |
 |---|---|---|
-| Fatura (PDF) | ocupa o espaço livre | 400 px |
-| Detalhes | 690 px (encolhe até o mínimo) | 520 px |
+| Fatura (PDF) | 686 px — largura da página do PDF (encolhe até o mínimo) | 400 px |
+| Detalhes | ocupa o espaço livre | 520 px |
 | Atividade | 284 px fixo | 284 px |
 
 - Espaço entre painéis: 24 px.
-- Sem Fatura, Detalhes ocupa o espaço livre. Sem Detalhes, Fatura ocupa o espaço livre.
+- A Fatura nunca cresce além da página do PDF, para não sobrar vão. Quem cresce é Detalhes.
+- Sem Detalhes, a Fatura ocupa o espaço livre.
 
 ### Prioridade quando falta largura
 1. **Detalhes**
