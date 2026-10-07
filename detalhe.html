@@ -484,7 +484,7 @@
   .note.demo .cs-trig{height:26px;gap:6px;padding:0 8px;font-size:11px;font-weight:600;border-radius:999px}
   /* iOS Safari dá zoom em campo com fonte < 16px: só lá os campos sobem para 16px (a pinça continua liberada) */
   @supports (-webkit-touch-callout:none){ input,select,textarea{font-size:16px!important} }
-  /* ---------- V2: identidade da fatura (Figma 1971:20200 · 1977:28098 · 1972:21849) ---------- */
+  /* ---------- V2: validar UC (Figma 1971:20200 · 1977:28098 · 1972:21849) ---------- */
   /* o painel Detalhes vira um envoltório: bloco de identidade em cima, caixa cinza dos detalhes embaixo */
   .p-det{background:none!important;gap:16px}
   .p-det>.det-box{flex:1;min-height:0;display:flex;flex-direction:column;background:var(--s100);border-radius:var(--r);overflow:hidden}
@@ -689,7 +689,7 @@
 <div id="offLayer" aria-live="polite"></div>
 <div class="toast" id="toast"></div>
 <div class="note demo"><label for="demo">Estado</label><select id="demo">
-  <option value="identidade">1 · Validar identidade</option>
+  <option value="identidade">1 · Validar UC</option>
   <option value="nao-encontrada">2 · UC não encontrada</option>
   <option value="divergente">3 · Distribuidora não confere</option>
   <option value="pendencias">4 · Pendências</option>
@@ -1004,8 +1004,8 @@ function renderPend(){
   $('#tbCnt').textContent = list.length;
   if (!list.length || S.sent){ $('#pendCard').classList.add('hide'); return; }
   if (S.id!=='ok'){
-    $('#pendBody').innerHTML = `<div class="fl"><b>Valide a identidade primeiro</b><span style="color:var(--mid);font-size:13px">As pendências ficam liberadas depois que a UC da fatura for confirmada.</span></div>
-      <div class="acts"><span></span><button class="btn primary" id="pIdGo">Ir para identidade</button></div>`;
+    $('#pendBody').innerHTML = `<div class="fl"><b>Valide a UC primeiro</b><span style="color:var(--mid);font-size:13px">As pendências ficam liberadas depois que a UC da fatura for confirmada.</span></div>
+      <div class="acts"><span></span><button class="btn primary" id="pIdGo">Ir para a UC</button></div>`;
     $('#pIdGo').onclick=goIdentity; $('#pGo').onclick=goIdentity;
     $('#pendCard').classList.toggle('hide', !S.open.pend); return; }
   S.pIdx = Math.min(S.pIdx, list.length-1);
@@ -1097,7 +1097,7 @@ function renderIdb(){
   S.id = IDS.ok ? 'ok' : 'pend';
   IDS.sent = S.sent;
   Identity.mount($('#idbWrap'), IDS, ev=>{   // o componente altera IDS (uc, ok) e avisa o que aconteceu
-    if(ev==='validar'){ S.acts.unshift([`Identidade validada · UC ${IDS.uc}`,'ok',now(),true,ME]); toast('Identidade validada'); }
+    if(ev==='validar'){ S.acts.unshift([`UC ${IDS.uc} validada`,'ok',now(),true,ME]); toast('UC validada'); }
     render();
   });
 }
@@ -1127,7 +1127,7 @@ function reExtract(){
   ov.querySelector('[data-x]').focus();
 }
 
-/* ---------- Faturar: substitui Pendências quando a identidade está validada e não há pendência ---------- */
+/* ---------- Faturar: substitui Pendências quando a UC está validada e não há pendência ---------- */
 function sendToBilling(){
   if(S.busy) return; S.busy=true;
   const b=$('#tbSend'), ic=b.querySelector('.ic .ms');

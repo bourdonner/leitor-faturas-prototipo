@@ -1,4 +1,4 @@
-/* Identidade da fatura (Figma: Detalhe › V2 Identity · 1971:20200, 1977:28098, 1972:20920, 1972:21849, 1973:22387).
+/* Validar UC da fatura (Figma: Detalhe › V2 Identity · 1971:20200, 1977:28098, 1972:20920, 1972:21849, 1973:22387).
    Lib: Card Base/Card Header (md) · Combobox · Command Base (Search + CMDK Item Radio) · Button · Info Pill.
    Regra: a distribuidora vem do cadastro da UC; se não for a mesma da fatura, a unidade não confere e não valida.
    Uso: Identity.mount(el, state, onChange) — state = {read, uc, ok, sent}; chame de novo para redesenhar. */
@@ -53,7 +53,7 @@
   function mount(el,S,onChange){
     const u=of(S.uc), bad=!!(u && u.dist!==INV.dist);
     if(S.sent){ el.innerHTML=`<div class="idf ok"><span class="idf-pill lock"><span class="ms" aria-hidden="true">lock</span>Enviada para faturamento · ${esc(S.sent.at)} · ${esc(lab(u))}</span></div>`; return; }
-    if(S.ok){ el.innerHTML=`<div class="idf ok"><span class="idf-pill"><span class="ms" aria-hidden="true">check_circle</span>Identidade validada · ${esc(lab(u))}</span><button class="idf-g" data-alt>Alterar</button></div>`;
+    if(S.ok){ el.innerHTML=`<div class="idf ok"><span class="idf-pill"><span class="ms" aria-hidden="true">check_circle</span>UC ${esc(u.uc)} validada · ${esc(u.dist)}</span><button class="idf-g" data-alt>Alterar</button></div>`;
       el.querySelector('[data-alt]').onclick=()=>{ S.ok=false; onChange('alterar'); el.querySelector('.idf-t')?.focus(); }; return; }
     const title = bad ? 'A unidade não confere com a fatura' : S.read ? 'Confirme a unidade da fatura' : 'Vincule a unidade da fatura';
     const desc  = bad ? 'Escolha outra unidade para liberar a edição dos dados coletados.'
