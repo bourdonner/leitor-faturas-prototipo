@@ -678,14 +678,15 @@
 <div class="note demo"><label for="demo">Estado</label><select id="demo">
   <option value="identidade">1 · Validar identidade</option>
   <option value="nao-encontrada">2 · UC não encontrada</option>
-  <option value="divergente">3 · UC de outro titular</option>
+  <option value="divergente">3 · Distribuidora não confere</option>
   <option value="pendencias">4 · Pendências</option>
   <option value="soma">5 · Soma não fecha</option>
   <option value="pronta">6 · Pronta para faturar</option>
   <option value="enviada">7 · Enviada (só leitura)</option>
   <option value="sem-tentativas">8 · Sem tentativas</option>
-</select><span>· dados fictícios</span></div>
+</select></div>
 
+<script src="assets/identidade.js"></script>
 <script>
 const MS=(n,s,f)=>'<span class="ms'+(f?' f':'')+'"'+(s?' style="font-size:'+s+'px"':'')+' aria-hidden="true">'+n+'</span>';
 const I = {
@@ -706,7 +707,7 @@ const who = u=>u&&u.sys
 
 /* ---------- estado ---------- */
 const S = {
-  tab:'Resumo', open:{pdf:true,det:true,act:true,pend:true}, status:'revisar', locked:false, id:'auto', uc:'3014567890', tries:2, sent:null, busy:false, pIdx:0, ov:{}, chartSel:null, itemChg:{'7-7':1},
+  tab:'Resumo', open:{pdf:true,det:true,act:true,pend:true}, status:'revisar', locked:false, id:'pend', tries:2, sent:null, busy:false, pIdx:0, ov:{}, chartSel:null, itemChg:{'7-7':1},
   items:[['Consumo ponta TUSD','kWh','540','1,48213','1,15443','32,89','144,06','800,35'],['Consumo ponta TE','kWh','540','0,51237','0,39909','11,37','49,80','276,68'],['Consumo fora ponta TUSD','kWh','5.960','0,11845','0,09226','29,02','127,07','705,96'],['Consumo fora ponta TE','kWh','5.960','0,32971','0,25681','80,76','353,71','1.965,07'],['Energia injetada fora ponta TUSD','kWh','−4.100','0,11845','0,09226','−19,96','−87,42','−485,65'],['Energia injetada fora ponta TE','kWh','−4.100','0,32971','0,25681','−55,56','−243,33','−1.351,81'],['Demanda','kW','75','32,41500','25,24804','99,92','','2.431,13'],['Contrib. ilum. pública municipal','—','—','—','—','—','—','98,40']],
   pend:[
     {id:'cofins', tab:'Resumo', title:'COFINS', label:'COFINS (alíquota)', kind:'Percentual', unit:'%', ph:'3,38', why:'COFINS (valor) ÷ base de cálculo', legend:'R$ 146,75', done:null, act:'COFINS corrigido'},
@@ -1062,64 +1063,25 @@ function renderPanels(){
 }
 function render(){ renderIdb(); renderHead(); renderTabs(); renderContent(); renderActs(); renderStatus(); renderPend(); renderPendList(); renderPanels(); }
 
-/* ---------- V2: identidade da fatura ----------
-   A UC lida na fatura vem preenchida; a distribuidora sai da UC. A revisão só libera depois de validar. */
-const TIT='Padaria Estrela do Sul Ltda';
-const UCS=[
-  {uc:'3014567890', dist:'Luz do Vale', tit:TIT},
-  {uc:'3014567811', dist:'Luz do Vale', tit:TIT+' (filial)'},
-  {uc:'3098812200', dist:'Luz do Vale', tit:TIT+' (depósito)'},
-  {uc:'7720045512', dist:'Energisa Serra', tit:'Mercado Bom Preço Ltda'}];
-const ucLabel=u=>u?`UC ${u.uc} · ${u.dist}`:'';
-const ucOf=id=>UCS.find(u=>u.uc===id);
+/* ---------- V2: identidade da fatura (componente em assets/identidade.js, igual ao Figma) ----------
+   A UC lida vem escolhida; a distribuidora sai do cadastro da UC. Se não for a da fatura, não valida. A revisão só libera depois de validar. */
+const IDS={read:'3014567890', uc:'3014567890', ok:false};
 function renderIdb(){
-  const w=$('#idbWrap'), u=ucOf(S.uc);
-  if (S.sent){ w.innerHTML=`<div class="idb ok"><span class="pill lock">${MS('lock',16,1)}Enviada para faturamento · ${S.sent.at} · ${ucLabel(u)}</span></div>`; return; }
-  if (S.id==='ok'){
-    w.innerHTML=`<div class="idb ok"><span class="pill">${MS('check_circle',16,1)}Identidade validada · ${ucLabel(u)}</span><span style="flex:1"></span><button class="btn ghost" id="idbAlt">Alterar</button></div>`;
-    $('#idbAlt').onclick=()=>{ S.id='edit'; S.idErr=''; render(); $('#idbQ').focus(); };
-    return; }
-  const err=S.idErr||'';
-  w.innerHTML=`<div class="idb" id="idb">
-    <div class="idb-h ${err?'bad':''}">${MS(err?'error':'warning',18,1)}Valide a identidade da fatura</div>
-    <div class="idb-t">${S.id==='auto'?'Encontramos a UC lida na fatura no cadastro. Confirme para liberar a revisão dos dados.':S.idNF?'A UC lida na fatura (3014567899) não está no cadastro. Busque pelo número ou pelo titular; a distribuidora vem da UC.':'Busque a UC pelo número ou pelo titular. A distribuidora vem da UC.'}</div>
-    <div class="idb-r"><div class="idb-f"><label for="idbQ">Unidade Consumidora e Distribuidora</label>
-      <span class="idb-in ${err?'err':''}">${MS('search',18)}<input id="idbQ" role="combobox" aria-expanded="false" aria-controls="idbM" aria-autocomplete="list" autocomplete="off" placeholder="Busque pela UC ou pelo titular" value="${ucLabel(u)}"></span>
-      ${err?`<span class="idb-err" role="alert">${err}</span>`:''}
-      <div class="idb-menu" id="idbM" role="listbox" hidden></div></div>
-      <button class="btn primary" id="idbOk">Validar</button></div></div>`;
-  const q=$('#idbQ'), m=$('#idbM'); let act=-1, shown=[];
-  const open=show=>{ m.hidden=!show; q.setAttribute('aria-expanded',show); };
-  const draw=()=>{ const t=q.value.trim().toLowerCase(), d=t.replace(/\D/g,'');
-    shown = (!t || t===ucLabel(u).toLowerCase()) ? UCS : UCS.filter(x=>(d && x.uc.includes(d)) || x.tit.toLowerCase().includes(t) || x.dist.toLowerCase().includes(t));
-    act=Math.min(act, shown.length-1);
-    m.innerHTML = shown.length ? shown.map((x,i)=>`<button type="button" role="option" id="ido${i}" class="idb-o ${x.uc===S.uc?'on':''} ${i===act?'act':''}" aria-selected="${x.uc===S.uc}" data-uc="${x.uc}"><b>${ucLabel(x)}</b><span>${x.tit}</span></button>`).join('')
-      : '<div class="idb-none">Nenhuma UC encontrada</div>';
-    if(act>=0) q.setAttribute('aria-activedescendant','ido'+act); else q.removeAttribute('aria-activedescendant');
-    m.querySelectorAll('[data-uc]').forEach(b=>b.onmousedown=e=>{ e.preventDefault(); pick(b.dataset.uc); }); };
-  const pick=id=>{ S.uc=id; S.idErr=''; q.value=ucLabel(ucOf(id)); open(false); q.closest('.idb-in').classList.remove('err'); };
-  q.onfocus=()=>{ q.select(); act=-1; draw(); open(true); };
-  q.oninput=()=>{ act=-1; draw(); open(true); };
-  q.onblur=()=>open(false);
-  q.onkeydown=e=>{
-    if(e.key==='ArrowDown'||e.key==='ArrowUp'){ e.preventDefault(); if(m.hidden){ draw(); open(true); } act=Math.max(0,Math.min(shown.length-1, act+(e.key==='ArrowDown'?1:-1))); draw(); }
-    else if(e.key==='Enter'){ e.preventDefault(); if(!m.hidden && shown[act]) pick(shown[act].uc); else validate(); }
-    else if(e.key==='Escape'){ open(false); } };
-  const validate=()=>{
-    const x=ucOf(S.uc);
-    if(!x || q.value.trim()!==ucLabel(x)){ S.idErr='Escolha uma UC da lista'; }
-    else if(x.tit!==TIT){ S.idErr=`Esta UC é de ${x.tit}, outro titular. A fatura é de ${TIT}.`; }
-    else { S.id='ok'; S.idErr=''; S.acts.unshift([`Identidade validada · UC ${x.uc}`,'ok',now(),true,ME]); toast('Identidade validada'); render(); return; }
-    render(); $('#idbQ').focus(); };
-  $('#idbOk').onclick=validate;
+  S.id = IDS.ok ? 'ok' : 'pend';
+  IDS.sent = S.sent;
+  Identity.mount($('#idbWrap'), IDS, ev=>{   // o componente altera IDS (uc, ok) e avisa o que aconteceu
+    if(ev==='validar'){ S.acts.unshift([`Identidade validada · UC ${IDS.uc}`,'ok',now(),true,ME]); toast('Identidade validada'); }
+    render();
+  });
 }
-function goIdentity(){ S.open.det=true; S.screen='det'; render(); const q=$('#idbQ'); if(q){ q.scrollIntoView({behavior:'smooth',block:'center'}); q.focus(); } }
+function goIdentity(){ S.open.det=true; S.screen='det'; render(); const t=$('#idbWrap .idf-t'); if(t){ t.scrollIntoView({behavior:'smooth',block:'center'}); t.focus(); } }
 
 /* ---------- cabeçalho: Extrair novamente (2 tentativas) ou quem enviou ---------- */
 function renderHead(){
   const h=$('#headActions');
   if (S.sent){ h.innerHTML=`<span class="sent-by">Enviada por ${S.sent.who} em ${S.sent.at}</span>`; return; }
-  h.innerHTML=`<span class="tries">${S.tries?`${S.tries} de 2 tentativas restantes`:'Sem tentativas restantes'}</span><button class="btn outline" id="reExt" ${S.tries?'':'disabled'}>${MS('refresh',18)}Extrair novamente</button>`;
+  // a contagem de tentativas fica só no diálogo; sem tentativas, o botão desabilita e explica no title
+  h.innerHTML=`<button class="btn outline" id="reExt" ${S.tries?'':'disabled title="Sem tentativas restantes"'}>${MS('refresh',18)}Extrair novamente</button>`;
   $('#reExt').onclick=reExtract;
 }
 function reExtract(){
@@ -1390,9 +1352,9 @@ LOGO = (document.querySelector('.sb-brand svg')?.outerHTML||'').replace(/fill="#
   const qs=new URLSearchParams(location.search), e=qs.get('estado')||'identidade';
   const fill={cofins:'3,38', leit:'13.020', item:'437,60', mod:'Horária verde'};
   const allDone=()=>{ S.pend.forEach(p=>{ p.done=fill[p.id]; if(p.cell) S.items[p.cell[0]][p.cell[1]]=p.done; }); S.status='pronta'; };
-  if (e==='nao-encontrada'){ S.id='edit'; S.uc=''; S.idNF=true; }
-  if (e==='divergente'){ S.id='edit'; S.uc='7720045512'; S.idErr='Esta UC é de Mercado Bom Preço Ltda, outro titular. A fatura é de '+TIT+'.'; }
-  if (['pendencias','soma','pronta','enviada','sem-tentativas'].includes(e)) S.id='ok';
+  if (e==='nao-encontrada'){ IDS.read=null; IDS.uc=''; }
+  if (e==='divergente') IDS.uc='3014002210';
+  if (['pendencias','soma','pronta','enviada','sem-tentativas'].includes(e)) IDS.ok=true;
   if (e==='soma'){ allDone(); S.items[6][7]='2.440,00'; S.itemChg['6-7']=1; checkSum(6,7); S.tab='Itens'; S.acts.length=Math.min(S.acts.length,8); }
   if (e==='pronta'||e==='enviada') allDone();
   if (e==='enviada'){ S.sent={who:ME.name, at:'07/10/2026 às 14:32'}; S.acts.unshift(['Enviada para faturamento','ok','14:32',false,ME]); }

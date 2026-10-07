@@ -3,174 +3,576 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Leitor de Faturas · Interações para o front</title>
+<title>Leitor de Faturas · Componentes e interações</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0..1,0&display=block" rel="stylesheet">
 <style>
-  :root{--ink:#1c1917;--mid:#78716c;--border:#e7e5e4;--s100:#f5f5f4;--s50:#fafaf9;--white:#fff;--brand:#71902f;--alert:#f97316}
-  *{box-sizing:border-box}
-  html{scroll-behavior:smooth;scroll-padding-top:24px}
-  body{margin:0;font:400 14px/1.55 Inter,sans-serif;color:var(--ink);background:var(--s100)}
-  .ms{font-family:"Material Symbols Rounded";font-size:18px;line-height:1;font-weight:400;font-style:normal;display:inline-block;vertical-align:-4px;font-variation-settings:"FILL" 1}
-  a{color:inherit}
-  .wrap{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;max-width:1480px;margin:0 auto;padding:32px 24px 80px}
-  nav{position:sticky;top:24px;align-self:start;display:flex;flex-direction:column;gap:2px}
-  nav h1{font:600 18px/1.3 Poppins,Inter,sans-serif;color:var(--brand);margin:0 0 4px}
-  nav p{margin:0 0 16px;color:var(--mid);font-size:12px}
-  nav a{display:flex;gap:8px;align-items:center;padding:7px 10px;border-radius:8px;text-decoration:none;font-weight:500}
-  nav a b{width:20px;height:20px;border-radius:6px;background:var(--white);display:grid;place-items:center;font-size:11px;flex:none}
-  nav a:hover,nav a.on{background:var(--white)}
-  nav a.on b{background:var(--brand);color:#fff}
-  .links{margin-top:16px;padding-top:16px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:6px;font-size:12px}
-  .links a{padding:0;font-weight:500;color:var(--mid)}
-  main{display:flex;flex-direction:column;gap:24px;min-width:0}
-  .intro{background:var(--white);border-radius:16px;padding:24px}
-  .intro h2{margin:0 0 6px;font:600 22px/1.3 Poppins,Inter,sans-serif}
-  .intro p{margin:0;color:var(--mid);max-width:760px}
-  section{background:var(--white);border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:20px}
-  .cols2{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:24px}
-  .txt h3{margin:0;font:600 18px/1.3 Poppins,Inter,sans-serif;display:flex;gap:10px;align-items:baseline}
-  .txt h3 small{font:600 12px Inter,sans-serif;color:var(--brand)}
-  .meta{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 16px}
-  .tag{display:inline-flex;align-items:center;gap:4px;height:24px;padding:0 8px;border-radius:999px;background:var(--s100);font-size:12px;font-weight:600;text-decoration:none}
-  .tag.issue{background:#ecfccb;color:#3f6212}
-  .txt h4{margin:16px 0 6px;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--mid)}
-  .txt ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:5px}
-  .txt li b{font-weight:600}
-  .txt .warn li::marker{color:var(--alert)}
-  .demo{min-width:0;display:flex;flex-direction:column;gap:10px}
-  .seg{display:flex;flex-wrap:wrap;gap:6px}
-  .seg button{height:30px;padding:0 12px;border-radius:999px;border:1px solid var(--border);background:var(--white);font:500 12px Inter,sans-serif;cursor:pointer}
-  .seg button.on{background:var(--ink);border-color:var(--ink);color:#fff}
-  .stage{position:relative;background:var(--s100);border-radius:12px;overflow:hidden;display:flex;justify-content:center}
-  .stage iframe{border:0;background:#fff;display:block}
-  .stage.desk iframe{position:absolute;top:0;left:0;width:1440px;height:860px;transform-origin:0 0}
-  .stage.mob{padding:16px 0}
-  .stage.mob iframe{width:393px;height:760px;border-radius:24px;box-shadow:0 8px 30px rgba(0,0,0,.12)}
-  .try{font-size:12px;color:var(--mid);display:flex;gap:6px;align-items:flex-start}
-  .try .ms{font-size:16px;color:var(--brand);vertical-align:0}
-  .open{margin-left:auto;font-size:12px;font-weight:500}
-  @media (max-width:1000px){.cols2{grid-template-columns:1fr}}
-  @media (max-width:820px){.wrap{grid-template-columns:1fr;padding:16px 16px 60px}nav{position:static}.stage.mob iframe{width:100%;max-width:393px}}
+:root{--ink:#1c1917;--mid:#78716c;--s400:#a8a29e;--border:#d6d3d1;--s200:#e7e5e4;--s100:#f5f5f4;--s50:#fafaf9;--white:#fff;
+  --brand:#71902f;--brand-d:#556927;--success:#5ea500;--ok-bg:#f7fee7;--alert:#f97316;--alert-bg:#fff7ed;--danger:#ef4444;
+  --shadow:0 10px 15px rgba(0,0,0,.10),0 4px 6px rgba(0,0,0,.10)}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:16px}
+body{margin:0;font:400 14px/1.5 Inter,sans-serif;color:var(--ink);background:var(--white)}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;padding:0}
+input{font:inherit;color:inherit}
+.ms{font-family:"Material Symbols Rounded";font-size:18px;line-height:1;font-weight:400;font-style:normal;display:inline-block;user-select:none;font-variation-settings:"FILL" 0}
+.ms.f{font-variation-settings:"FILL" 1}
+code{font:500 12px/1 ui-monospace,Consolas,monospace;background:var(--s100);padding:2px 5px;border-radius:4px}
+
+/* ---------- página ---------- */
+.wrap{display:grid;grid-template-columns:232px minmax(0,1fr);min-height:100vh}
+nav.side{position:sticky;top:0;height:100vh;overflow:auto;border-right:1px solid var(--s200);padding:24px 16px;background:var(--s50)}
+nav.side h1{font:600 16px/1.3 Poppins,Inter,sans-serif;color:var(--brand);margin:0}
+nav.side p{margin:4px 0 20px;color:var(--mid);font-size:12px}
+nav.side .grp{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--mid);margin:16px 8px 6px;font-weight:600}
+nav.side a{display:block;padding:6px 8px;border-radius:6px;text-decoration:none;color:var(--ink);font-weight:500;font-size:13px}
+nav.side a:hover{background:var(--s100)} nav.side a.on{background:var(--white);box-shadow:0 1px 3px rgba(0,0,0,.08);color:var(--brand)}
+nav.side .ext{margin-top:20px;padding-top:16px;border-top:1px solid var(--s200)}
+nav.side .ext a{color:var(--mid);font-size:12px}
+main{padding:40px 48px 120px;max-width:1120px;width:100%}
+.intro h2{font:600 28px/1.2 Poppins,Inter,sans-serif;margin:0 0 8px}
+.intro p{color:var(--mid);margin:0;max-width:680px}
+section.cmp{padding-top:56px}
+.cmp-h{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.cmp-h h3{font:600 22px/1.2 Poppins,Inter,sans-serif;margin:0}
+.cmp-h .tags{display:flex;gap:6px;flex-wrap:wrap}
+.tag{font-size:11px;font-weight:600;padding:3px 8px;border-radius:999px;background:var(--s100);text-decoration:none;color:var(--ink)}
+.tag.iss{background:#ecfccb;color:#3f6212}
+.cmp>p.lead{color:var(--mid);margin:6px 0 16px;max-width:720px}
+.ctrls{display:flex;flex-wrap:wrap;gap:16px;align-items:center;margin-bottom:10px}
+.seg{display:inline-flex;background:var(--s100);border-radius:8px;padding:3px;gap:2px;flex-wrap:wrap}
+.seg button{height:28px;padding:0 10px;border-radius:6px;font-size:12px;font-weight:500;color:var(--mid)}
+.seg button.on{background:var(--white);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.ctrls label.k{font-size:11px;color:var(--mid);text-transform:uppercase;letter-spacing:.05em;font-weight:600;margin-right:4px}
+.reset{margin-left:auto;font-size:12px;color:var(--mid);display:inline-flex;gap:4px;align-items:center}
+.reset:hover{color:var(--ink)}
+.canvas{position:relative;background:var(--s50);border:1px solid var(--s200);border-radius:12px;padding:40px 24px;display:flex;justify-content:center;align-items:center;min-height:180px;overflow:hidden;
+  background-image:radial-gradient(var(--s200) 1px,transparent 1px);background-size:16px 16px}
+.canvas.top{align-items:flex-start}
+.spec{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;margin-top:16px}
+.spec h4{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--mid);margin:0 0 8px}
+table.bh{width:100%;border-collapse:collapse;font-size:13px}
+table.bh td{padding:7px 8px;border-bottom:1px solid var(--s200);vertical-align:top}
+table.bh td:first-child{color:var(--mid);width:38%;padding-left:0}
+ul.nt{margin:0;padding-left:16px;font-size:13px;display:flex;flex-direction:column;gap:5px}
+.log{font-size:12px;color:var(--mid);margin-top:8px;min-height:18px}
+.log b{color:var(--ink);font-weight:600}
+
+/* ---------- componentes (mesmos valores do protótipo) ---------- */
+/* tab bar */
+.tabbar{display:flex;gap:10px;align-items:stretch}
+.tb-main{display:flex;gap:8px;padding:8px;background:var(--white);border-radius:999px;box-shadow:var(--shadow)}
+.tb{position:relative;isolation:isolate;width:124px;padding:8px 16px;border-radius:999px;display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--s400)}
+.tb>.lb{font-size:13px;font-weight:500;color:var(--mid)}
+.tb::before{content:'';position:absolute;inset:0;border-radius:999px;background:var(--s100);transform:scale(.55);opacity:0;transition:transform .35s cubic-bezier(.3,1.5,.5,1),opacity .2s;z-index:-1}
+.tb.on{color:var(--ink)} .tb.on>.lb{color:var(--ink);font-weight:600} .tb.on::before{transform:scale(1);opacity:1}
+.tb .ic{position:relative} .tb .ic .ms{font-size:26px}
+.tb.jump .ic{animation:tbOpen .45s cubic-bezier(.3,1.5,.5,1)}
+@keyframes tbOpen{40%{transform:translateY(-6px) scale(1.12)}}
+.tb .cnt{position:absolute;top:-6px;left:15px;min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:var(--alert);color:#fff;font-size:10px;font-weight:600;display:grid;place-items:center;box-shadow:0 0 0 2px #fff}
+.tb.side{background:var(--white);box-shadow:var(--shadow);justify-content:center;padding:14px 20px}
+.tb.side::before{inset:8px}
+.tb.send{background:var(--brand);color:#fff;transition:background .15s} .tb.send>.lb{color:#fff} .tb.send::before{display:none}
+.tb.send:hover{background:var(--brand-d)}
+.tb.send.busy{pointer-events:none} .tb.send.busy .ic .ms{animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.tabbar.mob .tb-main{padding:6px;gap:4px} .tabbar.mob .tb{width:76px;padding:15px 4px}
+.tabbar.mob .tb.side{width:68px;padding:15px 4px}
+.tabbar.mob .tb>.lb{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* painéis */
+.pl-stage{width:100%;display:flex;flex-direction:column;gap:16px}
+.pl-cols{display:flex;gap:8px;height:150px;transition:width .35s ease;margin:0 auto;border:1px dashed var(--s400);border-radius:10px;padding:8px;background:rgba(255,255,255,.6)}
+.pl-p{border-radius:8px;background:var(--white);box-shadow:0 1px 3px rgba(0,0,0,.08);display:flex;flex-direction:column;justify-content:center;align-items:center;gap:2px;font-size:12px;font-weight:600;min-width:0;overflow:hidden;white-space:nowrap;transition:flex-basis .35s ease,opacity .25s ease,min-width .35s ease}
+.pl-p small{font-weight:400;color:var(--mid);font-size:11px}
+.pl-p.min{flex:0 0 0!important;min-width:0!important;opacity:0;margin-left:-8px}
+.pl-p.det{outline:2px solid var(--brand);outline-offset:-2px}
+.pl-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:var(--mid);font-size:12px}
+.pl-empty b{color:var(--ink)}
+.range{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--mid)} .range input{width:240px;accent-color:var(--brand)}
+
+/* card de dado */
+.cards{display:grid;grid-template-columns:repeat(3,260px);gap:16px}
+.cap{font-size:11px;color:var(--mid);text-transform:uppercase;letter-spacing:.05em;font-weight:600;margin-bottom:6px}
+.card{background:var(--white);border-radius:8px;padding:12px;border:1px solid var(--s200);transition:box-shadow .3s,border-color .3s}
+.card .ct{display:flex;align-items:center;gap:6px;font-weight:600;font-size:13px;min-height:28px}
+.card .ct .sp{flex:1}
+.card .row{display:flex;align-items:center;gap:8px;margin-top:6px}
+.vbox{flex:1;min-width:0;height:40px;display:flex;align-items:center;gap:6px;padding:0 12px;border-radius:6px;background:var(--s50);font-size:14px}
+.vbox .u,.fld .u{color:var(--mid)}
+.ib{width:28px;height:28px;border-radius:6px;display:grid;place-items:center;color:var(--ink)}
+.ib:hover{background:var(--s100)}
+.cp{width:40px;height:40px;border-radius:6px;display:grid;place-items:center;color:var(--ink)}
+.cp:hover{background:var(--s100)}
+.fld{flex:1;min-width:0;height:40px;display:flex;align-items:center;gap:6px;padding:0 12px;border-radius:6px;border:1px solid var(--border);background:var(--white)}
+.fld:focus-within{outline:2px solid var(--brand);outline-offset:-1px;border-color:transparent}
+.fld input{flex:1;min-width:0;border:0;outline:0;background:none;font-size:14px}
+.fld input::placeholder{color:var(--s400)}
+.fld.err{border-color:var(--danger)} .fld.err:focus-within{outline-color:var(--danger)}
+.card.pend{border-color:var(--alert)} .card.ok{border-color:var(--success)}
+.badge{width:18px;height:18px;border-radius:5px;background:var(--alert);color:#fff;display:grid;place-items:center;flex:none} .badge .ms{font-size:13px}
+.hint{font-size:12px;color:var(--mid);margin-top:8px} .hint b{color:var(--ink);font-weight:500}
+.send-c{color:var(--brand)}
+.card.flash{animation:flash 1.2s ease}
+@keyframes flash{0%,60%{box-shadow:0 0 0 2px var(--alert),0 0 0 6px rgba(249,115,22,.25)}}
+
+/* máscaras */
+.masks{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;width:100%}
+.masks label{display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:500}
+.masks .msg{font-size:11px;color:var(--mid);font-weight:400;min-height:15px} .masks .msg.e{color:var(--danger)}
+
+/* planilha */
+.grade{background:var(--white);border-radius:8px;border:1px solid var(--s200);overflow:hidden;width:560px}
+.grade table{border-collapse:collapse;width:100%;font-size:13px}
+.grade th{font-weight:500;color:var(--mid);text-align:right;padding:8px 12px;background:var(--s50);border-bottom:1px solid var(--s200)}
+.grade th:first-child,.grade td:first-child{text-align:left}
+.grade td{padding:0 12px;height:40px;border-bottom:1px solid var(--s100);text-align:right;white-space:nowrap}
+.grade td.num{cursor:cell;outline:0}
+.grade td .cu{color:var(--s400)}
+.grade td.sel{box-shadow:inset 0 0 0 2px var(--brand)}
+.grade td.chg{background:var(--ok-bg)}
+.grade td.pd{background:var(--alert-bg);color:var(--alert)}
+.grade td.ed{padding:0} .grade td.ed input{width:100%;height:38px;border:0;padding:0 12px;text-align:right;background:#fff;outline:2px solid var(--brand);outline-offset:-2px}
+.grade td.ed input::placeholder{color:var(--s400)}
+.grade tfoot td{font-weight:600;background:var(--s50);border:0}
+.grade tfoot td.off{color:var(--danger)}
+.grade-h{display:flex;justify-content:space-between;font-size:12px;color:var(--mid);margin-bottom:6px;width:560px}
+.grade-h .off{color:var(--danger);font-weight:500}
+
+/* card de pendências */
+.pc-demo{display:flex;gap:24px;align-items:flex-start}
+.pc-fields{display:flex;flex-direction:column;gap:10px;width:260px}
+.pend-card{width:340px;background:var(--white);border-radius:16px;box-shadow:var(--shadow);overflow:hidden}
+.pc-h{display:flex;align-items:center;gap:8px;padding:12px 12px 12px 16px;font-weight:600;font-size:13px;border-bottom:1px solid var(--s100)}
+.pc-h .sp{flex:1}
+.bxs{height:28px;padding:0 8px;border-radius:6px;background:var(--s50);display:inline-flex;align-items:center;gap:4px;font-size:12px}
+.pc-b{padding:16px;display:flex;flex-direction:column;gap:12px}
+.pc-b label{font-size:13px;font-weight:500}
+.pc-a{display:flex;align-items:center;justify-content:space-between}
+.pc-nav{display:flex;align-items:center;gap:4px;font-size:12px;color:var(--mid)}
+.pc-nav button{width:28px;height:28px;border-radius:6px;display:grid;place-items:center} .pc-nav button:disabled{opacity:.3;cursor:default}
+.btn{height:36px;padding:0 14px;border-radius:6px;font-weight:500;display:inline-flex;align-items:center;gap:6px;font-size:13px}
+.btn.pri{background:var(--ink);color:#fff} .btn.pri:disabled{background:#8a8988;cursor:not-allowed}
+.btn.out{border:1px solid var(--border);background:#fff} .btn.out:disabled{opacity:.45;cursor:not-allowed}
+.pc-empty{padding:24px 16px;text-align:center;color:var(--mid);font-size:13px;display:flex;flex-direction:column;align-items:center;gap:4px}
+.pc-empty .ms{color:var(--success);font-size:28px} .pc-empty b{color:var(--ink)}
+
+/* marcador fora da área */
+.mk-box{position:relative;width:320px}
+.mk-scroll{height:240px;overflow:auto;border-radius:12px;background:var(--white);border:1px solid var(--s200);padding:12px;display:flex;flex-direction:column;gap:10px}
+.mk-scroll .card{flex:none}
+.offi{position:absolute;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;z-index:2}
+.offi.d{bottom:6px} .offi.u{top:6px;flex-direction:column-reverse}
+.offi .b{width:24px;height:24px;border-radius:7px;background:var(--alert);color:#fff;display:grid;place-items:center;animation:ring 1.4s ease-out infinite}
+.offi .b .ms{font-size:15px}
+.offi .a{color:var(--alert);font-size:22px;margin:-6px 0;animation:bob 1s ease-in-out infinite}
+.offi.u .a{animation-name:bobU}
+@keyframes ring{0%{box-shadow:0 0 0 0 rgba(249,115,22,.5)}70%,100%{box-shadow:0 0 0 8px rgba(249,115,22,0)}}
+@keyframes bob{50%{transform:translateY(4px)}} @keyframes bobU{50%{transform:translateY(-4px)}}
+
+/* atividade */
+.act{width:300px;background:var(--white);border:1px solid var(--s200);border-radius:16px;padding:16px}
+.ev{display:grid;grid-template-columns:24px 1fr 24px;gap:0 10px;padding:8px;border-radius:8px;position:relative}
+.ev .i{width:24px;height:24px;border-radius:7px;display:grid;place-items:center;background:var(--s100)} .ev .i .ms{font-size:14px}
+.ev .i.ok{background:var(--success);color:#fff} .ev .i.alert{background:var(--alert);color:#fff}
+.ev .n{font-size:13px;font-weight:500} .ev .d{font-size:11px;color:var(--mid);grid-column:2}
+.who{grid-column:3;grid-row:1;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:9px;font-weight:700;color:#fff;background:linear-gradient(140deg,#93c5fd,#1d4ed8)}
+.who.sys{background:#0c0a09} .who.sys .ms{font-size:12px}
+.who[data-name]:hover::after{content:attr(data-name);position:absolute;right:8px;top:-20px;background:var(--ink);color:#fff;font-size:11px;font-weight:500;padding:2px 6px;border-radius:4px;white-space:nowrap}
+.ev .dif{grid-column:2;display:grid;grid-template-rows:0fr;transition:grid-template-rows .2s ease,margin .2s;font-size:12px}
+.ev .dif>div{overflow:hidden;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.ev.has:hover .dif,.ev.has:focus .dif{grid-template-rows:1fr;margin-top:6px}
+.ev.has:focus{outline:2px solid var(--brand)}
+.dif .o{text-decoration:line-through;color:var(--mid)} .dif .o.none{text-decoration:none;font-style:italic}
+.dif .t{font-weight:600;background:var(--ok-bg);padding:1px 6px;border-radius:4px}
+.ev.new{animation:evNew 1.6s ease}
+@keyframes evNew{0%,40%{background:var(--ok-bg)}}
+.link{width:1px;height:8px;background:var(--s200);margin-left:20px}
+
+/* identidade: o bloco vem de assets/identidade.js (mesmo código do protótipo) */
+.under{margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:10px;transition:opacity .2s}
+.under.wait{opacity:.45;pointer-events:none}
+
+/* diálogo */
+.hacts{display:flex;align-items:center;gap:10px;background:var(--white);border:1px solid var(--s200);padding:12px 16px;border-radius:12px}
+.tries{font-size:12px;color:var(--mid)}
+.dlg-ov{position:absolute;inset:0;background:rgba(12,10,9,.4);display:grid;place-items:center;padding:16px;animation:fade .2s ease;z-index:5}
+@keyframes fade{from{opacity:0}}
+.dlg{background:#fff;border-radius:12px;max-width:400px;width:100%;padding:24px;display:flex;flex-direction:column;gap:10px;box-shadow:var(--shadow);animation:pop .25s cubic-bezier(.2,.9,.3,1.1)}
+@keyframes pop{from{transform:translateY(8px) scale(.98);opacity:0}}
+.dlg h5{margin:0;font:600 17px/1.3 Poppins,Inter,sans-serif} .dlg p{margin:0;color:var(--mid);font-size:13px}
+.dlg .a{display:flex;justify-content:flex-end;gap:8px;margin-top:8px}
+
+/* mobile */
+.phone{position:relative;width:320px;height:560px;border-radius:32px;background:var(--white);box-shadow:0 0 0 8px #1c1917,0 20px 40px rgba(0,0,0,.2);overflow:hidden}
+.ph-head{position:absolute;top:0;left:0;right:0;z-index:3;background:#fff;display:flex;align-items:center;gap:8px;padding:14px 12px 10px 16px;border-bottom:1px solid var(--s100);transition:transform .28s ease}
+.ph-head .tt{flex:1;min-width:0} .ph-head .tt b{display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis} .ph-head .tt span{font-size:9px;letter-spacing:.06em;color:var(--mid);text-transform:uppercase}
+.bds{display:flex;padding-left:10px} .bd{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;color:#fff;margin-left:-10px;box-shadow:0 0 0 2px #fff} .bd .ms{font-size:16px}
+.bd.ink{background:var(--ink)} .bd.br{background:var(--brand)} .bd.st{background:var(--s100);color:var(--ink);width:auto;padding:0 8px;border-radius:999px;font-size:11px;font-weight:600;gap:2px;display:flex;align-items:center} .bd.st .ms{color:var(--alert)}
+.ph-body{position:absolute;inset:0;overflow:auto;padding:76px 16px 100px;display:flex;flex-direction:column;gap:10px}
+.ph-body .card{flex:none}
+.ph-tb{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);z-index:3;transition:transform .28s ease}
+.phone.hide .ph-head{transform:translateY(-100%)} .phone.hide .ph-tb{transform:translate(-50%,140px)}
+.ph-ov{position:absolute;inset:0;z-index:5;background:rgba(245,245,244,.4);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);padding:56px 12px;animation:fade .2s ease}
+.ph-sheet{background:#fff;border-radius:16px;box-shadow:var(--shadow);animation:pop .25s cubic-bezier(.2,.9,.3,1.1)}
+.ph-nav{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;font-weight:600;font-size:14px}
+.ph-sec{padding:4px 16px 12px;display:flex;flex-direction:column;align-items:flex-start;gap:8px}
+.hb{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 10px;border-radius:999px;background:var(--s100);font-size:12px;font-weight:600}
+.hb .ms{font-size:16px}
+.ph-acts{display:flex;gap:8px;padding:0 16px 16px} .ph-acts button{width:52px;height:52px;border-radius:11px;background:var(--s50);display:grid;place-items:center}
+
+/* filtro */
+.flt{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.fbtn{width:36px;height:36px;border-radius:8px;display:grid;place-items:center;background:var(--brand);color:#fff;position:relative}
+.fbtn[aria-pressed=false]{background:var(--white);color:var(--brand);border:1px solid var(--s200)}
+.fbtn .n{position:absolute;top:-6px;right:-6px;min-width:18px;height:18px;border-radius:999px;background:var(--ink);color:#fff;font-size:10px;font-weight:600;display:grid;place-items:center;padding:0 4px}
+.fchip{height:36px;padding:0 12px;border-radius:8px;border:1px dashed var(--border);background:#fff;display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:500}
+.fchip.act{border-style:solid;border-color:var(--ink)}
+.fchip .v{background:var(--s100);border-radius:4px;padding:1px 6px;font-size:12px}
+.fclear{font-size:13px;font-weight:500;color:var(--mid);height:36px;padding:0 8px}
+.fpop{position:absolute;z-index:10;width:240px;background:#fff;border-radius:8px;box-shadow:var(--shadow);padding:4px;animation:popd .12s ease}
+@keyframes popd{from{transform:translateY(-4px);opacity:0}}
+.fpop .s{display:flex;align-items:center;gap:6px;padding:0 8px;height:36px;border-bottom:1px solid var(--s100);color:var(--mid)}
+.fpop .s input{flex:1;border:0;outline:0;font-size:13px}
+.fpop .o{display:flex;align-items:center;gap:8px;width:100%;padding:7px 8px;border-radius:4px;font-size:13px;text-align:left}
+.fpop .o:hover,.fpop .o:focus-visible{background:var(--s100);outline:0}
+.chk{width:16px;height:16px;border-radius:4px;border:1px solid var(--border);display:grid;place-items:center;flex:none}
+.o.on .chk{background:var(--ink);border-color:var(--ink);color:#fff} .chk .ms{font-size:13px}
+.fpop .cl{border-top:1px solid var(--s100);margin-top:4px;padding:8px;width:100%;font-size:13px;text-align:center}
+.fpop .cl:disabled{color:var(--s400);cursor:default}
+
+/* upload */
+.up{width:460px;display:flex;flex-direction:column;gap:10px}
+.drop{border:1.5px dashed var(--border);border-radius:12px;background:#fff;padding:24px;text-align:center;font-size:13px;color:var(--mid);transition:border-color .15s,background .15s;cursor:pointer}
+.drop.over{border-color:var(--brand);background:var(--ok-bg)}
+.drop .ms{font-size:28px;color:var(--brand);display:block;margin:0 auto 6px}
+.drop b{color:var(--ink)}
+.fi{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--s200);border-radius:8px;padding:10px 12px;font-size:13px}
+.fi>.ms{color:var(--mid)} .fi .nm{flex:1;min-width:0} .fi .nm b{display:block;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis} .fi .nm span{font-size:11px;color:var(--mid)}
+.fi.err{border-color:var(--danger)} .fi.err .nm span,.fi.err>.ms{color:var(--danger)}
+.fi .bar{height:4px;border-radius:2px;background:var(--s100);overflow:hidden;margin-top:6px} .fi .bar i{display:block;height:100%;background:var(--brand);transition:width .15s linear}
+.fi .st .ms{color:var(--success)}
+.sims{display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:12px;color:var(--mid)}
+.sims button{font-size:12px;height:28px;padding:0 10px;border-radius:999px;background:#fff;border:1px solid var(--s200);color:var(--ink)}
+
+.toast{position:fixed;top:20px;left:50%;transform:translate(-50%,-20px);background:var(--ink);color:#fff;padding:10px 16px;border-radius:10px;opacity:0;transition:.25s;z-index:99;font-size:13px;pointer-events:none}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media (max-width:900px){.wrap{grid-template-columns:1fr}nav.side{position:static;height:auto}main{padding:24px 16px 80px}.spec{grid-template-columns:1fr}.cards,.masks{grid-template-columns:1fr}.canvas{overflow:auto;justify-content:flex-start}}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <nav id="nav">
-    <h1>Leitor de Faturas</h1>
-    <p>Interações para o front · uma área por subissue</p>
-    <div id="navList"></div>
-    <div class="links">
-      <a href="detalhe.html">Protótipo · Detalhe ↗</a>
-      <a href="index.html">Protótipo · Listagem ↗</a>
-      <a href="https://github.com/bourdonner/leitor-faturas-prototipo/blob/main/REGRAS.md">REGRAS.md (completo) ↗</a>
-      <a href="https://www.figma.com/design/EwAXXXwHEhfBp9L7N02InG/Faturamento">Figma · Faturamento ↗</a>
-      <a href="https://linear.app/cogecom/issue/COG-286">Linear · COG-286 ↗</a>
-    </div>
-  </nav>
-  <main id="main">
-    <div class="intro">
-      <h2>O que é chato de acertar, por área</h2>
-      <p>Cada bloco tem as regras que não dá para ver só olhando a tela e uma demo ao vivo do protótipo. Detalhes de medida e animação ficam no REGRAS.md. Dados fictícios.</p>
-    </div>
-  </main>
+<nav class="side">
+  <h1>Leitor de Faturas</h1>
+  <p>Componentes e interações · fora do contexto da tela</p>
+  <div id="navl"></div>
+  <div class="ext">
+    <a href="detalhe.html">Protótipo completo · Detalhe ↗</a>
+    <a href="index.html">Protótipo completo · Listagem ↗</a>
+    <a href="https://github.com/bourdonner/leitor-faturas-prototipo/blob/main/REGRAS.md">REGRAS.md ↗</a>
+    <a href="https://www.figma.com/design/EwAXXXwHEhfBp9L7N02InG/Faturamento">Figma · Faturamento ↗</a>
+    <a href="https://linear.app/cogecom/issue/COG-286">Linear · COG-286 ↗</a>
+  </div>
+</nav>
+<main id="main">
+  <div class="intro">
+    <h2>Componentes e interações</h2>
+    <p>Cada componente aparece sozinho, com os estados para alternar e a tabela gatilho → resultado. Tudo é clicável. Cores, tempos e curvas são os do protótipo; nomes da lib Style Guide Enershare aparecem nas etiquetas.</p>
+  </div>
+</main>
 </div>
+<div class="toast" id="toast"></div>
+<script src="assets/identidade.js"></script>
 <script>
-const D='detalhe.html?demo=1&';
-// subissues da COG-286 no Linear, uma por área
-const ISSUE={paineis:'COG-287',tabbar:'COG-288',cards:'COG-289',planilha:'COG-290',pendencias:'COG-291',atividade:'COG-292',identidade:'COG-293',mobile:'COG-294',listagem:'COG-295'};
-const SECTIONS=[
- {id:'paineis', t:'Painéis e layout (desktop)', rules:[
-   'Até 3 painéis lado a lado: <b>Fatura</b> (686 px, mín. 400) · <b>Detalhes</b> (ocupa o resto, mín. 520) · <b>Atividade</b> (284 fixo). Gap 24.',
-   'Faltou largura: sai primeiro o de menor prioridade. Ordem: Detalhes › Fatura › Atividade.',
-   'Abrir um painel que não cabe fecha os outros, do menos para o mais prioritário.',
-   'Todos fechados: "Nenhum painel aberto" + <b>Voltar ao padrão</b>.',
-   'Cards em 2/3/4 colunas pela largura do <b>painel</b> (container query), não da janela.'],
-  edge:['Breakpoint único em 768 px; ao trocar de modo, volta para Detalhes.','Abas rolam com o conteúdo (não ficam presas).'],
-  demos:[['Desktop',D+'estado=pendencias','desk','Feche e abra painéis pela tab bar e estreite a janela.']]},
- {id:'tabbar', t:'Tab bar', rules:[
-   'Pílula <b>Fatura · Detalhes · Atividade</b> + botão separado à direita (gap 10).',
-   'O botão da direita muda: <b>Pendências</b> (com contador) enquanto houver pendência → <b>Faturar</b> quando a identidade está validada e não há pendência → nada depois de enviada.',
-   'Faturar: Default (brand) · Hover (neon/800) · Loading ("Enviando…", ícone girando, sem clique). Componente da lib: Tab Bar Item <code>Type=Send</code>.',
-   'Mobile: só ícones (nome continua para leitor de tela), Atividade sai da barra; ao rolar para baixo a barra desce e some.'],
-  edge:['Item ativo = pílula interna com animação de escala; abrir/fechar faz o ícone pular.','Faturar no mobile precisa de aria-label "Enviar para faturamento".'],
-  demos:[['Pendências',D+'estado=pendencias','desk'],['Faturar',D+'estado=pronta','desk','Passe o mouse e clique em Faturar para ver o carregando.'],['Mobile',D+'estado=pronta','mob']]},
- {id:'cards', t:'Detalhes · cards e campos', rules:[
-   'Card = <b>um rótulo + um valor + unidade</b>. Copiar leva só o valor.',
-   'Estados: visualização (lápis) · edição (campo com unidade dentro, enviar ao lado, fechar no cabeçalho; Enter/Esc) · pendente (borda laranja) · corrigido (borda verde).',
-   'Visualização e edição têm a <b>mesma altura</b>; cards da mesma linha alinham ao topo.',
-   'Máscaras: moeda/% digitam da direita (2 casas); kWh inteiro com milhar; data, CNPJ, CEP e código de barras com pontuação e validação.'],
-  edge:['Inválido: borda vermelha + aviso, não salva.','No iOS, campo com 16 px para o Safari não dar zoom.'],
-  demos:[['Resumo',D+'estado=pendencias','desk','Clique no lápis de um card e digite um valor.'],['Mobile',D+'estado=pendencias','mob']]},
- {id:'planilha', t:'Planilha de itens e soma', rules:[
-   'Duplo clique, Enter ou F2 edita; setas navegam; Esc cancela. No mobile, a célula pendente abre com um toque.',
-   'Unidade dentro da célula, em cinza ("540 kWh", "R$ 800,35").',
-   '<b>A soma da coluna Valor tem que fechar com o Total da fatura.</b> Editou e não fechou → a célula vira pendência, com o valor que fecha no placeholder.',
-   'Corrigiu com outro valor que ainda não fecha → continua pendência. Rodapé mostra a soma em vermelho enquanto não fecha.'],
-  edge:['Coluna Item fixa no desktop; no mobile rola junto e ocupa até metade, com corte no meio do nome.','Quantidade e valores aceitam negativo (créditos); tarifas com 5 casas.'],
-  demos:[['Soma não fecha',D+'estado=soma&aba=Itens','desk','A Demanda está com valor errado: digite outro valor e veja a pendência continuar.'],['Mobile',D+'estado=soma&aba=Itens','mob']]},
- {id:'pendencias', t:'Pendências', rules:[
-   'Desktop: card flutuante com "1 de N", anterior/próxima, <b>Ver no Campo</b> (rola até o card e pisca) e Confirmar (só com valor).',
-   'Mobile: lista em tela cheia, cada item com campo, Ver no Campo e Confirmar.',
-   '<b>Sugestão no placeholder</b> quando o valor é derivável (nunca preenchido): COFINS = valor ÷ base, leitura = anterior + consumo, ICMS do item = alíquota × valor. A dica embaixo diz de onde veio.',
-   'Item pendente fora da área visível: marcador laranja + seta na borda do container; clicar rola até ele.'],
-  edge:['Sem identidade validada, o card só manda para a identidade.','Zerou: some o botão Pendências, aba perde o alerta, status vira "Sem pendências".'],
-  demos:[['Desktop',D+'estado=pendencias','desk','Role o Resumo: o marcador aponta o COFINS quando ele sai da tela.'],['Mobile',D+'estado=pendencias','mob','Toque no botão de alerta.']]},
- {id:'atividade', t:'Atividade', rules:[
-   'Linha do tempo, mais recente no topo. Autor no canto: <b>sistema</b> = marca Enershare em preto; <b>pessoa</b> = iniciais com cor própria (nome no hover).',
-   'Edição: no hover/foco/toque abre <b>de → para</b> (antigo riscado, novo em negrito sobre verde-claro). Pendência resolvida: "pendente → valor".',
-   'Evento novo entra destacado.',
-   'Mobile: fica no painel do header (botão histórico), não na tab bar.'],
-  edge:['Status do sistema em 1–2 palavras.'],
-  demos:[['Desktop',D+'estado=pendencias','desk','Passe o mouse num evento de edição.']]},
- {id:'identidade', t:'Identidade, extrair novamente e só leitura', rules:[
-   'Bloco acima das abas. A UC lida vem preenchida; a <b>distribuidora sai da UC</b> (um campo: "Unidade Consumidora e Distribuidora", combobox com busca por número ou titular).',
-   'Até validar: dados esmaecidos e travados. UC de outro titular dá erro no campo. Validada: pílula verde + Alterar.',
-   '<b>Extrair novamente</b>: "N de 2 tentativas restantes", diálogo de confirmação (descarta correções); sem tentativas, desabilitado. Mobile: no painel do header.',
-   '<b>Enviada</b>: sem edição, sem tab bar de ação, pílula com cadeado + data + UC, cabeçalho "Enviada por … em …".'],
-  edge:['Combobox: setas, Enter escolhe, Esc fecha; texto digitado sem escolher → "Escolha uma UC da lista".','Regras de negócio seguem o stg (COG-282).'],
-  demos:[['Validar',D+'estado=identidade','desk'],['Não encontrada',D+'estado=nao-encontrada','desk','Digite "mercado" ou "3014" no campo.'],['Outro titular',D+'estado=divergente','desk'],['Sem tentativas',D+'estado=sem-tentativas','desk'],['Enviada',D+'estado=enviada','desk'],['Mobile',D+'estado=identidade','mob']]},
- {id:'mobile', t:'Mobile · header e fatura', rules:[
-   'Header da lib (<code>Size=Mobile, Context=Invoice</code>): badges sobrepostos UC, distribuidora, referência + pílula de status por cima.',
-   'Tocar num badge abre o painel do header sobre fundo desfocado: status, referência, links, histórico, baixar, abrir, extrair novamente.',
-   'Rolar para baixo: header sobe e tab bar desce; rolar para cima, topo ou trocar de tela: voltam. Rolagem lateral não conta.',
-   'Fatura: zoom por pinça (1×–4×, mantém o ponto entre os dedos) e toque duplo (cabe ↔ 2×).'],
-  edge:['Painel fecha com ×, toque fora ou Esc; o foco volta ao badge.'],
-  demos:[['Detalhe',D+'estado=pendencias','mob','Toque nos badges do header e role o conteúdo.'],['Enviada',D+'estado=enviada','mob']]},
- {id:'listagem', t:'Listagem e envio de fatura', rules:[
-   'Filtros visíveis por padrão (padrão do Cadastro): Situação, Pendências, Concessionária, Enviado por, Recebida em. Funil mostra/esconde e conta os ativos.',
-   'Cada filtro: busca + opções + "Limpar seleção"; "Limpar todos" só com filtro ativo.',
-   '<b>Nova fatura</b>: PDF/JPG/PNG/WebP, até 20 MB e 20 arquivos; inválido fica na lista com o motivo e não sobe.',
-   'Mobile: "Tirar foto" (câmera na página com enquadramento; sem permissão, câmera do aparelho) → revisar páginas → enviar.'],
-  edge:['Ao terminar, as novas entram no topo como "Lendo fatura", destacadas.','"Enviado por" no lugar de responsável: não existe atribuição.'],
-  demos:[['Desktop','index.html','desk','Clique em "Nova fatura" e arraste arquivos.'],['Mobile','index.html','mob']]},
-];
-const main=document.getElementById('main'), nav=document.getElementById('navList');
-SECTIONS.forEach((s,i)=>{
-  nav.insertAdjacentHTML('beforeend',`<a href="#${s.id}" data-id="${s.id}"><b>${i+1}</b>${s.t}</a>`);
-  const iss=ISSUE[s.id];
-  main.insertAdjacentHTML('beforeend',`<section id="${s.id}">
-    <div class="txt"><h3><small>${String(i+1).padStart(2,'0')}</small>${s.t}</h3>
-      <div class="meta">${iss?`<a class="tag issue" href="https://linear.app/cogecom/issue/${iss}">${iss}</a>`:''}<a class="tag" href="https://github.com/bourdonner/leitor-faturas-prototipo/blob/main/REGRAS.md">REGRAS.md</a></div>
-      <div class="cols2"><div><h4>Regras</h4><ul>${s.rules.map(r=>`<li>${r}</li>`).join('')}</ul></div>
-      <div><h4>Atenção</h4><ul class="warn">${s.edge.map(r=>`<li>${r}</li>`).join('')}</ul></div></div></div>
-    <div class="demo"><div class="seg" role="tablist">${s.demos.map((d,k)=>`<button role="tab" data-k="${k}" class="${k?'':'on'}">${d[0]}</button>`).join('')}<a class="open" target="_blank" href="${s.demos[0][1].replace('demo=1&','')}">Abrir em tela cheia ↗</a></div>
-      <div class="stage"></div><div class="try"></div></div></section>`);
-  const sec=document.getElementById(s.id), stage=sec.querySelector('.stage'), tr=sec.querySelector('.try'), op=sec.querySelector('.open');
-  const show=k=>{ const [lb,url,kind,tip]=s.demos[k];
-    sec.querySelectorAll('.seg button').forEach(b=>b.classList.toggle('on',+b.dataset.k===k));
-    stage.className='stage '+kind; stage.innerHTML=`<iframe loading="lazy" title="Demo: ${s.t} · ${lb}" src="${url}"></iframe>`; fit(stage);
-    tr.innerHTML=tip?`<span class="ms">touch_app</span>${tip}`:''; op.href=url.replace('demo=1&',''); };
-  sec.querySelectorAll('.seg button').forEach(b=>b.onclick=()=>show(+b.dataset.k));
-  show(0);
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const MS=(n,f,s)=>`<span class="ms${f?' f':''}"${s?` style="font-size:${s}px"`:''} aria-hidden="true">${n}</span>`;
+function toast(t){ const e=$('#toast'); e.textContent=t; e.classList.add('show'); clearTimeout(e._t); e._t=setTimeout(()=>e.classList.remove('show'),1800); }
+const now=()=>new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+const jump=el=>{ if(!el) return; el.classList.remove('jump'); void el.offsetWidth; el.classList.add('jump'); };
+const flash=el=>{ if(!el) return; el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash'); };
+const TIT='Padaria Estrela do Sul Ltda';
+
+/* máscaras (as mesmas do protótipo) */
+const PAT={date:'##/##/####',cnpj:'##.###.###/####-##',cep:'#####-###',barcode:'###########-# ###########-# ###########-# ###########-#'};
+const NUM={money:2,pct:2,int:0};
+const fmtPat=(d,p)=>{ let o='',j=0; for(const c of p){ if(j>=d.length) break; o+=c==='#'?d[j++]:c; } return o; };
+function applyMask(k,raw,signed){ const d=raw.replace(/\D/g,'');
+  if(k in NUM){ const neg=signed&&((raw.match(/[-−]/g)||[]).length%2===1); if(!d) return neg?'−':''; let n=d.replace(/^0+(?=\d)/,''), dec=NUM[k], out;
+    if(dec){ n=n.padStart(dec+1,'0'); out=Number(n.slice(0,-dec)).toLocaleString('pt-BR')+','+n.slice(-dec); } else out=Number(n).toLocaleString('pt-BR');
+    return (neg&&/[1-9]/.test(d)?'−':'')+out; }
+  if(PAT[k]) return fmtPat(d,PAT[k]); return raw; }
+function validMask(k,v){ if(!v||(k in NUM&&!/\d/.test(v))) return 'Preencha o valor';
+  if(k==='date'){ const [dd,mm,yy]=v.split('/').map(Number), dt=new Date(yy,mm-1,dd); if(v.length!==10||dt.getFullYear()!==yy||dt.getMonth()!==mm-1||dt.getDate()!==dd) return 'Data inválida'; }
+  if(PAT[k]&&k!=='date'&&v.length!==PAT[k].length) return {cnpj:'CNPJ incompleto',cep:'CEP incompleto',barcode:'Código de barras incompleto'}[k];
+  return ''; }
+function mask(inp,k,signed){ if(!k) return; inp.inputMode=k in NUM?'decimal':'numeric'; if(PAT[k]) inp.maxLength=PAT[k].length;
+  inp.addEventListener('input',()=>{ const v=applyMask(k,inp.value,signed); if(v!==inp.value){ inp.value=v; inp.setSelectionRange(v.length,v.length);} inp.closest('.fld')?.classList.remove('err'); }); }
+const pn=t=>parseFloat(String(t).replace(/[^\d,−-]/g,'').replace(/\./g,'').replace(',','.').replace('−','-'))||0;
+const money=n=>(n<0?'−':'')+Math.abs(n).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+
+/* ---------- registro ---------- */
+const C=[]; const comp=o=>C.push(o);
+const segH=(name,label,opts,cur)=>`<span><label class="k">${label}</label><span class="seg" data-seg="${name}">${opts.map(([v,t])=>`<button data-v="${v}" class="${v===cur?'on':''}">${t}</button>`).join('')}</span></span>`;
+function onSeg(r,fn){ $$('[data-seg]',r).forEach(s=>$$('button',s).forEach(b=>b.addEventListener('click',()=>{ segSet(r,s.dataset.seg,b.dataset.v); fn(s.dataset.seg,b.dataset.v); }))); }
+function segSet(r,n,v){ $$(`[data-seg="${n}"] button`,r).forEach(b=>b.classList.toggle('on',b.dataset.v===v)); }
+function log(r,t){ $('.log',r).innerHTML=t; }
+
+/* 1. Tab bar */
+comp({id:'tabbar', grp:'Navegação', t:'Tab bar', lib:'Tab Bar · Tab Bar Item', iss:'COG-288',
+ lead:'Troca os painéis (desktop) ou a tela (mobile). O botão à direita muda conforme o estado da fatura.',
+ ctrls:segH('acao','Ação',[['pend','Pendências'],['send','Faturar'],['none','Enviada']],'pend')+segH('size','Tamanho',[['d','Desktop'],['m','Mobile']],'d'),
+ beh:[['Clique em Fatura/Detalhes/Atividade','Desktop: abre/fecha o painel (vários ativos). Mobile: troca de tela (um ativo).'],['Ativar item','Pílula interna escala .55 → 1 (350 ms, cubic-bezier(.3,1.5,.5,1)); ícone pula 6 px'],['Há pendência','Pendências com contador; clique abre/fecha o card de pendências'],['Identidade validada e 0 pendência','Pendências sai e entra Faturar (brand)'],['Hover em Faturar','Fundo neon/800'],['Clique em Faturar','Loading: ícone gira, "Enviando…", sem clique → enviada: botão sai']],
+ notes:['Mobile: só ícone; o nome fica no DOM para leitor de tela (Faturar: aria-label "Enviar para faturamento").','Mobile: Atividade não fica na barra.','Faturar = <code>Tab Bar Item Type=Send</code> (Default · Hover · Loading).'],
+ init(r){ const S={acao:'pend',size:'d',on:{pdf:true,det:true,act:false},scr:'det',busy:false,pendOn:false};
+  const draw=()=>{ const mob=S.size==='m', items=[['pdf','picture_as_pdf','Fatura'],['det','description','Detalhes'],['act','history','Atividade']].filter(x=>!mob||x[0]!=='act');
+    let side='';
+    if(S.acao==='pend') side=`<button class="tb side ${S.pendOn?'on':''}" data-k="pend"><span class="ic">${MS('warning',1)}<b class="cnt">3</b></span><span class="lb">Pendências</span></button>`;
+    if(S.acao==='send') side=`<button class="tb side send ${S.busy?'busy':''}" data-k="send" aria-label="Enviar para faturamento"${S.busy?' aria-busy="true"':''}><span class="ic">${MS(S.busy?'progress_activity':'send',1)}</span><span class="lb">${S.busy?'Enviando…':'Faturar'}</span></button>`;
+    $('.canvas',r).innerHTML=`<nav class="tabbar ${mob?'mob':''}" aria-label="Painéis"><span class="tb-main">${items.map(([k,i,l])=>{ const on=mob?S.scr===k:S.on[k]; return `<button class="tb ${on?'on':''}" data-k="${k}" aria-pressed="${!!on}"><span class="ic">${MS(i,1)}</span><span class="lb">${l}</span></button>`; }).join('')}</span>${side}</nav>`;
+    $$('.tb',r).forEach(b=>b.onclick=()=>{ const k=b.dataset.k, lb=b.querySelector('.lb').textContent;
+      if(k==='send'){ S.busy=true; draw(); log(r,'<b>Loading</b>: sem clique até responder'); setTimeout(()=>{ S.busy=false; S.acao='none'; segSet(r,'acao','none'); draw(); log(r,'<b>Enviada</b>: o botão sai da barra'); },1400); return; }
+      if(k==='pend'){ S.pendOn=!S.pendOn; draw(); jump($('[data-k=pend]',r)); log(r,`Card de pendências <b>${S.pendOn?'aberto':'fechado'}</b>`); return; }
+      if(mob) S.scr=k; else S.on[k]=!S.on[k]; draw(); jump($(`[data-k=${k}]`,r)); log(r,mob?`Tela: <b>${lb}</b>`:`Painel ${lb}: <b>${S.on[k]?'aberto':'fechado'}</b>`); }); };
+  onSeg(r,(n,v)=>{ S[n]=v; S.busy=false; draw(); }); r._reset=()=>{ Object.assign(S,{acao:'pend',size:'d',on:{pdf:true,det:true,act:false},scr:'det',pendOn:false}); segSet(r,'acao','pend'); segSet(r,'size','d'); draw(); }; draw(); }});
+
+/* 2. Painéis */
+comp({id:'paineis', grp:'Navegação', t:'Painéis por prioridade', iss:'COG-287',
+ lead:'Até três painéis lado a lado. Quando falta largura, sai o de menor prioridade: Detalhes › Fatura › Atividade.',
+ ctrls:`<span class="range"><label class="k" for="plw">Largura disponível</label><input id="plw" type="range" min="560" max="1600" step="10" value="1400"><b id="plv">1400 px</b></span>`,
+ beh:[['Estreitar o espaço','Sai Atividade, depois Fatura; Detalhes fica até 520 px'],['Abrir um painel que não cabe','Fecha os outros, do menos para o mais prioritário, até caber'],['Fechar todos','"Nenhum painel aberto" + Voltar ao padrão'],['Abrir/fechar','350 ms ease: largura + opacidade']],
+ notes:['Fatura 686 px (mín. 400), Detalhes ocupa o resto (mín. 520), Atividade 284 fixo. Gap 24.','A Fatura não cresce além da página do PDF; sem Detalhes, ela ocupa o espaço.','Dentro de Detalhes, cards em 2/3/4 colunas pela largura do painel (container query).','Abaixo de 768 px vira uma tela por vez.'],
+ init(r){ const MINW={det:520,pdf:400,act:284}, PRI=['det','pdf','act'], NM={pdf:'Fatura',det:'Detalhes',act:'Atividade'}, IC={pdf:'picture_as_pdf',det:'description',act:'history'}, open={pdf:true,det:true,act:true}; let W=1400;
+  $('.canvas',r).innerHTML=`<div class="pl-stage"><div class="pl-cols" id="plc"></div><div style="display:flex;justify-content:center"><nav class="tabbar"><span class="tb-main">${['pdf','det','act'].map(k=>`<button class="tb" data-k="${k}"><span class="ic">${MS(IC[k],1)}</span><span class="lb">${NM[k]}</span></button>`).join('')}</span></nav></div></div>`;
+  const fits=s=>s.reduce((w,k)=>w+MINW[k],0)+24*Math.max(0,s.length-1)<=W;
+  const vis=()=>{ const v=[]; PRI.forEach(k=>{ if(open[k]&&fits([...v,k])) v.push(k); }); return v; };
+  const draw=()=>{ const v=vis(), box=$('#plc',r), sc=Math.min(1,($('.canvas',r).clientWidth-64)/1600);
+    box.style.width=W*sc+'px';
+    box.innerHTML = v.length ? ['pdf','det','act'].map(k=>{ const on=v.includes(k); const grow=k==='det'||(k==='pdf'&&!v.includes('det'));
+        return `<div class="pl-p ${k} ${on?'':'min'}" style="flex:${grow?'1 1 0':`0 1 ${(k==='act'?284:686)*sc}px`};min-width:${on?MINW[k]*sc:0}px">${NM[k]}<small>${k==='act'?'284':k==='pdf'?'686 · mín. 400':'resto · mín. 520'}</small></div>`; }).join('')
+      : `<div class="pl-empty">${MS('view_column',0,24)}<b>Nenhum painel aberto</b><button class="btn pri" id="plr">Voltar ao padrão</button></div>`;
+    $$('.tb',r).forEach(b=>b.classList.toggle('on',v.includes(b.dataset.k)));
+    const pr=$('#plr',r); if(pr) pr.onclick=()=>{ open.pdf=open.det=open.act=true; draw(); log(r,'<b>Voltar ao padrão</b>: reabre respeitando a largura'); }; };
+  $$('.tb',r).forEach(b=>b.onclick=()=>{ const k=b.dataset.k; if(vis().includes(k)){ open[k]=false; log(r,`${NM[k]} <b>fechado</b>`); } else { open[k]=true; const closed=[]; for(const o of [...PRI].reverse().filter(x=>x!==k)){ if(vis().includes(k)) break; if(open[o]){ open[o]=false; closed.push(NM[o]); } } log(r,`${NM[k]} <b>aberto</b>${closed.length?` · fechou ${closed.join(', ')} para caber`:''}`); } jump(b); draw(); });
+  $('#plw',r).oninput=e=>{ W=+e.target.value; $('#plv',r).textContent=W+' px'; draw(); };
+  r._reset=()=>{ open.pdf=open.det=open.act=true; W=1400; $('#plw',r).value=1400; $('#plv',r).textContent='1400 px'; draw(); };
+  new ResizeObserver(()=>draw()).observe($('.canvas',r)); draw(); }});
+
+/* 3. Card de dado */
+comp({id:'card', grp:'Dados', t:'Card de dado', lib:'Data Card', iss:'COG-289',
+ lead:'Um rótulo, um valor e a unidade. Precisa de legenda? Vira outro card.',
+ beh:[['Lápis','Vira edição: campo com unidade dentro, enviar ao lado, fechar no cabeçalho'],['Enter / enviar','Valida a máscara; salva e volta para visualização'],['Esc / fechar','Cancela sem salvar'],['Copiar','Copia só o valor (sem unidade)'],['Pendente','Borda laranja; campo vazio com sugestão no placeholder; enviar → Corrigido (borda verde)']],
+ notes:['Visualização e edição com a mesma altura.','R$ antes do valor; outras unidades depois.','Somente leitura (fatura enviada): sem lápis, copiar continua. <code>State=Read only</code>.','Placeholder é sugestão, nunca valor preenchido.'],
+ init(r){ const view=(t,v,u,ro,cls='')=>`<div class="card ${cls}" data-t="${t}" data-u="${u}"><div class="ct">${t}<span class="sp"></span>${ro?'':`<button class="ib ed" aria-label="Editar ${t}">${MS('edit',1,14)}</button>`}</div><div class="row"><span class="vbox">${u==='R$'?'<span class="u">R$</span>':''}<span class="v">${v}</span>${u&&u!=='R$'?`<span class="u">${u}</span>`:''}</span><button class="cp cpy" aria-label="Copiar ${t}">${MS('content_copy',1,16)}</button></div></div>`;
+  const pend=`<div class="card pend"><div class="ct"><span class="badge">${MS('warning',1)}</span>COFINS (alíquota)<span class="sp"></span><button class="ib cl" aria-label="Limpar">${MS('close',0,14)}</button></div><div class="row"><label class="fld"><input aria-label="COFINS (alíquota)" placeholder="3,38"><span class="u">%</span></label><button class="cp send-c sv" aria-label="Enviar">${MS('send',1,16)}</button></div><div class="hint">Não encontrado na fatura. Sugestão: <b>valor ÷ base de cálculo</b></div></div>`;
+  const draw=()=>{ $('.canvas',r).innerHTML=`<div class="cards"><div><div class="cap">Visualização ↔ edição</div>${view('Consumo fora ponta','5.960','kWh')}</div><div><div class="cap">Pendente → corrigido</div>${pend}</div><div><div class="cap">Somente leitura</div>${view('Total a pagar','4.440,13','R$',true)}</div></div>`; bind(); };
+  const bind=()=>{
+    $$('.cpy',r).forEach(b=>b.onclick=()=>{ const v=b.closest('.card').querySelector('.v').textContent; navigator.clipboard?.writeText(v).catch(()=>{}); toast('Copiado: '+v); log(r,`Copiado só o valor: <b>${v}</b>`); });
+    $$('.ed',r).forEach(b=>b.onclick=()=>edit(b.closest('.card')));
+    const pc=$('.card.pend',r); if(pc){ const inp=$('input',pc); mask(inp,'pct');
+      const go=()=>{ const m=validMask('pct',inp.value.trim()); if(m){ inp.closest('.fld').classList.add('err'); toast(m); inp.focus(); return; } const v=inp.value; pc.outerHTML=view('COFINS (alíquota)',v,'%',false,'ok'); bind(); log(r,`Pendência resolvida: <b>${v} %</b> → borda verde`); };
+      $('.sv',pc).onclick=go; inp.onkeydown=e=>{ if(e.key==='Enter') go(); }; $('.cl',pc).onclick=()=>{ inp.value=''; inp.focus(); }; } };
+  const edit=c=>{ const v=$('.v',c).textContent, u=c.dataset.u, t=c.dataset.t, k=u==='R$'?'money':u==='%'?'pct':'int', h=c.offsetHeight;
+    $('.ed',c).outerHTML=`<button class="ib x" aria-label="Fechar edição">${MS('close',0,14)}</button>`;
+    $('.row',c).innerHTML=`<label class="fld">${u==='R$'?'<span class="u">R$</span>':''}<input value="${v}" aria-label="${t}">${u&&u!=='R$'?`<span class="u">${u}</span>`:''}</label><button class="cp send-c" aria-label="Salvar">${MS('send',1,16)}</button>`;
+    const inp=$('input',c); mask(inp,k); inp.focus(); inp.select(); log(r,`Edição · altura igual: <b>${h} px → ${c.offsetHeight} px</b>`);
+    const done=save=>{ if(save){ const m=validMask(k,inp.value.trim()); if(m){ inp.closest('.fld').classList.add('err'); toast(m); return; } }
+      const nv=save?inp.value:v; c.outerHTML=view(t,nv,u); bind(); log(r,save?`Salvo: <b>${nv} ${u}</b>`:'Edição cancelada'); };
+    $('.send-c',c).onclick=()=>done(true); $('.x',c).onclick=()=>done(false);
+    inp.onkeydown=e=>{ if(e.key==='Enter') done(true); if(e.key==='Escape') done(false); }; };
+  r._reset=draw; draw(); }});
+
+/* 4. Máscaras */
+comp({id:'mascaras', grp:'Dados', t:'Campos com máscara', iss:'COG-289',
+ lead:'O campo formata enquanto se digita e valida ao confirmar (Enter ou ao sair do campo).',
+ beh:[['Moeda / %','Digita da direita, 2 casas: "512399" → 5.123,99'],['kWh / kW / dias','Inteiro com milhar'],['Data','dd/mm/aaaa e data real (31/02 é inválida)'],['CNPJ, CEP, código de barras','Pontuação automática; precisa estar completo'],['Inválido','Borda vermelha + mensagem; não salva']],
+ notes:['Na planilha, quantidade e valores aceitam negativo ("−"); tarifas com 5 casas.','No iOS, campos com 16 px para o Safari não dar zoom.','Teclado numérico no mobile (inputmode).'],
+ init(r){ const F=[['Moeda','money','R$','0,00'],['Percentual','pct','%','0,00'],['kWh','int','kWh','0'],['Data','date','','dd/mm/aaaa'],['CNPJ','cnpj','','00.000.000/0000-00'],['CEP','cep','','00000-000'],['Código de barras','barcode','','']];
+  const draw=()=>{ $('.canvas',r).innerHTML=`<div class="masks">${F.map(([l,k,u,ph])=>`<label ${k==='barcode'?'style="grid-column:span 2"':''}>${l}<span class="fld">${u==='R$'?'<span class="u">R$</span>':''}<input data-k="${k}" placeholder="${ph}">${u&&u!=='R$'?`<span class="u">${u}</span>`:''}</span><span class="msg"></span></label>`).join('')}</div>`;
+   $$('input',r).forEach(inp=>{ const k=inp.dataset.k; mask(inp,k); const chk=()=>{ const m=inp.value?validMask(k,inp.value):'', s=inp.closest('label').querySelector('.msg'); inp.closest('.fld').classList.toggle('err',!!m); s.textContent=m||(inp.value?'Válido':''); s.classList.toggle('e',!!m); };
+    inp.onblur=chk; inp.onkeydown=e=>{ if(e.key==='Enter') chk(); }; }); };
+  r._reset=draw; draw(); }});
+
+/* 5. Planilha */
+comp({id:'planilha', grp:'Dados', t:'Planilha de itens e soma', iss:'COG-290',
+ lead:'A soma da coluna Valor tem que fechar com o total da fatura. Se não fecha, a célula editada vira pendência.',
+ ctrls:`<button class="btn out" id="plErr">Simular valor errado na Demanda</button>`,
+ beh:[['Clique','Seleciona a célula'],['Duplo clique, Enter ou F2','Edita (moeda, aceita "−")'],['↑ ↓','Navegam entre células'],['Esc','Cancela'],['Soma ≠ total','Célula vira pendência (laranja); placeholder = valor que fecha; rodapé vermelho'],['Corrige com valor que ainda não fecha','Continua pendência, com nova sugestão']],
+ notes:['Total da fatura nesta demo: R$ 3.606,56.','Unidade dentro da célula, em cinza ("R$ 800,35", "540 kWh"); sem coluna "Unid.".','Célula alterada: verde-claro. Pendente: laranja-claro.','Mobile: célula pendente abre com um toque; coluna Item rola junto e ocupa até metade.'],
+ init(r){ const TOTAL=3606.56; let rows, chg, pend;
+  const sum=()=>Math.round(rows.reduce((a,x)=>a+pn(x[2]),0)*100)/100;
+  const check=i=>{ const gap=Math.round((TOTAL-sum())*100)/100; if(!gap){ pend=null; return false; } pend={r:i,ph:money(pn(rows[i][2])+gap)}; return true; };
+  const draw=selR=>{ const s=sum(), off=s!==TOTAL;
+    $('.canvas',r).innerHTML=`<div><div class="grade-h"><span>Clique duas vezes numa célula para editar</span>${off?`<span class="off">Soma ≠ total da fatura (R$ ${money(TOTAL)})</span>`:''}</div>
+     <div class="grade"><table><thead><tr><th>Item</th><th>Quant.</th><th>Valor</th></tr></thead><tbody>${rows.map((x,i)=>`<tr><td>${x[0]}</td><td>${x[1].replace(/ (\S+)$/,' <span class="cu">$1</span>')}</td><td class="num ${pend&&pend.r===i?'pd':''} ${chg[i]&&!(pend&&pend.r===i)?'chg':''}" data-r="${i}" tabindex="-1">${pend&&pend.r===i?MS('warning',1,16):`<span class="cu">R$</span> ${x[2]}`}</td></tr>`).join('')}</tbody>
+     <tfoot><tr><td>Total</td><td></td><td class="${off?'off':''}"><span class="cu">R$</span> ${money(s)}</td></tr></tfoot></table></div></div>`;
+    const cells=$$('td.num',r); const sel=td=>{ cells.forEach(c=>c.classList.remove('sel')); td.classList.add('sel'); td.focus(); };
+    cells.forEach(td=>{ const i=+td.dataset.r; td.onclick=()=>sel(td); td.ondblclick=()=>edit(td,i);
+      td.onkeydown=e=>{ const n={ArrowUp:i-1,ArrowDown:i+1}[e.key]; if(n!==undefined&&cells[n]){ e.preventDefault(); sel(cells[n]); } else if(e.key==='Enter'||e.key==='F2'){ e.preventDefault(); edit(td,i); } }; });
+    if(selR!==undefined&&cells[selR]) sel(cells[selR]); };
+  const edit=(td,i)=>{ const isP=pend&&pend.r===i, old=rows[i][2]; td.classList.add('ed'); td.innerHTML=`<input aria-label="Valor de ${rows[i][0]}" placeholder="${isP?pend.ph:''}">`; const inp=$('input',td); if(!isP) inp.value=old; mask(inp,'money',true); inp.focus(); inp.select();
+    const done=save=>{ td.classList.remove('ed'); const nv=inp.value.trim(); if(save&&nv&&(nv!==old||isP)){ rows[i][2]=nv; chg[i]=1; const bad=check(i); draw(i); log(r,bad?`Soma não fecha → <b>pendência</b>, sugestão R$ ${pend.ph}`:'Soma fecha: <b>sem pendência</b>'); } else draw(i); };
+    inp.onkeydown=e=>{ e.stopPropagation(); if(e.key==='Enter'){ e.preventDefault(); done(true);} if(e.key==='Escape'){ e.preventDefault(); done(false);} }; inp.onblur=()=>{ if(td.classList.contains('ed')) done(true); }; };
+  const reset=()=>{ rows=[['Consumo ponta TUSD','540 kWh','800,35'],['Consumo ponta TE','540 kWh','276,68'],['Demanda','75 kW','2.431,13'],['Ilum. pública','—','98,40']]; chg={}; pend=null; draw(); };
+  r._reset=reset; reset();
+  $('#plErr',r).onclick=()=>{ rows[2][2]='2.400,00'; chg[2]=1; check(2); draw(2); log(r,'Demanda = 2.400,00 → soma não fecha. Dê duplo clique na célula laranja.'); }; }});
+
+/* 6. Card de pendências */
+comp({id:'pendencias', grp:'Revisão', t:'Card de pendências', iss:'COG-291',
+ lead:'Percorre o que a leitura não encontrou. No desktop é um card flutuante; no mobile, uma lista em tela cheia com os mesmos itens.',
+ ctrls:segH('id','Identidade',[['ok','Validada'],['no','Não validada']],'ok'),
+ beh:[['Anterior / próxima','Navega "1 de N"'],['Digitar','Confirmar habilita só com valor'],['Confirmar ou Enter','Resolve; o campo pisca e o card passa para a próxima'],['Ver no Campo','Rola até o campo e pisca laranja (1,2 s)'],['Última resolvida','"Sem pendências"; na tab bar, Pendências vira Faturar'],['Identidade não validada','O card só manda para a identidade']],
+ notes:['Placeholder com o valor derivável + dica de onde veio (nunca preenchido).','O botão Pendências da tab bar abre e fecha o card.'],
+ init(r){ let st='ok', L, idx=0;
+  const reset=()=>{ L=[{t:'COFINS (alíquota)',u:'%',k:'pct',ph:'3,38',why:'valor ÷ base de cálculo'},{t:'Leitura atual ponta',u:'kWh',k:'int',ph:'13.020',why:'leitura anterior + consumo'},{t:'ICMS · Demanda',u:'R$',k:'money',ph:'437,60',why:'18% de R$ 2.431,13'}].map((x,i)=>({...x,i,done:null})); idx=0; draw(); };
+  const open=()=>L.filter(x=>!x.done);
+  const draw=()=>{ const o=open(); idx=Math.max(0,Math.min(idx,o.length-1)); const p=o[idx];
+    const fields=L.map(x=>`<div class="card ${x.done?'ok':'pend'}" id="pf${x.i}"><div class="ct">${x.done?'':`<span class="badge">${MS('warning',1)}</span>`}${x.t}</div><div class="row"><span class="vbox">${x.done?`${x.u==='R$'?'<span class="u">R$</span> ':''}${x.done}${x.u!=='R$'?` <span class="u">${x.u}</span>`:''}`:'<span class="u">—</span>'}</span></div></div>`).join('');
+    let body;
+    if(st==='no') body=`<div class="pc-b"><b style="font-size:13px">Valide a identidade primeiro</b><span style="font-size:13px;color:var(--mid)">As pendências ficam liberadas depois que a unidade da fatura for confirmada.</span><div class="pc-a"><span></span><button class="btn pri" id="pcId">Ir para identidade</button></div></div>`;
+    else if(!p) body=`<div class="pc-empty">${MS('check_circle',1)}<b>Sem pendências</b>Todos os dados da fatura foram conferidos.</div>`;
+    else body=`<div class="pc-b"><label for="pcf">${p.t}</label><label class="fld">${p.u==='R$'?'<span class="u">R$</span>':''}<input id="pcf" placeholder="${p.ph}">${p.u!=='R$'?`<span class="u">${p.u}</span>`:''}</label><span class="hint" style="margin:-4px 0 0">Não encontrado na fatura. Sugestão: <b>${p.why}</b></span>
+      <div class="pc-a"><span class="pc-nav"><button id="pcP" aria-label="Anterior" ${idx===0?'disabled':''}>${MS('chevron_left')}</button>${idx+1} de ${o.length}<button id="pcN" aria-label="Próxima" ${idx===o.length-1?'disabled':''}>${MS('chevron_right')}</button></span><button class="btn pri" id="pcOk" disabled>Confirmar</button></div></div>`;
+    $('.canvas',r).innerHTML=`<div class="pc-demo"><div class="pc-fields">${fields}</div><div class="pend-card" role="dialog" aria-label="Pendências"><div class="pc-h"><span class="badge">${MS('warning',1)}</span>Pendências<span class="sp"></span>${p&&st==='ok'?`<button class="bxs" id="pcGo">Ver no Campo ${MS('open_in_new',0,14)}</button>`:''}</div>${body}</div></div>`;
+    if(st==='no'){ $('#pcId',r).onclick=()=>log(r,'Leva ao bloco de <b>identidade</b> e põe o foco no campo'); return; }
+    if(!p) return;
+    const f=$('#pcf',r), ok=$('#pcOk',r); mask(f,p.k); f.addEventListener('input',()=>ok.disabled=!f.value.trim());
+    const go=()=>{ const m=validMask(p.k,f.value.trim()); if(m){ f.closest('.fld').classList.add('err'); toast(m); return; } p.done=f.value; draw(); flash($('#pf'+p.i,r)); log(r,`<b>${p.t}</b> = ${p.done}`+(open().length?'':' · <b>sem pendências</b>: na tab bar entra Faturar')); };
+    ok.onclick=go; f.onkeydown=e=>{ if(e.key==='Enter'&&f.value.trim()) go(); };
+    $('#pcP',r).onclick=()=>{ idx--; draw(); }; $('#pcN',r).onclick=()=>{ idx++; draw(); };
+    $('#pcGo',r).onclick=()=>{ const el=$('#pf'+p.i,r); el.scrollIntoView({behavior:'smooth',block:'nearest'}); flash(el); }; };
+  onSeg(r,(n,v)=>{ st=v; draw(); }); r._reset=()=>{ st='ok'; segSet(r,'id','ok'); reset(); }; reset(); }});
+
+/* 7. Marcador fora da área */
+comp({id:'marcador', grp:'Revisão', t:'Marcador de pendência fora da área', iss:'COG-291',
+ lead:'Quando o item pendente está escondido pela rolagem, um marcador na borda do container aponta para ele.',
+ beh:[['Item pendente abaixo da área visível','Marcador na borda de baixo, seta ↓'],['Acima','Marcador no topo, seta ↑'],['Clique no marcador','Rola até o item (smooth) e ele pisca'],['Item visível','Marcador some']],
+ notes:['Vale também para rolagem lateral (planilha), com setas ← →.','Animação: seta balança 4 px (1 s) + anel pulsando (1,4 s).','A área visível desconta a tab bar flutuante.'],
+ init(r){ const draw=()=>{ $('.canvas',r).innerHTML=`<div class="mk-box"><div class="mk-scroll" id="mks">${['Crédito compensado','Crédito abatido','Saldo fora ponta','Consumo ponta','Demanda medida'].map(t=>`<div class="card"><div class="ct">${t}</div><div class="row"><span class="vbox">1.250 <span class="u">kWh</span></span></div></div>`).join('')}<div class="card pend" id="mkp"><div class="ct"><span class="badge">${MS('warning',1)}</span>COFINS (alíquota)</div><div class="row"><label class="fld"><input placeholder="3,38" aria-label="COFINS (alíquota)"><span class="u">%</span></label></div></div>${['Total a pagar','Vencimento'].map(t=>`<div class="card"><div class="ct">${t}</div><div class="row"><span class="vbox">—</span></div></div>`).join('')}</div><div id="mkl"></div></div>`;
+  const sc=$('#mks',r), it=$('#mkp',r), lay=$('#mkl',r);
+  const up=()=>{ const a=sc.getBoundingClientRect(), b=it.getBoundingClientRect(); const d=b.top>=a.bottom-4?'d':b.bottom<=a.top+4?'u':null;
+    if((lay.dataset.d||'')===(d||'')) return; lay.dataset.d=d||'';
+    lay.innerHTML=d?`<button class="offi ${d}" aria-label="Ir para a pendência: COFINS"><span class="b">${MS('warning',1)}</span><span class="ms f a" aria-hidden="true">${d==='d'?'arrow_drop_down':'arrow_drop_up'}</span></button>`:'';
+    const bt=$('.offi',lay); if(bt) bt.onclick=()=>{ it.scrollIntoView({behavior:'smooth',block:'center'}); flash(it); }; };
+  sc.addEventListener('scroll',up); up(); };
+  r._reset=draw; draw(); }});
+
+/* 8. Atividade */
+comp({id:'atividade', grp:'Revisão', t:'Atividade', iss:'COG-292',
+ lead:'Linha do tempo da fatura, mais recente no topo.',
+ ctrls:`<button class="btn out" id="acAdd">${MS('add',0,16)}Simular edição</button>`,
+ beh:[['Hover, foco ou toque num evento de edição','Abre de → para (200 ms): antigo riscado, novo em negrito sobre verde-claro'],['Pendência resolvida','"pendente → valor"'],['Hover no autor','Mostra o nome'],['Evento novo','Entra no topo, destacado']],
+ notes:['Autor: sistema = marca Enershare em preto; pessoa = iniciais com cor própria.','Status do sistema em 1–2 palavras + data.','Mobile: a Atividade abre pelo painel do header (histórico).'],
+ init(r){ let E;
+  const draw=nw=>{ $('.canvas',r).innerHTML=`<div class="act">${E.map((e,k)=>`${k?'<div class="link"></div>':''}<div class="ev ${e[4]?'has':''} ${nw&&k===0?'new':''}" ${e[4]?`tabindex="0" aria-label="${e[0]}: de ${e[4][0]||'pendente'} para ${e[4][1]}"`:''}><span class="i ${e[1]}">${MS(e[1]==='edit'?'edit':e[1]==='alert'?'warning':'radio_button_checked',1)}</span><div class="n">${e[0]}</div>${e[3]?`<span class="who" data-name="${e[3].n}">${e[3].i}</span>`:`<span class="who sys" data-name="Sistema">${MS('bolt',1)}</span>`}<div class="d">13/03 às ${e[2]}</div>${e[4]?`<div class="dif"><div><span class="o ${e[4][0]?'':'none'}">${e[4][0]||'pendente'}</span>${MS('arrow_forward',0,14)}<span class="t">${e[4][1]}</span></div></div>`:''}</div>`).join('')}</div>`; };
+  const reset=()=>{ E=[['Demanda contratada editado','edit','11:05',{n:'Carlos Mendes',i:'CM'},['70 kW','75 kW']],['Leitura atual corrigida','edit','10:58',{n:'Ana Ribeiro',i:'AR'},['','13.020 kWh']],['Para revisar','alert','10:42',null],['Lida','def','10:42',null],['Recebida','def','10:40',null]]; draw(); };
+  $('#acAdd',r).onclick=()=>{ E.unshift(['Vencimento editado','edit',now(),{n:'Eduardo Moreira',i:'EM'},['24/03/2025','25/03/2025']]); draw(true); };
+  r._reset=reset; reset(); }});
+
+/* 9. Identidade */
+comp({id:'identidade', grp:'Fatura', t:'Identidade da fatura', lib:'Card Header md · Combobox · Command Base · Button · Info Pill', iss:'COG-293',
+ lead:'Confirma de qual unidade é a fatura antes de liberar a edição. A distribuidora vem do cadastro da UC.',
+ ctrls:segH('st','Estado',[['auto','Confirmar'],['nf','Vincular'],['bad','Não confere'],['ok','Validada'],['sent','Enviada']],'auto'),
+ beh:[['Abrir o campo (clique ou ↓)','Popover com busca + opções de rádio: UC · distribuidora · titular'],['Digitar na busca','Filtra por UC, distribuidora ou titular'],['↑ ↓ · Enter · Esc','Navega, escolhe, fecha (foco volta ao campo)'],['Escolher UC de outra distribuidora','Título, rótulo e campo em vermelho: "A fatura é da X, mas esta unidade é da Y"; Validar desabilitado'],['Sem unidade escolhida','Validar desabilitado'],['Validar alterações','Pílula verde + Alterar; dados liberados'],['Alterar','Volta ao campo; dados travam de novo']],
+ notes:['Título por estado: "Confirme a unidade da fatura" (achada) · "Vincule a unidade da fatura" (não achada) · "A unidade não confere com a fatura".','Ajuda: "Encontrada pela leitura da fatura." ou "Lida na fatura: UC … · …".','Até validar, os dados abaixo ficam esmaecidos e sem clique.','Mesmo código do protótipo (<code>assets/identidade.js</code>). Regra de negócio: COG-282 (stg).'],
+ init(r){ let S; const c=$('.canvas',r);
+  const set=v=>{ S={read:v==='nf'?null:'3014567890', uc:v==='nf'?'':v==='bad'?'3014002210':'3014567890', ok:v==='ok', sent:v==='sent'?{at:'07/10/2026 às 14:32'}:null}; draw(); };
+  const draw=()=>{ c.innerHTML=`<div style="width:660px;max-width:100%"><div id="idM"></div><div class="under ${S.ok||S.sent?'':'wait'}"><div class="card"><div class="ct">Consumo fora ponta</div><div class="row"><span class="vbox">5.960 <span class="u">kWh</span></span></div></div><div class="card"><div class="ct">Total a pagar</div><div class="row"><span class="vbox"><span class="u">R$</span> 4.440,13</span></div></div></div></div>`;
+    Identity.mount($('#idM',r),S,ev=>{ const u=Identity.UCS.find(x=>x.uc===S.uc); draw();
+      if(ev==='escolher') log(r, u&&u.dist!==Identity.INV.dist?`<b>Não confere</b>: ${Identity.label(S.uc)} é de outra distribuidora`:`Escolhida: <b>${Identity.label(S.uc)}</b>`);
+      if(ev==='validar') log(r,'<b>Validada</b>: dados liberados');
+      if(ev==='alterar') log(r,'Alterar: dados <b>travados</b> de novo'); }); };
+  onSeg(r,(n,v)=>{ set(v); log(r,''); }); r._reset=()=>{ segSet(r,'st','auto'); set('auto'); }; set('auto'); }});
+
+/* 10. Extrair novamente */
+comp({id:'extrair', grp:'Fatura', t:'Extrair novamente', lib:'Button · Alert Dialog', iss:'COG-293',
+ lead:'Pede uma nova leitura da fatura. São 2 tentativas manuais.',
+ beh:[['Clique','Abre o diálogo de confirmação; foco no Cancelar'],['Confirmar','Gasta uma tentativa; a fatura volta para "Lendo fatura"'],['Cancelar, Esc ou clique fora','Fecha; foco volta ao botão'],['Sem tentativas','Botão desabilitado (title "Sem tentativas restantes")'],['Fatura enviada','Some; no lugar, "Enviada por … em …"']],
+ notes:['A tela não mostra a contagem: ela aparece só no diálogo ("Restam 2 de 2 tentativas" / "Esta é a última tentativa").','A leitura recomeça do zero e as correções são descartadas (o diálogo avisa).','Tab fica preso dentro do diálogo.','Mobile: fica no painel do header.'],
+ init(r){ let n=2; const c=$('.canvas',r);
+  const draw=()=>{ c.innerHTML=`<div class="hacts"><button class="btn out" id="exB" ${n?'':'disabled title="Sem tentativas restantes"'}>${MS('refresh',0,18)}Extrair novamente</button></div>`; $('#exB',r).onclick=dlg; };
+  const dlg=()=>{ const ov=document.createElement('div'); ov.className='dlg-ov'; ov.innerHTML=`<div class="dlg" role="alertdialog" aria-modal="true" aria-labelledby="exT"><h5 id="exT">Extrair a fatura novamente?</h5><p>A leitura recomeça do zero e as correções feitas aqui são descartadas. ${n===1?'Esta é a última tentativa.':`Restam ${n} de 2 tentativas.`}</p><div class="a"><button class="btn out" data-x>Cancelar</button><button class="btn pri" data-y>Extrair novamente</button></div></div>`; c.appendChild(ov);
+    const close=()=>{ ov.remove(); $('#exB',r)?.focus(); }; $('[data-x]',ov).onclick=close; ov.onclick=e=>{ if(e.target===ov) close(); };
+    ov.onkeydown=e=>{ if(e.key==='Escape') close(); if(e.key==='Tab'){ const f=$$('button',ov), i=f.indexOf(document.activeElement); e.preventDefault(); f[(i+(e.shiftKey?-1:1)+f.length)%f.length].focus(); } };
+    $('[data-y]',ov).onclick=()=>{ n--; ov.remove(); draw(); toast('Fatura enviada para nova leitura'); log(r,`Tentativa usada · restam <b>${n}</b>`); }; $('[data-x]',ov).focus(); };
+  r._reset=()=>{ n=2; draw(); }; draw(); }});
+
+/* 11. Mobile */
+comp({id:'mobile', grp:'Mobile', t:'Header e barra ao rolar', lib:'Header Size=Mobile, Context=Invoice', iss:'COG-294',
+ lead:'No mobile, header e tab bar saem do caminho ao rolar. Os badges do header abrem um painel com o resumo da fatura.',
+ beh:[['Rolar para baixo','Header sobe e tab bar desce (280 ms)'],['Rolar para cima ou chegar ao topo','Voltam'],['Rolagem lateral (planilha)','Não conta'],['Tocar num badge','Painel sobre fundo desfocado: status, referência, links, histórico, baixar, extrair'],['×, toque fora ou Esc','Fecha; foco volta ao badge']],
+ notes:['Badges de 34 px sobrepostos (−12 px): UC, distribuidora, referência; pílula de status por cima.','Fatura (PDF): pinça 1×–4× mantendo o ponto entre os dedos; toque duplo alterna cabe ↔ 2×.','Ao trocar de tela, header e barra voltam.'],
+ init(r){ const draw=()=>{ $('.canvas',r).innerHTML=`<div class="phone" id="ph"><div class="ph-head"><span class="ms">menu</span><span class="tt"><b>${TIT}</b><span>Fatura · Mar/2025</span></span><span class="bds"><button class="bd ink" data-b aria-label="UC 3014567890">${MS('electrical_services',1)}</button><button class="bd ink" data-b aria-label="Distribuidora">${MS('electric_meter',1)}</button><button class="bd br" data-b aria-label="Referência">${MS('calendar_today',1)}</button><button class="bd st" data-b aria-label="3 pendências">${MS('warning',1)}3</button></span></div>
+   <div class="ph-body" id="phb">${['Crédito compensado','Crédito abatido','Saldo fora ponta','Consumo fora ponta','Consumo ponta','Demanda medida','Demanda contratada','Injetado no período','Média 12 meses','Mediana 12 meses'].map((t,i)=>`<div class="card"><div class="ct">${t}</div><div class="row"><span class="vbox">${(1000+i*137).toLocaleString('pt-BR')} <span class="u">kWh</span></span></div></div>`).join('')}</div>
+   <div class="ph-tb"><nav class="tabbar mob"><span class="tb-main"><button class="tb"><span class="ic">${MS('picture_as_pdf',1)}</span><span class="lb">Fatura</span></button><button class="tb on"><span class="ic">${MS('description',1)}</span><span class="lb">Detalhes</span></button></span><button class="tb side"><span class="ic">${MS('warning',1)}<b class="cnt">3</b></span><span class="lb">Pendências</span></button></nav></div></div>`;
+  const ph=$('#ph',r), b=$('#phb',r); let last=0;
+  b.addEventListener('scroll',()=>{ const t=b.scrollTop, d=t-last; last=t; if(Math.abs(d)<4) return; if(t<8){ ph.classList.remove('hide'); return; } const h=d>0; if(h!==ph.classList.contains('hide')) log(r,h?'Rolou para baixo: <b>header e barra saem</b>':'Rolou para cima: <b>voltam</b>'); ph.classList.toggle('hide',h); });
+  $$('[data-b]',r).forEach(bt=>bt.onclick=()=>{ const ov=document.createElement('div'); ov.className='ph-ov'; ov.innerHTML=`<div class="ph-sheet" role="dialog" aria-modal="true" aria-label="Resumo da fatura"><div class="ph-nav"><span style="width:24px"></span>Padaria Estrela do Sul<button aria-label="Fechar" data-x>${MS('close')}</button></div><div class="ph-sec"><span class="hb">${MS('warning',1)}3 pendências</span><span class="hb">${MS('calendar_today',1)}Março de 2025</span><span class="hb">${MS('electric_meter',1)}Luz do Vale ${MS('open_in_new',0,14)}</span><span class="hb">${MS('electrical_services',1)}UC 3014567890 ${MS('open_in_new',0,14)}</span></div><div class="ph-acts"><button aria-label="Histórico">${MS('history')}</button><button aria-label="Baixar">${MS('download')}</button><button aria-label="Abrir">${MS('open_in_new')}</button><button aria-label="Extrair novamente">${MS('refresh')}</button></div></div>`;
+    ph.appendChild(ov); const close=()=>{ ov.remove(); bt.focus(); }; $('[data-x]',ov).onclick=close; ov.onclick=e=>{ if(e.target===ov) close(); }; ov.onkeydown=e=>{ if(e.key==='Escape') close(); }; $('[data-x]',ov).focus(); log(r,'Painel do header <b>aberto</b>'); }); };
+  r._reset=draw; draw(); }});
+
+/* 12. Filtros */
+comp({id:'filtro', grp:'Listagem', t:'Filtros', lib:'Filter · Command Base', iss:'COG-295',
+ lead:'Padrão do Cadastro: filtros visíveis abaixo da busca, cada um com busca e opções.',
+ beh:[['Clique no filtro','Abre menu com busca + opções (caixa de seleção)'],['Marcar opção','Aplica na hora; o chip mostra a escolha (ou "N selecionados")'],['Limpar seleção','Desmarca aquele filtro'],['Limpar todos','Aparece só com algum filtro ativo'],['Funil','Mostra/esconde a linha de filtros; o número conta os ativos'],['Esc ou clique fora','Fecha o menu']],
+ notes:['Filtros: Situação · Pendências · Concessionária · Enviado por · Recebida em.','Data é escolha única ("Hoje", "Últimos 7 dias"…).','Mobile: funil à esquerda e filtros com rolagem lateral.'],
+ init(r){ const F={sit:{t:'Situação',o:['Lendo fatura','Para revisar','Sem pendências','Enviada','Recusada'],v:[]},con:{t:'Concessionária',o:['Luz do Vale','Energisa Serra','Força Sul'],v:[]}}; let show=true;
+  const draw=()=>{ const act=Object.values(F).filter(f=>f.v.length).length;
+    $('.canvas',r).innerHTML=`<div class="flt" id="flt" style="position:relative;min-height:260px;align-items:flex-start;width:680px;max-width:100%"><button class="fbtn" id="fFn" aria-label="Filtros" aria-pressed="${show}">${MS('filter_list')}${act?`<span class="n">${act}</span>`:''}</button>${show?Object.entries(F).map(([k,f])=>`<button class="fchip ${f.v.length?'act':''}" data-f="${k}" aria-haspopup="listbox">${MS(f.v.length?'filter_alt':'add_circle',0,16)}${f.t}${f.v.length?`<span class="v">${f.v.length>1?f.v.length+' selecionados':f.v[0]}</span>`:''}</button>`).join('')+(act?'<button class="fclear" id="fCl">Limpar todos</button>':''):''}</div>`;
+    $('#fFn',r).onclick=()=>{ show=!show; draw(); };
+    const cl=$('#fCl',r); if(cl) cl.onclick=()=>{ Object.values(F).forEach(f=>f.v=[]); draw(); log(r,'<b>Limpar todos</b>'); };
+    $$('[data-f]',r).forEach(b=>b.onclick=()=>pop(b.dataset.f,'')); };
+  const pop=(key,q)=>{ $$('.fpop',r).forEach(x=>x.remove()); const f=F[key], b=$(`[data-f="${key}"]`,r), w=$('#flt',r), p=document.createElement('div'); p.className='fpop'; p.style.left=b.offsetLeft+'px'; p.style.top=b.offsetTop+44+'px';
+    p.innerHTML=`<div class="s">${MS('search',0,16)}<input placeholder="${f.t}" aria-label="Buscar em ${f.t}"></div><div class="ls" role="listbox"></div><button class="cl" ${f.v.length?'':'disabled'}>Limpar seleção</button>`;
+    const s=$('input',p), ls=$('.ls',p); s.value=q;
+    const list=()=>{ ls.innerHTML=f.o.filter(o=>o.toLowerCase().includes(s.value.toLowerCase())).map(o=>`<button class="o ${f.v.includes(o)?'on':''}" data-o="${o}" role="option" aria-selected="${f.v.includes(o)}"><span class="chk">${f.v.includes(o)?MS('check'):''}</span>${o}</button>`).join('')||'<div style="padding:8px;font-size:13px;color:var(--mid)">Nada encontrado</div>';
+      $$('[data-o]',ls).forEach(x=>x.onclick=()=>{ const o=x.dataset.o; f.v=f.v.includes(o)?f.v.filter(y=>y!==o):[...f.v,o]; const qq=s.value; draw(); pop(key,qq); log(r,`${f.t}: <b>${f.v.join(', ')||'todas'}</b>`); }); };
+    s.oninput=list; list(); $('.cl',p).onclick=()=>{ f.v=[]; draw(); pop(key,''); };
+    w.appendChild(p); s.focus();
+    const out=e=>{ if(!p.contains(e.target)&&!e.target.closest('[data-f]')){ p.remove(); document.removeEventListener('mousedown',out); } };
+    setTimeout(()=>document.addEventListener('mousedown',out));
+    p.onkeydown=e=>{ if(e.key==='Escape'){ p.remove(); b.focus(); } }; };
+  r._reset=()=>{ Object.values(F).forEach(f=>f.v=[]); show=true; draw(); }; draw(); }});
+
+/* 13. Upload */
+comp({id:'upload', grp:'Listagem', t:'Envio de fatura (arquivo)', lib:'File Upload Item', iss:'COG-295',
+ lead:'Arrastar ou escolher arquivos. Inválidos ficam na lista com o motivo e não sobem.',
+ beh:[['Arrastar sobre a área','Borda e fundo verdes'],['Soltar / escolher','Cada arquivo entra na lista e sobe em sequência (barra de progresso)'],['Tipo errado, > 20 MB, vazio ou repetido','Item com borda vermelha + motivo; não sobe'],['Mais de 20 arquivos','Os excedentes são recusados com o motivo'],['Remover','Tira o item da lista']],
+ notes:['Aceita PDF, JPG, PNG e WebP.','Mobile: "Tirar foto da fatura" (câmera com enquadramento; sem permissão, câmera do aparelho) ou "Escolher arquivos".','Ao terminar, as faturas entram no topo da listagem como "Lendo fatura", destacadas.'],
+ init(r){ let L=[], busy=false; const OK=['application/pdf','image/jpeg','image/png','image/webp'];
+  $('.canvas',r).innerHTML=`<div class="up"><label class="drop" id="upD">${MS('upload_file')}<b>Arraste as faturas aqui</b> ou clique para escolher<br><span style="font-size:12px">PDF, JPG, PNG ou WebP · até 20 MB cada · até 20 arquivos</span><input type="file" multiple hidden id="upI" accept=".pdf,.jpg,.jpeg,.png,.webp"></label>
+    <div class="sims">Simular: <button data-s="ok">fatura.pdf</button><button data-s="type">planilha.xlsx</button><button data-s="big">scan.pdf (32 MB)</button><button data-s="empty">vazio.pdf (0 KB)</button><button data-s="dup">fatura.pdf de novo</button></div><div id="upL" style="display:flex;flex-direction:column;gap:8px"></div></div>`;
+  const kb=n=>n>1048576?(n/1048576).toFixed(1).replace('.',',')+' MB':Math.round(n/1024)+' KB';
+  const draw=()=>{ $('#upL',r).innerHTML=L.map((x,i)=>`<div class="fi ${x.err?'err':''}">${MS(x.err?'error':'description')}<div class="nm"><b>${x.name}</b><span>${x.err||(x.p===100?kb(x.size)+' · enviado':x.p<0?'Na fila':'Enviando…')}</span>${!x.err&&x.p>=0&&x.p<100?`<div class="bar"><i style="width:${x.p}%"></i></div>`:''}</div>${x.p===100?`<span class="st">${MS('check_circle',1)}</span>`:''}<button class="ib" data-rm="${i}" aria-label="Remover ${x.name}">${MS('close',0,16)}</button></div>`).join('');
+    $$('[data-rm]',r).forEach(b=>b.onclick=()=>{ L.splice(+b.dataset.rm,1); draw(); }); };
+  const run=()=>{ if(busy) return; const x=L.find(y=>!y.err&&y.p<0); if(!x) return; busy=true; x.p=0; const t=setInterval(()=>{ x.p=Math.min(100,x.p+20); draw(); if(x.p===100){ clearInterval(t); busy=false; run(); } },160); };
+  const add=fs=>{ for(const f of fs){ let err=''; const valid=L.filter(x=>!x.err);
+      if(valid.length>=20) err='Limite de 20 arquivos'; else if(!OK.includes(f.type)) err='Tipo não aceito · use PDF, JPG, PNG ou WebP'; else if(f.size>20*1048576) err='Maior que 20 MB'; else if(!f.size) err='Arquivo vazio'; else if(valid.some(x=>x.name===f.name&&x.size===f.size)) err='Arquivo repetido';
+      L.push({name:f.name,size:f.size,err,p:err?0:-1}); log(r,err?`<b>${f.name}</b>: ${err}`:`<b>${f.name}</b> na fila`); } draw(); run(); };
+  const D=$('#upD',r); D.ondragover=e=>{ e.preventDefault(); D.classList.add('over'); }; D.ondragleave=()=>D.classList.remove('over'); D.ondrop=e=>{ e.preventDefault(); D.classList.remove('over'); add([...e.dataTransfer.files]); };
+  $('#upI',r).onchange=e=>{ add([...e.target.files]); e.target.value=''; };
+  const SIM={ok:{name:'fatura-luzdovale-mar25.pdf',type:'application/pdf',size:840000},type:{name:'planilha.xlsx',type:'application/vnd.ms-excel',size:30000},big:{name:'scan.pdf',type:'application/pdf',size:32*1048576},empty:{name:'vazio.pdf',type:'application/pdf',size:0},dup:{name:'fatura-luzdovale-mar25.pdf',type:'application/pdf',size:840000}};
+  $$('[data-s]',r).forEach(b=>b.onclick=()=>add([SIM[b.dataset.s]]));
+  r._reset=()=>{ L=[]; draw(); }; }});
+
+/* ---------- montagem ---------- */
+const main=$('#main'), nav=$('#navl'); let g='';
+C.forEach(c=>{
+  if(c.grp!==g){ g=c.grp; nav.insertAdjacentHTML('beforeend',`<div class="grp">${g}</div>`); }
+  nav.insertAdjacentHTML('beforeend',`<a href="#${c.id}" data-id="${c.id}">${c.t}</a>`);
+  main.insertAdjacentHTML('beforeend',`<section class="cmp" id="${c.id}">
+    <div class="cmp-h"><h3>${c.t}</h3><span class="tags">${c.iss?`<a class="tag iss" href="https://linear.app/cogecom/issue/${c.iss}">${c.iss}</a>`:''}${c.lib?`<span class="tag">Lib: ${c.lib}</span>`:''}</span></div>
+    <p class="lead">${c.lead}</p>
+    <div class="ctrls">${c.ctrls||''}<button class="reset">${MS('restart_alt',0,16)}Reiniciar</button></div>
+    <div class="canvas ${['identidade','pendencias','filtro'].includes(c.id)?'top':''}"></div><div class="log" aria-live="polite"></div>
+    <div class="spec"><div><h4>Comportamento</h4><table class="bh">${c.beh.map(([a,b])=>`<tr><td>${a}</td><td>${b}</td></tr>`).join('')}</table></div><div><h4>Notas</h4><ul class="nt">${c.notes.map(n=>`<li>${n}</li>`).join('')}</ul></div></div></section>`);
+  const r=$('#'+c.id); c.init(r);
+  $('.reset',r).onclick=()=>{ r._reset&&r._reset(); log(r,''); };
 });
-function fit(st){ if(!st.classList.contains('desk')) { st.style.height=''; return; } const f=st.querySelector('iframe'), k=Math.min(1,st.clientWidth/1440); f.style.transform=`scale(${k})`; st.style.height=860*k+'px'; }
-new ResizeObserver(()=>document.querySelectorAll('.stage').forEach(fit)).observe(main);
-// item do menu acompanha a rolagem
-const io=new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting) document.querySelectorAll('nav a[data-id]').forEach(a=>a.classList.toggle('on',a.dataset.id===e.target.id)); }),{rootMargin:'-40% 0px -55% 0px'});
-document.querySelectorAll('section').forEach(s=>io.observe(s));
+const io=new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting) $$('nav.side a[data-id]').forEach(a=>a.classList.toggle('on',a.dataset.id===e.target.id)); }),{rootMargin:'-30% 0px -65% 0px'});
+$$('section.cmp').forEach(s=>io.observe(s));
 </script>
 </body>
 </html>
