@@ -473,6 +473,7 @@
   [data-mode=mobile] .plist{padding:0 24px 120px}
 
   .note{position:fixed;right:16px;top:12px;font-size:11px;color:var(--mid);background:var(--white);border:1px solid var(--s200);padding:4px 8px;border-radius:999px;z-index:40}
+  .in-demo .note.demo{display:none!important}
   .note.demo{display:flex;align-items:center;gap:6px;padding:2px 4px 2px 10px}
   .note.demo select{font:inherit;font-weight:600;color:var(--ink);border:0;background:var(--s100);border-radius:999px;padding:3px 6px}
   [data-mode=mobile] .note.demo{display:flex!important;top:auto;bottom:104px;right:auto;left:8px;z-index:30;box-shadow:0 2px 8px rgba(0,0,0,.08)}
@@ -1386,7 +1387,7 @@ document.querySelectorAll('.sidebar [data-tip]').forEach(a=>{ a.setAttribute('ar
 LOGO = (document.querySelector('.sb-brand svg')?.outerHTML||'').replace(/fill="#[0-9A-Fa-f]+"/g,'fill="currentColor"');
 /* estados de demonstração: ?estado=… (o seletor no canto recarrega a página no estado escolhido) */
 (function(){
-  const e=new URLSearchParams(location.search).get('estado')||'identidade';
+  const qs=new URLSearchParams(location.search), e=qs.get('estado')||'identidade';
   const fill={cofins:'3,38', leit:'13.020', item:'437,60', mod:'Horária verde'};
   const allDone=()=>{ S.pend.forEach(p=>{ p.done=fill[p.id]; if(p.cell) S.items[p.cell[0]][p.cell[1]]=p.done; }); S.status='pronta'; };
   if (e==='nao-encontrada'){ S.id='edit'; S.uc=''; S.idNF=true; }
@@ -1396,6 +1397,8 @@ LOGO = (document.querySelector('.sb-brand svg')?.outerHTML||'').replace(/fill="#
   if (e==='pronta'||e==='enviada') allDone();
   if (e==='enviada'){ S.sent={who:ME.name, at:'07/10/2026 às 14:32'}; S.acts.unshift(['Enviada para faturamento','ok','14:32',false,ME]); }
   if (e==='sem-tentativas') S.tries=0;
+  const ab=qs.get('aba'); if (ab && TABS[ab]) S.tab=ab;
+  if (qs.get('demo')==='1') document.documentElement.classList.add('in-demo'); // dentro da página de interações: sem o seletor
   const d=$('#demo'); d.value=e; d.onchange=()=>{ const u=new URL(location.href); u.searchParams.set('estado',d.value); location.href=u; };
 })();
 render();

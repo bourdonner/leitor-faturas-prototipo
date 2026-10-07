@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Leitor de Faturas · Interações para o front</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0..1,0&display=block" rel="stylesheet">
+<style>
+  :root{--ink:#1c1917;--mid:#78716c;--border:#e7e5e4;--s100:#f5f5f4;--s50:#fafaf9;--white:#fff;--brand:#71902f;--alert:#f97316}
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth;scroll-padding-top:24px}
+  body{margin:0;font:400 14px/1.55 Inter,sans-serif;color:var(--ink);background:var(--s100)}
+  .ms{font-family:"Material Symbols Rounded";font-size:18px;line-height:1;font-weight:400;font-style:normal;display:inline-block;vertical-align:-4px;font-variation-settings:"FILL" 1}
+  a{color:inherit}
+  .wrap{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;max-width:1480px;margin:0 auto;padding:32px 24px 80px}
+  nav{position:sticky;top:24px;align-self:start;display:flex;flex-direction:column;gap:2px}
+  nav h1{font:600 18px/1.3 Poppins,Inter,sans-serif;color:var(--brand);margin:0 0 4px}
+  nav p{margin:0 0 16px;color:var(--mid);font-size:12px}
+  nav a{display:flex;gap:8px;align-items:center;padding:7px 10px;border-radius:8px;text-decoration:none;font-weight:500}
+  nav a b{width:20px;height:20px;border-radius:6px;background:var(--white);display:grid;place-items:center;font-size:11px;flex:none}
+  nav a:hover,nav a.on{background:var(--white)}
+  nav a.on b{background:var(--brand);color:#fff}
+  .links{margin-top:16px;padding-top:16px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:6px;font-size:12px}
+  .links a{padding:0;font-weight:500;color:var(--mid)}
+  main{display:flex;flex-direction:column;gap:24px;min-width:0}
+  .intro{background:var(--white);border-radius:16px;padding:24px}
+  .intro h2{margin:0 0 6px;font:600 22px/1.3 Poppins,Inter,sans-serif}
+  .intro p{margin:0;color:var(--mid);max-width:760px}
+  section{background:var(--white);border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:20px}
+  .cols2{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:24px}
+  .txt h3{margin:0;font:600 18px/1.3 Poppins,Inter,sans-serif;display:flex;gap:10px;align-items:baseline}
+  .txt h3 small{font:600 12px Inter,sans-serif;color:var(--brand)}
+  .meta{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 16px}
+  .tag{display:inline-flex;align-items:center;gap:4px;height:24px;padding:0 8px;border-radius:999px;background:var(--s100);font-size:12px;font-weight:600;text-decoration:none}
+  .tag.issue{background:#ecfccb;color:#3f6212}
+  .txt h4{margin:16px 0 6px;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--mid)}
+  .txt ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:5px}
+  .txt li b{font-weight:600}
+  .txt .warn li::marker{color:var(--alert)}
+  .demo{min-width:0;display:flex;flex-direction:column;gap:10px}
+  .seg{display:flex;flex-wrap:wrap;gap:6px}
+  .seg button{height:30px;padding:0 12px;border-radius:999px;border:1px solid var(--border);background:var(--white);font:500 12px Inter,sans-serif;cursor:pointer}
+  .seg button.on{background:var(--ink);border-color:var(--ink);color:#fff}
+  .stage{position:relative;background:var(--s100);border-radius:12px;overflow:hidden;display:flex;justify-content:center}
+  .stage iframe{border:0;background:#fff;display:block}
+  .stage.desk iframe{position:absolute;top:0;left:0;width:1440px;height:860px;transform-origin:0 0}
+  .stage.mob{padding:16px 0}
+  .stage.mob iframe{width:393px;height:760px;border-radius:24px;box-shadow:0 8px 30px rgba(0,0,0,.12)}
+  .try{font-size:12px;color:var(--mid);display:flex;gap:6px;align-items:flex-start}
+  .try .ms{font-size:16px;color:var(--brand);vertical-align:0}
+  .open{margin-left:auto;font-size:12px;font-weight:500}
+  @media (max-width:1000px){.cols2{grid-template-columns:1fr}}
+  @media (max-width:820px){.wrap{grid-template-columns:1fr;padding:16px 16px 60px}nav{position:static}.stage.mob iframe{width:100%;max-width:393px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav id="nav">
+    <h1>Leitor de Faturas</h1>
+    <p>Interações para o front · uma área por subissue</p>
+    <div id="navList"></div>
+    <div class="links">
+      <a href="detalhe.html">Protótipo · Detalhe ↗</a>
+      <a href="index.html">Protótipo · Listagem ↗</a>
+      <a href="https://github.com/bourdonner/leitor-faturas-prototipo/blob/main/REGRAS.md">REGRAS.md (completo) ↗</a>
+      <a href="https://www.figma.com/design/EwAXXXwHEhfBp9L7N02InG/Faturamento">Figma · Faturamento ↗</a>
+      <a href="https://linear.app/cogecom/issue/COG-286">Linear · COG-286 ↗</a>
+    </div>
+  </nav>
+  <main id="main">
+    <div class="intro">
+      <h2>O que é chato de acertar, por área</h2>
+      <p>Cada bloco tem as regras que não dá para ver só olhando a tela e uma demo ao vivo do protótipo. Detalhes de medida e animação ficam no REGRAS.md. Dados fictícios.</p>
+    </div>
+  </main>
+</div>
+<script>
+const D='detalhe.html?demo=1&';
+// subissues da COG-286 no Linear, uma por área
+const ISSUE={paineis:'COG-287',tabbar:'COG-288',cards:'COG-289',planilha:'COG-290',pendencias:'COG-291',atividade:'COG-292',identidade:'COG-293',mobile:'COG-294',listagem:'COG-295'};
+const SECTIONS=[
+ {id:'paineis', t:'Painéis e layout (desktop)', rules:[
+   'Até 3 painéis lado a lado: <b>Fatura</b> (686 px, mín. 400) · <b>Detalhes</b> (ocupa o resto, mín. 520) · <b>Atividade</b> (284 fixo). Gap 24.',
+   'Faltou largura: sai primeiro o de menor prioridade. Ordem: Detalhes › Fatura › Atividade.',
+   'Abrir um painel que não cabe fecha os outros, do menos para o mais prioritário.',
+   'Todos fechados: "Nenhum painel aberto" + <b>Voltar ao padrão</b>.',
+   'Cards em 2/3/4 colunas pela largura do <b>painel</b> (container query), não da janela.'],
+  edge:['Breakpoint único em 768 px; ao trocar de modo, volta para Detalhes.','Abas rolam com o conteúdo (não ficam presas).'],
+  demos:[['Desktop',D+'estado=pendencias','desk','Feche e abra painéis pela tab bar e estreite a janela.']]},
+ {id:'tabbar', t:'Tab bar', rules:[
+   'Pílula <b>Fatura · Detalhes · Atividade</b> + botão separado à direita (gap 10).',
+   'O botão da direita muda: <b>Pendências</b> (com contador) enquanto houver pendência → <b>Faturar</b> quando a identidade está validada e não há pendência → nada depois de enviada.',
+   'Faturar: Default (brand) · Hover (neon/800) · Loading ("Enviando…", ícone girando, sem clique). Componente da lib: Tab Bar Item <code>Type=Send</code>.',
+   'Mobile: só ícones (nome continua para leitor de tela), Atividade sai da barra; ao rolar para baixo a barra desce e some.'],
+  edge:['Item ativo = pílula interna com animação de escala; abrir/fechar faz o ícone pular.','Faturar no mobile precisa de aria-label "Enviar para faturamento".'],
+  demos:[['Pendências',D+'estado=pendencias','desk'],['Faturar',D+'estado=pronta','desk','Passe o mouse e clique em Faturar para ver o carregando.'],['Mobile',D+'estado=pronta','mob']]},
+ {id:'cards', t:'Detalhes · cards e campos', rules:[
+   'Card = <b>um rótulo + um valor + unidade</b>. Copiar leva só o valor.',
+   'Estados: visualização (lápis) · edição (campo com unidade dentro, enviar ao lado, fechar no cabeçalho; Enter/Esc) · pendente (borda laranja) · corrigido (borda verde).',
+   'Visualização e edição têm a <b>mesma altura</b>; cards da mesma linha alinham ao topo.',
+   'Máscaras: moeda/% digitam da direita (2 casas); kWh inteiro com milhar; data, CNPJ, CEP e código de barras com pontuação e validação.'],
+  edge:['Inválido: borda vermelha + aviso, não salva.','No iOS, campo com 16 px para o Safari não dar zoom.'],
+  demos:[['Resumo',D+'estado=pendencias','desk','Clique no lápis de um card e digite um valor.'],['Mobile',D+'estado=pendencias','mob']]},
+ {id:'planilha', t:'Planilha de itens e soma', rules:[
+   'Duplo clique, Enter ou F2 edita; setas navegam; Esc cancela. No mobile, a célula pendente abre com um toque.',
+   'Unidade dentro da célula, em cinza ("540 kWh", "R$ 800,35").',
+   '<b>A soma da coluna Valor tem que fechar com o Total da fatura.</b> Editou e não fechou → a célula vira pendência, com o valor que fecha no placeholder.',
+   'Corrigiu com outro valor que ainda não fecha → continua pendência. Rodapé mostra a soma em vermelho enquanto não fecha.'],
+  edge:['Coluna Item fixa no desktop; no mobile rola junto e ocupa até metade, com corte no meio do nome.','Quantidade e valores aceitam negativo (créditos); tarifas com 5 casas.'],
+  demos:[['Soma não fecha',D+'estado=soma&aba=Itens','desk','A Demanda está com valor errado: digite outro valor e veja a pendência continuar.'],['Mobile',D+'estado=soma&aba=Itens','mob']]},
+ {id:'pendencias', t:'Pendências', rules:[
+   'Desktop: card flutuante com "1 de N", anterior/próxima, <b>Ver no Campo</b> (rola até o card e pisca) e Confirmar (só com valor).',
+   'Mobile: lista em tela cheia, cada item com campo, Ver no Campo e Confirmar.',
+   '<b>Sugestão no placeholder</b> quando o valor é derivável (nunca preenchido): COFINS = valor ÷ base, leitura = anterior + consumo, ICMS do item = alíquota × valor. A dica embaixo diz de onde veio.',
+   'Item pendente fora da área visível: marcador laranja + seta na borda do container; clicar rola até ele.'],
+  edge:['Sem identidade validada, o card só manda para a identidade.','Zerou: some o botão Pendências, aba perde o alerta, status vira "Sem pendências".'],
+  demos:[['Desktop',D+'estado=pendencias','desk','Role o Resumo: o marcador aponta o COFINS quando ele sai da tela.'],['Mobile',D+'estado=pendencias','mob','Toque no botão de alerta.']]},
+ {id:'atividade', t:'Atividade', rules:[
+   'Linha do tempo, mais recente no topo. Autor no canto: <b>sistema</b> = marca Enershare em preto; <b>pessoa</b> = iniciais com cor própria (nome no hover).',
+   'Edição: no hover/foco/toque abre <b>de → para</b> (antigo riscado, novo em negrito sobre verde-claro). Pendência resolvida: "pendente → valor".',
+   'Evento novo entra destacado.',
+   'Mobile: fica no painel do header (botão histórico), não na tab bar.'],
+  edge:['Status do sistema em 1–2 palavras.'],
+  demos:[['Desktop',D+'estado=pendencias','desk','Passe o mouse num evento de edição.']]},
+ {id:'identidade', t:'Identidade, extrair novamente e só leitura', rules:[
+   'Bloco acima das abas. A UC lida vem preenchida; a <b>distribuidora sai da UC</b> (um campo: "Unidade Consumidora e Distribuidora", combobox com busca por número ou titular).',
+   'Até validar: dados esmaecidos e travados. UC de outro titular dá erro no campo. Validada: pílula verde + Alterar.',
+   '<b>Extrair novamente</b>: "N de 2 tentativas restantes", diálogo de confirmação (descarta correções); sem tentativas, desabilitado. Mobile: no painel do header.',
+   '<b>Enviada</b>: sem edição, sem tab bar de ação, pílula com cadeado + data + UC, cabeçalho "Enviada por … em …".'],
+  edge:['Combobox: setas, Enter escolhe, Esc fecha; texto digitado sem escolher → "Escolha uma UC da lista".','Regras de negócio seguem o stg (COG-282).'],
+  demos:[['Validar',D+'estado=identidade','desk'],['Não encontrada',D+'estado=nao-encontrada','desk','Digite "mercado" ou "3014" no campo.'],['Outro titular',D+'estado=divergente','desk'],['Sem tentativas',D+'estado=sem-tentativas','desk'],['Enviada',D+'estado=enviada','desk'],['Mobile',D+'estado=identidade','mob']]},
+ {id:'mobile', t:'Mobile · header e fatura', rules:[
+   'Header da lib (<code>Size=Mobile, Context=Invoice</code>): badges sobrepostos UC, distribuidora, referência + pílula de status por cima.',
+   'Tocar num badge abre o painel do header sobre fundo desfocado: status, referência, links, histórico, baixar, abrir, extrair novamente.',
+   'Rolar para baixo: header sobe e tab bar desce; rolar para cima, topo ou trocar de tela: voltam. Rolagem lateral não conta.',
+   'Fatura: zoom por pinça (1×–4×, mantém o ponto entre os dedos) e toque duplo (cabe ↔ 2×).'],
+  edge:['Painel fecha com ×, toque fora ou Esc; o foco volta ao badge.'],
+  demos:[['Detalhe',D+'estado=pendencias','mob','Toque nos badges do header e role o conteúdo.'],['Enviada',D+'estado=enviada','mob']]},
+ {id:'listagem', t:'Listagem e envio de fatura', rules:[
+   'Filtros visíveis por padrão (padrão do Cadastro): Situação, Pendências, Concessionária, Enviado por, Recebida em. Funil mostra/esconde e conta os ativos.',
+   'Cada filtro: busca + opções + "Limpar seleção"; "Limpar todos" só com filtro ativo.',
+   '<b>Nova fatura</b>: PDF/JPG/PNG/WebP, até 20 MB e 20 arquivos; inválido fica na lista com o motivo e não sobe.',
+   'Mobile: "Tirar foto" (câmera na página com enquadramento; sem permissão, câmera do aparelho) → revisar páginas → enviar.'],
+  edge:['Ao terminar, as novas entram no topo como "Lendo fatura", destacadas.','"Enviado por" no lugar de responsável: não existe atribuição.'],
+  demos:[['Desktop','index.html','desk','Clique em "Nova fatura" e arraste arquivos.'],['Mobile','index.html','mob']]},
+];
+const main=document.getElementById('main'), nav=document.getElementById('navList');
+SECTIONS.forEach((s,i)=>{
+  nav.insertAdjacentHTML('beforeend',`<a href="#${s.id}" data-id="${s.id}"><b>${i+1}</b>${s.t}</a>`);
+  const iss=ISSUE[s.id];
+  main.insertAdjacentHTML('beforeend',`<section id="${s.id}">
+    <div class="txt"><h3><small>${String(i+1).padStart(2,'0')}</small>${s.t}</h3>
+      <div class="meta">${iss?`<a class="tag issue" href="https://linear.app/cogecom/issue/${iss}">${iss}</a>`:''}<a class="tag" href="https://github.com/bourdonner/leitor-faturas-prototipo/blob/main/REGRAS.md">REGRAS.md</a></div>
+      <div class="cols2"><div><h4>Regras</h4><ul>${s.rules.map(r=>`<li>${r}</li>`).join('')}</ul></div>
+      <div><h4>Atenção</h4><ul class="warn">${s.edge.map(r=>`<li>${r}</li>`).join('')}</ul></div></div></div>
+    <div class="demo"><div class="seg" role="tablist">${s.demos.map((d,k)=>`<button role="tab" data-k="${k}" class="${k?'':'on'}">${d[0]}</button>`).join('')}<a class="open" target="_blank" href="${s.demos[0][1].replace('demo=1&','')}">Abrir em tela cheia ↗</a></div>
+      <div class="stage"></div><div class="try"></div></div></section>`);
+  const sec=document.getElementById(s.id), stage=sec.querySelector('.stage'), tr=sec.querySelector('.try'), op=sec.querySelector('.open');
+  const show=k=>{ const [lb,url,kind,tip]=s.demos[k];
+    sec.querySelectorAll('.seg button').forEach(b=>b.classList.toggle('on',+b.dataset.k===k));
+    stage.className='stage '+kind; stage.innerHTML=`<iframe loading="lazy" title="Demo: ${s.t} · ${lb}" src="${url}"></iframe>`; fit(stage);
+    tr.innerHTML=tip?`<span class="ms">touch_app</span>${tip}`:''; op.href=url.replace('demo=1&',''); };
+  sec.querySelectorAll('.seg button').forEach(b=>b.onclick=()=>show(+b.dataset.k));
+  show(0);
+});
+function fit(st){ if(!st.classList.contains('desk')) { st.style.height=''; return; } const f=st.querySelector('iframe'), k=Math.min(1,st.clientWidth/1440); f.style.transform=`scale(${k})`; st.style.height=860*k+'px'; }
+new ResizeObserver(()=>document.querySelectorAll('.stage').forEach(fit)).observe(main);
+// item do menu acompanha a rolagem
+const io=new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting) document.querySelectorAll('nav a[data-id]').forEach(a=>a.classList.toggle('on',a.dataset.id===e.target.id)); }),{rootMargin:'-40% 0px -55% 0px'});
+document.querySelectorAll('section').forEach(s=>io.observe(s));
+</script>
+</body>
+</html>
