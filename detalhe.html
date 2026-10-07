@@ -888,7 +888,9 @@ function bindSheet(){
   const edit=td=>{
     if(td.classList.contains('ed') || S.sent || S.id!=='ok') return;
     const r=+td.dataset.r, c=+td.dataset.c, old=S.items[r][c];
-    td.classList.add('ed'); td.innerHTML='<input>'; const inp=td.firstChild; inp.value=old==='—'?'':old; inp.focus(); inp.select();
+    td.classList.add('ed'); td.innerHTML='<input>'; const inp=td.firstChild; inp.value=old==='—'?'':old;
+    if(td.dataset.pend){ const pp=S.pend.find(x=>x.id===td.dataset.pend); inp.value=''; inp.placeholder=pp.ph||''; } // pendente: campo vazio, sugestão no placeholder
+    inp.focus(); inp.select();
     const kind=COLK[c]; attachMask(inp, kind, {signed:c!==3&&c!==4});
     const done=save=>{ const nv=inp.value.trim();
       if(save && nv && nv!==old && invalid(inp, kind)) return;
