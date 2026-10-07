@@ -83,18 +83,25 @@
   /* pdf */
   /* páginas da fatura empilhadas em rolagem contínua; margin auto centraliza sem cortar quando o zoom passa da largura */
   .pdf-scroll{flex:1;overflow:auto;padding:8px 24px 24px;display:flex;flex-direction:column;align-items:flex-start;gap:16px}
-  .pdf-page{width:560px;flex:none;margin:0 auto;transition:width .2s ease;box-shadow:0 1px 3px rgba(0,0,0,.08);background:#fff}
+  /* sem zoom, a página cabe no painel (max-width 100%); o zoom por botão libera o limite */
+  .pdf-page{width:560px;max-width:100%;flex:none;margin:0 auto;transition:width .2s ease;box-shadow:0 1px 3px rgba(0,0,0,.08);background:#fff}
   .pdf-page img{width:100%;display:block}
   /* tabs */
   .tabs{display:flex;gap:4px}
   .tab{height:33px;padding:0 12px;border-radius:8px;color:var(--mid);display:inline-flex;align-items:center;gap:6px;font-weight:500}
   .tab.on{background:var(--white);color:var(--brand);box-shadow:0 1px 3px rgba(0,0,0,.08)}
   .tab .warn{width:18px;height:18px;border-radius:5px;background:var(--alert);color:#fff;display:grid;place-items:center}
-  .content{flex:1;overflow:auto;padding:4px 24px 120px;display:flex;flex-direction:column;gap:16px}
+  /* abas e conteúdo rolam juntos: quem rola é o .det-scroll, não o .content */
+  .det-scroll{flex:1;min-height:0;overflow:auto;display:flex;flex-direction:column}
+  .content{flex:none;padding:4px 24px 120px;display:flex;flex-direction:column;gap:16px}
   .content > *{flex-shrink:0}
   .sec-t{font-family:Poppins,Inter,sans-serif;font-weight:600;font-size:14px;color:var(--brand);margin-top:6px}
   .grid{display:grid;gap:16px}
   .g2{grid-template-columns:1fr 1fr} .g3{grid-template-columns:1fr 1fr 1fr}
+  /* colunas dos cards pela largura do painel Detalhes: 2 → 3 (conteúdo ≥ 900) → 4 (conteúdo ≥ 1200) */
+  .p-det{container-type:inline-size}
+  @container (min-width:948px){ .g2{grid-template-columns:repeat(3,minmax(0,1fr))} }
+  @container (min-width:1248px){ .g2{grid-template-columns:repeat(4,minmax(0,1fr))} }
   .full{grid-column:1/-1}
   /* data card — um valor + unidade; mesma altura em visualização e edição */
   .card{background:var(--s50);border-radius:8px;padding:12px;border:1px solid transparent;transition:box-shadow .3s,border-color .3s,background .2s;min-width:0}
@@ -535,12 +542,14 @@
 
         <!-- Detalhes -->
         <div class="panel p-det" id="pDet">
-          <div class="bar">
-            <div class="tabs" role="tablist" id="tabs"></div>
-            <span class="sp"></span>
-            <button class="ib sq" data-toggle="det" aria-label="Minimizar detalhes"><span class="ms" aria-hidden="true">hide</span></button>
+          <div class="det-scroll" id="detScroll">
+            <div class="bar">
+              <div class="tabs" role="tablist" id="tabs"></div>
+              <span class="sp"></span>
+              <button class="ib sq" data-toggle="det" aria-label="Minimizar detalhes"><span class="ms" aria-hidden="true">hide</span></button>
+            </div>
+            <div class="content" id="content"></div>
           </div>
-          <div class="content" id="content"></div>
         </div>
 
         <!-- Pendências em lista (mobile) -->
@@ -1052,7 +1061,7 @@ document.addEventListener('click', e=>{
   });
 })();
 function setPages(w, maxW){ document.querySelectorAll('.pdf-page').forEach(p=>{ p.style.width=w; if(maxW!==undefined) p.style.maxWidth=maxW; }); }
-let z=560; $('#zIn').onclick=()=>{ z=Math.min(1100,z+80); setPages(z+'px'); }; $('#zOut').onclick=()=>{ z=Math.max(400,z-80); setPages(z+'px'); };
+let z=560; $('#zIn').onclick=()=>{ z=Math.min(1100,z+80); setPages(z+'px','none'); }; $('#zOut').onclick=()=>{ z=Math.max(400,z-80); setPages(z+'px','none'); };
 /* ---------- nome do item no mobile: começo + … + fim, como o macOS ---------- */
 const _cv=document.createElement('canvas').getContext('2d');
 function midFit(t,max){
@@ -1099,10 +1108,10 @@ document.fonts?.ready.then(measureHead);
 /* ---------- pendência fora da área visível ---------- */
 const clipRect=(a,b)=>({left:Math.max(a.left,b.left),right:Math.min(a.right,b.right),top:Math.max(a.top,b.top),bottom:Math.min(a.bottom,b.bottom)});
 function offUpdate(){
-  const layer=$('#offLayer'), content=$('#content');
+  const layer=$('#offLayer'), content=$('#content'), scroller=$('#detScroll');
   const items=[];
   if (content && !$('#pDet').classList.contains('min') && content.offsetParent){
-    const cr=content.getBoundingClientRect(), tb=$('#tabbar').getBoundingClientRect();
+    const cr=scroller.getBoundingClientRect(), tb=$('#tabbar').getBoundingClientRect();
     const view={left:cr.left, right:cr.right, top:cr.top, bottom:(tb.height && tb.top<cr.bottom) ? Math.min(cr.bottom, tb.top-8) : cr.bottom};
     if (view.right-view.left > 40 && view.bottom-view.top > 40){
       openPend().forEach(p=>{

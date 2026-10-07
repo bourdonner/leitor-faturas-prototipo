@@ -30,6 +30,24 @@ O modo é recalculado a cada `resize`. Ao mudar de modo, a tela volta para Detal
 - Espaço entre painéis: 24 px.
 - A Fatura nunca cresce além da página do PDF, para não sobrar vão. Quem cresce é Detalhes.
 - Sem Detalhes, a Fatura ocupa o espaço livre.
+- Os painéis ocupam a altura disponível; nenhum passa por cima do título nem da tab bar.
+
+### Fatura (PDF) no painel
+- A página fica **centralizada** no painel.
+- Sem zoom, a página **cabe na largura** do painel: se o painel for mais estreito que a página, ela encolhe em vez de cortar. Os botões de zoom liberam esse limite (aí a página pode passar da largura e rolar para os lados).
+
+### Detalhes
+- As **abas rolam junto com o conteúdo** (não ficam presas no topo).
+- Os cards de dado se arrumam pela largura do painel:
+
+| Largura do conteúdo | Colunas |
+|---|---|
+| < 900 px | 2 |
+| 900–1199 px | 3 |
+| ≥ 1200 px | 4 |
+
+- Cards marcados como largura total continuam ocupando a linha inteira.
+- Cards da mesma linha têm a **mesma altura**; o conteúdo fica alinhado ao topo.
 
 ### Prioridade quando falta largura
 1. **Detalhes**
@@ -49,7 +67,7 @@ O painel de menor prioridade sai primeiro. Se a pessoa fechar todos, aparece "Ne
 ## 3. Mobile (< 768 px)
 
 ### Estrutura (Figma 1815:29980)
-- **Header**: menu (56 px) · nome (Inter Bold 16) + subtítulo (10 px, caixa alta) · badges.
+- **Header**: componente `Header` da lib (Style Guide Enershare), `Size=Mobile, Context=Invoice` — menu (56 px) · nome (Inter Bold 16) + subtítulo (10 px, caixa alta) · badges.
   - Badges redondos 34 px, sobrepostos (−12 px): **UC**, **distribuidora**, **referência**.
   - Por cima de todos: pílula cinza de **pendências** com ícone + quantidade (vira check verde sem número quando zera).
   - Separador de 1 px abaixo.
@@ -67,7 +85,7 @@ O painel de menor prioridade sai primeiro. Se a pessoa fechar todos, aparece "Ne
 | Tela | Conteúdo |
 |---|---|
 | Fatura | Nome do arquivo + **Baixar** ao lado. Sem botões de zoom e sem "abrir em nova aba". Zoom por **pinça** (1×–4×, mantém o ponto entre os dedos) e **toque duplo** (cabe na tela ↔ 2×). |
-| Detalhes | Cards em 1 coluna. |
+| Detalhes | Cards em 1 coluna. As abas rolam com o conteúdo e somem junto com o header ao rolar para baixo. |
 | Pendências | Lista em tela cheia: cada item com campo (com máscara), "Ver no Campo" e Confirmar. Vazia → "Sem pendências". |
 
 ### Painel do header (Figma 1823:29368 / 1823:29509)
