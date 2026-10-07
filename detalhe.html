@@ -93,6 +93,7 @@
   .tab .warn{width:18px;height:18px;border-radius:5px;background:var(--alert);color:#fff;display:grid;place-items:center}
   /* abas e conteúdo rolam juntos: quem rola é o .det-scroll, não o .content */
   .det-scroll{flex:1;min-height:0;overflow:auto;display:flex;flex-direction:column}
+  .det-scroll > *{flex-shrink:0} /* quem rola é o container: abas e conteúdo mantêm a altura natural (no mobile a barra encolhia e perdia o padding) */
   .content{flex:none;padding:4px 24px 120px;display:flex;flex-direction:column;gap:16px}
   .content > *{flex-shrink:0}
   .sec-t{font-family:Poppins,Inter,sans-serif;font-weight:600;font-size:14px;color:var(--brand);margin-top:6px}

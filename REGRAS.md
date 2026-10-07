@@ -188,3 +188,25 @@ Com **reduzir movimento** ativado no sistema, as animações são desligadas.
 - Pendente: "Não encontrado na fatura".
 - Lista vazia: "Sem pendências — Todos os dados da fatura foram conferidos."
 - Não existe "Aprovar fatura".
+
+## 7. Listagem (index.html)
+
+### Colunas e menu
+- "Enviado por" (não existe atribuição de fatura). Menu da linha: Revisar fatura, Recusar fatura.
+- Sem painel lateral.
+
+### Filtros (padrão do Cadastro)
+- Visíveis por padrão, abaixo da busca; funil verde mostra/esconde.
+- Situação · Pendências · Concessionária · Enviado por · Recebida em. Padrão: Todas / Todos / Qualquer data.
+- Cada filtro: busca + opções (caixa de seleção; data = uma opção) + "Limpar seleção". "Limpar todos" só com filtro ativo.
+- Mobile: funil à esquerda e filtros com rolagem lateral; busca embaixo.
+
+### Nova fatura
+- PDF, JPG, PNG ou WebP · até 20 MB cada · até 20 arquivos.
+- Desktop: arrastar ou escolher; arquivo inválido fica na lista com o motivo e não é enviado.
+- Mobile: card sobre fundo desfocado → "Tirar foto da fatura" ou "Escolher arquivos".
+- Foto: câmera na página com marcas de enquadramento (flash se o aparelho tiver); sem acesso, abre a câmera do aparelho. Depois: revisar páginas, tirar de novo, adicionar página, enviar.
+- Ao terminar: faturas novas no topo como "Lendo fatura", destacadas, + aviso.
+
+### Mobile (< 768 px)
+- Header com menu, título e "+"; tabela com rolagem lateral (Titular, Situação, Pendências, UC, Ref., Enviado por, Recebida em).
