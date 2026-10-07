@@ -73,11 +73,16 @@ const money=n=>(n<0?'−':'')+Math.abs(n).toLocaleString('pt-BR',{minimumFractio
 const isPre=u=>u==='R$';
 const withUnit=(v,u)=>!v||v==='—'||!u ? v : (u==='R$' ? 'R$ '+v : v+' '+u);
 function fmt(p,v){ if(p.kind==='Percentual'){ v=v.replace('%','').trim(); return v.includes(',')||v.includes('.')? v.replace('.',',') : v+',00'; } return v; }
-const hintOf=p=>(p.hint||'Não encontrado na fatura')+(p.why?`. Sugestão: <span class="sg">${p.why}</span>`:'');
+const hintOf=p=>(p.hint||'Não encontrado na fatura')+(p.why?`. Sugestão: <span class="sg">${p.why}</span><span class="tabk"> · <kbd>Tab</kbd> para usar</span>`:'');
+/* Tab com o campo vazio aceita a sugestão do placeholder (igual ao protótipo) */
+document.addEventListener('keydown',e=>{ const t=e.target;
+  if(e.key!=='Tab'||e.shiftKey||!(t instanceof HTMLInputElement)||!t.hasAttribute('data-sug')||t.value.trim()||!t.placeholder) return;
+  e.preventDefault(); t.value=t.placeholder; t.dispatchEvent(new Event('input',{bubbles:true})); t.dispatchEvent(new Event('change',{bubbles:true})); t.setSelectionRange(t.value.length,t.value.length);
+},true);
 function fieldHTML(p,id){
   if (p.kind==='Seleção') return `<select class="input" id="${id}"><option value="">${p.ph}</option>${p.options.map(o=>`<option>${o}</option>`).join('')}</select>`;
   const u=p.unit?`<span class="u">${p.unit}</span>`:'';
-  return `<label class="ufld">${p.unit&&isPre(p.unit)?u:''}<input id="${id}" placeholder="${p.ph}" data-mask="${{Percentual:'pct',Número:'int',Moeda:'money'}[p.kind]||'text'}">${p.unit&&!isPre(p.unit)?u:''}</label>`;
+  return `<label class="ufld">${p.unit&&isPre(p.unit)?u:''}<input id="${id}" placeholder="${p.ph}" ${p.why?'data-sug':''} data-mask="${{Percentual:'pct',Número:'int',Moeda:'money'}[p.kind]||'text'}">${p.unit&&!isPre(p.unit)?u:''}</label>`;
 }
 
 /* ---------- card de dado (card() + editCard() do protótipo) ---------- */
@@ -255,7 +260,7 @@ function midFit(t,max){ const w=x=>_cv.measureText(x).width; if(w(t)<=max) retur
 comp({id:'planilha', grp:'Dados', t:'Planilha de itens e soma', iss:'COG-290',
  lead:'Itens da nota fiscal. A soma da coluna Valor tem que fechar com o Total da fatura (R$ 4.440,13); se não fecha, a célula editada vira pendência.',
  ctrls:seg('size','Tamanho',[['desk','Desktop'],['mob','Mobile']],'desk')+`<button class="cbtn" data-err>Simular valor errado na Demanda</button>`,
- beh:[['Clique','Seleciona a célula (borda verde)'],['Duplo clique, Enter ou F2','Edita com a máscara da coluna; quantidade e valores aceitam "−"'],['Setas ← → ↑ ↓','Movem a seleção'],['Enter na edição / sair do campo','Salva (inválido: borda vermelha + aviso)'],['Esc na edição','Cancela'],['Célula pendente','Fundo laranja + ícone; ao editar, campo vazio com a sugestão no placeholder. No mobile abre com um toque'],['Valor editado e soma ≠ total','A célula vira pendência, com o valor que fecha no placeholder; rodapé e aviso em vermelho'],['Corrigiu com um valor que ainda não fecha','Continua pendência, com nova sugestão']],
+ beh:[['Clique','Seleciona a célula (borda verde)'],['Duplo clique, Enter ou F2','Edita com a máscara da coluna; quantidade e valores aceitam "−"'],['Setas ← → ↑ ↓','Movem a seleção'],['Enter na edição / sair do campo','Salva (inválido: borda vermelha + aviso)'],['Esc na edição','Cancela'],['Célula pendente','Fundo laranja + ícone; ao editar, campo vazio com a sugestão no placeholder. No mobile abre com um toque'],['Tab com a célula pendente vazia','Preenche com a sugestão; Enter confirma'],['Largura ao editar','A coluna mantém a largura; só cresce (180 ms, ease) se o valor ou a sugestão não couberem'],['Valor editado e soma ≠ total','A célula vira pendência, com o valor que fecha no placeholder; rodapé e aviso em vermelho'],['Corrigiu com um valor que ainda não fecha','Continua pendência, com nova sugestão']],
  notes:['Unidade dentro da célula, em cinza: "540 kWh", "1,48213 R$/kWh", "R$ 800,35". Sem coluna "Unid.".','Cabeçalho e coluna Item fixos no desktop. No mobile, Item rola junto e ocupa até metade da largura; nome longo é cortado no meio ("Energia in…onta TUSD").','Célula alterada: fundo #f7fee7. Negativos em verde-escuro.','Barra de rolagem no estilo Scroll-area (alça 8 px).'],
  init(r){
   const cv=$('.canvas',r), TOTAL=4440.13; let S;
@@ -282,8 +287,12 @@ comp({id:'planilha', grp:'Dados', t:'Planilha de itens e soma', iss:'COG-290',
   const edit=td=>{
     if(td.classList.contains('ed')) return;
     const ri=+td.dataset.r, c=+td.dataset.c, old=S.items[ri][c], kind=COLK[c];
-    td.classList.add('ed'); td.innerHTML='<input>'; const inp=td.firstChild; inp.value=old==='—'?'':old;
-    const p=td.dataset.pend && S.pend.find(x=>x.id===td.dataset.pend); if(p){ inp.value=''; inp.placeholder=p.ph||''; }
+    const cs0=getComputedStyle(td), w0=td.clientWidth-parseFloat(cs0.paddingLeft)-parseFloat(cs0.paddingRight);
+    td.classList.add('ed'); td.innerHTML=`<span class="ghost" aria-hidden="true">${td.innerHTML}</span><input size="1">`; const inp=td.querySelector('input'); inp.value=old==='—'?'':old;
+    const p=td.dataset.pend && S.pend.find(x=>x.id===td.dataset.pend); if(p){ inp.value=''; inp.placeholder=p.ph||''; if(p.why) inp.dataset.sug='1'; }
+    const gh=td.querySelector('.ghost'), nat=gh.getBoundingClientRect().width; gh.style.minWidth=nat+'px';
+    const grow=()=>{ const cs=getComputedStyle(inp); _cv.font=`${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`; const need=Math.ceil(Math.max(_cv.measureText(inp.value).width,_cv.measureText(inp.placeholder).width))+4; gh.style.minWidth=(need>w0?need:nat)+'px'; if(need>w0) log(r,`A coluna cresce <b>${Math.round(w0)} → ${need} px</b> (animado) para caber ${inp.value?'o valor':'a sugestão'}`); };
+    requestAnimationFrame(grow); inp.addEventListener('input',grow);
     inp.setAttribute('aria-label',`${S.items[ri][0]} · ${COLS[c-2]}`); inp.focus(); inp.select();
     attachMask(inp,kind,{signed:c!==3&&c!==4});
     const done=save=>{ const nv=inp.value.trim();
@@ -460,7 +469,7 @@ comp({id:'extrair', grp:'Fatura', t:'Extrair novamente', lib:'Button · Alert Di
     $('[data-re]',cv).onclick=dlg; };
   const dlg=()=>{ const prev=document.activeElement, ov=document.createElement('div'); ov.className='cx'; ov.innerHTML=`<div class="dlg-ov"><div class="dlg" role="alertdialog" aria-modal="true" aria-labelledby="exT" aria-describedby="exD"><h2 id="exT">Extrair a fatura novamente?</h2><p id="exD">A leitura recomeça do zero e as correções feitas aqui são descartadas. ${S.n===1?'Esta é a última tentativa.':`Restam ${S.n} de 2 tentativas.`}</p><div class="acts"><button class="btn outline" data-x>Cancelar</button><button class="btn primary" data-y>Extrair novamente</button></div></div></div>`;
     document.body.appendChild(ov); const o=$('.dlg-ov',ov);
-    const close=()=>{ ov.remove(); prev?.focus?.(); };
+    const close=()=>{ ov.remove(); ($('[data-re]',cv)||prev)?.focus?.(); }; // foco volta ao botão (no Safari o clique não foca)
     $('[data-x]',ov).onclick=close; o.onclick=e=>{ if(e.target===o) close(); };
     o.onkeydown=e=>{ if(e.key==='Escape') close(); if(e.key==='Tab'){ const f=$$('button',o), i=f.indexOf(document.activeElement); e.preventDefault(); f[(i+(e.shiftKey?-1:1)+f.length)%f.length].focus(); } };
     $('[data-y]',ov).onclick=()=>{ close(); S.n--; segSet(r,'n',String(S.n)); toast('Fatura enviada para nova leitura'); draw(); log(r,`Tentativa usada · restam <b>${S.n}</b>${S.n?'':' (botão desabilitado)'}`); };
@@ -525,12 +534,12 @@ comp({id:'filtro', grp:'Listagem', t:'Busca e filtros', lib:'Filter · Command B
     $('[data-q]',cv).oninput=e=>{ S.q=e.target.value; };
     $('[data-funnel]',cv).onclick=()=>{ S.showF=!S.showF; S.fOpen=null; draw(); $('[data-funnel]',cv).focus(); log(r,S.showF?'Filtros <b>visíveis</b>':`Filtros <b>escondidos</b>${active()?` · funil mostra ${active()} ativo(s)`:''}`); };
     const ca=$('[data-clearall]',cv); if(ca) ca.onclick=()=>{ reset(); S.showF=true; draw(); log(r,'<b>Limpar todos</b>'); };
-    $$('[data-fk]',cv).forEach(b=>b.onclick=e=>{ e.stopPropagation(); const was=S.fOpen===b.dataset.fk; S.fOpen=was?null:b.dataset.fk; draw(); if(!was) openFilter(); });
+    $$('[data-fk]',cv).forEach(b=>b.onclick=e=>{ e.stopPropagation(); const was=S.fOpen===b.dataset.fk; S.fOpen=was?null:b.dataset.fk; draw(); if(!was) r._open(); });
     const dd=$('.dd',cv);
     dd.onclick=e=>{ e.stopPropagation(); const f=FDEF.find(x=>x.k===S.fOpen); if(!f) return;
       if(e.target.closest('.fclr')){ if(f.date) S.dt='Qualquer data'; else S.F[f.k]=[]; log(r,`${f.label}: <b>${f.all||'Qualquer data'}</b>`); }
       else { const o=e.target.closest('[data-fv]'); if(!o) return; const v=o.dataset.fv; if(f.date) S.dt=v; else S.F[f.k]=S.F[f.k].includes(v)?S.F[f.k].filter(x=>x!==v):[...S.F[f.k],v]; log(r,`${f.label}: <b>${f.date?S.dt:(S.F[f.k].join(', ')||f.all)}</b>`); }
-      if(f.date){ S.fOpen=null; draw(); $(`[data-fk="${f.k}"]`,cv)?.focus(); } else { const q=$('[data-fq]',cv).value; draw(); openFilter(q); } };
+      if(f.date){ S.fOpen=null; draw(); $(`[data-fk="${f.k}"]`,cv)?.focus(); } else { const q=$('[data-fq]',cv).value; draw(); r._open(q); } };
     dd.onkeydown=e=>{ if(e.key==='Escape'){ const k=S.fOpen; S.fOpen=null; draw(); $(`[data-fk="${k}"]`,cv)?.focus(); } };
     function openFilter(q=''){ const f=FDEF.find(x=>x.k===S.fOpen), b=$(`[data-fk="${f.k}"]`,cv), fq=$('[data-fq]',cv);
       fq.value=q; fq.placeholder=f.ph; dd.setAttribute('aria-label','Filtro: '+f.label);
@@ -539,6 +548,7 @@ comp({id:'filtro', grp:'Listagem', t:'Busca e filtros', lib:'Filter · Command B
       fq.oninput=fill; fill(); dd.hidden=false;
       const wb=W.getBoundingClientRect(), bb=b.getBoundingClientRect(); dd.style.top=(bb.bottom-wb.top+4)+'px'; dd.style.left=Math.max(0,Math.min(bb.left-wb.left,W.clientWidth-dd.offsetWidth))+'px';
       fq.focus(); fq.setSelectionRange(q.length,q.length); }
+    r._open=openFilter; // sempre o menu do desenho atual
   };
   document.addEventListener('click',e=>{ if(S&&S.fOpen&&!e.target.closest('.dd')&&!e.target.closest('[data-fk]')){ S.fOpen=null; draw(); } });
   r._reset=()=>{ reset(); draw(); }; reset(); draw(); }});
@@ -552,7 +562,7 @@ comp({id:'upload', grp:'Listagem', t:'Nova fatura (envio)', lib:'File Upload Ite
  init(r){ const cv=$('.canvas',r), MAXF=20, MAXB=20*1024*1024, OK_EXT=/\.(pdf|jpe?g|png|webp)$/i; let NF;
   const fmtMB=b=>b<102400?Math.max(1,Math.round(b/1024))+' KB':(b/1048576).toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1})+' MB';
   const valid=()=>NF.files.filter(f=>f.state!=='err');
-  const reset=()=>{ NF={files:[],sending:false,seq:0,drag:0}; };
+  const reset=()=>{ NF={files:[],sending:false,seq:0,drag:0,run:{}}; }; // run: Reiniciar cancela um envio em andamento
   const addFiles=list=>{ let extra=0; const dup=[];
     for(const f of [...list]){ if(NF.files.some(x=>x.name===f.name&&x.bytes===f.size)){ dup.push(f.name); continue; } if(NF.files.length>=MAXF){ extra++; continue; }
       const okType=/^(application\/pdf|image\/(jpeg|png|webp))$/.test(f.type)||OK_EXT.test(f.name), img=/^image\//.test(f.type)||/\.(jpe?g|png|webp)$/i.test(f.name);
@@ -582,10 +592,10 @@ comp({id:'upload', grp:'Listagem', t:'Nova fatura (envio)', lib:'File Upload Ite
     nf.ondragover=e=>{ if(!NF.sending) e.preventDefault(); };
     nf.ondragleave=()=>{ if(--NF.drag<=0){ NF.drag=0; resetDrop(); } };
     nf.ondrop=e=>{ e.preventDefault(); NF.drag=0; resetDrop(); if(!NF.sending&&e.dataTransfer.files.length) addFiles(e.dataTransfer.files); }; };
-  const send=()=>{ const q=valid(); if(!q.length) return; NF.sending=true; NF.files=q; render(); log(r,`Enviando <b>${q.length}</b>, um por vez`); let i=0;
-    const step=()=>{ const f=q[i]; if(!f){ setTimeout(()=>{ toast(`${q.length} fatura${q.length>1?'s':''} enviada${q.length>1?'s':''}`); log(r,`Fim: o modal fecha e ${q.length>1?'elas entram':'ela entra'} no topo da listagem como <b>Lendo fatura</b>`); reset(); render(); },700); return; }
+  const send=()=>{ const q=valid(); if(!q.length) return; NF.sending=true; NF.files=q; render(); log(r,`Enviando <b>${q.length}</b>, um por vez`); let i=0; const run=NF.run;
+    const step=()=>{ if(NF.run!==run) return; const f=q[i]; if(!f){ setTimeout(()=>{ if(NF.run!==run) return; toast(`${q.length} fatura${q.length>1?'s':''} enviada${q.length>1?'s':''}`); log(r,`Fim: o modal fecha e ${q.length>1?'elas entram':'ela entra'} no topo da listagem como <b>Lendo fatura</b>`); reset(); render(); },700); return; }
       f.state='up'; f.pct=0; render();
-      const tm=setInterval(()=>{ f.pct=Math.min(100,f.pct+8+Math.round(Math.random()*14));
+      const tm=setInterval(()=>{ if(NF.run!==run) return clearInterval(tm); f.pct=Math.min(100,f.pct+8+Math.round(Math.random()*14));
         if(f.pct>=100){ clearInterval(tm); f.state='done'; i++; render(); setTimeout(step,250); return; }
         const el=$(`[data-fid="${f.id}"]`,cv); if(el){ el.querySelector('.trk i').style.width=f.pct+'%'; el.querySelector('.pc').textContent=f.pct+'%'; } },120); };
     step(); };

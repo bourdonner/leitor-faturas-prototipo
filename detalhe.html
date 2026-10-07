@@ -196,8 +196,10 @@
   .grade td.num{cursor:cell}
   .grade td.neg{color:#3f6212}
   .grade td.sel{box-shadow:inset 0 0 0 2px var(--brand);background:#fff!important}
-  .grade td.ed{padding:0}
-  .grade td.ed input{width:100%;height:38px;border:0;padding:0 12px;text-align:right;font:inherit;background:#fff;outline:2px solid var(--brand);outline-offset:-2px}
+  /* edição: o conteúdo antigo fica invisível segurando a largura; o campo fica por cima. Só a reserva cresce (animada) se precisar */
+  .grade td.ed{position:relative}
+  .grade td.ed .ghost{display:inline-block;visibility:hidden;transition:min-width .18s ease;text-align:right}
+  .grade td.ed input{position:absolute;inset:0;width:100%;height:100%;border:0;padding:0 12px;text-align:right;font:inherit;background:#fff;outline:2px solid var(--brand);outline-offset:-2px}
   .grade td.chg{background:#f7fee7}
   .grade td.pend{background:#fff7ed!important;box-shadow:inset 0 0 0 1.5px var(--alert);text-align:center}
   .grade td.pend.sel{box-shadow:inset 0 0 0 2px var(--alert)}
@@ -518,6 +520,8 @@
   .btn.ghost{background:none;height:32px;padding:0 10px;color:var(--ink)}
   .btn.ghost:hover{background:var(--s50)}
   .content.wait{opacity:.45;pointer-events:none;user-select:none}
+  kbd{font:600 11px/1 Inter,sans-serif;padding:1px 5px;border:1px solid var(--border);border-bottom-width:2px;border-radius:4px;background:#fff;color:var(--ink)}
+  [data-mode=mobile] .tabk{display:none}
   .hint .sg{color:var(--ink)}
   .grade tfoot td.off{color:var(--danger)}
   .grade-h .off{color:var(--danger);font-weight:500}
@@ -752,11 +756,11 @@ function card(t, v, u, opts={}){
     <div class="row">${valHTML(val,u)}<span class="sp"></span><button class="cp" aria-label="Copiar valor de ${t}">${I.copy}</button></div>
   </div>`;
 }
-const hintOf = p=>(p.hint||'Não encontrado na fatura')+(p.why?`. Sugestão: <span class="sg">${p.why}</span>`:'');
+const hintOf = p=>(p.hint||'Não encontrado na fatura')+(p.why?`. Sugestão: <span class="sg">${p.why}</span><span class="tabk"> · <kbd>Tab</kbd> para usar</span>`:'');
 function fieldHTML(p,id){
   if (p.kind==='Seleção') return `<select class="input" id="${id}"><option value="">${p.ph}</option>${p.options.map(o=>`<option>${o}</option>`).join('')}</select>`;
   const u=p.unit?`<span class="u">${p.unit}</span>`:'';
-  return `<label class="ufld">${p.unit&&isPre(p.unit)?u:''}<input id="${id}" placeholder="${p.ph}" data-mask="${{Percentual:'pct',Número:'int',Moeda:'money'}[p.kind]||'text'}">${p.unit&&!isPre(p.unit)?u:''}</label>`;
+  return `<label class="ufld">${p.unit&&isPre(p.unit)?u:''}<input id="${id}" placeholder="${p.ph}" ${p.why?'data-sug':''} data-mask="${{Percentual:'pct',Número:'int',Moeda:'money'}[p.kind]||'text'}">${p.unit&&!isPre(p.unit)?u:''}</label>`;
 }
 const sec = t=>`<div class="sec-t">${t}</div>`;
 
@@ -880,6 +884,16 @@ function sheetHTML(){
       : `<td class="num ${String(c).startsWith('−')?'neg':''} ${S.itemChg[ri+'-'+(ci+2)]?'chg':''}" data-r="${ri}" data-c="${ci+2}" tabindex="-1">${cellHTML(ri,ci+2)}</td>`; }).join('')}</tr>`).join('')}</tbody>
   <tfoot><tr><td class="stk">Total</td><td colspan="5"></td><td class="${off?'off':''}"><span class="cu">R$</span> ${money(tot)}</td></tr></tfoot></table></div>`;
 }
+/* edição na planilha: a célula mantém a largura; só cresce (animando) se o valor ou a sugestão não couberem */
+function growCell(td, inp, w0){
+  // a reserva começa no tamanho natural do conteúdo (a tabela reparte sobra pelo conteúdo, então não pode inflar);
+  // só cresce quando o texto não cabe no espaço visível da célula
+  const g=td.querySelector('.ghost'); const nat=g.getBoundingClientRect().width; g.style.minWidth=nat+'px';
+  const fit=()=>{ const cs=getComputedStyle(inp); _cv.font=`${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
+    const need=Math.ceil(Math.max(_cv.measureText(inp.value).width, _cv.measureText(inp.placeholder).width))+4;
+    g.style.minWidth=(need>w0?need:nat)+'px'; };
+  requestAnimationFrame(fit); inp.addEventListener('input',fit);
+}
 function bindSheet(){
   const sh=$('#sheet'); if(!sh) return;
   const cells=[...sh.querySelectorAll('td.num')];
@@ -888,10 +902,12 @@ function bindSheet(){
   const edit=td=>{
     if(td.classList.contains('ed') || S.sent || S.id!=='ok') return;
     const r=+td.dataset.r, c=+td.dataset.c, old=S.items[r][c];
-    td.classList.add('ed'); td.innerHTML='<input>'; const inp=td.firstChild; inp.value=old==='—'?'':old;
-    if(td.dataset.pend){ const pp=S.pend.find(x=>x.id===td.dataset.pend); inp.value=''; inp.placeholder=pp.ph||''; } // pendente: campo vazio, sugestão no placeholder
+    const cs0=getComputedStyle(td), w0=td.clientWidth-parseFloat(cs0.paddingLeft)-parseFloat(cs0.paddingRight);
+    td.classList.add('ed'); td.innerHTML=`<span class="ghost" aria-hidden="true">${td.innerHTML}</span><input size="1">`; const inp=td.querySelector('input'); inp.value=old==='—'?'':old;
+    if(td.dataset.pend){ const pp=S.pend.find(x=>x.id===td.dataset.pend); inp.value=''; inp.placeholder=pp.ph||''; if(pp.why) inp.dataset.sug='1'; } // pendente: campo vazio, sugestão no placeholder (Tab aceita)
     inp.focus(); inp.select();
     const kind=COLK[c]; attachMask(inp, kind, {signed:c!==3&&c!==4});
+    growCell(td, inp, w0);
     const done=save=>{ const nv=inp.value.trim();
       if(save && nv && nv!==old && invalid(inp, kind)) return;
       if(td.dataset.pend){ const p=S.pend.find(x=>x.id===td.dataset.pend); td.classList.remove('ed','err');
@@ -1103,7 +1119,7 @@ function reExtract(){
     <p id="dlgD">A leitura recomeça do zero e as correções feitas aqui são descartadas. ${S.tries===1?'Esta é a última tentativa.':`Restam ${S.tries} de 2 tentativas.`}</p>
     <div class="acts"><button class="btn outline" data-x>Cancelar</button><button class="btn primary" data-y>Extrair novamente</button></div></div>`;
   document.body.appendChild(ov);
-  const close=()=>{ ov.remove(); prev?.focus?.(); };
+  const close=()=>{ ov.remove(); ($('#reExt')||prev)?.focus?.(); }; // foco volta ao botão (no Safari o clique não foca)
   ov.querySelector('[data-x]').onclick=close;
   ov.onclick=e=>{ if(e.target===ov) close(); };
   ov.onkeydown=e=>{ if(e.key==='Escape') close(); if(e.key==='Tab'){ const f=[...ov.querySelectorAll('button')], i=f.indexOf(document.activeElement); e.preventDefault(); f[(i+(e.shiftKey?-1:1)+f.length)%f.length].focus(); } };
@@ -1349,6 +1365,11 @@ $('#mOv').addEventListener('click',e=>{ if(e.target===$('#mOv')) mCloseSheet(); 
 document.addEventListener('keydown',e=>{ if(e.key==='Escape' && !$('#mOv').hidden){ if(S.mView==='act') mShow('info'); else mCloseSheet(); } });
 addEventListener('resize',()=>{ if(modeOf()!=='mobile' && !$('#mOv').hidden) mCloseSheet(); });
 $('#mMenu').onclick=()=>toast('Menu fora do escopo do protótipo.');
+/* sugestão no placeholder: Tab com o campo vazio preenche com a sugestão (o usuário ainda confirma) */
+document.addEventListener('keydown',e=>{ const t=e.target;
+  if(e.key!=='Tab'||e.shiftKey||!(t instanceof HTMLInputElement)||!t.hasAttribute('data-sug')||t.value.trim()||!t.placeholder) return;
+  e.preventDefault(); t.value=t.placeholder; t.dispatchEvent(new Event('input',{bubbles:true})); t.dispatchEvent(new Event('change',{bubbles:true})); t.setSelectionRange(t.value.length,t.value.length);
+},true);
 $('#tbSend').onclick=sendToBilling; $('#tbSend').setAttribute('aria-label','Enviar para faturamento');
 /* tooltips da barra lateral */
 const tip=$('#sbTip');
