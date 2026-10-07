@@ -48,6 +48,7 @@ O modo é recalculado a cada `resize`. Ao mudar de modo, a tela volta para Detal
 
 - Cards marcados como largura total continuam ocupando a linha inteira.
 - Cards da mesma linha têm a **mesma altura**; o conteúdo fica alinhado ao topo.
+- **Consumo e demanda** com painel largo (≥ 1100 px): cards em 2 colunas à esquerda e gráfico de 12 meses à direita, na mesma altura — o gráfico não estica na largura toda. Abaixo disso, gráfico embaixo dos cards.
 
 ### Prioridade quando falta largura
 1. **Detalhes**

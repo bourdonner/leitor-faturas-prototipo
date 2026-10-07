@@ -103,6 +103,13 @@
   .p-det{container-type:inline-size}
   @container (min-width:948px){ .g2{grid-template-columns:repeat(3,minmax(0,1fr))} }
   @container (min-width:1248px){ .g2{grid-template-columns:repeat(4,minmax(0,1fr))} }
+  /* Consumo e demanda: com Detalhes largo, cards (2 colunas) à esquerda e gráfico à direita — o gráfico não estica (Figma 1867:8641) */
+  .cd-split{display:flex;flex-direction:column;gap:16px}
+  @container (min-width:1100px){
+    .cd-split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:stretch}
+    .cd-split .cd-cards{grid-template-columns:repeat(2,minmax(0,1fr));align-content:start}
+    .cd-split .ccard{display:flex;flex-direction:column}
+  }
   .full{grid-column:1/-1}
   /* data card — um valor + unidade; mesma altura em visualização e edição */
   .card{background:var(--s50);border-radius:8px;padding:12px;border:1px solid transparent;transition:box-shadow .3s,border-color .3s,background .2s;min-width:0}
@@ -819,11 +826,11 @@ const TABS = {
       ${card('Crédito compensado fora ponta','4.100','kWh')}${card('Crédito abatido fora ponta','1.837,46','R$')}
       ${card('Crédito compensado ponta','0','kWh')}${card('Crédito abatido ponta','0,00','R$')}
       ${card('Saldo fora ponta','1.250','kWh')}${card('Saldo ponta','0','kWh')}</div>`
-      +sec('Consumo e demanda')+`<div class="grid g2">
+      +sec('Consumo e demanda')+`<div class="cd-split"><div class="grid g2 cd-cards">
       ${card('Consumo fora ponta','5.960','kWh')}${card('Consumo ponta','540','kWh')}
       ${card('Demanda medida','68','kW')}${card('Demanda contratada','75','kW')}
       ${card('Tipo de unidade','Beneficiária')}${card('Geração','—')}</div>`
-      +chartHTML()
+      +chartHTML()+`</div>`
       +sec('Valores')+`<div class="grid g2">${card('Total a pagar','4.440,13','R$')}${card('Vencimento','25/03/2025')}</div>`
       +sec('Alíquotas')+`<div class="grid g2">${card('ICMS (alíquota)','18,00','%')}${card('ICMS (valor)','781,49','R$')}${card('PIS/PASEP (alíquota)','0,73','%')}${card('PIS/PASEP (valor)','31,69','R$')}${card('COFINS (alíquota)','','%',{pend:'cofins'})}${card('COFINS (valor)','146,75','R$')}</div>`
       +sec('Datas')+`<div class="grid g2">${card('Leitura anterior','07/02/2025')}${card('Leitura atual','11/03/2025')}${card('Dias de leitura','32','dias')}${card('Próxima leitura','08/04/2025')}${card('Emissão','12/03/2025')}</div>`;
