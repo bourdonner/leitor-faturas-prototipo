@@ -166,6 +166,9 @@
   /* ===== filtros (padrão do Cadastro) ===== */
   .fbtn.on span{background:var(--brand);color:var(--s50)}
   button.fbtn.on:hover span{background:#5f7a27}
+  .fbtn span{position:relative}
+  .fcount{position:absolute;top:-2px;right:-2px;min-width:16px;height:16px;padding:0 4px;border-radius:999px;background:var(--brand);color:#fff;font:600 10px/16px Inter;text-align:center}
+  .cb:focus-visible,.row:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
   .frow{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:-12px}
   .frow .mf{display:none}
   .fchip{height:40px;display:inline-flex;align-items:center;gap:8px;padding:4px 8px 4px 12px;border:1px solid var(--s100);border-radius:6px;background:#fff;font:400 12px/18px Inter;color:var(--ink);white-space:nowrap}
@@ -324,6 +327,9 @@
     .toast.show{transform:none}
     .ltoast{left:0;right:0;bottom:0;width:auto;max-width:none;border-radius:8px 8px 0 0;padding:20px 24px calc(env(safe-area-inset-bottom) + 20px)}
     .fi.up .sz{display:none}
+    .th .colbtn{width:40px;height:40px}
+    .ltoast .x{width:40px;height:40px}
+    .card{padding-bottom:72px} /* espaço para a pílula do protótipo não tapar a paginação */
   }
   /* iOS Safari dá zoom em campo com fonte < 16px: só lá os campos sobem para 16px (a pinça continua liberada) */
   @supports (-webkit-touch-callout:none){ input,select,textarea{font-size:16px!important} }
@@ -444,7 +450,7 @@ const ROWS = [
   {st:'Faturada',pend:'—',tit:'Zenith Serviços Médicos',uc:'3104567890 · Energia Serra',ref:'fev/2025',env:'Ana Souza',dt:'09/03/2025'},
   {st:'Recusada',pend:'Não é fatura',tit:'Carlos Pereira',uc:'—',ref:'—',env:'Bruno Lima',dt:'08/03/2025'},
   {st:'Duplicada',pend:'Já existe fev/2025',tit:'Veridian Elétrica',uc:'7712340987 · Força Sul',ref:'fev/2025',env:'Bruno Lima',dt:'07/03/2025'}
-].map((r,i)=>({...r,id:i}));
+].map((r,i)=>({...r,id:i,arq:r.arq||('fatura-'+(r.uc.includes(' · ')?r.uc.split(' · ')[1].toLowerCase().replace(/[^a-z]+/g,''):'digitalizada')+'-'+(r.ref!=='—'?r.ref.replace('/',''):r.dt.slice(3).replace('/',''))+'.pdf')}));
 let TOTAL=454;
 const byId=id=>ROWS.find(r=>r.id===id);
 const S = {view:'carregando', q:'', sort:null, dir:1, F:{st:[],pend:[],conc:[],env:[]}, dt:'Qualquer data', showF:true, fOpen:null, sel:new Set(), menuRow:null};
@@ -472,7 +478,9 @@ function chipHTML(f){
   return `<button type="button" class="fchip ${S.fOpen===f.k?'open':''}" data-fk="${f.k}" aria-haspopup="dialog" aria-expanded="${S.fOpen===f.k}"><span class="fl">${f.label}</span><span class="fsep"></span>${shown.map(v=>`<span class="fb">${esc(v)}</span>`).join('')}${extra?`<span class="fx">+${extra}</span>`:''}<span class="msr">expand_more</span></button>`;
 }
 function toolsHTML(){
-  const funnel = (id,cls)=>`<button class="fbtn ${S.showF?'on':''} ${cls}" id="${id}" aria-label="${S.showF?'Esconder filtros':'Mostrar filtros'}" aria-pressed="${S.showF}"><span><span class="msr fill">filter_alt</span></span></button>`;
+  // filtros escondidos continuam valendo: o funil mostra quantos estão ativos
+  const nAct = FDEF.filter(f=>f.date?S.dt!=='Qualquer data':S.F[f.k].length).length;
+  const funnel = (id,cls)=>`<button class="fbtn ${S.showF?'on':''} ${cls}" id="${id}" aria-label="${S.showF?'Esconder filtros':'Mostrar filtros'}${!S.showF&&nAct?` (${nAct} ativo${nAct>1?'s':''})`:''}" aria-pressed="${S.showF}"><span><span class="msr fill">filter_alt</span>${!S.showF&&nAct?`<b class="fcount">${nAct}</b>`:''}</span></button>`;
   return `<div class="tools ${S.showF?'hasf':''}">
     <div class="field grow"><span class="fbtn" aria-hidden="true"><span><span class="msr">search</span></span></span>
       <input id="q" placeholder="Buscar por titular, UC ou nome do arquivo" value="${esc(S.q)}" aria-label="Buscar faturas" autocomplete="off">
@@ -488,7 +496,7 @@ function stateHTML(kind){
 function visibleRows(){
   let r = ROWS.filter(x=>FDEF.every(f=>f.date || !S.F[f.k].length || S.F[f.k].includes(f.get(x))));
   if (S.dt!=='Qualquer data'){ const max=Math.max(...ROWS.map(x=>toDate(x.dt))); const days=S.dt==='Últimos 7 dias'?7:30; r=r.filter(x=>max-toDate(x.dt)<=days*864e5); }
-  if (S.q){ const q=S.q.toLowerCase(); r=r.filter(x=>(x.tit+' '+x.uc).toLowerCase().includes(q)); }
+  if (S.q){ const q=S.q.toLowerCase(); r=r.filter(x=>(x.tit+' '+x.uc+' '+x.arq).toLowerCase().includes(q)); }
   if (S.sort==='dt') r=r.slice().sort((a,b)=>S.dir*key(a.dt).localeCompare(key(b.dt)));
   if (S.sort==='st') r=r.slice().sort((a,b)=>S.dir*a.st.localeCompare(b.st,'pt'));
   return r;
@@ -498,14 +506,14 @@ function tableHTML(rows){
   const sIco = k => S.sort===k ? (S.dir>0?'arrow_upward':'arrow_downward') : 'import_export';
   return `<div class="table" role="table" aria-label="Faturas">
     <div class="tr th" role="row">
-      <div class="ck"><span class="cb ${all?'on':''}" id="ckAll" role="checkbox" aria-checked="${all}" aria-label="Selecionar todas">${all?'<span class="mss">check</span>':''}</span></div>
+      <div class="ck"><span class="cb ${all?'on':''}" id="ckAll" role="checkbox" tabindex="0" aria-checked="${all}" aria-label="Selecionar todas">${all?'<span class="mss">check</span>':''}</span></div>
       <div class="sort o-st"><button class="sbtn ${S.sort==='st'?'on':''}" data-sort="st"><span class="w">Situação</span><span class="msr">${sIco('st')}</span></button></div>
       <div class="o-pend">Pendências</div><div class="o-tit">Titular</div><div class="o-uc">UC</div><div class="o-ref">Referência</div><div class="o-env">Enviado por</div>
       <div class="sort o-dt"><button class="sbtn ${S.sort==='dt'?'on':''}" data-sort="dt"><span class="w">Recebida em</span><span class="msr">${sIco('dt')}</span></button></div>
       <div class="act"><button class="colbtn" id="colBtn" aria-label="Colunas"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M9.74 3.833v.333H8.22v7.667h3.887v-1.5h.333v1.833H3.167V3.833H9.74zM3.5 11.833h4.38V4.166H3.5v7.667zm8.94-7.813v2h2v.333h-2v2h-.333v-2h-2v-.333h2v-2h.333z" fill="#0C0A09" stroke="#1C1917"/></svg></button></div>
     </div>
-    ${rows.map(r=>`<div class="tr row ${S.sel.has(r.id)?'sel':''} ${r.isNew?'new':''}" role="row" data-id="${r.id}" tabindex="0">
-      <div class="td ck"><span class="cb ${S.sel.has(r.id)?'on':''}" data-ck="${r.id}" role="checkbox" aria-checked="${S.sel.has(r.id)}" aria-label="Selecionar ${esc(r.tit)}">${S.sel.has(r.id)?'<span class="mss">check</span>':''}</span></div>
+    ${rows.map(r=>`<div class="tr row ${S.sel.has(r.id)?'sel':''} ${r.isNew?'new':''}" role="row" data-id="${r.id}" tabindex="0" title="Arquivo: ${esc(r.arq)}">
+      <div class="td ck"><span class="cb ${S.sel.has(r.id)?'on':''}" data-ck="${r.id}" role="checkbox" tabindex="0" aria-checked="${S.sel.has(r.id)}" aria-label="Selecionar ${esc(r.tit)}">${S.sel.has(r.id)?'<span class="mss">check</span>':''}</span></div>
       <div class="td o-st"><span class="badge ${BADGE[r.st]}">${r.st}</span></div>
       <div class="td o-pend">${r.pend}</div>
       <div class="td o-tit"><span class="ent"><span class="bb"><span class="msr fill">bolt</span></span><span class="t">${esc(r.tit)}</span></span></div>
@@ -577,10 +585,15 @@ $('#body').addEventListener('click',e=>{
   const more=e.target.closest('[data-more]'); if(more){ e.stopPropagation(); if(more.classList.contains('open')) closeMenus(); else openRowMenu(more,+more.dataset.more); return; }
   const ck=e.target.closest('[data-ck]'); if(ck){ const id=+ck.dataset.ck; S.sel.has(id)?S.sel.delete(id):S.sel.add(id); render(); return; }
   if(e.target.closest('#ckAll')){ const rows=visibleRows(); const all=rows.every(r=>S.sel.has(r.id)); rows.forEach(r=>all?S.sel.delete(r.id):S.sel.add(r.id)); render(); return; }
-  const s=e.target.closest('[data-sort]'); if(s){ const k=s.dataset.sort; if(S.sort===k){ if(S.dir===1) S.dir=-1; else { S.sort=null; S.dir=1; } } else { S.sort=k; S.dir=k==='dt'?-1:1; } render(); return; }
+  const s=e.target.closest('[data-sort]'); if(s){ const k=s.dataset.sort; const first=k==='dt'?-1:1; if(S.sort===k){ if(S.dir===first) S.dir=-first; else { S.sort=null; S.dir=1; } } else { S.sort=k; S.dir=first; } render(); return; }
   if(e.target.closest('[data-next]')){ toast('Só a primeira página tem dados no protótipo.'); return; }
   if(e.target.closest('#colBtn')){ toast('Seleção de colunas fora do escopo do protótipo.'); return; }
   const row=e.target.closest('.row'); if(row) open(byId(+row.dataset.id));
+});
+$('#body').addEventListener('keydown',e=>{
+  // caixas de seleção pelo teclado (Espaço ou Enter), mantendo o foco depois de redesenhar
+  const cbx=e.target.closest('[data-ck],#ckAll');
+  if(cbx && (e.key===' '||e.key==='Enter')){ e.preventDefault(); e.stopPropagation(); const sel=cbx.id?'#ckAll':`[data-ck="${cbx.dataset.ck}"]`; cbx.click(); const n=$(sel); n&&n.focus(); return; }
 });
 $('#body').addEventListener('keydown',e=>{ const row=e.target.closest('.row'); if(row && e.key==='Enter' && e.target===row) open(byId(+row.dataset.id)); });
 document.addEventListener('click',e=>{ if(!e.target.closest('.dd')) closeMenus(); });
@@ -596,6 +609,15 @@ $('#dlg').onsubmit=e=>{ e.preventDefault(); const r=dlgRow; const m=$('#motivo')
 /* estados do protótipo */
 document.querySelectorAll('.proto [data-st]').forEach(b=>b.onclick=()=>{ document.querySelectorAll('.proto [data-st]').forEach(x=>x.classList.toggle('on',x===b)); S.view=b.dataset.st; render(); if(S.view==='carregando') setTimeout(()=>{ if(S.view==='carregando'){ S.view='lista'; syncProto(); render(); } },1400); });
 function syncProto(){ document.querySelectorAll('.proto [data-st]').forEach(x=>x.classList.toggle('on',x.dataset.st===S.view)); }
+/* foco preso dentro do modal aberto (Tab e Shift+Tab circulam só nele) */
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Tab') return;
+  const m=['#cam.show','#nfOv.show','#ov.show'].map(s=>document.querySelector(s)).find(Boolean); if(!m) return;
+  const f=[...m.querySelectorAll('button,input,select,textarea,[tabindex]:not([tabindex="-1"])')].filter(x=>!x.disabled&&x.offsetParent!==null&&!x.hidden);
+  if(!f.length) return; const a=f[0], z=f[f.length-1];
+  if(!m.contains(document.activeElement)){ e.preventDefault(); a.focus(); return; }
+  if(e.shiftKey&&document.activeElement===a){ e.preventDefault(); z.focus(); } else if(!e.shiftKey&&document.activeElement===z){ e.preventDefault(); a.focus(); }
+});
 /* ===== Nova fatura ===== */
 const MAXF=20, MAXB=20*1024*1024, OK_EXT=/\.(pdf|jpe?g|png|webp)$/i;
 const isMobile=()=>matchMedia('(max-width:767px)').matches;
@@ -604,17 +626,20 @@ const fmtMB=b=>b<102400 ? Math.max(1,Math.round(b/1024))+' KB' : (b/1048576).toL
 const NF={step:'pick',files:[],opt:'foto',pages:[],cur:0,sending:false,seq:0};
 const validFiles=()=>NF.files.filter(f=>f.state!=='err');
 function addFiles(list){
-  let extra=0;
+  let extra=0; const dup=[];
   for(const f of [...list]){
+    if(NF.files.some(x=>x.name===f.name&&x.bytes===f.size)){ dup.push(f.name); continue; }
     if(NF.files.length>=MAXF){ extra++; continue; }
     const okType=/^(application\/pdf|image\/(jpeg|png|webp))$/.test(f.type)||OK_EXT.test(f.name);
     const img=/^image\//.test(f.type)||/\.(jpe?g|png|webp)$/i.test(f.name);
-    const it={id:++NF.seq,name:f.name,size:fmtMB(f.size),icon:img?'image':'picture_as_pdf',state:'ready',pct:0,err:''};
+    const it={id:++NF.seq,name:f.name,bytes:f.size,size:fmtMB(f.size),icon:img?'image':'picture_as_pdf',state:'ready',pct:0,err:''};
     if(!okType){ it.state='err'; it.err='Formato não aceito. Envie PDF, JPG, PNG ou WebP.'; }
+    else if(f.size===0){ it.state='err'; it.size='0 KB'; it.err='Arquivo vazio. Escolha o arquivo de novo.'; }
     else if(f.size>MAXB){ it.state='err'; it.err=isMobile()?'Maior que 20 MB. Tire uma foto da fatura.':'Maior que 20 MB. Diminua o arquivo ou tire uma foto da fatura.'; }
     NF.files.push(it);
   }
   if(extra) toast(`Limite de ${MAXF} arquivos por envio. ${extra} ${extra>1?'ficaram':'ficou'} de fora.`);
+  else if(dup.length) toast(dup.length>1?`${dup.length} arquivos já estavam na lista.`:`${dup[0]} já está na lista.`);
   if(isMobile() && NF.files.length) NF.step='files';
   nfRender();
 }
@@ -679,7 +704,7 @@ function nfSend(){
   let i=0;
   const finish=()=>setTimeout(()=>{
     const n=q.length;
-    for(let k=0;k<n;k++) ROWS.unshift({id:ROWS.length+k,st:'Lendo fatura',pend:'—',tit:'Não identificado',uc:'—',ref:'—',env:'Eduardo Moreira',dt:today(),isNew:true});
+    for(let k=0;k<n;k++) ROWS.unshift({id:ROWS.length+k,arq:q[n-1-k].name,st:'Lendo fatura',pend:'—',tit:'Não identificado',uc:'—',ref:'—',env:'Eduardo Moreira',dt:today(),isNew:true});
     TOTAL+=n; Object.assign(S,{view:'lista',q:'',F:{st:[],pend:[],conc:[],env:[]},dt:'Qualquer data',sort:null,dir:1}); syncProto();
     nfClose(true); render();
     ltoast(`${n} fatura${n>1?'s':''} enviada${n>1?'s':''}`, `A leitura começa em instantes. ${n>1?'Elas aparecem':'Ela aparece'} como "Lendo fatura".`);
@@ -687,6 +712,7 @@ function nfSend(){
   const step=()=>{
     const f=q[i]; if(!f) return finish();
     f.state='up'; f.pct=0; nfRender();
+    const cur=document.querySelector(`[data-fid="${f.id}"]`); if(cur) cur.scrollIntoView({block:'nearest'});
     const tm=setInterval(()=>{
       f.pct=Math.min(100,f.pct+8+Math.round(Math.random()*14));
       if(f.pct>=100){ clearInterval(tm); f.state='done'; i++; nfRender(); setTimeout(step,250); return; }
