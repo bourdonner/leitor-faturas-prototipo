@@ -573,6 +573,8 @@ C.forEach(c=>{
 });
 const io=new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting) $$('nav.side a[data-id]').forEach(a=>a.classList.toggle('on',a.dataset.id===e.target.id)); }),{rootMargin:'-30% 0px -65% 0px'});
 $$('section.cmp').forEach(s=>io.observe(s));
+// links antigos das subissues (COG-289 #cards, COG-295 #listagem)
+const ALIAS={cards:'card',listagem:'filtro'}; const h=location.hash.slice(1); if(ALIAS[h]) location.replace('#'+ALIAS[h]); else if(h) document.getElementById(h)?.scrollIntoView();
 </script>
 </body>
 </html>
