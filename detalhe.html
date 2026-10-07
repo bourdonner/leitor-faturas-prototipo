@@ -473,8 +473,67 @@
   [data-mode=mobile] .plist{padding:0 24px 120px}
 
   .note{position:fixed;right:16px;top:12px;font-size:11px;color:var(--mid);background:var(--white);border:1px solid var(--s200);padding:4px 8px;border-radius:999px;z-index:40}
+  .note.demo{display:flex;align-items:center;gap:6px;padding:2px 4px 2px 10px}
+  .note.demo select{font:inherit;font-weight:600;color:var(--ink);border:0;background:var(--s100);border-radius:999px;padding:3px 6px}
+  [data-mode=mobile] .note.demo{display:flex!important;top:auto;bottom:104px;right:auto;left:8px;z-index:30;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+  [data-mode=mobile] .note.demo > span:not(.cs){display:none}
+  .note.demo .cs{width:auto}
+  .note.demo .cs-trig{height:26px;gap:6px;padding:0 8px;font-size:11px;font-weight:600;border-radius:999px}
   /* iOS Safari dá zoom em campo com fonte < 16px: só lá os campos sobem para 16px (a pinça continua liberada) */
   @supports (-webkit-touch-callout:none){ input,select,textarea{font-size:16px!important} }
+  /* ---------- V2: identidade da fatura (Figma 1971:20200 · 1977:28098 · 1972:21849) ---------- */
+  .idb-wrap{padding:16px 16px 0}
+  .idb-wrap:empty{display:none}
+  [data-mode=mobile] .idb-wrap{padding:12px 24px 0}
+  .idb{margin:0;background:var(--s100);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:12px}
+  .idb-h{display:flex;align-items:center;gap:8px;font-weight:600;font-size:14px}
+  .idb-h .ms{color:var(--alert)}
+  .idb-h.bad{color:var(--danger)} .idb-h.bad .ms{color:var(--danger)}
+  .idb-t{font-size:13px;color:var(--mid);margin-top:-6px}
+  .idb-r{display:flex;gap:8px;align-items:flex-start}
+  .idb-r > .btn{height:40px;margin-top:25px}
+  .idb-f{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;position:relative}
+  .idb-in{height:40px;display:flex;align-items:center;gap:8px;padding:0 12px;border:1px solid var(--border);border-radius:6px;background:var(--s50)}
+  .idb-in:focus-within{outline:2px solid var(--brand);background:#fff}
+  .idb-in.err{border-color:var(--danger)}
+  .idb-in input{flex:1;min-width:0;border:0;background:none;font:inherit;font-weight:400;outline:0}
+  .idb-in .ms{color:var(--mid)}
+  .idb-err{font-size:12px;color:var(--danger);font-weight:400}
+  .idb-menu{position:absolute;top:66px;left:0;right:0;z-index:20;background:#fff;border-radius:6px;box-shadow:0 10px 15px -3px rgba(0,0,0,.1),0 4px 6px -4px rgba(0,0,0,.1);padding:4px;max-height:240px;overflow:auto}
+  .idb-o{display:flex;flex-direction:column;align-items:flex-start;width:100%;padding:6px 8px 6px 32px;border-radius:4px;text-align:left;position:relative;font-weight:400}
+  .idb-o b{font-weight:500;font-size:14px} .idb-o span{font-size:12px;color:var(--mid)}
+  .idb-o:hover,.idb-o.act{background:var(--s100)}
+  .idb-o.on::before{content:'';position:absolute;left:12px;top:15px;width:8px;height:8px;border-radius:50%;background:var(--ink)}
+  .idb-none{padding:10px 8px;font-size:13px;color:var(--mid)}
+  .idb.ok{flex-direction:row;align-items:center;padding:8px 8px 8px 12px}
+  .pill{display:inline-flex;align-items:center;gap:6px;min-height:28px;padding:4px 10px;border-radius:999px;background:#fff;font-size:12px;font-weight:600;min-width:0}
+  .pill .ms{color:var(--success)} .pill.lock .ms{color:var(--mid)}
+  .btn.ghost{background:none;height:32px;padding:0 10px;color:var(--ink)}
+  .btn.ghost:hover{background:var(--s50)}
+  .content.wait{opacity:.45;pointer-events:none;user-select:none}
+  .hint .sg{color:var(--ink)}
+  .grade tfoot td.off{color:var(--danger)}
+  .grade-h .off{color:var(--danger);font-weight:500}
+  /* extrair novamente */
+  .tries{font-size:12px;color:var(--mid);align-self:center}
+  .dlg-ov{position:fixed;inset:0;z-index:60;background:rgba(12,10,9,.4);display:grid;place-items:center;padding:16px;animation:mOvIn .2s ease}
+  .dlg{background:#fff;border-radius:12px;max-width:440px;width:100%;padding:24px;display:flex;flex-direction:column;gap:12px;box-shadow:var(--shadow)}
+  .dlg h2{margin:0;font:600 18px/1.3 Poppins,Inter,sans-serif}
+  .dlg p{margin:0;color:var(--mid);font-size:14px;line-height:1.5}
+  .dlg .acts{display:flex;justify-content:flex-end;gap:8px;margin-top:8px}
+  /* Faturar — Tab Bar Item Type=Send (lib 2416:28368) */
+  #tbSend{justify-content:center;background:var(--brand)!important;border-radius:999px;box-shadow:0 10px 15px rgba(0,0,0,.10),0 4px 6px rgba(0,0,0,.10);padding:14px 20px;color:#fff}
+  #tbSend::before{display:none}
+  #tbSend span{color:#fff}
+  #tbSend:hover{background:#556927!important}
+  #tbSend.busy{pointer-events:none}
+  #tbSend.busy .ic .ms{animation:spin 1s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  [data-mode=mobile] #tbSend{width:68px;padding:15px 4px}
+  .chip.sent .ms{color:var(--brand)}
+  .m-pill.sent,.m-bd.sent{background:var(--brand)}
+  .sent-by{font-size:12px;color:var(--mid);align-self:center}
+  .ro .card .ib.edit,.ro .card.pend .ca{display:none}
 </style>
 </head>
 <body>
@@ -551,6 +610,7 @@
         <!-- Detalhes -->
         <div class="panel p-det" id="pDet">
           <div class="det-scroll" id="detScroll">
+            <div class="idb-wrap" id="idbWrap"></div>
             <div class="bar">
               <div class="tabs" role="tablist" id="tabs"></div>
               <span class="sp"></span>
@@ -596,6 +656,7 @@
   <button class="tb" data-toggle="det"><span class="ic"><span class="ms f" style="font-size:26px" aria-hidden="true">description</span></span><span>Detalhes</span></button>
   <button class="tb" data-toggle="act"><span class="ic"><span class="ms f" style="font-size:26px" aria-hidden="true">history</span></span><span>Atividade</span></button>
   </span>
+  <button class="tb" id="tbSend" hidden><span class="ic"><span class="ms f" style="font-size:26px" aria-hidden="true">send</span></span><span id="tbSendL">Faturar</span></button>
   <button class="tb" data-toggle="pend" id="tbPend"><span class="ic"><span class="ms f" style="font-size:26px" aria-hidden="true">warning</span><b class="cnt" id="tbCnt">3</b></span><span>Pendências</span></button>
 </nav>
 
@@ -613,7 +674,16 @@
 <!-- indicadores de pendência fora da área visível (Figma 1823:30676) -->
 <div id="offLayer" aria-live="polite"></div>
 <div class="toast" id="toast"></div>
-<div class="note">Protótipo · dados fictícios</div>
+<div class="note demo"><label for="demo">Estado</label><select id="demo">
+  <option value="identidade">1 · Validar identidade</option>
+  <option value="nao-encontrada">2 · UC não encontrada</option>
+  <option value="divergente">3 · UC de outro titular</option>
+  <option value="pendencias">4 · Pendências</option>
+  <option value="soma">5 · Soma não fecha</option>
+  <option value="pronta">6 · Pronta para faturar</option>
+  <option value="enviada">7 · Enviada (só leitura)</option>
+  <option value="sem-tentativas">8 · Sem tentativas</option>
+</select><span>· dados fictícios</span></div>
 
 <script>
 const MS=(n,s,f)=>'<span class="ms'+(f?' f':'')+'"'+(s?' style="font-size:'+s+'px"':'')+' aria-hidden="true">'+n+'</span>';
@@ -635,12 +705,12 @@ const who = u=>u&&u.sys
 
 /* ---------- estado ---------- */
 const S = {
-  tab:'Resumo', open:{pdf:true,det:true,act:true,pend:true}, status:'revisar', locked:false, pIdx:0, ov:{}, chartSel:null, itemChg:{'7-7':1},
+  tab:'Resumo', open:{pdf:true,det:true,act:true,pend:true}, status:'revisar', locked:false, id:'auto', uc:'3014567890', tries:2, sent:null, busy:false, pIdx:0, ov:{}, chartSel:null, itemChg:{'7-7':1},
   items:[['Consumo ponta TUSD','kWh','540','1,48213','1,15443','32,89','144,06','800,35'],['Consumo ponta TE','kWh','540','0,51237','0,39909','11,37','49,80','276,68'],['Consumo fora ponta TUSD','kWh','5.960','0,11845','0,09226','29,02','127,07','705,96'],['Consumo fora ponta TE','kWh','5.960','0,32971','0,25681','80,76','353,71','1.965,07'],['Energia injetada fora ponta TUSD','kWh','−4.100','0,11845','0,09226','−19,96','−87,42','−485,65'],['Energia injetada fora ponta TE','kWh','−4.100','0,32971','0,25681','−55,56','−243,33','−1.351,81'],['Demanda','kW','75','32,41500','25,24804','99,92','','2.431,13'],['Contrib. ilum. pública municipal','—','—','—','—','—','—','98,40']],
   pend:[
-    {id:'cofins', tab:'Resumo', title:'COFINS', label:'COFINS (alíquota)', kind:'Percentual', unit:'%', ph:'0,00', legend:'R$ 146,75', done:null, act:'COFINS corrigido'},
-    {id:'leit', tab:'Consumo', title:'Leitura atual', label:'Leitura atual ponta (kWh)', kind:'Número', unit:'kWh', ph:'0', legend:'kWh', done:null, act:'Leitura atual corrigida'},
-    {id:'item', tab:'Itens', title:'ICMS · Demanda', label:'ICMS do item Demanda', kind:'Moeda', unit:'R$', ph:'0,00', cell:[6,6], done:null, act:'ICMS do item corrigido'},
+    {id:'cofins', tab:'Resumo', title:'COFINS', label:'COFINS (alíquota)', kind:'Percentual', unit:'%', ph:'3,38', why:'COFINS (valor) ÷ base de cálculo', legend:'R$ 146,75', done:null, act:'COFINS corrigido'},
+    {id:'leit', tab:'Consumo', title:'Leitura atual', label:'Leitura atual ponta (kWh)', kind:'Número', unit:'kWh', ph:'13.020', why:'leitura anterior + consumo medido', legend:'kWh', done:null, act:'Leitura atual corrigida'},
+    {id:'item', tab:'Itens', title:'ICMS · Demanda', label:'ICMS do item Demanda', kind:'Moeda', unit:'R$', ph:'437,60', why:'18% de ICMS sobre R$ 2.431,13', cell:[6,6], done:null, act:'ICMS do item corrigido'},
     {id:'mod', tab:'Identificação', title:'Modalidade tarifária', label:'Modalidade tarifária', kind:'Seleção', ph:'Selecione', options:['Convencional','Horária verde','Horária azul','Branca'], done:null, act:'Modalidade corrigida'}
   ],
   acts:[
@@ -663,7 +733,7 @@ function card(t, v, u, opts={}){
     return `<div class="card pend ${opts.cls||''}" id="c-${p.id}">
       <div class="ct"><span class="badge">${I.warn}</span>${t}<span class="sp"></span><span class="ca"><button data-pclear="${p.id}" aria-label="Limpar ${t}">${I.close}</button></span></div>
       <div class="in erow">${fieldHTML(p,'in-'+p.id)}<button class="cp send" data-psave="${p.id}" aria-label="Enviar ${t}">${I.send}</button></div>
-      <div class="hint">Não encontrado na fatura</div></div>`;
+      <div class="hint">${hintOf(p)}</div></div>`;
   }
   const val = S.ov[k] ?? (p ? p.done : v);
   return `<div class="card ${p?'done':''} ${opts.cls||''}" ${p?`id="c-${p.id}"`:''} data-k="${k}" data-edit="${t}" data-u="${u||''}">
@@ -671,6 +741,7 @@ function card(t, v, u, opts={}){
     <div class="row">${valHTML(val,u)}<span class="sp"></span><button class="cp" aria-label="Copiar valor de ${t}">${I.copy}</button></div>
   </div>`;
 }
+const hintOf = p=>(p.hint||'Não encontrado na fatura')+(p.why?`. Sugestão: <span class="sg">${p.why}</span>`:'');
 function fieldHTML(p,id){
   if (p.kind==='Seleção') return `<select class="input" id="${id}"><option value="">${p.ph}</option>${p.options.map(o=>`<option>${o}</option>`).join('')}</select>`;
   const u=p.unit?`<span class="u">${p.unit}</span>`:'';
@@ -777,14 +848,26 @@ const COLK={2:'int',3:'dec5',4:'dec5',5:'money',6:'money',7:'money'}; // quantid
 const pn = t=>parseFloat(String(t).replace(/[^\d,−-]/g,'').replace(/\./g,'').replace(',','.').replace('−','-'));
 const money = n=>(n<0?'−':'')+Math.abs(n).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
 const cellPend=(r,c)=>openPend().find(p=>p.cell&&p.cell[0]===r&&p.cell[1]===c);
+const TOTAL=4440.13; let SUMN=0;
+const itemsSum=()=>Math.round(S.items.reduce((a,r)=>a+(pn(r[7])||0),0)*100)/100;
+/* a soma dos valores dos itens tem que fechar com o total da fatura; se não fecha, a célula editada vira pendência com o valor que fecha como sugestão */
+function checkSum(r,c){
+  if(c!==7) return false;
+  const gap=Math.round((TOTAL-itemsSum())*100)/100; if(!gap) return false;
+  const nm=S.items[r][0];
+  S.pend.push({id:'sum'+(++SUMN), tab:'Itens', title:nm, label:nm+' · valor', kind:'Moeda', unit:'R$', ph:money((pn(S.items[r][7])||0)+gap), why:'valor que fecha a soma', hint:'A soma dos itens não fecha com o total da fatura', cell:[r,7], done:null, act:nm+' corrigido'});
+  S.status='revisar'; S.pIdx=openPend().length-1; S.acts.unshift(['Soma dos itens não fecha','alert',now(),true]);
+  toast('A soma dos itens não fecha com o total da fatura');
+  return true;
+}
 function sheetHTML(){
-  const tot=S.items.reduce((a,r)=>a+(pn(r[7])||0),0);
-  return `<div class="grade-h"><span>Clique duas vezes numa célula para editar</span></div>
+  const tot=itemsSum(), off=tot!==TOTAL;
+  return `<div class="grade-h"><span>${S.sent?'Fatura enviada: somente leitura':'Clique duas vezes numa célula para editar'}</span>${off?`<span class="off">Soma ≠ total da fatura (R$ ${money(TOTAL)})</span>`:''}</div>
   <div class="grade" id="sheet"><table><thead><tr><th class="stk">Item</th>${COLS.map(c=>`<th>${c}</th>`).join('')}</tr></thead>
   <tbody>${S.items.map((r,ri)=>`<tr><td class="stk">${r[0]}</td>${r.slice(2).map((c,ci)=>{ const p=cellPend(ri,ci+2);
     return p ? `<td class="num pend" id="c-${p.id}" data-r="${ri}" data-c="${ci+2}" data-pend="${p.id}" tabindex="-1" title="Não encontrado na fatura"><span class="pw">${I.warn}</span></td>`
       : `<td class="num ${String(c).startsWith('−')?'neg':''} ${S.itemChg[ri+'-'+(ci+2)]?'chg':''}" data-r="${ri}" data-c="${ci+2}" tabindex="-1">${cellHTML(ri,ci+2)}</td>`; }).join('')}</tr>`).join('')}</tbody>
-  <tfoot><tr><td class="stk">Total</td><td colspan="5"></td><td><span class="cu">R$</span> ${money(tot)}</td></tr></tfoot></table></div>`;
+  <tfoot><tr><td class="stk">Total</td><td colspan="5"></td><td class="${off?'off':''}"><span class="cu">R$</span> ${money(tot)}</td></tr></tfoot></table></div>`;
 }
 function bindSheet(){
   const sh=$('#sheet'); if(!sh) return;
@@ -792,7 +875,7 @@ function bindSheet(){
   const at=(r,c)=>sh.querySelector(`td[data-r="${r}"][data-c="${c}"]`);
   const select=td=>{ sh.querySelectorAll('td.sel').forEach(x=>x.classList.remove('sel')); td.classList.add('sel'); td.focus(); };
   const edit=td=>{
-    if(td.classList.contains('ed')) return;
+    if(td.classList.contains('ed') || S.sent || S.id!=='ok') return;
     const r=+td.dataset.r, c=+td.dataset.c, old=S.items[r][c];
     td.classList.add('ed'); td.innerHTML='<input>'; const inp=td.firstChild; inp.value=old==='—'?'':old; inp.focus(); inp.select();
     const kind=COLK[c]; attachMask(inp, kind, {signed:c!==3&&c!==4});
@@ -801,8 +884,8 @@ function bindSheet(){
       if(td.dataset.pend){ const p=S.pend.find(x=>x.id===td.dataset.pend); td.classList.remove('ed','err');
         if(save && nv){ resolve(p, nv); const n=at(r,c); if(n) select(n); } else { td.innerHTML=`<span class="pw">${I.warn}</span>`; select(td); } return; }
       td.classList.remove('ed','err');
-      if(save && nv && nv!==old){ S.items[r][c]=nv; S.itemChg[r+'-'+c]=1; S.acts.unshift([`${S.items[r][0]} editado`,'edit',now(),true,ME,{from:old==='—'?'':withUnit(old,cellUnit(S.items[r],c)[0]),to:withUnit(nv,cellUnit(S.items[r],c)[0])}]); renderActs(); toast(`${S.items[r][0]} atualizado`);
-        renderContent(); const n=at(r,c); if(n) select(n); return; }
+      if(save && nv && nv!==old){ S.items[r][c]=nv; S.itemChg[r+'-'+c]=1; S.acts.unshift([`${S.items[r][0]} editado`,'edit',now(),true,ME,{from:old==='—'?'':withUnit(old,cellUnit(S.items[r],c)[0]),to:withUnit(nv,cellUnit(S.items[r],c)[0])}]); renderActs(); if(!checkSum(r,c)) toast(`${S.items[r][0]} atualizado`);
+        render(); const n=at(r,c); if(n) select(n); return; }
       td.innerHTML=cellHTML(r,c); select(td); };
     inp.onkeydown=e=>{ if(e.key==='Enter'){e.preventDefault();done(true);} if(e.key==='Escape'){e.preventDefault();done(false);} e.stopPropagation(); };
     inp.onblur=()=>{ if(td.classList.contains('ed')) done(true); };
@@ -865,7 +948,7 @@ function renderTabs(){
     return `<button role="tab" class="tab ${S.tab===t?'on':''}" data-tab="${t}" aria-selected="${S.tab===t}">${t}${warn?`<span class="warn">${I.warn}</span>`:''}</button>`;
   }).join('');
 }
-function renderContent(){ CK=0; $('#content').innerHTML = TABS[S.tab](); fitStk(); setTimeout(()=>offSoon()); $('#pDet').classList.toggle('locked', S.locked); bindInline(); }
+function renderContent(){ CK=0; $('#content').innerHTML = TABS[S.tab](); fitStk(); setTimeout(()=>offSoon()); $('#pDet').classList.toggle('locked', S.locked); $('#content').classList.toggle('wait', S.id!=='ok'); $('#content').inert = S.id!=='ok'; $('#pDet').classList.toggle('ro', !!S.sent); bindInline(); }
 const withUnit=(v,u)=>!v||v==='—'||!u ? v : (u==='R$' ? 'R$ '+v : v+' '+u);
 const difHTML=d=>`<div class="dif" aria-hidden="true"><span class="o ${d.from?'':'none'}">${d.from||'pendente'}</span><span class="ms" aria-hidden="true">arrow_forward</span><span class="t">${d.to}</span></div>`;
 function renderActs(){
@@ -875,6 +958,8 @@ function renderActs(){
 }
 function renderStatus(){
   const n = openPend().length, chip=$('#stChip');
+  if (S.sent){ chip.className='chip sent'; chip.innerHTML=MS('send',16,1)+'Enviada para faturamento';
+    const b=$('#mSt'); b.className='m-pill sent'; b.dataset.info='Enviada para faturamento'; b.setAttribute('aria-label','Enviada para faturamento'); b.innerHTML='<span class="msr fill" aria-hidden="true">send</span>'; return; }
   const map = {revisar:[`${n} pendência${n>1?'s':''}`,'alert'], pronta:['Sem pendências','ok']};
   const [txt,cls] = map[S.status];
   chip.className='chip '+cls;
@@ -885,12 +970,18 @@ function renderStatus(){
 }
 function renderPend(){
   const list = openPend();
-  $('#tbPend').hidden = list.length===0;
+  $('#tbPend').hidden = list.length===0 || !!S.sent;
+  $('#tbSend').hidden = !(S.id==='ok' && !list.length && !S.sent);
   $('#tbCnt').textContent = list.length;
-  if (!list.length){ $('#pendCard').classList.add('hide'); return; }
+  if (!list.length || S.sent){ $('#pendCard').classList.add('hide'); return; }
+  if (S.id!=='ok'){
+    $('#pendBody').innerHTML = `<div class="fl"><b>Valide a identidade primeiro</b><span style="color:var(--mid);font-size:13px">As pendências ficam liberadas depois que a UC da fatura for confirmada.</span></div>
+      <div class="acts"><span></span><button class="btn primary" id="pIdGo">Ir para identidade</button></div>`;
+    $('#pIdGo').onclick=goIdentity; $('#pGo').onclick=goIdentity;
+    $('#pendCard').classList.toggle('hide', !S.open.pend); return; }
   S.pIdx = Math.min(S.pIdx, list.length-1);
   const p = list[S.pIdx];
-  $('#pendBody').innerHTML = `<div class="fl"><label for="pf">${p.label}</label>${fieldHTML(p,'pf')}</div>
+  $('#pendBody').innerHTML = `<div class="fl"><label for="pf">${p.label}</label>${fieldHTML(p,'pf')}<span style="color:var(--mid);font-size:12px">${hintOf(p)}</span></div>
     <div class="acts">
       <span class="nav"><button id="pPrev" aria-label="Anterior" ${S.pIdx===0?'disabled':''}><span class="ms" aria-hidden="true">chevron_left</span></button><span>${S.pIdx+1} de ${list.length}</span><button id="pNext" aria-label="Próxima" ${S.pIdx===list.length-1?'disabled':''}><span class="ms" aria-hidden="true">chevron_right</span></button></span>
       <button class="btn primary" id="pOk" disabled>Confirmar</button>
@@ -912,11 +1003,11 @@ function visibleSet(){ const v=[]; PRI.forEach(k=>{ if(S.open[k] && fits([...v,k
 /* um breakpoint só: mobile < 768 ≤ desktop (no desktop, a falta de largura é resolvida pela prioridade dos painéis) */
 const modeOf = ()=> innerWidth < 768 ? 'mobile' : 'desk';
 function renderPendList(){
-  const list=openPend(), TABN={Resumo:'Resumo',Itens:'Itens',Consumo:'Consumo','Identificação':'Identificação'};
+  const list=S.sent?[]:openPend(), TABN={Resumo:'Resumo',Itens:'Itens',Consumo:'Consumo','Identificação':'Identificação'};
   $('#plCnt').textContent = list.length ? `${list.length} para conferir` : '';
   $('#plist').innerHTML = list.length ? list.map(p=>`<div class="pl-item" id="pl-item-${p.id}">
       <div class="pl-h"><span class="badge">${I.warn}</span>${p.label}</div>
-      <div class="pl-m">${TABN[p.tab]} · Não encontrado na fatura</div>
+      <div class="pl-m">${TABN[p.tab]} · ${hintOf(p)}</div>
       ${fieldHTML(p,'pl-'+p.id)}
       <div class="pl-a"><button class="bxs" data-plgo="${p.id}"><span class="tx">Ver no Campo</span><span class="ms" style="font-size:16px" aria-hidden="true">open_in_new</span></button>
         <button class="btn primary" data-plok="${p.id}" disabled>Confirmar</button></div></div>`).join('')
@@ -968,7 +1059,95 @@ function renderPanels(){
   $('#colsEmpty').hidden = !(md==='desk' && S.vis.length===0);
   if (openPend().length) $('#pendCard').classList.toggle('hide', !S.open.pend);
 }
-function render(){ renderTabs(); renderContent(); renderActs(); renderStatus(); renderPend(); renderPendList(); renderPanels(); }
+function render(){ renderIdb(); renderHead(); renderTabs(); renderContent(); renderActs(); renderStatus(); renderPend(); renderPendList(); renderPanels(); }
+
+/* ---------- V2: identidade da fatura ----------
+   A UC lida na fatura vem preenchida; a distribuidora sai da UC. A revisão só libera depois de validar. */
+const TIT='Padaria Estrela do Sul Ltda';
+const UCS=[
+  {uc:'3014567890', dist:'Luz do Vale', tit:TIT},
+  {uc:'3014567811', dist:'Luz do Vale', tit:TIT+' (filial)'},
+  {uc:'3098812200', dist:'Luz do Vale', tit:TIT+' (depósito)'},
+  {uc:'7720045512', dist:'Energisa Serra', tit:'Mercado Bom Preço Ltda'}];
+const ucLabel=u=>u?`UC ${u.uc} · ${u.dist}`:'';
+const ucOf=id=>UCS.find(u=>u.uc===id);
+function renderIdb(){
+  const w=$('#idbWrap'), u=ucOf(S.uc);
+  if (S.sent){ w.innerHTML=`<div class="idb ok"><span class="pill lock">${MS('lock',16,1)}Enviada para faturamento · ${S.sent.at} · ${ucLabel(u)}</span></div>`; return; }
+  if (S.id==='ok'){
+    w.innerHTML=`<div class="idb ok"><span class="pill">${MS('check_circle',16,1)}Identidade validada · ${ucLabel(u)}</span><span style="flex:1"></span><button class="btn ghost" id="idbAlt">Alterar</button></div>`;
+    $('#idbAlt').onclick=()=>{ S.id='edit'; S.idErr=''; render(); $('#idbQ').focus(); };
+    return; }
+  const err=S.idErr||'';
+  w.innerHTML=`<div class="idb" id="idb">
+    <div class="idb-h ${err?'bad':''}">${MS(err?'error':'warning',18,1)}Valide a identidade da fatura</div>
+    <div class="idb-t">${S.id==='auto'?'Encontramos a UC lida na fatura no cadastro. Confirme para liberar a revisão dos dados.':S.idNF?'A UC lida na fatura (3014567899) não está no cadastro. Busque pelo número ou pelo titular; a distribuidora vem da UC.':'Busque a UC pelo número ou pelo titular. A distribuidora vem da UC.'}</div>
+    <div class="idb-r"><div class="idb-f"><label for="idbQ">Unidade Consumidora e Distribuidora</label>
+      <span class="idb-in ${err?'err':''}">${MS('search',18)}<input id="idbQ" role="combobox" aria-expanded="false" aria-controls="idbM" aria-autocomplete="list" autocomplete="off" placeholder="Busque pela UC ou pelo titular" value="${ucLabel(u)}"></span>
+      ${err?`<span class="idb-err" role="alert">${err}</span>`:''}
+      <div class="idb-menu" id="idbM" role="listbox" hidden></div></div>
+      <button class="btn primary" id="idbOk">Validar</button></div></div>`;
+  const q=$('#idbQ'), m=$('#idbM'); let act=-1, shown=[];
+  const open=show=>{ m.hidden=!show; q.setAttribute('aria-expanded',show); };
+  const draw=()=>{ const t=q.value.trim().toLowerCase(), d=t.replace(/\D/g,'');
+    shown = (!t || t===ucLabel(u).toLowerCase()) ? UCS : UCS.filter(x=>(d && x.uc.includes(d)) || x.tit.toLowerCase().includes(t) || x.dist.toLowerCase().includes(t));
+    act=Math.min(act, shown.length-1);
+    m.innerHTML = shown.length ? shown.map((x,i)=>`<button type="button" role="option" id="ido${i}" class="idb-o ${x.uc===S.uc?'on':''} ${i===act?'act':''}" aria-selected="${x.uc===S.uc}" data-uc="${x.uc}"><b>${ucLabel(x)}</b><span>${x.tit}</span></button>`).join('')
+      : '<div class="idb-none">Nenhuma UC encontrada</div>';
+    if(act>=0) q.setAttribute('aria-activedescendant','ido'+act); else q.removeAttribute('aria-activedescendant');
+    m.querySelectorAll('[data-uc]').forEach(b=>b.onmousedown=e=>{ e.preventDefault(); pick(b.dataset.uc); }); };
+  const pick=id=>{ S.uc=id; S.idErr=''; q.value=ucLabel(ucOf(id)); open(false); q.closest('.idb-in').classList.remove('err'); };
+  q.onfocus=()=>{ q.select(); act=-1; draw(); open(true); };
+  q.oninput=()=>{ act=-1; draw(); open(true); };
+  q.onblur=()=>open(false);
+  q.onkeydown=e=>{
+    if(e.key==='ArrowDown'||e.key==='ArrowUp'){ e.preventDefault(); if(m.hidden){ draw(); open(true); } act=Math.max(0,Math.min(shown.length-1, act+(e.key==='ArrowDown'?1:-1))); draw(); }
+    else if(e.key==='Enter'){ e.preventDefault(); if(!m.hidden && shown[act]) pick(shown[act].uc); else validate(); }
+    else if(e.key==='Escape'){ open(false); } };
+  const validate=()=>{
+    const x=ucOf(S.uc);
+    if(!x || q.value.trim()!==ucLabel(x)){ S.idErr='Escolha uma UC da lista'; }
+    else if(x.tit!==TIT){ S.idErr=`Esta UC é de ${x.tit}, outro titular. A fatura é de ${TIT}.`; }
+    else { S.id='ok'; S.idErr=''; S.acts.unshift([`Identidade validada · UC ${x.uc}`,'ok',now(),true,ME]); toast('Identidade validada'); render(); return; }
+    render(); $('#idbQ').focus(); };
+  $('#idbOk').onclick=validate;
+}
+function goIdentity(){ S.open.det=true; S.screen='det'; render(); const q=$('#idbQ'); if(q){ q.scrollIntoView({behavior:'smooth',block:'center'}); q.focus(); } }
+
+/* ---------- cabeçalho: Extrair novamente (2 tentativas) ou quem enviou ---------- */
+function renderHead(){
+  const h=$('#headActions');
+  if (S.sent){ h.innerHTML=`<span class="sent-by">Enviada por ${S.sent.who} em ${S.sent.at}</span>`; return; }
+  h.innerHTML=`<span class="tries">${S.tries?`${S.tries} de 2 tentativas restantes`:'Sem tentativas restantes'}</span><button class="btn outline" id="reExt" ${S.tries?'':'disabled'}>${MS('refresh',18)}Extrair novamente</button>`;
+  $('#reExt').onclick=reExtract;
+}
+function reExtract(){
+  if(!S.tries || S.sent) return;
+  const prev=document.activeElement, ov=document.createElement('div'); ov.className='dlg-ov';
+  ov.innerHTML=`<div class="dlg" role="alertdialog" aria-modal="true" aria-labelledby="dlgT" aria-describedby="dlgD">
+    <h2 id="dlgT">Extrair a fatura novamente?</h2>
+    <p id="dlgD">A leitura recomeça do zero e as correções feitas aqui são descartadas. ${S.tries===1?'Esta é a última tentativa.':`Restam ${S.tries} de 2 tentativas.`}</p>
+    <div class="acts"><button class="btn outline" data-x>Cancelar</button><button class="btn primary" data-y>Extrair novamente</button></div></div>`;
+  document.body.appendChild(ov);
+  const close=()=>{ ov.remove(); prev?.focus?.(); };
+  ov.querySelector('[data-x]').onclick=close;
+  ov.onclick=e=>{ if(e.target===ov) close(); };
+  ov.onkeydown=e=>{ if(e.key==='Escape') close(); if(e.key==='Tab'){ const f=[...ov.querySelectorAll('button')], i=f.indexOf(document.activeElement); e.preventDefault(); f[(i+(e.shiftKey?-1:1)+f.length)%f.length].focus(); } };
+  ov.querySelector('[data-y]').onclick=()=>{ close(); S.tries--; S.acts.unshift(['Nova extração solicitada','def',now(),true,ME]); toast('Fatura enviada para nova leitura'); render(); };
+  ov.querySelector('[data-x]').focus();
+}
+
+/* ---------- Faturar: substitui Pendências quando a identidade está validada e não há pendência ---------- */
+function sendToBilling(){
+  if(S.busy) return; S.busy=true;
+  const b=$('#tbSend'), ic=b.querySelector('.ic .ms');
+  b.classList.add('busy'); ic.textContent='progress_activity'; $('#tbSendL').textContent='Enviando…'; b.setAttribute('aria-label','Enviando para faturamento'); b.setAttribute('aria-busy','true');
+  setTimeout(()=>{
+    S.busy=false; b.classList.remove('busy'); ic.textContent='send'; $('#tbSendL').textContent='Faturar'; b.setAttribute('aria-label','Enviar para faturamento'); b.removeAttribute('aria-busy');
+    S.sent={who:ME.name, at:'07/10/2026 às '+now()}; S.acts.unshift(['Enviada para faturamento','ok',now(),true,ME]);
+    toast('Fatura enviada para faturamento'); render();
+  }, 1400);
+}
 
 /* ---------- ações ---------- */
 const now = ()=>new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
@@ -979,7 +1158,7 @@ function resolve(p, v){
   p.done = fmt(p,v);
   if (p.cell){ S.items[p.cell[0]][p.cell[1]] = p.done; S.itemChg[p.cell.join('-')] = 1; }
   S.acts.unshift([p.act,'edit',now(),true,ME,{from:'',to:withUnit(p.done,p.unit)}]);
-  toast(`${p.label}: ${p.done}`);
+  if (!(p.cell && checkSum(p.cell[0],p.cell[1]))) toast(`${p.label}: ${p.done}`);
   if (!openPend().length){ S.status='pronta'; S.acts.unshift(['Sem pendências','ok',now(),true]); }
   render();
   const c = document.getElementById('c-'+p.id); if (c){ c.classList.add('flash'); setTimeout(()=>c.classList.remove('flash'),900); }
@@ -1160,7 +1339,7 @@ new ResizeObserver(offSoon).observe(document.body);
 let mTrigger=null;
 function mInfoHTML(){
   const n=openPend().length;
-  const st = n ? `<span class="m-hb alert"><span class="msr fill" aria-hidden="true">warning</span>${n} pendência${n>1?'s':''}</span>`
+  const st = S.sent ? `<span class="m-hb"><span class="msr fill" aria-hidden="true" style="color:var(--brand)">send</span>Enviada para faturamento</span>` : n ? `<span class="m-hb alert"><span class="msr fill" aria-hidden="true">warning</span>${n} pendência${n>1?'s':''}</span>`
                : `<span class="m-hb ok"><span class="msr fill" aria-hidden="true">check_circle</span>Sem pendências</span>`;
   return `<div class="m-sec">${st}
       <span class="m-hb brand"><span class="msr fill" aria-hidden="true">calendar_today</span>Março de 2025</span>
@@ -1171,6 +1350,7 @@ function mInfoHTML(){
       <button class="m-ab" id="mHist" aria-label="Atividade"><span class="mss" aria-hidden="true">history</span></button>
       <a class="m-ab" href="assets/fatura-grupo-a.png" download aria-label="Baixar fatura"><span class="mss" aria-hidden="true">download</span></a>
       <a class="m-ab" href="assets/fatura-grupo-a.png" target="_blank" aria-label="Abrir fatura em nova aba"><span class="mss" aria-hidden="true">open_in_new</span></a>
+      ${S.sent?'':`<button class="m-ab" id="mReExt" aria-label="Extrair novamente (${S.tries} de 2 tentativas)" ${S.tries?'':'disabled'}><span class="mss" aria-hidden="true">refresh</span></button>`}
     </div>`;
 }
 const mActHTML = ()=>`<div class="m-actlist">${$('#acts').innerHTML}</div>`;
@@ -1182,6 +1362,7 @@ function mShow(view){
   $('#mBody').scrollTop = 0;
   if (view==='info'){
     $('#mHist').onclick=()=>mShow('act');
+    const re=$('#mReExt'); if(re) re.onclick=()=>{ mCloseSheet(); reExtract(); };
     document.querySelectorAll('[data-mgo]').forEach(b=>b.onclick=()=>toast(`${b.dataset.mgo} fora do escopo do protótipo.`));
   }
 }
@@ -1194,6 +1375,7 @@ $('#mOv').addEventListener('click',e=>{ if(e.target===$('#mOv')) mCloseSheet(); 
 document.addEventListener('keydown',e=>{ if(e.key==='Escape' && !$('#mOv').hidden){ if(S.mView==='act') mShow('info'); else mCloseSheet(); } });
 addEventListener('resize',()=>{ if(modeOf()!=='mobile' && !$('#mOv').hidden) mCloseSheet(); });
 $('#mMenu').onclick=()=>toast('Menu fora do escopo do protótipo.');
+$('#tbSend').onclick=sendToBilling; $('#tbSend').setAttribute('aria-label','Enviar para faturamento');
 /* tooltips da barra lateral */
 const tip=$('#sbTip');
 document.querySelectorAll('.sidebar [data-tip]').forEach(a=>{ a.setAttribute('aria-label',a.dataset.tip);
@@ -1202,6 +1384,20 @@ document.querySelectorAll('.sidebar [data-tip]').forEach(a=>{ a.setAttribute('ar
   if(!a.classList.contains('on')) a.addEventListener('click',e=>{ e.preventDefault(); toast(`${a.dataset.tip} fora do escopo do protótipo.`); });
 });
 LOGO = (document.querySelector('.sb-brand svg')?.outerHTML||'').replace(/fill="#[0-9A-Fa-f]+"/g,'fill="currentColor"');
+/* estados de demonstração: ?estado=… (o seletor no canto recarrega a página no estado escolhido) */
+(function(){
+  const e=new URLSearchParams(location.search).get('estado')||'identidade';
+  const fill={cofins:'3,38', leit:'13.020', item:'437,60', mod:'Horária verde'};
+  const allDone=()=>{ S.pend.forEach(p=>{ p.done=fill[p.id]; if(p.cell) S.items[p.cell[0]][p.cell[1]]=p.done; }); S.status='pronta'; };
+  if (e==='nao-encontrada'){ S.id='edit'; S.uc=''; S.idNF=true; }
+  if (e==='divergente'){ S.id='edit'; S.uc='7720045512'; S.idErr='Esta UC é de Mercado Bom Preço Ltda, outro titular. A fatura é de '+TIT+'.'; }
+  if (['pendencias','soma','pronta','enviada','sem-tentativas'].includes(e)) S.id='ok';
+  if (e==='soma'){ allDone(); S.items[6][7]='2.440,00'; S.itemChg['6-7']=1; checkSum(6,7); S.tab='Itens'; S.acts.length=Math.min(S.acts.length,8); }
+  if (e==='pronta'||e==='enviada') allDone();
+  if (e==='enviada'){ S.sent={who:ME.name, at:'07/10/2026 às 14:32'}; S.acts.unshift(['Enviada para faturamento','ok','14:32',false,ME]); }
+  if (e==='sem-tentativas') S.tries=0;
+  const d=$('#demo'); d.value=e; d.onchange=()=>{ const u=new URL(location.href); u.searchParams.set('estado',d.value); location.href=u; };
+})();
 render();
 </script>
 <script src="assets/select.js"></script>

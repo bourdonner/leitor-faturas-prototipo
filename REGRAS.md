@@ -211,3 +211,14 @@ Com **reduzir movimento** ativado no sistema, as animações são desligadas.
 
 ### Mobile (< 768 px)
 - Header com menu, título e "+"; tabela com rolagem lateral (Titular, Situação, Pendências, UC, Ref., Enviado por, Recebida em).
+
+## 8. V2: identidade, soma, faturar (detalhe.html)
+
+Estados de demonstração: `detalhe.html?estado=` `identidade` · `nao-encontrada` · `divergente` · `pendencias` · `soma` · `pronta` · `enviada` · `sem-tentativas` (seletor no canto).
+
+- **Identidade da fatura**: bloco acima das abas. A UC lida vem preenchida; a distribuidora sai da UC (um campo só, "Unidade Consumidora e Distribuidora", combobox com busca por número ou titular). Até validar, os dados ficam esmaecidos e travados, e o card de Pendências manda para a identidade. UC de outro titular dá erro no campo. Validada: pílula verde + "Alterar".
+- **Extrair novamente**: no cabeçalho, com "N de 2 tentativas restantes". Confirma num diálogo (a leitura recomeça e as correções são descartadas). Sem tentativas, o botão fica desabilitado. No mobile, fica no painel do header.
+- **Soma dos itens**: a soma da coluna Valor tem que fechar com o Total da fatura (R$ 4.440,13). Editou e não fechou → a célula vira pendência com o valor que fecha como placeholder. Corrigiu com outro valor que ainda não fecha → continua pendência. O rodapé da planilha mostra a soma em vermelho enquanto não fecha.
+- **Sugestão no placeholder**: quando o valor é fácil de derivar, ele vai no placeholder (nunca preenchido): COFINS = valor ÷ base (3,38%), leitura atual = anterior + consumo (13.020), ICMS do item = 18% do valor (437,60), item da soma = valor que fecha. A dica abaixo do campo diz de onde veio.
+- **Faturar**: substitui o botão Pendências quando a identidade está validada e não há pendência. Fundo brand, ícone sobre o texto no desktop e só ícone no mobile (aria-label "Enviar para faturamento"). Estados: hover (neon/800) e carregando ("Enviando…", ícone girando, não clicável).
+- **Enviada (só leitura)**: some a edição (lápis, planilha), some a tab bar de ação, a pílula vira cadeado "Enviada para faturamento · data · UC", o chip do cabeçalho vira "Enviada para faturamento" e no lugar de Extrair novamente aparece "Enviada por … em …".
