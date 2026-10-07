@@ -32,7 +32,7 @@
   .idf-o .ms{font-family:"Material Symbols Rounded";font-size:18px;font-style:normal;color:#1c1917}
   .idf-o:hover,.idf-o.act{background:#f5f5f4}
   .idf-none{padding:12px 24px;font-size:13px;color:#78716c}
-  .idf.ok{flex-direction:row;align-items:center;padding:8px 8px 8px 16px}
+  .idf.ok{flex-direction:row;align-items:center;padding:8px 8px 8px 16px;min-height:48px} /* enviada (sem Alterar) tem a mesma altura da validada */
   .idf-pill{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;flex:1;min-width:0}
   .idf-pill .ms{font-family:"Material Symbols Rounded";font-size:20px;font-style:normal;color:#5ea500;font-variation-settings:"FILL" 1}
   .idf-pill.lock .ms{color:#78716c}
