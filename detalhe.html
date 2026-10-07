@@ -483,8 +483,14 @@
   /* iOS Safari dá zoom em campo com fonte < 16px: só lá os campos sobem para 16px (a pinça continua liberada) */
   @supports (-webkit-touch-callout:none){ input,select,textarea{font-size:16px!important} }
   /* ---------- V2: identidade da fatura (Figma 1971:20200 · 1977:28098 · 1972:21849) ---------- */
-  .idb-wrap{padding:16px 16px 0}
+  /* o painel Detalhes vira um envoltório: bloco de identidade em cima, caixa cinza dos detalhes embaixo */
+  .p-det{background:none!important;gap:16px}
+  .p-det>.det-box{flex:1;min-height:0;display:flex;flex-direction:column;background:var(--s100);border-radius:var(--r);overflow:hidden}
+  .idb-wrap{flex:none}
   .idb-wrap:empty{display:none}
+  .p-det.min .idb-wrap{display:none}
+  [data-mode=mobile] .p-det{gap:0}
+  [data-mode=mobile] .p-det>.det-box{background:#fff;border-radius:0}
   [data-mode=mobile] .idb-wrap{padding:12px 24px 0}
   .idb{margin:0;background:var(--s100);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:12px}
   .idb-h{display:flex;align-items:center;gap:8px;font-weight:600;font-size:14px}
@@ -609,15 +615,18 @@
         </div>
 
         <!-- Detalhes -->
+        <!-- identidade + detalhes: um envoltório só, minimizam juntos (Figma: Right column) -->
         <div class="panel p-det" id="pDet">
+          <div class="idb-wrap" id="idbWrap"></div>
+          <div class="det-box">
           <div class="det-scroll" id="detScroll">
-            <div class="idb-wrap" id="idbWrap"></div>
             <div class="bar">
               <div class="tabs" role="tablist" id="tabs"></div>
               <span class="sp"></span>
               <button class="ib sq" data-toggle="det" aria-label="Minimizar detalhes"><span class="ms" aria-hidden="true">hide</span></button>
             </div>
             <div class="content" id="content"></div>
+          </div>
           </div>
         </div>
 
