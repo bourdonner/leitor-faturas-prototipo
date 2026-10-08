@@ -183,7 +183,7 @@ comp({id:'paineis', grp:'Navegação', t:'Painéis por prioridade', iss:'COG-287
  init(r){
   const cv=$('.canvas',r), PRI=['det','pdf','act'], MINW={det:520,pdf:400,act:284}, NM={pdf:'Fatura',det:'Detalhes',act:'Atividade'}, IC={pdf:'picture_as_pdf',det:'description',act:'history'}, SPEC={pdf:'686 · min 400',det:'fill · min 520',act:'284 fixed'};
   const S={open:{pdf:true,det:true,act:true},W:1440,vis:[]};
-  cv.innerHTML=`<div class="cx" style="width:100%"><div data-box style="position:relative;overflow:hidden;background:#fff;border-radius:16px;box-shadow:0 0 40px rgba(0,0,0,.04)"><div data-sc style="transform-origin:0 0"><div class="cols" style="height:300px">
+  cv.innerHTML=`<div class="cx" style="width:100%"><div data-box style="position:relative;overflow:hidden;background:#fff;border-radius:16px;box-shadow:0 0 40px rgba(0,0,0,.04)"><div data-sc style="transform-origin:0 0;padding:24px;box-sizing:border-box"><div class="cols" style="height:300px">
     ${['pdf','det','act'].map(k=>`<div class="panel p-${k}" data-p="${k}"><div style="margin:auto;text-align:center;white-space:nowrap;display:flex;flex-direction:column;gap:4px"><b style="font-size:20px">${NM[k]}</b><span style="color:var(--mid);font-size:16px">${SPEC[k]}</span><span data-wd style="font-size:16px;font-weight:600"></span></div></div>`).join('')}
     <div class="cols-empty" hidden>${MS('view_column')}<b>Nenhum painel aberto</b><span>Abra um painel pela barra abaixo ou volte à visualização padrão.</span><button class="btn primary" data-reset>Voltar ao padrão</button></div>
   </div></div></div>
@@ -191,7 +191,8 @@ comp({id:'paineis', grp:'Navegação', t:'Painéis por prioridade', iss:'COG-287
   const box=$('[data-box]',cv), sc=$('[data-sc]',cv), cols=$('.cols',cv);
   const fits=set=>set.reduce((w,k)=>w+MINW[k],0)+24*Math.max(0,set.length-1) <= cols.clientWidth;
   const visibleSet=()=>{ const v=[]; PRI.forEach(k=>{ if(S.open[k] && fits([...v,k])) v.push(k); }); return v; };
-  const scale=()=>{ const k=Math.min(1, box.parentElement.clientWidth/S.W); sc.style.width=S.W+'px'; sc.style.transform=`scale(${k})`; box.style.width=S.W*k+'px'; box.style.margin='0 auto'; box.style.height=300*k+'px'; return k; }; // o fundo branco acompanha a largura escolhida
+  const P=24; // respiro entre os painéis e o fundo branco
+  const scale=()=>{ const tw=S.W+2*P, k=Math.min(1, box.parentElement.clientWidth/tw); sc.style.width=tw+'px'; sc.style.transform=`scale(${k})`; box.style.width=tw*k+'px'; box.style.margin='0 auto'; box.style.height=(300+2*P)*k+'px'; return k; }; // o fundo branco acompanha a largura escolhida
   const widths=()=>$$('.panel',cv).forEach(p=>{ p.querySelector('[data-wd]').textContent = p.classList.contains('min')?'':Math.round(p.offsetWidth)+' px now'; });
   const render=(first)=>{ scale(); const prev=S.vis; S.vis=visibleSet();
     PRI.forEach(k=>{ const p=$(`[data-p=${k}]`,cv), is=S.vis.includes(k), was=prev.includes(k); p.classList.toggle('min',!is); if(!first && is && !was) anim(p,'opening',450);
