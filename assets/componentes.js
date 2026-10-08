@@ -521,15 +521,17 @@ comp({id:'filtro', grp:'Listagem', t:'Busca e filtros', lib:'Filter · Command B
     {k:'conc',label:'Concessionária',all:'Todas',ph:'Pesquise por uma concessionária',opts:['Força Sul','Luz do Vale','Não identificada']},
     {k:'env',label:'Enviado por',all:'Todos',ph:'Pesquise por uma pessoa',opts:['Ana Ribeiro','Carlos Mendes','Eduardo Moreira']},
     {k:'dt',label:'Recebida em',date:true,ph:'Pesquise por um período',opts:['Qualquer data','Últimos 7 dias','Últimos 30 dias']}];
-  const reset=()=>{ S={F:{st:[],pend:[],conc:[],env:[]},dt:'Qualquer data',showF:true,fOpen:null,q:''}; };
+  const reset=()=>{ S={F:{st:[],pend:[],conc:[],env:[]},dt:'Qualquer data',dr:null,showF:true,fOpen:null,q:''}; };
+  const fmt=d=>DateRange.fmt(d);
   const active=()=>FDEF.filter(f=>f.date?S.dt!=='Qualquer data':S.F[f.k].length).length;
-  const chipHTML=f=>{ const vals=f.date?[S.dt]:(S.F[f.k].length?S.F[f.k]:[f.all]); const shown=vals.slice(0,2), extra=vals.length-shown.length;
+  const chipHTML=f=>{ if(f.date&&S.dt==='Período') return `<button type="button" class="fchip ${S.fOpen===f.k?'open':''}" data-fk="${f.k}" aria-haspopup="dialog" aria-expanded="${S.fOpen===f.k}"><span class="fl">${f.label}</span><span class="fsep"></span><span class="fb">${fmt(S.dr.a)}</span><span class="fe">e</span><span class="fb">${fmt(S.dr.b)}</span><span class="msr">expand_more</span></button>`;
+    const vals=f.date?[S.dt]:(S.F[f.k].length?S.F[f.k]:[f.all]); const shown=vals.slice(0,2), extra=vals.length-shown.length;
     return `<button type="button" class="fchip ${S.fOpen===f.k?'open':''}" data-fk="${f.k}" aria-haspopup="dialog" aria-expanded="${S.fOpen===f.k}"><span class="fl">${f.label}</span><span class="fsep"></span>${shown.map(v=>`<span class="fb">${esc(v)}</span>`).join('')}${extra?`<span class="fx">+${extra}</span>`:''}<span class="msr">expand_more</span></button>`; };
   const draw=()=>{ const n=active();
-    cv.innerHTML=`<div class="cx lst" style="position:relative;width:100%;min-height:330px"><div class="tools"><div class="field grow"><span class="fbtn" aria-hidden="true"><span><span class="msr">search</span></span></span><input data-q placeholder="Buscar por titular, UC ou nome do arquivo" value="${esc(S.q)}" aria-label="Buscar faturas" autocomplete="off">
+    cv.innerHTML=`<div class="cx lst" style="position:relative;width:100%;min-height:${S.fOpen==='dt'?520:330}px"><div class="tools"><div class="field grow"><span class="fbtn" aria-hidden="true"><span><span class="msr">search</span></span></span><input data-q placeholder="Buscar por titular, UC ou nome do arquivo" value="${esc(S.q)}" aria-label="Buscar faturas" autocomplete="off">
       <button class="fbtn ${S.showF?'on':''}" data-funnel aria-pressed="${S.showF}" aria-label="${S.showF?'Esconder filtros':'Mostrar filtros'}${!S.showF&&n?` (${n} ativo${n>1?'s':''})`:''}"><span><span class="msr fill">filter_alt</span>${!S.showF&&n?`<b class="fcount">${n}</b>`:''}</span></button></div></div>
       ${S.showF?`<div class="frow" role="group" aria-label="Filtros">${FDEF.map(chipHTML).join('')}${n?`<button type="button" class="btn sm sec" data-clearall>Limpar todos</button>`:''}</div>`:''}
-      <div class="dd fp" hidden role="dialog"><div class="sec"><label class="fsearch"><span class="msr">search</span><input data-fq autocomplete="off" aria-label="Pesquisar opções"></label><div class="fopts" role="group"></div><button type="button" class="btn out sm fclr">Limpar seleção</button></div></div></div>`;
+      <div class="dd fp" hidden role="dialog"><div class="sec"><label class="fsearch"><span class="msr">search</span><input data-fq autocomplete="off" aria-label="Pesquisar opções"></label><div class="fopts" role="group"></div><div class="fcal" hidden></div><button type="button" class="btn out sm fclr">Limpar seleção</button></div></div></div>`;
     const W=$('.cx',cv);
     $('[data-q]',cv).oninput=e=>{ S.q=e.target.value; };
     $('[data-funnel]',cv).onclick=()=>{ S.showF=!S.showF; S.fOpen=null; draw(); $('[data-funnel]',cv).focus(); log(r,S.showF?'Filters <b>shown</b>':`Filters <b>hidden</b>${active()?` · funnel shows ${active()} active`:''}`); };
@@ -545,7 +547,12 @@ comp({id:'filtro', grp:'Listagem', t:'Busca e filtros', lib:'Filter · Command B
       fq.value=q; fq.placeholder=f.ph; dd.setAttribute('aria-label','Filtro: '+f.label);
       const fill=()=>{ const t=fq.value.trim().toLowerCase(), opts=f.opts.filter(o=>!t||o.toLowerCase().includes(t));
         $('.fopts',dd).innerHTML=opts.length?opts.map(o=>{ const on=f.date?S.dt===o:S.F[f.k].includes(o); return `<button type="button" role="${f.date?'menuitemradio':'menuitemcheckbox'}" aria-checked="${on}" data-fv="${esc(o)}"><span>${esc(o)}</span><span class="${f.date?'rdo':'cbx'} ${on?'on':''}">${on&&!f.date?'<span class="mss">check</span>':''}</span></button>`; }).join(''):`<p class="fnone">Nada encontrado.</p>`; };
-      fq.oninput=fill; fill(); dd.hidden=false;
+      fq.oninput=fill; fill();
+      dd.classList.toggle('cal',!!f.date); const fc=$('.fcal',dd); fc.hidden=!f.date;
+      if(f.date) DateRange.mount(fc,{from:S.dr&&S.dr.a,to:S.dr&&S.dr.b,months:W.clientWidth<700?1:2,view:S.dr?S.dr.a:new Date(2025,1,1),
+        onStart:a=>log(r,`Start: <b>${fmt(a)}</b> · pick the end date`),
+        onPick:(a,b)=>{ S.dt='Período'; S.dr={a,b}; S.fOpen=null; draw(); $(`[data-fk="dt"]`,cv)?.focus(); log(r,`Recebida em: <b>${fmt(a)} e ${fmt(b)}</b>`); }});
+      dd.hidden=false;
       const wb=W.getBoundingClientRect(), bb=b.getBoundingClientRect(); dd.style.top=(bb.bottom-wb.top+4)+'px'; dd.style.left=Math.max(0,Math.min(bb.left-wb.left,W.clientWidth-dd.offsetWidth))+'px';
       fq.focus(); fq.setSelectionRange(q.length,q.length); }
     r._open=openFilter; // sempre o menu do desenho atual
@@ -617,7 +624,7 @@ const DOC={
  card:{grp:'Data',t:'Data card',lead:'One label, one value, its unit.',
   ctrls:seg('st','Invoice',[['rev','In review'],['ro','Sent (read-only)']],'rev')+SZ,
   beh:[['Pencil','Edit: field with unit inside; send replaces copy, close replaces pencil'],['Enter / send','Validates the mask; invalid = red border + toast'],['Esc / close','Cancels'],['Copy','Copies the value only'],['Pending · Tab','Fills the placeholder suggestion'],['Pending · send','Resolved → green border, still editable']],
-  notes:['View and edit have the same height.','R$ before the value; other units after.','Read-only: no pencil, copy stays (<code>State=Read only</code>).','Mobile: 16 px padding, radius 12, 40 px touch targets.']},
+  notes:['View and edit have the same height.','R$ before the value; other units after.','Read-only: no pencil, copy stays (<code>State=Read only</code>).','Mobile: 16 px padding, radius 12, 40 px touch targets.','Rows stay balanced in the Details panel: the column count is picked so every row has the same number of cards (6 → 3+3, not 4+2); if a few are still left, they split the full width (12-column grid). Titles use <code>text-wrap: balance</code> and the value sits at the card bottom, so 1- and 2-line titles line up.']},
  mascaras:{grp:'Data',t:'Masked fields',lead:'Mask comes from the value type. Click the pencil, type, press Enter.',
   beh:[['Money / %','2 decimals, typed from the right: 512399 → 5.123,99'],['kWh / kW / days','Integer with thousands'],['Date','dd/mm/yyyy, must be a real date'],['CNPJ / CEP / barcode','Auto punctuation, must be complete'],['IDs (UC, NF, series)','Digits only, original length'],['Invalid','Red border + message, not saved']],
   notes:['Type: unit → label → value format (<code>kindOf</code>).','Numeric keyboard on mobile; 16 px fields on iOS.','Spreadsheet allows "−" and 5-decimal rates.']},
@@ -648,8 +655,8 @@ const DOC={
   beh:[['Scroll down (≥ 4 px)','Header up, tab bar down (280 ms)'],['Scroll up / top / switch screen','Both come back'],['Horizontal scroll','Ignored'],['Tap a badge','Sheet over blurred background: status, links, history, download, extract'],['×, outside, Esc','Closes; focus back to the badge']],
   notes:['Badges 34 px, overlapping −12 px; pending pill on top.','PDF: pinch 1×–4× keeping the focal point; double tap fit ↔ 2×.']},
  filtro:{grp:'List',t:'Search & filters',lead:'Registry pattern: filter row visible by default under the search. Each filter opens search + options.',
-  beh:[['Click a filter','Menu: search, options (checkbox; date = radio), Limpar seleção'],['Check an option','Applies now, menu stays open; chip shows up to 2 values + "+N"'],['Pick a date','Applies and closes'],['Limpar todos','Only when a filter is active'],['Funnel','Shows/hides the row; hidden filters still apply, funnel shows the count'],['Esc / outside','Closes the menu']],
-  notes:['Filters: Situação · Pendências · Concessionária · Enviado por · Recebida em.','Mobile: funnel on the left, filters scroll horizontally.']},
+  beh:[['Click a filter','Menu: search, options (checkbox; date = radio), Limpar seleção'],['Check an option','Applies now, menu stays open; chip shows up to 2 values + "+N"'],['Recebida em · shortcut','Qualquer data / Últimos 7 / 30 dias: applies and closes'],['Recebida em · period','Calendar (2 months): 1st click = start, hover previews, 2nd click = end → applies and closes; chip shows "dd/mm/aaaa e dd/mm/aaaa"'],['Limpar todos','Only when a filter is active'],['Funnel','Shows/hides the row; hidden filters still apply, funnel shows the count'],['Esc / outside','Closes the menu']],
+  notes:['Filters: Situação · Pendências · Concessionária · Enviado por · Recebida em.','Lib: <code>Filter=Date Range</code> chip + <code>Calendar Type=Date Range</code> (cells 36×33, start/end #1c1917, range #f5f5f4). Mobile: 1 month, shortcuts on top.','Mobile: funnel on the left, filters scroll horizontally.']},
  upload:{grp:'List',t:'New invoice (upload)',lead:'Pick or drop files, review the list, then send. One file at a time.',
   ctrls:'<span><span class="k">Add</span></span><button class="cbtn" data-s="ok">fatura.pdf</button><button class="cbtn" data-s="img">foto.jpg</button><button class="cbtn" data-s="type">planilha.xlsx</button><button class="cbtn" data-s="big">32 MB</button><button class="cbtn" data-s="empty">0 KB</button><button class="cbtn" data-s="dup">duplicate</button><button class="cbtn" data-s="many">22 files</button>',
   beh:[['Drag over','Drop zone turns green: "Solte para adicionar N arquivos"'],['Add','Item "Aguardando envio"; drop zone becomes a strip'],['Wrong type / empty / > 20 MB','Red item with the reason; not sent'],['Duplicate · > 20 files','Not added; toast'],['Enviar N faturas','Uploads one by one (bar + %); no remove/cancel meanwhile'],['Done','Modal closes; rows on top as "Lendo fatura"']],
@@ -706,10 +713,10 @@ C.forEach(c=>{
   main.insertAdjacentHTML('beforeend',`<section class="cmp box" id="${c.id}">
     <div class="cmp-h"><h3>${c.t}</h3><span class="tags">${c.iss?`<a class="chip iss" href="https://linear.app/cogecom/issue/${c.iss}" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" width="12" height="12" fill="#5e6ad2" aria-hidden="true"><path d="M2.886 4.18A11.982 11.982 0 0 1 11.99 0C18.624 0 24 5.376 24 12.009c0 3.64-1.62 6.903-4.18 9.105L2.887 4.18ZM1.817 5.626l16.556 16.556c-.524.33-1.075.62-1.65.866L.951 7.277c.247-.575.537-1.126.866-1.65ZM.322 9.163l14.515 14.515c-.71.172-1.443.282-2.195.322L0 11.358a12 12 0 0 1 .322-2.195Zm-.17 4.862 9.823 9.824a12.02 12.02 0 0 1-9.824-9.824Z"/></svg> ${c.iss}</a>`:''}${c.lib?`<span class="chip">Lib: ${c.lib}</span>`:''}${FIG[c.id]?`<a class="chip fig" href="${FIG[c.id][0]}" target="_blank" rel="noopener" title="${FIG[c.id][1]}">${FIGI} Figma</a>`:''}</span></div>
     <p class="lead">${c.lead}</p>
-    <div class="ctrls">${c.ctrls||''}<button class="reset"><span class="pg-ms">restart_alt</span>Reset</button></div>
-    <div class="canvas ${['identidade','pendencias','filtro','upload','planilha','card','mascaras'].includes(c.id)?'top':''} ${['identidade','extrair','filtro','upload'].includes(c.id)?'white':''}"></div><div class="log" aria-live="polite"></div>
-    <div class="dt"><div class="ptabs" role="tablist" aria-label="${c.t}"><button role="tab" class="ptab on" aria-selected="true" data-dt="beh">Behavior</button><button role="tab" class="ptab" aria-selected="false" data-dt="notes">Notes</button><button role="tab" class="ptab" aria-selected="false" data-dt="code">Code</button></div>
-      <div class="dpane" data-p="beh"><table class="bh">${c.beh.map(([a,b])=>`<tr><td>${a}</td><td>${b}</td></tr>`).join('')}</table></div>
+    <div class="stage ${['identidade','extrair','filtro','upload'].includes(c.id)?'white':''}"><div class="ctrls">${c.ctrls||''}<button class="reset"><span class="pg-ms">restart_alt</span>Reset</button></div>
+    <div class="canvas ${['identidade','pendencias','filtro','upload','planilha','card','mascaras'].includes(c.id)?'top':''}"></div></div><div class="log" aria-live="polite"></div>
+    <div class="dt"><div class="ptabs" aria-label="${c.t}: documentação"><button type="button" class="ptab" aria-expanded="false" data-dt="beh">Behavior</button><button type="button" class="ptab" aria-expanded="false" data-dt="notes">Notes</button><button type="button" class="ptab" aria-expanded="false" data-dt="code">Code</button></div>
+      <div class="dpane" data-p="beh" hidden><table class="bh">${c.beh.map(([a,b])=>`<tr><td>${a}</td><td>${b}</td></tr>`).join('')}</table></div>
       <div class="dpane" data-p="notes" hidden><ul class="nt">${c.notes.map(n=>`<li>${n}</li>`).join('')}</ul></div>
       <div class="dpane" data-p="code" hidden><div class="code-h"><div class="ptabs sm" role="tablist"><button role="tab" class="ptab on" data-lang="html">HTML</button><button role="tab" class="ptab" data-lang="css">CSS</button><button role="tab" class="ptab" data-lang="js">JS</button></div><span class="code-src"></span><button class="copy"><span class="pg-ms">content_copy</span>Copy</button></div><pre class="code"><code></code></pre></div></div></section>`);
   const r=$('#'+c.id); c.init(r);
@@ -719,7 +726,8 @@ C.forEach(c=>{
   const from={html:'Initial state, generated from the rendered component', css:c.id==='identidade'?'assets/identidade.js (injected style)':'assets/componentes.css · [mobile] = .cx.mob', js:'Prototype logic (commented summary)'};
   let lang='html', raw='';
   const show=()=>{ raw=src[lang](); $('.code code',r).innerHTML=hl[lang](raw); $('.code-src',r).textContent=from[lang]; $$('[data-lang]',r).forEach(b=>{ b.classList.toggle('on',b.dataset.lang===lang); b.setAttribute('aria-selected',b.dataset.lang===lang); }); };
-  $$('[data-dt]',r).forEach(b=>b.onclick=()=>{ $$('[data-dt]',r).forEach(x=>{ x.classList.toggle('on',x===b); x.setAttribute('aria-selected',x===b); }); $$('.dpane',r).forEach(p=>p.hidden=p.dataset.p!==b.dataset.dt); if(b.dataset.dt==='code') show(); });
+  // fechado por padrão: clicar abre; clicar no aberto fecha
+  $$('[data-dt]',r).forEach(b=>b.onclick=()=>{ const open=!b.classList.contains('on'); $$('[data-dt]',r).forEach(x=>{ const on=open&&x===b; x.classList.toggle('on',on); x.setAttribute('aria-expanded',on); }); $$('.dpane',r).forEach(p=>p.hidden=!(open&&p.dataset.p===b.dataset.dt)); if(open&&b.dataset.dt==='code') show(); });
   $$('[data-lang]',r).forEach(b=>b.onclick=()=>{ lang=b.dataset.lang; show(); });
   $('.copy',r).onclick=()=>{ navigator.clipboard?.writeText(raw).catch(()=>{}); toast('Code copied'); };
 });

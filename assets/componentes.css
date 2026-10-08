@@ -407,3 +407,11 @@
 /* sugestão: Tab aceita; planilha: largura estável ao editar */
 .cx kbd{font:600 11px/1 Inter,sans-serif;padding:1px 5px;border:1px solid var(--border);border-bottom-width:2px;border-radius:4px;background:#fff;color:var(--ink)}
 .cx.mob .tabk{display:none}
+/* Recebida em: atalhos à esquerda + calendário de período (assets/daterange.js), igual à listagem */
+.cx.lst .dd.fp.cal{width:auto}
+.cx.lst .dd.fp.cal .sec{display:grid;grid-template-columns:168px auto;grid-template-rows:auto 1fr;column-gap:16px;padding:12px}
+.cx.lst .dd.fp.cal .fsearch{display:none}
+.cx.lst .dd.fp.cal .fopts{grid-column:1;grid-row:1;max-height:none}
+.cx.lst .dd.fp.cal .fcal{grid-column:2;grid-row:1/3}
+.cx.lst .dd.fp.cal .fclr{grid-column:1;grid-row:2;align-self:end}
+.cx.lst .fchip .fe{color:var(--mid)}
