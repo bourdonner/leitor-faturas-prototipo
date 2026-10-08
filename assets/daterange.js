@@ -58,7 +58,10 @@
       if(!a||b){ a=d; b=null; hov=null; draw(); el.querySelector(`[data-d="${d.getTime()}"]`)?.focus(); o.onStart&&o.onStart(a); return; }
       if(d<a){ b=a; a=d; } else b=d;
       draw(); o.onPick&&o.onPick(a,b); };
-    el.onmouseover=e=>{ if(!a||b) return; const c=e.target.closest('[data-d]'); const d=c?new Date(+c.dataset.d):null; if(!same(d,hov)){ hov=d; draw(); } };
+    // redesenha só quando o dia sob o mouse muda (fora de um dia = null). Antes, same(null,null) dava falso e a área entre os dias redesenhava sem parar e travava a página
+    const key=d=>d?d.getTime():0;
+    el.onmouseover=e=>{ if(!a||b) return; const c=e.target.closest('[data-d]'); const d=c?new Date(+c.dataset.d):null; if(key(d)!==key(hov)){ hov=d; draw(); } };
+    el.onmouseleave=()=>{ if(hov&&!b){ hov=null; draw(); } };
     draw();
     return {get:()=>({from:a,to:b})};
   }
