@@ -1059,6 +1059,11 @@ const modeOf = ()=> innerWidth < 768 ? 'mobile' : 'desk';
 function renderPendList(){
   const list=S.sent?[]:openPend(), TABN={Resumo:'Resumo',Itens:'Itens',Consumo:'Consumo','Identificação':'Identificação'};
   $('#plCnt').textContent = list.length ? `${list.length} para conferir` : '';
+  if (list.length && S.id!=='ok'){ // UC ainda não validada: nada de campo nem "Ver no Campo" para campo travado — leva para a UC
+    $('#plist').innerHTML = `<div class="pl-item"><div class="pl-h"><span class="badge">${I.warn}</span>Valide a UC primeiro</div>
+      <div class="pl-m">As ${list.length} pendências ficam liberadas depois que a UC da fatura for confirmada.</div>
+      <div class="pl-a"><span></span><button class="btn primary" id="plIdGo">Ir para a UC</button></div></div>`;
+    $('#plIdGo').onclick=goIdentity; return; }
   $('#plist').innerHTML = list.length ? list.map(p=>`<div class="pl-item" id="pl-item-${p.id}">
       <div class="pl-h"><span class="badge">${I.warn}</span>${p.label}</div>
       <div class="pl-m">${TABN[p.tab]} · ${hintOf(p)}</div>
