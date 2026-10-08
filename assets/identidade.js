@@ -4,9 +4,9 @@
    Uso: Identity.mount(el, state, onChange) — state = {read, uc, ok, sent}; chame de novo para redesenhar. */
 (function(){
   /* seletores prefixados com .idf-c: vencem estilos genéricos de botão de quem usa o componente.
-     valores do Figma (Detalhe › UC validation): bloco hover:secondary #f5f5f4, raio 16, padding 24 (mobile 16), gap 16 */
+     valores do Figma (Detalhe › UC validation): bloco hover:secondary #f5f5f4, raio 16, padding 16 como os outros cards grandes (validada: 16 no desktop, 12 no mobile), gap 16 */
   const CSS=`
-  .idf-c .idf{background:#f5f5f4;border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:16px;font:400 14px/1.7 Inter,sans-serif;color:#1c1917}
+  .idf-c .idf{background:#f5f5f4;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:16px;font:400 14px/1.7 Inter,sans-serif;color:#1c1917}
   .idf-c .idf-h{display:flex;flex-direction:column;gap:6px}
   .idf-c .idf-h b{display:block;font:600 20px/1.2 Poppins,Inter,sans-serif;color:#292524}
   .idf-c .idf-h span{display:block;font-size:14px;line-height:1.7;color:#78716c}
@@ -46,7 +46,7 @@
   .idf-c .idf-o:hover,.idf-c .idf-o.act{background:#f5f5f4}
   .idf-c .idf-none{padding:8px 8px 8px 32px;font-size:14px;color:#78716c}
   /* validada / enviada: bloco padding 12; pílula 48 px, fundo view only rgba(245,245,244,.4), ícone verified #65a30d, texto Inter Bold 14 */
-  .idf-c .idf.ok{flex-direction:row;align-items:center;gap:8px;padding:12px}
+  .idf-c .idf.ok{flex-direction:row;align-items:center;gap:8px;padding:16px}
   .idf-c .idf-pill{display:inline-flex;align-items:center;gap:12px;height:48px;padding:12px 16px 12px 12px;border-radius:999px;background:rgba(245,245,244,.4);font:700 14px/1.7 Inter,sans-serif;color:#1c1917;min-width:0}
   .idf-c .idf-pill .ms{font-family:"Material Symbols Rounded";font-size:20px;font-style:normal;line-height:1;color:#65a30d;font-variation-settings:"FILL" 1}
   .idf-c .idf-pill .tx{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
