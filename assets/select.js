@@ -52,7 +52,8 @@
   }
   function place(){
     if(!open) return; const r=open.wrap.querySelector('.cs-trig').getBoundingClientRect(), m=open.menu;
-    m.style.minWidth=r.width+'px'; m.style.left=r.left+'px';
+    m.style.minWidth=r.width+'px';
+    m.style.left=Math.max(8, Math.min(r.left, innerWidth-m.offsetWidth-8))+'px'; // não sai da página pela direita (ex.: seletor de estado no canto)
     const h=m.offsetHeight, below=innerHeight-r.bottom;
     m.style.top = (below < h+8 && r.top > h+8) ? (r.top-h-4)+'px' : (r.bottom+4)+'px';
   }
