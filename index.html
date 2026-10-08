@@ -186,6 +186,14 @@
   .rdo{width:16px;height:16px;border:1px solid var(--ink);border-radius:50%;flex:none;display:grid;place-items:center}
   .rdo.on::after{content:"";width:8px;height:8px;border-radius:50%;background:var(--ink)}
   .fnone{margin:8px;color:var(--mid)}
+  /* Recebida em: atalhos (rádio) à esquerda e calendário de período à direita; mobile empilha com 1 mês */
+  .dd.fp.cal{width:auto}
+  .dd.fp.cal .sec{display:grid;grid-template-columns:168px auto;grid-template-rows:auto 1fr;column-gap:16px;padding:12px}
+  .dd.fp.cal .fsearch{display:none}
+  .dd.fp.cal .fopts{grid-column:1;grid-row:1;max-height:none}
+  .dd.fp.cal .fcal{grid-column:2;grid-row:1/3}
+  .dd.fp.cal #fclr{grid-column:1;grid-row:2;align-self:end}
+  .fchip .fe{color:var(--mid)}
   .dd.fp #fclr{margin-top:4px;width:100%;padding:6px 12px;text-align:center;border:1px solid var(--border)}
   /* ===== Nova fatura ===== */
   .mmenu{display:none}
@@ -274,6 +282,9 @@
 
   /* ===== mobile (< 768) — referência: listagem mobile do Cadastro ===== */
   @media (max-width:767px){
+    .dd.fp.cal .sec{grid-template-columns:auto;grid-template-rows:auto auto auto}
+    .dd.fp.cal .fcal{grid-column:1;grid-row:2;margin-top:8px}
+    .dd.fp.cal #fclr{grid-row:3;margin-top:12px}
     .sidebar,.sb-tip,.topbar{display:none}
     .page{margin:0;padding:0;gap:0}
     .card{border-radius:0;box-shadow:none;padding:0;gap:0}
@@ -326,6 +337,7 @@
   @supports (-webkit-touch-callout:none){ input,select,textarea{font-size:16px!important} }
 </style>
 <script src="assets/toast.js"></script>
+<script src="assets/daterange.js"></script>
 </head>
 <body>
 
@@ -416,6 +428,7 @@
 <div class="dd fp" id="fd" hidden role="dialog" aria-label="Filtro"><div class="sec">
   <label class="fsearch"><span class="msr">search</span><input id="fq" autocomplete="off" aria-label="Pesquisar opções"></label>
   <div class="fopts" id="fdSec" role="group"></div>
+  <div class="fcal" id="fdCal" hidden></div>
   <button type="button" class="btn out sm" id="fclr">Limpar seleção</button>
 </div></div>
 
@@ -453,7 +466,7 @@ const ROWS = [
 ].map((r,i)=>({...r,id:i,arq:r.arq||('fatura-'+(r.uc.includes(' · ')?r.uc.split(' · ')[1].toLowerCase().replace(/[^a-z]+/g,''):'digitalizada')+'-'+(r.ref!=='—'?r.ref.replace('/',''):r.dt.slice(3).replace('/',''))+'.pdf')}));
 let TOTAL=454;
 const byId=id=>ROWS.find(r=>r.id===id);
-const S = {view:'carregando', q:'', sort:null, dir:1, F:{st:[],pend:[],conc:[],env:[]}, dt:'Qualquer data', showF:true, fOpen:null, sel:new Set(), menuRow:null};
+const S = {view:'carregando', q:'', sort:null, dir:1, F:{st:[],pend:[],conc:[],env:[]}, dt:'Qualquer data', dr:null, showF:true, fOpen:null, sel:new Set(), menuRow:null};
 /* filtros — padrão do Cadastro: linha de filtros visível, cada um abre busca + opções + Limpar seleção */
 const concOf=r=>r.uc.includes(' · ')?r.uc.split(' · ')[1]:'Não identificada';
 const pendOf=r=>/^\d+ pendênc/.test(r.pend)?'Com pendências':r.pend==='Sem pendências'?'Sem pendências':'Não se aplica';
@@ -472,6 +485,7 @@ const key=d=>d.split('/').reverse().join('');
 
 function chipHTML(f){
   let vals;
+  if(f.date && S.dt==='Período') return `<button type="button" class="fchip ${S.fOpen===f.k?'open':''}" data-fk="${f.k}" aria-haspopup="dialog" aria-expanded="${S.fOpen===f.k}" aria-label="${f.label}: de ${DateRange.fmt(S.dr.a)} a ${DateRange.fmt(S.dr.b)}"><span class="fl">${f.label}</span><span class="fsep"></span><span class="fb">${DateRange.fmt(S.dr.a)}</span><span class="fe">e</span><span class="fb">${DateRange.fmt(S.dr.b)}</span><span class="msr">expand_more</span></button>`;
   if(f.date) vals = [S.dt];
   else vals = S.F[f.k].length ? S.F[f.k] : [f.all];
   const shown = vals.slice(0,2), extra = vals.length-shown.length;
@@ -495,7 +509,8 @@ function stateHTML(kind){
 }
 function visibleRows(){
   let r = ROWS.filter(x=>FDEF.every(f=>f.date || !S.F[f.k].length || S.F[f.k].includes(f.get(x))));
-  if (S.dt!=='Qualquer data'){ const max=Math.max(...ROWS.map(x=>toDate(x.dt))); const days=S.dt==='Últimos 7 dias'?7:30; r=r.filter(x=>max-toDate(x.dt)<=days*864e5); }
+  if (S.dt==='Período'){ r=r.filter(x=>{ const d=toDate(x.dt); return d>=S.dr.a && d<=S.dr.b; }); }
+  else if (S.dt!=='Qualquer data'){ const max=Math.max(...ROWS.map(x=>toDate(x.dt))); const days=S.dt==='Últimos 7 dias'?7:30; r=r.filter(x=>max-toDate(x.dt)<=days*864e5); }
   if (S.q){ const q=S.q.toLowerCase(); r=r.filter(x=>(x.tit+' '+x.uc+' '+x.arq).toLowerCase().includes(q)); }
   if (S.sort==='dt') r=r.slice().sort((a,b)=>S.dir*key(a.dt).localeCompare(key(b.dt)));
   if (S.sort==='st') r=r.slice().sort((a,b)=>S.dir*a.st.localeCompare(b.st,'pt'));
@@ -554,6 +569,10 @@ function openRowMenu(btn,id){ closeMenus(); S.menuRow=id; btn.classList.add('ope
 const FD=k=>FDEF.find(f=>f.k===k);
 function fillFilter(){
   const f=FD(S.fOpen); if(!f) return; const q=$('#fq').value.trim().toLowerCase();
+  $('#fd').classList.toggle('cal',!!f.date); $('#fdCal').hidden=!f.date;
+  if(f.date){ const max=new Date(Math.max(...ROWS.map(x=>toDate(x.dt))));
+    DateRange.mount($('#fdCal'),{from:S.dr&&S.dr.a,to:S.dr&&S.dr.b,months:isMobile()?1:2,view:S.dr?S.dr.a:new Date(max.getFullYear(),max.getMonth()-(isMobile()?0:1),1),
+      onPick:(a,b)=>{ S.dt='Período'; S.dr={a,b}; S.sel.clear(); render(); document.querySelector('[data-fk="dt"]')?.focus(); }}); }
   const opts=f.opts().filter(o=>!q||o.toLowerCase().includes(q));
   $('#fdSec').innerHTML = opts.length ? opts.map(o=>{ const on=f.date?S.dt===o:S.F[f.k].includes(o);
     return `<button type="button" role="${f.date?'menuitemradio':'menuitemcheckbox'}" aria-checked="${on}" data-fv="${esc(o)}"><span>${esc(o)}</span><span class="${f.date?'rdo':'cbx'} ${on?'on':''}">${on&&!f.date?'<span class="mss">check</span>':''}</span></button>`; }).join('')
