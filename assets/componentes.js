@@ -162,13 +162,13 @@ comp({id:'tabbar', grp:'Navegação', t:'Tab bar', lib:'Tab Bar · Tab Bar Item'
       <button class="tb tb-pend" data-toggle="pend" ${S.acao==='pend'?'':'hidden'}><span class="ic">${MS('warning',26,1)}<b class="cnt">3</b></span><span>Pendências</span></button></nav></div>`;
     paint();
     $$('.tb[data-toggle]',cv).forEach(b=>b.onclick=()=>{ const k=b.dataset.toggle, nm=b.lastElementChild.textContent.trim();
-      if(S.size==='mob'){ S.screen=k; paint(); anim(b,'opening'); log(r,`Tela: <b>${nm}</b>`); return; }
+      if(S.size==='mob'){ S.screen=k; paint(); anim(b,'opening'); log(r,`Screen: <b>${nm}</b>`); return; }
       if(k==='pend') S.pend=!S.pend; else S.open[k]=!S.open[k];
-      const on=onTab(k); paint(); anim(b,on?'opening':'closing'); log(r,`${k==='pend'?'Card de pendências':'Painel '+nm}: <b>${on?'aberto':'fechado'}</b>`); });
+      const on=onTab(k); paint(); anim(b,on?'opening':'closing'); log(r,`${k==='pend'?'Pending card':nm+' panel'}: <b>${on?'open':'closed'}</b>`); });
     const sd=$('.tb-send',cv);
     sd.onclick=()=>{ if(S.busy) return; S.busy=true; sd.classList.add('busy'); sd.setAttribute('aria-busy','true'); sd.setAttribute('aria-label','Enviando para faturamento');
-      $('.ic .ms',sd).textContent='progress_activity'; sd.lastElementChild.textContent='Enviando…'; log(r,'<b>Loading</b>: sem clique até o retorno');
-      setTimeout(()=>{ S.busy=false; S.acao='sent'; segSet(r,'acao','sent'); draw(); log(r,'<b>Enviada</b>: o botão sai e a fatura fica só leitura'); },1400); };
+      $('.ic .ms',sd).textContent='progress_activity'; sd.lastElementChild.textContent='Enviando…'; log(r,'<b>Loading</b>: not clickable');
+      setTimeout(()=>{ S.busy=false; S.acao='sent'; segSet(r,'acao','sent'); draw(); log(r,'<b>Sent</b>: button removed, invoice read-only'); },1400); };
   };
   onSeg(r,(n,v)=>{ S[n]=v; S.busy=false; draw(); log(r,''); });
   r._reset=()=>{ reset(); segSet(r,'acao','pend'); segSet(r,'size','desk'); draw(); };
@@ -181,9 +181,9 @@ comp({id:'paineis', grp:'Navegação', t:'Painéis por prioridade', iss:'COG-287
  beh:[['Estreitar a área','Sai Atividade, depois Fatura; Detalhes fica até 520 px'],['Abrir um painel que não cabe','Fecha os outros, do menos para o mais prioritário, até ele caber'],['Fechar todos','"Nenhum painel aberto" + Voltar ao padrão (reabre os três, respeitando a largura)'],['Painel fechando','350 ms ease: largura → 0, opacidade → 0, desce 24 px e escala .96'],['Painel abrindo','400 ms cubic-bezier(.2,.9,.3,1.1): sobe 32 px, escala .95 → 1']],
  notes:['Fatura 686 px (encolhe até 400); Detalhes ocupa o resto (mín. 520); Atividade 284 fixo. Gap 24.','A Fatura não cresce além da página do PDF; sem Detalhes, ela ocupa o espaço.','Dentro de Detalhes, cards em 2/3/4 colunas pela largura do painel (container query: conteúdo ≥ 900 → 3, ≥ 1200 → 4).','Abaixo de 768 px vira uma tela por vez (tab bar mobile).'],
  init(r){
-  const cv=$('.canvas',r), PRI=['det','pdf','act'], MINW={det:520,pdf:400,act:284}, NM={pdf:'Fatura',det:'Detalhes',act:'Atividade'}, IC={pdf:'picture_as_pdf',det:'description',act:'history'}, SPEC={pdf:'686 · mín. 400',det:'resto · mín. 520',act:'284 fixo'};
+  const cv=$('.canvas',r), PRI=['det','pdf','act'], MINW={det:520,pdf:400,act:284}, NM={pdf:'Fatura',det:'Detalhes',act:'Atividade'}, IC={pdf:'picture_as_pdf',det:'description',act:'history'}, SPEC={pdf:'686 · min 400',det:'fill · min 520',act:'284 fixed'};
   const S={open:{pdf:true,det:true,act:true},W:1440,vis:[]};
-  cv.innerHTML=`<div class="cx" style="width:100%"><div data-box style="position:relative;overflow:hidden"><div data-sc style="transform-origin:0 0"><div class="cols" style="height:300px">
+  cv.innerHTML=`<div class="cx" style="width:100%"><div data-box style="position:relative;overflow:hidden;background:#fff;border-radius:16px;box-shadow:0 0 40px rgba(0,0,0,.04)"><div data-sc style="transform-origin:0 0"><div class="cols" style="height:300px">
     ${['pdf','det','act'].map(k=>`<div class="panel p-${k}" data-p="${k}"><div style="margin:auto;text-align:center;white-space:nowrap;display:flex;flex-direction:column;gap:4px"><b style="font-size:20px">${NM[k]}</b><span style="color:var(--mid);font-size:16px">${SPEC[k]}</span><span data-wd style="font-size:16px;font-weight:600"></span></div></div>`).join('')}
     <div class="cols-empty" hidden>${MS('view_column')}<b>Nenhum painel aberto</b><span>Abra um painel pela barra abaixo ou volte à visualização padrão.</span><button class="btn primary" data-reset>Voltar ao padrão</button></div>
   </div></div></div>
@@ -191,8 +191,8 @@ comp({id:'paineis', grp:'Navegação', t:'Painéis por prioridade', iss:'COG-287
   const box=$('[data-box]',cv), sc=$('[data-sc]',cv), cols=$('.cols',cv);
   const fits=set=>set.reduce((w,k)=>w+MINW[k],0)+24*Math.max(0,set.length-1) <= cols.clientWidth;
   const visibleSet=()=>{ const v=[]; PRI.forEach(k=>{ if(S.open[k] && fits([...v,k])) v.push(k); }); return v; };
-  const scale=()=>{ const k=Math.min(1, box.clientWidth/S.W); sc.style.width=S.W+'px'; sc.style.transform=`scale(${k})`; box.style.height=300*k+'px'; return k; };
-  const widths=()=>$$('.panel',cv).forEach(p=>{ p.querySelector('[data-wd]').textContent = p.classList.contains('min')?'':Math.round(p.offsetWidth)+' px agora'; });
+  const scale=()=>{ const k=Math.min(1, box.parentElement.clientWidth/S.W); sc.style.width=S.W+'px'; sc.style.transform=`scale(${k})`; box.style.width=S.W*k+'px'; box.style.margin='0 auto'; box.style.height=300*k+'px'; return k; }; // o fundo branco acompanha a largura escolhida
+  const widths=()=>$$('.panel',cv).forEach(p=>{ p.querySelector('[data-wd]').textContent = p.classList.contains('min')?'':Math.round(p.offsetWidth)+' px now'; });
   const render=(first)=>{ scale(); const prev=S.vis; S.vis=visibleSet();
     PRI.forEach(k=>{ const p=$(`[data-p=${k}]`,cv), is=S.vis.includes(k), was=prev.includes(k); p.classList.toggle('min',!is); if(!first && is && !was) anim(p,'opening',450);
       const b=$(`.tb[data-toggle=${k}]`,cv); b.classList.toggle('on',is); if(!first && is!==was) anim(b,is?'opening':'closing'); });
@@ -202,10 +202,10 @@ comp({id:'paineis', grp:'Navegação', t:'Painéis por prioridade', iss:'COG-287
     if(S.vis.includes(k)) S.open[k]=false;
     else { S.open[k]=true; for(const o of [...PRI].reverse().filter(x=>x!==k)){ if(visibleSet().includes(k)) break; S.open[o]=false; } }
     render(); const closed=before.filter(x=>x!==k && !S.vis.includes(x)).map(x=>NM[x]);
-    log(r, S.vis.includes(k)?`${NM[k]} <b>aberto</b>${closed.length?` · fechou ${closed.join(' e ')} para caber`:''}`:`${NM[k]} <b>fechado</b>`); });
-  $('[data-reset]',cv).onclick=()=>{ S.open={pdf:true,det:true,act:true}; render(); log(r,'<b>Voltar ao padrão</b>'); };
-  const w=$('[data-w]',r); w.oninput=()=>{ S.W=+w.value; $('[data-wv]',r).textContent=S.W+' px'; render(); const out=['pdf','det','act'].filter(k=>S.open[k]&&!S.vis.includes(k)).map(k=>NM[k]); log(r, out.length?`Não cabe: <b>${out.join(' e ')}</b> (continua marcado como aberto e volta quando couber)`:'Todos os painéis abertos cabem'); };
-  new ResizeObserver(()=>{ scale(); }).observe(box);
+    log(r, S.vis.includes(k)?`${NM[k]} <b>opened</b>${closed.length?` · closed ${closed.join(' and ')} to fit`:''}`:`${NM[k]} <b>closed</b>`); });
+  $('[data-reset]',cv).onclick=()=>{ S.open={pdf:true,det:true,act:true}; render(); log(r,'<b>Reset to default</b>'); };
+  const w=$('[data-w]',r); w.oninput=()=>{ S.W=+w.value; $('[data-wv]',r).textContent=S.W+' px'; render(); const out=['pdf','det','act'].filter(k=>S.open[k]&&!S.vis.includes(k)).map(k=>NM[k]); log(r, out.length?`Doesn't fit: <b>${out.join(' and ')}</b> (stays open, returns when it fits)`:'All open panels fit'); };
+  new ResizeObserver(()=>{ scale(); }).observe(box.parentElement);
   r._reset=()=>{ S.open={pdf:true,det:true,act:true}; S.W=1440; w.value=1440; $('[data-wv]',r).textContent='1440 px'; render(); };
   render(true); }});
 
@@ -222,10 +222,10 @@ comp({id:'card', grp:'Dados', t:'Card de dado', lib:'Data Card', iss:'COG-289',
     cv.innerHTML=`<div class="cx ${S.size==='mob'?'mob':''}" style="width:${S.size==='mob'?'345px':'760px'}"><div class="grid g2 ${S.st==='ro'?'ro':''}">
       ${cardHTML('Consumo fora ponta','5.960','kWh',o)}${cardHTML('Total a pagar','4.440,13','R$',o)}
       ${cardHTML('COFINS (alíquota)','','%',{...o,pend:S.st==='ro'?{...S.p,done:S.p.done||'3,38'}:S.p})}${cardHTML('Vencimento','25/03/2025','',o)}</div></div>`;
-    bindCards(cv,(t,old,nv)=>{ if(t==='copy') return log(r,`Copiado só o valor: <b>${old}</b>`); log(r, nv?`<b>${t}</b>: ${old} → ${nv}`:`<b>${t}</b>: edição fechada sem mudança`); }, (c,k)=>log(r,`Editando <b>${c.dataset.edit}</b> · máscara <code>${k}</code> · mesma altura: ${c.offsetHeight} px`));
+    bindCards(cv,(t,old,nv)=>{ if(t==='copy') return log(r,`Copied value only: <b>${old}</b>`); log(r, nv?`<b>${t}</b>: ${old} → ${nv}`:`<b>${t}</b>: closed, no change`); }, (c,k)=>log(r,`Editing <b>${c.dataset.edit}</b> · mask <code>${k}</code> · same height: ${c.offsetHeight} px`));
     const p=S.p, f=$(`#cd-in-${p.id}`,cv); if(!f) return;
     attachMask(f,f.dataset.mask);
-    const go=()=>{ const v=f.value.trim(); if(!v){ f.focus(); return; } if(invalid(f,f.dataset.mask)) return; p.done=fmt(p,v); toast(`${p.label}: ${p.done}`); draw(); flash($('#cd-c-'+p.id,cv),900); log(r,`Pendência resolvida: <b>${p.done} %</b> → Corrigido`); };
+    const go=()=>{ const v=f.value.trim(); if(!v){ f.focus(); return; } if(invalid(f,f.dataset.mask)) return; p.done=fmt(p,v); toast(`${p.label}: ${p.done}`); draw(); flash($('#cd-c-'+p.id,cv),900); log(r,`Resolved: <b>${p.done} %</b> → corrected`); };
     f.onkeydown=e=>{ if(e.key==='Enter'&&f.value.trim()) go(); };
     $(`[data-psave="${p.id}"]`,cv).onclick=go;
     $(`[data-pclear="${p.id}"]`,cv).onclick=()=>{ f.value=''; f.focus(); };
@@ -246,7 +246,7 @@ comp({id:'mascaras', grp:'Dados', t:'Campos com máscara', iss:'COG-289',
       ${cardHTML('Vencimento','25/03/2025','',o)}${cardHTML('CNPJ','12.345.678/0001-90','',o)}${cardHTML('CEP','32400-000','',o)}
       ${cardHTML('Nº da instalação','3014567890','',o)}${cardHTML('Constante','1','',o)}${cardHTML('Demanda','75','kW',o)}
       ${cardHTML('Código de barras','83610000044-2 40130138004-3 11989574712-4 30145678901-7','',{...o,cls:'full'})}</div></div>`;
-    bindCards(cv,(t,old,nv)=>{ if(t==='copy') return; log(r, nv?`<b>${t}</b> salvo: ${nv}`:`<b>${t}</b>: fechado sem mudança`); }, (c,k)=>log(r,`<b>${c.dataset.edit}</b> · máscara <code>${k}</code>`)); };
+    bindCards(cv,(t,old,nv)=>{ if(t==='copy') return; log(r, nv?`<b>${t}</b> saved: ${nv}`:`<b>${t}</b>: closed, no change`); }, (c,k)=>log(r,`<b>${c.dataset.edit}</b> · mask <code>${k}</code>`)); };
   r._reset=draw; draw(); }});
 
 /* ===== 5. Planilha de itens ===== */
@@ -291,7 +291,7 @@ comp({id:'planilha', grp:'Dados', t:'Planilha de itens e soma', iss:'COG-290',
     td.classList.add('ed'); td.innerHTML=`<span class="ghost" aria-hidden="true">${td.innerHTML}</span><input size="1">`; const inp=td.querySelector('input'); inp.value=old==='—'?'':old;
     const p=td.dataset.pend && S.pend.find(x=>x.id===td.dataset.pend); if(p){ inp.value=''; inp.placeholder=p.ph||''; if(p.why) inp.dataset.sug='1'; }
     const gh=td.querySelector('.ghost'), nat=gh.getBoundingClientRect().width; gh.style.minWidth=nat+'px';
-    const grow=()=>{ const cs=getComputedStyle(inp); _cv.font=`${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`; const need=Math.ceil(Math.max(_cv.measureText(inp.value).width,_cv.measureText(inp.placeholder).width))+4; gh.style.minWidth=(need>w0?need:nat)+'px'; if(need>w0) log(r,`A coluna cresce <b>${Math.round(w0)} → ${need} px</b> (animado) para caber ${inp.value?'o valor':'a sugestão'}`); };
+    const grow=()=>{ const cs=getComputedStyle(inp); _cv.font=`${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`; const need=Math.ceil(Math.max(_cv.measureText(inp.value).width,_cv.measureText(inp.placeholder).width))+4; gh.style.minWidth=(need>w0?need:nat)+'px'; if(need>w0) log(r,`Column grows <b>${Math.round(w0)} → ${need} px</b> (animated) to fit the ${inp.value?'value':'suggestion'}`); };
     requestAnimationFrame(grow); inp.addEventListener('input',grow);
     inp.setAttribute('aria-label',`${S.items[ri][0]} · ${COLS[c-2]}`); inp.focus(); inp.select();
     attachMask(inp,kind,{signed:c!==3&&c!==4});
@@ -299,10 +299,10 @@ comp({id:'planilha', grp:'Dados', t:'Planilha de itens e soma', iss:'COG-290',
       if(save && nv && (p || nv!==old) && invalid(inp,kind)) return;
       td.classList.remove('ed','err');
       if(p){ if(save&&nv){ p.done=nv; S.items[ri][c]=nv; S.chg[ri+'-'+c]=1; const bad=checkSum(ri,c); if(!bad) toast(`${p.label}: ${nv}`);
-          draw([ri,c]); log(r,bad?`Ainda não fecha → <b>nova pendência</b>, sugestão R$ ${open().slice(-1)[0].ph}`:`Pendência resolvida: <b>${nv}</b>`); }
+          draw([ri,c]); log(r,bad?`Still off → <b>new pending</b>, suggestion R$ ${open().slice(-1)[0].ph}`:`Resolved: <b>${nv}</b>`); }
         else { td.innerHTML=`<span class="pw">${I.warn}</span>`; select(td); } return; }
       if(save && nv && nv!==old){ S.items[ri][c]=nv; S.chg[ri+'-'+c]=1; const bad=checkSum(ri,c); if(!bad) toast(`${S.items[ri][0]} atualizado`);
-        draw([ri,c]); log(r,bad?`Soma não fecha → <b>pendência</b> na célula, sugestão R$ ${open().slice(-1)[0].ph}`:`<b>${S.items[ri][0]}</b> · ${COLS[c-2]}: ${old} → ${nv}`); return; }
+        draw([ri,c]); log(r,bad?`Sum is off → cell becomes <b>pending</b>, suggestion R$ ${open().slice(-1)[0].ph}`:`<b>${S.items[ri][0]}</b> · ${COLS[c-2]}: ${old} → ${nv}`); return; }
       td.innerHTML=cellHTML(ri,c); select(td); };
     inp.onkeydown=e=>{ if(e.key==='Enter'){ e.preventDefault(); done(true); } if(e.key==='Escape'){ e.preventDefault(); done(false); } e.stopPropagation(); };
     inp.onblur=()=>{ if(td.classList.contains('ed')) done(true); };
@@ -313,7 +313,7 @@ comp({id:'planilha', grp:'Dados', t:'Planilha de itens e soma', iss:'COG-290',
     td.onkeydown=e=>{ const ri=+td.dataset.r, c=+td.dataset.c, mv={ArrowUp:[ri-1,c],ArrowDown:[ri+1,c],ArrowLeft:[ri,c-1],ArrowRight:[ri,c+1]}[e.key];
       if(mv){ const n=at(...mv); if(n){ e.preventDefault(); select(n); } } else if(e.key==='Enter'||e.key==='F2'){ e.preventDefault(); edit(td); } }; });
   onSeg(r,(n,v)=>{ S[n]=v; draw(); log(r,''); });
-  $('[data-err]',r).onclick=()=>{ S.items[6][7]='2.400,00'; S.chg['6-7']=1; checkSum(6,7); draw([6,7]); log(r,'Demanda = 2.400,00 → a soma não fecha. Dê duplo clique (ou Enter) na célula laranja.'); };
+  $('[data-err]',r).onclick=()=>{ S.items[6][7]='2.400,00'; S.chg['6-7']=1; checkSum(6,7); draw([6,7]); log(r,'Demanda = 2.400,00 → sum is off. Double-click (or Enter) the orange cell.'); };
   r._reset=()=>{ reset(); segSet(r,'size','desk'); draw(); };
   reset(); draw(); }});
 
@@ -331,7 +331,7 @@ comp({id:'pendencias', grp:'Revisão', t:'Pendências', iss:'COG-291',
     {id:'mod',title:'Modalidade tarifária',label:'Modalidade tarifária',kind:'Seleção',ph:'Selecione',options:['Convencional','Horária verde','Horária azul','Branca'],done:null}]}; };
   const open=()=>S.pend.filter(p=>!p.done);
   const resolve=(p,v,f)=>{ if(p.kind!=='Seleção' && f && invalid(f,f.dataset.mask)) return; p.done=fmt(p,v); toast(`${p.label}: ${p.done}`); draw(); flash($('#pd-c-'+p.id,cv),900);
-    log(r, open().length?`<b>${p.label}</b> = ${p.done} · faltam ${open().length}`:'<b>Sem pendências</b>: o card some e Faturar entra na tab bar'); };
+    log(r, open().length?`<b>${p.label}</b> = ${p.done} · ${open().length} left`:'<b>All resolved</b>: card hides, Faturar appears'); };
   const focusPend=p=>{ const c=$('#pd-c-'+p.id,cv); if(!c) return; c.scrollIntoView({behavior:'smooth',block:'nearest'}); flash(c); log(r,`Ver no Campo: <b>${p.title}</b>`); };
   const cards=()=>`<div class="grid g2" style="width:${S.size==='mob'?'100%':'560px'}">${S.pend.map(p=>cardHTML(p.title,'',p.unit||'',{uid:'pd',pend:p})).join('')}${cardHTML('Total a pagar','4.440,13','R$',{uid:'pd'})}</div>`;
   const tabbar=()=>{ const n=open().length; return `<nav class="tabbar" aria-label="Painéis"><span class="tb-main"><button class="tb" data-toggle="pdf"><span class="ic">${MS('picture_as_pdf',26,1)}</span><span>Fatura</span></button><button class="tb on" data-toggle="det"><span class="ic">${MS('description',26,1)}</span><span>Detalhes</span></button><button class="tb" data-toggle="act"><span class="ic">${MS('history',26,1)}</span><span>Atividade</span></button></span>
@@ -367,16 +367,16 @@ comp({id:'pendencias', grp:'Revisão', t:'Pendências', iss:'COG-291',
       ok.onclick=()=>resolve(p,f.value.trim(),f);
       $('[data-prev]',cv).onclick=()=>{ S.i--; draw(); }; $('[data-next]',cv).onclick=()=>{ S.i++; draw(); };
       $('[data-go]',cv).onclick=()=>focusPend(p); }
-    const gid=$('[data-goid]',cv); if(gid) gid.onclick=()=>log(r,'Leva ao bloco da UC e põe o foco no campo');
-    const mn=$('[data-min]',cv); if(mn) mn.onclick=()=>{ S.open=false; $('.pend-card',cv).classList.add('hide'); $('[data-pend]',cv).classList.remove('on'); anim($('[data-pend]',cv),'closing'); log(r,'Card <b>minimizado</b>; reabre pelo botão Pendências'); };
-    const tp=$('[data-pend]',cv); if(tp) tp.onclick=()=>{ if(S.size==='mob'){ anim(tp,'opening'); log(r,'Mobile: abre a <b>tela de pendências</b>'); return; } S.open=!S.open; $('.pend-card',cv)?.classList.toggle('hide',!S.open); tp.classList.toggle('on',S.open); anim(tp,S.open?'opening':'closing'); log(r,`Card de pendências <b>${S.open?'aberto':'fechado'}</b>`); };
-    const sd=$('.tb-send',cv); if(sd) sd.onclick=()=>log(r,'Faturar: veja o comportamento completo na <b>Tab bar</b>');
+    const gid=$('[data-goid]',cv); if(gid) gid.onclick=()=>log(r,'Goes to the UC block and focuses the field');
+    const mn=$('[data-min]',cv); if(mn) mn.onclick=()=>{ S.open=false; $('.pend-card',cv).classList.add('hide'); $('[data-pend]',cv).classList.remove('on'); anim($('[data-pend]',cv),'closing'); log(r,'Card <b>minimized</b>; reopen via Pendências'); };
+    const tp=$('[data-pend]',cv); if(tp) tp.onclick=()=>{ if(S.size==='mob'){ anim(tp,'opening'); log(r,'Mobile: opens the <b>pending screen</b>'); return; } S.open=!S.open; $('.pend-card',cv)?.classList.toggle('hide',!S.open); tp.classList.toggle('on',S.open); anim(tp,S.open?'opening':'closing'); log(r,`Pending card <b>${S.open?'open':'closed'}</b>`); };
+    const sd=$('.tb-send',cv); if(sd) sd.onclick=()=>log(r,'Faturar: see <b>Tab bar</b>');
     // lista (mobile)
     list.forEach(x=>{ const ff=$('#pd-pl-'+x.id,cv); if(!ff) return; const okb=$(`[data-plok="${x.id}"]`,cv); if(ff.dataset.mask) attachMask(ff,ff.dataset.mask);
       const upd=()=>{ okb.disabled=!ff.value.trim(); }; ff.addEventListener('input',upd); ff.addEventListener('change',upd);
       ff.addEventListener('keydown',e=>{ if(e.key==='Enter'&&ff.value.trim()) resolve(x,ff.value.trim(),ff); });
       okb.onclick=()=>resolve(x,ff.value.trim(),ff);
-      $(`[data-plgo="${x.id}"]`,cv).onclick=()=>log(r,`Mobile · Ver no Campo: vai para a aba do dado (<b>${x.title}</b>) e pisca o card`); }); };
+      $(`[data-plgo="${x.id}"]`,cv).onclick=()=>log(r,`Mobile · Ver no Campo: opens the field's tab (<b>${x.title}</b>) and flashes it`); }); };
   onSeg(r,(n,v)=>{ S[n]=v; draw(); log(r,''); });
   r._reset=()=>{ reset(); segSet(r,'size','desk'); segSet(r,'uc','ok'); draw(); };
   reset(); draw(); }});
@@ -410,7 +410,7 @@ comp({id:'marcador', grp:'Revisão', t:'Marcador de pendência fora da área', i
       $$('.offi',layer).forEach(b=>b.onclick=()=>{ const o=items[+b.dataset.i], el=o.el, s=sc.getBoundingClientRect(), e=el.getBoundingClientRect();
         sc.scrollBy({top:e.top-(s.top+s.height/2-e.height/2),behavior:'smooth'});
         const gg=el.closest('.grade'); if(gg){ const gr=gg.getBoundingClientRect(); gg.scrollBy({left:e.left-(gr.left+gr.width/2-e.width/2),behavior:'smooth'}); }
-        setTimeout(()=>flash(el),250); log(r,`Rolou até a pendência (<b>${el.dataset.pid==='icms'?'ICMS · Demanda':'COFINS'}</b>)`); }); };
+        setTimeout(()=>flash(el),250); log(r,`Scrolled to <b>${el.dataset.pid==='icms'?'ICMS · Demanda':'COFINS'}</b>`); }); };
     sc.addEventListener('scroll',up); g.addEventListener('scroll',up); new ResizeObserver(up).observe(sc); up(); };
   r._reset=draw; draw(); }});
 
@@ -430,7 +430,7 @@ comp({id:'atividade', grp:'Revisão', t:'Atividade', iss:'COG-292',
     if(k==='edit') A.unshift(['Total a pagar editado','edit',now(),true,ME,{from:'R$ 4.400,13',to:'R$ 4.440,13'}]);
     if(k==='pend') A.unshift(['COFINS corrigido','edit',now(),true,ME,{from:'',to:'3,38 %'}]);
     if(k==='sys') A.unshift(['Sem pendências','ok',now(),true]);
-    draw(); log(r,'Evento novo no topo'); });
+    draw(); log(r,'New event on top'); });
   r._reset=()=>{ reset(); draw(); }; reset(); draw(); }});
 
 /* ===== 9. Validar UC ===== */
@@ -443,16 +443,16 @@ comp({id:'identidade', grp:'Fatura', t:'Validar UC', lib:'Card Header md · Comb
   const set=v=>{ S={read:v==='nf'?null:'3014567890',uc:v==='nf'?'':v==='bad'?'3014002210':'3014567890',ok:v==='ok',sent:v==='sent'?{at:'07/10/2026 às 14:32'}:null}; draw(); };
   const draw=()=>{ cv.innerHTML=`<div class="cx" style="width:680px;max-width:100%"><div class="panel p-det" data-w style="background:none;gap:16px;min-width:0;${min?'display:none':''}"><div data-id></div>
       <div style="background:var(--s100);border-radius:16px;padding:16px;${S.ok||S.sent?'':'opacity:.45;pointer-events:none;user-select:none'}"><div class="sec-t" style="margin:0 0 12px">Créditos</div><div class="grid g2">${cardHTML('Crédito compensado','4.100','kWh',{uid:'id2'})}${cardHTML('Crédito abatido','1.837,46','R$',{uid:'id2'})}</div></div></div>
-      ${min?`<div style="text-align:center;color:var(--mid);padding:24px">Detalhes minimizado: a UC sai junto.</div>`:''}</div>`;
+      ${min?`<div style="text-align:center;color:var(--mid);padding:24px">Details minimized: the UC block hides too.</div>`:''}</div>`;
     if(min) return;
     Identity.mount($('[data-id]',cv),S,ev=>{ const u=Identity.UCS.find(x=>x.uc===S.uc); draw();
-      if(ev==='escolher') log(r,u&&u.dist!==Identity.INV.dist?`<b>Não confere</b>: ${Identity.label(S.uc)} é de outra distribuidora`:`Escolhida: <b>${Identity.label(S.uc)}</b> · Validar habilitado`);
-      if(ev==='validar') log(r,'<b>Validada</b>: dados liberados');
-      if(ev==='alterar') log(r,'Alterar: dados <b>travados</b> de novo'); });
+      if(ev==='escolher') log(r,u&&u.dist!==Identity.INV.dist?`<b>Mismatch</b>: ${Identity.label(S.uc)} is another utility`:`Picked <b>${Identity.label(S.uc)}</b> · Validate enabled`);
+      if(ev==='validar') log(r,'<b>Validated</b>: data unlocked');
+      if(ev==='alterar') log(r,'Change: data <b>locked</b> again'); });
     bindCards(cv,()=>{}); };
   onSeg(r,(n,v)=>{ set(v); log(r,''); });
-  $('[data-min]',r).onclick=e=>{ min=!min; e.target.textContent=min?'Abrir Detalhes':'Minimizar Detalhes'; draw(); log(r,min?'Detalhes <b>minimizado</b>: o bloco da UC some junto':'Detalhes <b>aberto</b>: o bloco volta'); };
-  r._reset=()=>{ min=false; $('[data-min]',r).textContent='Minimizar Detalhes'; segSet(r,'st','auto'); set('auto'); };
+  $('[data-min]',r).onclick=e=>{ min=!min; e.target.textContent=min?'Open Details':'Minimize Details'; draw(); log(r,min?'Details <b>minimized</b>: UC block hides too':'Details <b>open</b>: block back'); };
+  r._reset=()=>{ min=false; $('[data-min]',r).textContent='Minimize Details'; segSet(r,'st','auto'); set('auto'); };
   set('auto'); }});
 
 /* ===== 10. Extrair novamente ===== */
@@ -472,7 +472,7 @@ comp({id:'extrair', grp:'Fatura', t:'Extrair novamente', lib:'Button · Alert Di
     const close=()=>{ ov.remove(); ($('[data-re]',cv)||prev)?.focus?.(); }; // foco volta ao botão (no Safari o clique não foca)
     $('[data-x]',ov).onclick=close; o.onclick=e=>{ if(e.target===o) close(); };
     o.onkeydown=e=>{ if(e.key==='Escape') close(); if(e.key==='Tab'){ const f=$$('button',o), i=f.indexOf(document.activeElement); e.preventDefault(); f[(i+(e.shiftKey?-1:1)+f.length)%f.length].focus(); } };
-    $('[data-y]',ov).onclick=()=>{ close(); S.n--; segSet(r,'n',String(S.n)); toast('Fatura enviada para nova leitura'); draw(); log(r,`Tentativa usada · restam <b>${S.n}</b>${S.n?'':' (botão desabilitado)'}`); };
+    $('[data-y]',ov).onclick=()=>{ close(); S.n--; segSet(r,'n',String(S.n)); toast('Fatura enviada para nova leitura'); draw(); log(r,`Attempt used · <b>${S.n}</b> left${S.n?'':' (button disabled)'}`); };
     $('[data-x]',ov).focus(); };
   onSeg(r,(k,v)=>{ S[k]=k==='n'?+v:v; draw(); log(r,''); });
   r._reset=()=>{ S={n:2,st:'rev'}; segSet(r,'n','2'); segSet(r,'st','rev'); draw(); };
@@ -498,12 +498,12 @@ comp({id:'mobile', grp:'Mobile', t:'Header e barra ao rolar', lib:'Header Size=M
       <div class="m-ov" hidden><div class="m-sheet" role="dialog" aria-modal="true" aria-labelledby="mbT"><div class="m-nav"><button class="m-nb" data-back aria-label="Voltar" hidden><span class="msr fill" aria-hidden="true">chevron_left</span></button><b id="mbT">Padaria Estrela do Sul Ltda</b><button class="m-nb" data-close aria-label="Fechar"><span class="msr" aria-hidden="true">close</span></button></div><div class="m-body"></div></div></div></div></div>`;
     const ph=$('[data-ph]',cv), head=$('[data-head]',cv), tb=$('[data-tb]',cv), sc=$('[data-sc]',cv), ov=$('.m-ov',cv); let last=0, trig=null, view=null;
     const setChrome=show=>{ head.style.marginTop=show?'':`-${head.offsetHeight}px`; tb.style.transform=show?'translateX(-50%)':'translate(-50%, calc(100% + 40px))'; };
-    sc.addEventListener('scroll',()=>{ const t=sc.scrollTop, d=t-last; last=t; if(Math.abs(d)<4) return; if(t<8){ setChrome(true); log(r,'Topo: header e barra <b>voltam</b>'); return; } setChrome(d<0); log(r,d<0?'Rolou para cima: <b>voltam</b>':'Rolou para baixo: header <b>sobe</b> e barra <b>desce</b>'); });
-    $$('[data-scr]',cv).forEach(b=>b.onclick=()=>{ $$('[data-scr]',cv).forEach(x=>x.classList.toggle('on',x===b)); anim(b,'opening'); setChrome(true); log(r,'Trocou de tela: header e barra <b>voltam</b>'); });
+    sc.addEventListener('scroll',()=>{ const t=sc.scrollTop, d=t-last; last=t; if(Math.abs(d)<4) return; if(t<8){ setChrome(true); log(r,'Top: header and bar <b>back</b>'); return; } setChrome(d<0); log(r,d<0?'Scroll up: <b>back</b>':'Scroll down: header <b>up</b>, bar <b>down</b>'); });
+    $$('[data-scr]',cv).forEach(b=>b.onclick=()=>{ $$('[data-scr]',cv).forEach(x=>x.classList.toggle('on',x===b)); anim(b,'opening'); setChrome(true); log(r,'Screen changed: header and bar <b>back</b>'); });
     const show=v=>{ view=v; $('#mbT',cv).textContent=v==='act'?'Atividade':'Padaria Estrela do Sul Ltda'; $('[data-back]',cv).hidden=v!=='act'; const b=$('.m-body',cv); b.innerHTML=v==='act'?actHTML():infoHTML(); b.scrollTop=0;
-      if(v==='info'){ $('[data-hist]',cv).onclick=()=>{ show('act'); log(r,'Histórico: <b>Atividade</b> dentro do painel'); }; $$('.m-go',cv).forEach(g=>g.onclick=()=>toast('Abre o cadastro (fora do escopo)')); } };
-    const close=()=>{ ov.hidden=true; view=null; trig?.focus(); log(r,'Painel <b>fechado</b>; foco volta ao badge'); };
-    $$('[data-info]',cv).forEach(b=>b.onclick=()=>{ trig=b; ov.hidden=false; show('info'); $('[data-close]',cv).focus(); log(r,'Painel do header <b>aberto</b>'); });
+      if(v==='info'){ $('[data-hist]',cv).onclick=()=>{ show('act'); log(r,'History: <b>Activity</b> inside the sheet'); }; $$('.m-go',cv).forEach(g=>g.onclick=()=>toast('Opens the registry (out of scope)')); } };
+    const close=()=>{ ov.hidden=true; view=null; trig?.focus(); log(r,'Sheet <b>closed</b>; focus back to badge'); };
+    $$('[data-info]',cv).forEach(b=>b.onclick=()=>{ trig=b; ov.hidden=false; show('info'); $('[data-close]',cv).focus(); log(r,'Header sheet <b>opened</b>'); });
     $('[data-back]',cv).onclick=()=>show('info'); $('[data-close]',cv).onclick=close;
     ov.addEventListener('click',e=>{ if(e.target===ov) close(); });
     ph.addEventListener('keydown',e=>{ if(e.key==='Escape'&&!ov.hidden){ if(view==='act') show('info'); else close(); } });
@@ -532,12 +532,12 @@ comp({id:'filtro', grp:'Listagem', t:'Busca e filtros', lib:'Filter · Command B
       <div class="dd fp" hidden role="dialog"><div class="sec"><label class="fsearch"><span class="msr">search</span><input data-fq autocomplete="off" aria-label="Pesquisar opções"></label><div class="fopts" role="group"></div><button type="button" class="btn out sm fclr">Limpar seleção</button></div></div></div>`;
     const W=$('.cx',cv);
     $('[data-q]',cv).oninput=e=>{ S.q=e.target.value; };
-    $('[data-funnel]',cv).onclick=()=>{ S.showF=!S.showF; S.fOpen=null; draw(); $('[data-funnel]',cv).focus(); log(r,S.showF?'Filtros <b>visíveis</b>':`Filtros <b>escondidos</b>${active()?` · funil mostra ${active()} ativo(s)`:''}`); };
-    const ca=$('[data-clearall]',cv); if(ca) ca.onclick=()=>{ reset(); S.showF=true; draw(); log(r,'<b>Limpar todos</b>'); };
+    $('[data-funnel]',cv).onclick=()=>{ S.showF=!S.showF; S.fOpen=null; draw(); $('[data-funnel]',cv).focus(); log(r,S.showF?'Filters <b>shown</b>':`Filters <b>hidden</b>${active()?` · funnel shows ${active()} active`:''}`); };
+    const ca=$('[data-clearall]',cv); if(ca) ca.onclick=()=>{ reset(); S.showF=true; draw(); log(r,'<b>Clear all</b>'); };
     $$('[data-fk]',cv).forEach(b=>b.onclick=e=>{ e.stopPropagation(); const was=S.fOpen===b.dataset.fk; S.fOpen=was?null:b.dataset.fk; draw(); if(!was) r._open(); });
     const dd=$('.dd',cv);
     dd.onclick=e=>{ e.stopPropagation(); const f=FDEF.find(x=>x.k===S.fOpen); if(!f) return;
-      if(e.target.closest('.fclr')){ if(f.date) S.dt='Qualquer data'; else S.F[f.k]=[]; log(r,`${f.label}: <b>${f.all||'Qualquer data'}</b>`); }
+      if(e.target.closest('.fclr')){ if(f.date) S.dt='Qualquer data'; else S.F[f.k]=[]; log(r,`${f.label}: <b>${f.all||'Qualquer data'}</b> (cleared)`); }
       else { const o=e.target.closest('[data-fv]'); if(!o) return; const v=o.dataset.fv; if(f.date) S.dt=v; else S.F[f.k]=S.F[f.k].includes(v)?S.F[f.k].filter(x=>x!==v):[...S.F[f.k],v]; log(r,`${f.label}: <b>${f.date?S.dt:(S.F[f.k].join(', ')||f.all)}</b>`); }
       if(f.date){ S.fOpen=null; draw(); $(`[data-fk="${f.k}"]`,cv)?.focus(); } else { const q=$('[data-fq]',cv).value; draw(); r._open(q); } };
     dd.onkeydown=e=>{ if(e.key==='Escape'){ const k=S.fOpen; S.fOpen=null; draw(); $(`[data-fk="${k}"]`,cv)?.focus(); } };
@@ -569,8 +569,8 @@ comp({id:'upload', grp:'Listagem', t:'Nova fatura (envio)', lib:'File Upload Ite
       const it={id:++NF.seq,name:f.name,bytes:f.size,size:fmtMB(f.size),icon:img?'image':'picture_as_pdf',state:'ready',pct:0,err:''};
       if(!okType){ it.state='err'; it.err='Formato não aceito. Envie PDF, JPG, PNG ou WebP.'; } else if(f.size===0){ it.state='err'; it.size='0 KB'; it.err='Arquivo vazio. Escolha o arquivo de novo.'; } else if(f.size>MAXB){ it.state='err'; it.err='Maior que 20 MB. Diminua o arquivo ou tire uma foto da fatura.'; }
       NF.files.push(it); }
-    if(extra){ toast(`Limite de ${MAXF} arquivos por envio. ${extra} ${extra>1?'ficaram':'ficou'} de fora.`); log(r,`<b>${extra}</b> ficaram de fora (limite de 20)`); }
-    else if(dup.length){ toast(dup.length>1?`${dup.length} arquivos já estavam na lista.`:`${dup[0]} já está na lista.`); log(r,'Repetido: <b>não entra</b> na lista'); }
+    if(extra){ toast(`Limite de ${MAXF} arquivos por envio. ${extra} ${extra>1?'ficaram':'ficou'} de fora.`); log(r,`<b>${extra}</b> left out (limit 20)`); }
+    else if(dup.length){ toast(dup.length>1?`${dup.length} arquivos já estavam na lista.`:`${dup[0]} já está na lista.`); log(r,'Duplicate: <b>not added</b>'); }
     render(); };
   const fileHTML=f=>{ const err=f.state==='err', up=f.state==='up', done=f.state==='done';
     const tx=up?`<div class="l1"><span class="nm">${esc(f.name)}</span><span class="sz">· ${f.size}</span><span class="pc">${f.pct}%</span></div><div class="trk"><i style="width:${f.pct}%"></i></div>`
@@ -584,16 +584,16 @@ comp({id:'upload', grp:'Listagem', t:'Nova fatura (envio)', lib:'File Upload Ite
     const label=NF.sending?`<span class="msr spin">progress_activity</span>Enviando…`:n?`Enviar ${n} fatura${n>1?'s':''}`:'Enviar';
     cv.innerHTML=`<div class="cx lst"><div class="dlg nf" data-nf><div class="dh"><h2>Nova fatura</h2><p>Envie a fatura em PDF ou imagem. A leitura dos dados começa assim que o envio termina.</p></div><div class="db">${list}${more}</div><div class="df"><button type="button" class="btn out" data-cancel ${NF.sending?'disabled':''}>Cancelar</button><button type="button" class="btn pri" data-send ${n&&!NF.sending?'':'disabled'}>${label}</button></div><button type="button" class="ibtn x" aria-label="Fechar" data-cancel><span class="mss">close</span></button></div><input type="file" multiple hidden data-input accept="application/pdf,image/jpeg,image/png,image/webp,.pdf,.jpg,.jpeg,.png,.webp"></div>`;
     const inp=$('[data-input]',cv); $$('[data-pick]',cv).forEach(b=>b.onclick=()=>inp.click()); inp.onchange=e=>{ if(e.target.files.length) addFiles(e.target.files); e.target.value=''; };
-    $$('[data-rm]',cv).forEach(b=>b.onclick=()=>{ NF.files=NF.files.filter(f=>f.id!==+b.dataset.rm); render(); log(r,'Removido da lista'); });
-    $$('[data-cancel]',cv).forEach(b=>b.onclick=()=>{ if(NF.sending){ toast('Aguarde o envio terminar.'); return; } reset(); render(); log(r,'Cancelado: lista limpa'); });
+    $$('[data-rm]',cv).forEach(b=>b.onclick=()=>{ NF.files=NF.files.filter(f=>f.id!==+b.dataset.rm); render(); log(r,'Removed'); });
+    $$('[data-cancel]',cv).forEach(b=>b.onclick=()=>{ if(NF.sending){ toast('Aguarde o envio terminar.'); return; } reset(); render(); log(r,'Cancelled: list cleared'); });
     $('[data-send]',cv).onclick=send;
     const nf=$('[data-nf]',cv), resetDrop=()=>{ const d=$('[data-drop]',cv); if(!d) return; d.classList.remove('over'); const t=d.querySelector('.t1,.t1x'); if(t&&t.dataset.o) t.textContent=t.dataset.o; };
     nf.ondragenter=e=>{ if(NF.sending) return; e.preventDefault(); NF.drag++; const d=$('[data-drop]',cv); if(!d||d.classList.contains('over')) return; d.classList.add('over'); const k=e.dataTransfer&&e.dataTransfer.items?e.dataTransfer.items.length:0, t=d.querySelector('.t1,.t1x'); if(t){ t.dataset.o=t.textContent; t.textContent=k?`Solte para adicionar ${k} arquivo${k>1?'s':''}`:'Solte para adicionar'; } };
     nf.ondragover=e=>{ if(!NF.sending) e.preventDefault(); };
     nf.ondragleave=()=>{ if(--NF.drag<=0){ NF.drag=0; resetDrop(); } };
     nf.ondrop=e=>{ e.preventDefault(); NF.drag=0; resetDrop(); if(!NF.sending&&e.dataTransfer.files.length) addFiles(e.dataTransfer.files); }; };
-  const send=()=>{ const q=valid(); if(!q.length) return; NF.sending=true; NF.files=q; render(); log(r,`Enviando <b>${q.length}</b>, um por vez`); let i=0; const run=NF.run;
-    const step=()=>{ if(NF.run!==run) return; const f=q[i]; if(!f){ setTimeout(()=>{ if(NF.run!==run) return; toast(`${q.length} fatura${q.length>1?'s':''} enviada${q.length>1?'s':''}`); log(r,`Fim: o modal fecha e ${q.length>1?'elas entram':'ela entra'} no topo da listagem como <b>Lendo fatura</b>`); reset(); render(); },700); return; }
+  const send=()=>{ const q=valid(); if(!q.length) return; NF.sending=true; NF.files=q; render(); log(r,`Uploading <b>${q.length}</b>, one at a time`); let i=0; const run=NF.run;
+    const step=()=>{ if(NF.run!==run) return; const f=q[i]; if(!f){ setTimeout(()=>{ if(NF.run!==run) return; toast(`${q.length} fatura${q.length>1?'s':''} enviada${q.length>1?'s':''}`); log(r,`Done: modal closes; new rows on top as <b>Lendo fatura</b>`); reset(); render(); },700); return; }
       f.state='up'; f.pct=0; render();
       const tm=setInterval(()=>{ if(NF.run!==run) return clearInterval(tm); f.pct=Math.min(100,f.pct+8+Math.round(Math.random()*14));
         if(f.pct>=100){ clearInterval(tm); f.state='done'; i++; render(); setTimeout(step,250); return; }
@@ -602,6 +602,60 @@ comp({id:'upload', grp:'Listagem', t:'Nova fatura (envio)', lib:'File Upload Ite
   const SIM={ok:{name:'fatura-luzdovale-mar25.pdf',type:'application/pdf',size:840000},img:{name:'foto-fatura.jpg',type:'image/jpeg',size:2300000},type:{name:'planilha.xlsx',type:'application/vnd.ms-excel',size:30000},big:{name:'scan-alta-resolucao.pdf',type:'application/pdf',size:32*1048576},empty:{name:'vazio.pdf',type:'application/pdf',size:0},dup:{name:'fatura-luzdovale-mar25.pdf',type:'application/pdf',size:840000}};
   $$('[data-s]',r).forEach(b=>b.onclick=()=>{ if(NF.sending) return toast('Aguarde o envio terminar.'); const k=b.dataset.s; addFiles(k==='many'?Array.from({length:22},(_,i)=>({name:`fatura-${String(i+1).padStart(2,'0')}.pdf`,type:'application/pdf',size:500000+i})):[SIM[k]]); });
   r._reset=()=>{ reset(); render(); }; reset(); render(); }});
+
+/* ---------- documentação (EN, curta). A interface do produto continua em pt-BR ---------- */
+const SZ=seg('size','Size',[['desk','Desktop'],['mob','Mobile']],'desk');
+const DOC={
+ tabbar:{grp:'Navigation',t:'Tab bar',lead:'Opens/closes panels on desktop, switches screens on mobile. The right button depends on the invoice state.',
+  ctrls:seg('acao','Right button',[['pend','Pending'],['send','Bill'],['sent','Sent']],'pend')+SZ,
+  beh:[['Click Fatura/Detalhes/Atividade','Desktop: toggles the panel (several can be on). Mobile: switches screen (one on).'],['Open / close','Icon bounces / shrinks (450 / 350 ms); inner pill scales .55 → 1'],['Pendências','Toggles the pending card (desktop) or opens the pending screen (mobile)'],['UC validated + 0 pending','Pendências is replaced by Faturar'],['Click Faturar','Loading (spinner, "Enviando…", not clickable) → button removed']],
+  notes:['Right button sits 10 px from the pill (mobile 4 px).','Mobile: icons only (label kept for screen readers); Atividade moves to the header sheet.','Lib: <code>Tab Bar Item Type=Send</code> (Default · Hover · Loading).']},
+ paineis:{grp:'Navigation',t:'Panels by priority',lead:'Up to 3 panels side by side, real size (scaled to fit). When space runs out, the lowest priority leaves: Details › Invoice › Activity.',
+  ctrls:'<span><span class="k">Available width</span><input type="range" min="560" max="1700" step="10" value="1440" data-w style="width:220px;vertical-align:middle;accent-color:#71902f"> <b data-wv style="font-size:12px">1440 px</b></span>',
+  beh:[['Narrow the area','Activity leaves, then Invoice; Details stays (min 520)'],['Open a panel that doesn\'t fit','Closes others, lowest priority first'],['Close all','"Nenhum painel aberto" + Voltar ao padrão'],['Close / open','350 ms ease (width, opacity) / 400 ms spring']],
+  notes:['Invoice 686 (min 400) · Details fills (min 520) · Activity 284. Gap 24.','Card grid inside Details: 2/3/4 columns by panel width (container query).','Below 768 px: one screen at a time.']},
+ card:{grp:'Data',t:'Data card',lead:'One label, one value, its unit.',
+  ctrls:seg('st','Invoice',[['rev','In review'],['ro','Sent (read-only)']],'rev')+SZ,
+  beh:[['Pencil','Edit: field with unit inside; send replaces copy, close replaces pencil'],['Enter / send','Validates the mask; invalid = red border + toast'],['Esc / close','Cancels'],['Copy','Copies the value only'],['Pending · Tab','Fills the placeholder suggestion'],['Pending · send','Resolved → green border, still editable']],
+  notes:['View and edit have the same height.','R$ before the value; other units after.','Read-only: no pencil, copy stays (<code>State=Read only</code>).','Mobile: 16 px padding, radius 12, 40 px touch targets.']},
+ mascaras:{grp:'Data',t:'Masked fields',lead:'Mask comes from the value type. Click the pencil, type, press Enter.',
+  beh:[['Money / %','2 decimals, typed from the right: 512399 → 5.123,99'],['kWh / kW / days','Integer with thousands'],['Date','dd/mm/yyyy, must be a real date'],['CNPJ / CEP / barcode','Auto punctuation, must be complete'],['IDs (UC, NF, series)','Digits only, original length'],['Invalid','Red border + message, not saved']],
+  notes:['Type: unit → label → value format (<code>kindOf</code>).','Numeric keyboard on mobile; 16 px fields on iOS.','Spreadsheet allows "−" and 5-decimal rates.']},
+ planilha:{grp:'Data',t:'Line items & sum',lead:'The Valor column must add up to the invoice total (R$ 4.440,13). If not, the edited cell becomes pending.',
+  ctrls:SZ+'<button class="cbtn" data-err>Simulate wrong Demanda value</button>',
+  beh:[['Click / arrows','Select / move'],['Double-click, Enter, F2','Edit (Esc cancels, Enter or blur saves)'],['Editing','Column keeps its width; grows (180 ms) only if the text doesn\'t fit'],['Sum ≠ total','Cell turns pending; placeholder = value that closes the sum'],['Pending cell · Tab','Fills the suggestion'],['Still off after fixing','Stays pending with a new suggestion']],
+  notes:['Unit inside the cell, gray. No unit column.','Header and Item column sticky on desktop; on mobile Item scrolls and takes ≤ 50%, middle-truncated.','Changed cell #f7fee7 · pending cell orange.']},
+ pendencias:{grp:'Review',t:'Pending items',lead:'What the reading missed. Desktop: floating card above the tab bar. Mobile: a list screen.',
+  ctrls:SZ+seg('uc','UC',[['ok','Validated'],['no','Not validated']],'ok'),
+  beh:[['‹ ›','Navigate "N de total"'],['Type / Tab','Confirmar enables with a value; Tab fills the suggestion'],['Confirmar / Enter','Resolves; field card flashes; next item'],['Ver no Campo','Scrolls to the field and flashes it (1.2 s)'],['Minimize','Hides the card; Pendências reopens it'],['Last one resolved','Card hides; Faturar replaces Pendências'],['UC not validated','Card only points to the UC block']],
+  notes:['Suggestion = derived value, never prefilled (COFINS = value ÷ base, reading = previous + usage).','"Tab para usar" hint shows on desktop only.']},
+ marcador:{grp:'Review',t:'Off-screen marker',lead:'When a pending item is scrolled out of view, a marker on the container edge points to it. Scroll the list and the table.',
+  beh:[['Below / above','Marker on bottom / top edge'],['Left / right (table)','Marker on the table edge, in the item row'],['Click','Smooth scroll to the item + flash'],['Item visible','Marker hides']],
+  notes:['Bobs 4 px (1 s) + pulsing ring (1.4 s); off with reduced motion.','The visible area excludes the floating tab bar and the sticky Item column.']},
+ atividade:{grp:'Review',t:'Activity',lead:'Invoice timeline, newest first. Hover (or Tab to) an edit event.',
+  ctrls:'<button class="cbtn" data-a="edit">Add edit</button><button class="cbtn" data-a="pend">Add resolved pending</button><button class="cbtn" data-a="sys">Add system status</button>',
+  beh:[['Hover / focus an edit','Shows from → to (200 ms): old struck through, new bold on light green'],['Resolved pending','"pendente" → value'],['Hover author','Shows the name'],['New event','Slides in on top']],
+  notes:['Author: system = black circle with the Enershare mark; person = initials.','Mobile: opened from the header sheet (history).']},
+ identidade:{grp:'Invoice',t:'Validate UC',lead:'Confirms which unit the invoice belongs to before review. The utility comes from the UC record. Sits above Details and minimizes with it.',
+  ctrls:seg('st','State',[['auto','Confirm'],['nf','Link'],['bad','Mismatch'],['ok','Validated'],['sent','Sent']],'auto')+'<button class="cbtn" data-min>Minimize Details</button>',
+  beh:[['Open field (click / ↓)','Popover: search + radio options (UC · utility · holder)'],['Type','Filters by UC, utility or holder'],['↑ ↓ · Enter · Esc','Move · pick · close (focus back)'],['UC from another utility','Title, label and message in red; Validar disabled'],['No UC picked','Validar disabled'],['Validar alterações','Pill "UC … validada" + Alterar; data unlocked'],['Alterar','Back to the field; data locked']],
+  notes:['Titles: Confirme / Vincule a unidade da fatura · A unidade não confere com a fatura.','Until validated: data at 45% opacity, no clicks.','Validated / sent block: 72 px. Rule source: COG-282 (stg).']},
+ extrair:{grp:'Invoice',t:'Extract again',lead:'Requests a new reading. 2 manual attempts. The count shows only in the dialog.',
+  ctrls:seg('n','Attempts left',[['2','2'],['1','1'],['0','0']],'2')+seg('st','Invoice',[['rev','In review'],['sent','Sent']],'rev'),
+  beh:[['Click','Confirm dialog; focus on Cancelar'],['Confirm','Uses one attempt; invoice back to "Lendo fatura"'],['Cancel / Esc / outside','Closes; focus back to the button'],['No attempts','Button disabled (tooltip)'],['Invoice sent','Replaced by "Enviada por … em …"']],
+  notes:['Edits are discarded (the dialog says so); last attempt has its own copy.','Tab is trapped in the dialog. Mobile: in the header sheet.']},
+ mobile:{grp:'Mobile',t:'Header & scroll',lead:'On mobile, header and tab bar get out of the way on scroll. Badges open a summary sheet.',
+  beh:[['Scroll down (≥ 4 px)','Header up, tab bar down (280 ms)'],['Scroll up / top / switch screen','Both come back'],['Horizontal scroll','Ignored'],['Tap a badge','Sheet over blurred background: status, links, history, download, extract'],['×, outside, Esc','Closes; focus back to the badge']],
+  notes:['Badges 34 px, overlapping −12 px; pending pill on top.','PDF: pinch 1×–4× keeping the focal point; double tap fit ↔ 2×.']},
+ filtro:{grp:'List',t:'Search & filters',lead:'Registry pattern: filter row visible by default under the search. Each filter opens search + options.',
+  beh:[['Click a filter','Menu: search, options (checkbox; date = radio), Limpar seleção'],['Check an option','Applies now, menu stays open; chip shows up to 2 values + "+N"'],['Pick a date','Applies and closes'],['Limpar todos','Only when a filter is active'],['Funnel','Shows/hides the row; hidden filters still apply, funnel shows the count'],['Esc / outside','Closes the menu']],
+  notes:['Filters: Situação · Pendências · Concessionária · Enviado por · Recebida em.','Mobile: funnel on the left, filters scroll horizontally.']},
+ upload:{grp:'List',t:'New invoice (upload)',lead:'Pick or drop files, review the list, then send. One file at a time.',
+  ctrls:'<span><span class="k">Add</span></span><button class="cbtn" data-s="ok">fatura.pdf</button><button class="cbtn" data-s="img">foto.jpg</button><button class="cbtn" data-s="type">planilha.xlsx</button><button class="cbtn" data-s="big">32 MB</button><button class="cbtn" data-s="empty">0 KB</button><button class="cbtn" data-s="dup">duplicate</button><button class="cbtn" data-s="many">22 files</button>',
+  beh:[['Drag over','Drop zone turns green: "Solte para adicionar N arquivos"'],['Add','Item "Aguardando envio"; drop zone becomes a strip'],['Wrong type / empty / > 20 MB','Red item with the reason; not sent'],['Duplicate · > 20 files','Not added; toast'],['Enviar N faturas','Uploads one by one (bar + %); no remove/cancel meanwhile'],['Done','Modal closes; rows on top as "Lendo fatura"']],
+  notes:['PDF, JPG, PNG, WebP · 20 MB each · 20 files.','Button counts valid files only.','Mobile: "Tirar foto da fatura" (camera with framing) or "Escolher arquivos".']}
+};
+C.forEach(c=>Object.assign(c,DOC[c.id]||{}));
 
 /* ---------- código: HTML do componente renderizado, CSS da folha de estilo, JS dos trechos da página ---------- */
 const CSSK={tabbar:['.tabbar','.tb','.cnt','tbOpen','tbClose','spin'],paineis:['.cols','.panel','.p-pdf','.p-det','.p-act','.cols-empty','panelIn'],card:['.card','.ufld','.fld','.badge','.grid','.g2','.full','kbd','.tabk'],mascaras:['.fld','.ufld','.err'],
@@ -629,7 +683,7 @@ function htmlOf(el){ const lines=[], VOID=/^(input|img|br|hr|meta|link)$/;
     if(kids.length===1&&kids[0].nodeType===3){ lines.push(pad+'<'+tag+attrs+'>'+kids[0].textContent.replace(/\s+/g,' ').trim()+'</'+tag+'>'); return; }
     lines.push(pad+'<'+tag+attrs+'>');
     const els=kids.filter(c=>c.nodeType===1), same=els.length>3&&els.every(c=>c.tagName===els[0].tagName&&c.className.split(' ')[0]===els[0].className.split(' ')[0]);
-    (same?els.slice(0,2):kids).forEach(c=>walk(c,d+1)); if(same) lines.push(pad+'  <!-- … mais '+(els.length-2)+' iguais -->');
+    (same?els.slice(0,2):kids).forEach(c=>walk(c,d+1)); if(same) lines.push(pad+'  <!-- … '+(els.length-2)+' more -->');
     lines.push(pad+'</'+tag+'>'); };
   walk(el,0); return lines.join('\n'); }
 const escH=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
@@ -638,7 +692,7 @@ const hl={
   html:s=>escH(s).replace(/ ([a-z-]+)="([^"]*)"/g,' <i class="k-a">$1</i>="<span class="k-s">$2</span>"').replace(/(&lt;\/?)([a-z0-9-]+)/g,'$1<b class="k-t">$2</b>').replace(/(&lt;!--.*?--&gt;)/g,'<span class="k-c">$1</span>'),
   css:s=>escH(s).replace(/^(\s*)([^\n{}]+?) \{$/gm,'$1<b class="k-t">$2</b> {').replace(/^(\s+)([a-z-]+):/gm,'$1<i class="k-a">$2</i>:'),
   js:s=>escH(s).replace(/(\/\/[^\n]*)/g,'<span class="k-c">$1</span>').replace(/\b(const|let|function|return|if|else|for|of|new|await|async)\b(?![^<]*<\/span>)/g,'<b class="k-t">$1</b>') };
-const snip=id=>{ const s=document.querySelector('script.snip[data-id="'+id+'"]'); return s?s.textContent.replace(/^\n/,'').replace(/\s+$/,''):'// sem trecho'; };
+const snip=id=>{ const s=document.querySelector('script.snip[data-id="'+id+'"]'); return s?s.textContent.replace(/^\n/,'').replace(/\s+$/,''):'// no snippet'; };
 
 /* ---------- montagem ---------- */
 const main=$('#main'), nav=$('#navl'); let g='';
@@ -648,22 +702,22 @@ C.forEach(c=>{
   main.insertAdjacentHTML('beforeend',`<section class="cmp box" id="${c.id}">
     <div class="cmp-h"><h3>${c.t}</h3><span class="tags">${c.iss?`<a class="chip iss" href="https://linear.app/cogecom/issue/${c.iss}">${c.iss}</a>`:''}${c.lib?`<span class="chip">Lib: ${c.lib}</span>`:''}</span></div>
     <p class="lead">${c.lead}</p>
-    <div class="ctrls">${c.ctrls||''}<button class="reset"><span class="pg-ms">restart_alt</span>Reiniciar</button></div>
-    <div class="canvas ${['identidade','pendencias','filtro','upload','planilha','card','mascaras'].includes(c.id)?'top':''}"></div><div class="log" aria-live="polite"></div>
-    <div class="dt"><div class="ptabs" role="tablist" aria-label="${c.t}"><button role="tab" class="ptab on" aria-selected="true" data-dt="beh">Comportamento</button><button role="tab" class="ptab" aria-selected="false" data-dt="notes">Notas</button><button role="tab" class="ptab" aria-selected="false" data-dt="code">Código</button></div>
+    <div class="ctrls">${c.ctrls||''}<button class="reset"><span class="pg-ms">restart_alt</span>Reset</button></div>
+    <div class="canvas ${['identidade','pendencias','filtro','upload','planilha','card','mascaras'].includes(c.id)?'top':''} ${['identidade','extrair','filtro','upload'].includes(c.id)?'white':''}"></div><div class="log" aria-live="polite"></div>
+    <div class="dt"><div class="ptabs" role="tablist" aria-label="${c.t}"><button role="tab" class="ptab on" aria-selected="true" data-dt="beh">Behavior</button><button role="tab" class="ptab" aria-selected="false" data-dt="notes">Notes</button><button role="tab" class="ptab" aria-selected="false" data-dt="code">Code</button></div>
       <div class="dpane" data-p="beh"><table class="bh">${c.beh.map(([a,b])=>`<tr><td>${a}</td><td>${b}</td></tr>`).join('')}</table></div>
       <div class="dpane" data-p="notes" hidden><ul class="nt">${c.notes.map(n=>`<li>${n}</li>`).join('')}</ul></div>
-      <div class="dpane" data-p="code" hidden><div class="code-h"><div class="ptabs sm" role="tablist"><button role="tab" class="ptab on" data-lang="html">HTML</button><button role="tab" class="ptab" data-lang="css">CSS</button><button role="tab" class="ptab" data-lang="js">JS</button></div><span class="code-src"></span><button class="copy"><span class="pg-ms">content_copy</span>Copiar</button></div><pre class="code"><code></code></pre></div></div></section>`);
+      <div class="dpane" data-p="code" hidden><div class="code-h"><div class="ptabs sm" role="tablist"><button role="tab" class="ptab on" data-lang="html">HTML</button><button role="tab" class="ptab" data-lang="css">CSS</button><button role="tab" class="ptab" data-lang="js">JS</button></div><span class="code-src"></span><button class="copy"><span class="pg-ms">content_copy</span>Copy</button></div><pre class="code"><code></code></pre></div></div></section>`);
   const r=$('#'+c.id); c.init(r);
   const html0=htmlOf($('.canvas',r).firstElementChild);
   $('.reset',r).onclick=()=>{ r._reset&&r._reset(); log(r,''); };
   const src={html:()=>html0, css:()=>cssFor(c.id), js:()=>snip(c.id)};
-  const from={html:'Estado inicial, gerado do componente renderizado', css:c.id==='identidade'?'assets/identidade.js (estilo injetado)':'assets/componentes.css · [mobile] = .cx.mob', js:'Lógica do protótipo (resumo comentado)'};
+  const from={html:'Initial state, generated from the rendered component', css:c.id==='identidade'?'assets/identidade.js (injected style)':'assets/componentes.css · [mobile] = .cx.mob', js:'Prototype logic (commented summary)'};
   let lang='html', raw='';
   const show=()=>{ raw=src[lang](); $('.code code',r).innerHTML=hl[lang](raw); $('.code-src',r).textContent=from[lang]; $$('[data-lang]',r).forEach(b=>{ b.classList.toggle('on',b.dataset.lang===lang); b.setAttribute('aria-selected',b.dataset.lang===lang); }); };
   $$('[data-dt]',r).forEach(b=>b.onclick=()=>{ $$('[data-dt]',r).forEach(x=>{ x.classList.toggle('on',x===b); x.setAttribute('aria-selected',x===b); }); $$('.dpane',r).forEach(p=>p.hidden=p.dataset.p!==b.dataset.dt); if(b.dataset.dt==='code') show(); });
   $$('[data-lang]',r).forEach(b=>b.onclick=()=>{ lang=b.dataset.lang; show(); });
-  $('.copy',r).onclick=()=>{ navigator.clipboard?.writeText(raw).catch(()=>{}); toast('Código copiado'); };
+  $('.copy',r).onclick=()=>{ navigator.clipboard?.writeText(raw).catch(()=>{}); toast('Code copied'); };
 });
 const io=new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting) $$('#navl a[data-id]').forEach(a=>a.classList.toggle('on',a.dataset.id===e.target.id)); }),{root:$('#sheet'),rootMargin:'-20% 0px -70% 0px'});
 $$('section.cmp').forEach(s=>io.observe(s));

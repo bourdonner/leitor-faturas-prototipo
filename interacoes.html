@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Leitor de Faturas · Componentes e interações</title>
+<title>Invoice Reader · Components</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
@@ -71,6 +71,7 @@ section.cmp{margin-top:24px;padding:40px;scroll-margin-top:0}
 .reset:hover{background:var(--s100);color:var(--ink)}
 .canvas{position:relative;background:var(--s100);border-radius:16px;padding:40px 24px;min-height:160px;display:flex;justify-content:center;align-items:center;overflow:auto}
 .canvas.top{align-items:flex-start}
+.canvas.white{background:#fff;border:1px solid var(--s100)} /* componentes que ficam na folha branca */
 .log{font-size:12px;color:var(--mid);margin-top:8px;min-height:18px}
 .log b{color:var(--ink);font-weight:600}
 .dt{margin-top:24px;display:flex;flex-direction:column;gap:12px}
@@ -95,23 +96,23 @@ pre.code code{background:none;padding:0;font:400 12px/1.65 'JetBrains Mono',ui-m
 </head>
 <body>
 <div class="app">
-  <aside class="side box" aria-label="Componentes">
-    <div class="side-h"><span class="lg" id="lg"></span><div><b>Leitor de Faturas</b><span>Componentes e interações</span></div></div>
+  <aside class="side box" aria-label="Components">
+    <div class="side-h"><span class="lg" id="lg"></span><div><b>Invoice Reader</b><span>Components &amp; interactions</span></div></div>
     <nav class="toc" id="navl"></nav>
   </aside>
   <div class="sheet" id="sheet">
     <main id="main">
       <div class="intro box" style="padding:40px">
-        <div class="eyebrow">Para devs</div>
-        <h1>Leitor de Faturas · componentes</h1>
-        <p>Cada componente sozinho, com o mesmo CSS e a mesma lógica do protótipo. Alterne os estados, clique e use o teclado. Embaixo de cada um, em abas: comportamento, notas e código.</p>
+        <div class="eyebrow">For devs</div>
+        <h1>Invoice Reader · components</h1>
+        <p>Each component on its own, with the prototype's CSS and logic. Switch states, click, use the keyboard. Below each: behavior, notes and code.</p>
         <div class="res">
-          <a class="rcard" href="detalhe.html"><span class="ri"><span class="msr fill">receipt_long</span></span><span class="rt"><b>Protótipo · Detalhe</b><span>…/leitor-faturas-prototipo/detalhe.html</span></span><span class="msr go">north_east</span></a>
-          <a class="rcard" href="index.html"><span class="ri"><span class="msr fill">view_list</span></span><span class="rt"><b>Protótipo · Listagem</b><span>bourdonner.github.io/leitor-faturas-prototipo</span></span><span class="msr go">north_east</span></a>
-          <a class="rcard" href="https://github.com/bourdonner/leitor-faturas-prototipo"><span class="ri"><span class="msr fill">code</span></span><span class="rt"><b>Código-fonte</b><span>github.com/bourdonner/leitor-faturas-prototipo</span></span><span class="msr go">north_east</span></a>
-          <a class="rcard" href="https://github.com/bourdonner/leitor-faturas-prototipo/blob/main/REGRAS.md"><span class="ri"><span class="msr fill">rule</span></span><span class="rt"><b>Regras · layout, animação, variantes</b><span>REGRAS.md no GitHub</span></span><span class="msr go">north_east</span></a>
+          <a class="rcard" href="detalhe.html"><span class="ri"><span class="msr fill">receipt_long</span></span><span class="rt"><b>Prototype · Invoice detail</b><span>…/leitor-faturas-prototipo/detalhe.html</span></span><span class="msr go">north_east</span></a>
+          <a class="rcard" href="index.html"><span class="ri"><span class="msr fill">view_list</span></span><span class="rt"><b>Prototype · Invoice list</b><span>bourdonner.github.io/leitor-faturas-prototipo</span></span><span class="msr go">north_east</span></a>
+          <a class="rcard" href="https://github.com/bourdonner/leitor-faturas-prototipo"><span class="ri"><span class="msr fill">code</span></span><span class="rt"><b>Source code</b><span>github.com/bourdonner/leitor-faturas-prototipo</span></span><span class="msr go">north_east</span></a>
+          <a class="rcard" href="https://github.com/bourdonner/leitor-faturas-prototipo/blob/main/REGRAS.md"><span class="ri"><span class="msr fill">rule</span></span><span class="rt"><b>Rules · layout, motion, variants</b><span>REGRAS.md on GitHub</span></span><span class="msr go">north_east</span></a>
           <a class="rcard" href="https://www.figma.com/design/EwAXXXwHEhfBp9L7N02InG/Faturamento"><span class="ri"><span class="msr fill">draw</span></span><span class="rt"><b>Figma · Faturamento</b><span>figma.com/design/…/Faturamento</span></span><span class="msr go">north_east</span></a>
-          <a class="rcard" href="https://linear.app/cogecom/issue/COG-286"><span class="ri"><span class="msr fill">checklist</span></span><span class="rt"><b>Linear · COG-286</b><span>subissues COG-287 a COG-295</span></span><span class="msr go">north_east</span></a>
+          <a class="rcard" href="https://linear.app/cogecom/issue/COG-286"><span class="ri"><span class="msr fill">checklist</span></span><span class="rt"><b>Linear · COG-286</b><span>sub-issues COG-287 to COG-295</span></span><span class="msr go">north_east</span></a>
         </div>
       </div>
     </main>
@@ -119,46 +120,44 @@ pre.code code{background:none;padding:0;font:400 12px/1.65 'JetBrains Mono',ui-m
 </div>
 <div class="toast" id="toast" role="status"></div>
 
-<!-- ===== trechos de JS por componente (aba Código › JS) ===== -->
+<!-- ===== JS snippets per component (Code › JS tab) ===== -->
 <script type="text/plain" class="snip" data-id="tabbar">
-// Tab bar — um item por painel + um botão à direita que depende do estado da fatura
-const anim = (el, cls) => {                       // ícone pula (opening) ou encolhe (closing)
+// Tab bar: one item per panel + a right button driven by invoice state
+const anim = (el, cls) => {                      // icon bounces (opening) or shrinks (closing)
   el.classList.remove('opening', 'closing'); void el.offsetWidth;
   el.classList.add(cls); setTimeout(() => el.classList.remove(cls), 450);
 };
-const onTab = k => mobile ? screen === k            // mobile: uma tela por vez
-  : k === 'pend' ? pendCardOpen : visiblePanels.includes(k);
+const isOn = k => mobile ? screen === k : k === 'pend' ? pendingCardOpen : visiblePanels.includes(k);
 
 tabBar.querySelectorAll('.tb[data-toggle]').forEach(tb => tb.onclick = () => {
   const k = tb.dataset.toggle;
-  if (mobile) { screen = k; anim(tb, 'opening'); render(); return; }   // tocar no ativo não desativa
-  if (k === 'pend') pendCardOpen = !pendCardOpen; else togglePanel(k); // ver "Painéis por prioridade"
-  render(); anim(tb, onTab(k) ? 'opening' : 'closing');
+  if (mobile) { screen = k; anim(tb, 'opening'); render(); return; }   // mobile: one screen at a time
+  if (k === 'pend') pendingCardOpen = !pendingCardOpen; else togglePanel(k);
+  render(); anim(tb, isOn(k) ? 'opening' : 'closing');
 });
 
-// botão da direita
-tbPend.hidden = pendencias.length === 0 || enviada;
-tbPend.querySelector('.cnt').textContent = pendencias.length;
-tbSend.hidden = !(ucValidada && pendencias.length === 0 && !enviada);
+// right button
+tbPend.hidden = pending.length === 0 || sent;
+tbPend.querySelector('.cnt').textContent = pending.length;
+tbSend.hidden = !(ucValidated && pending.length === 0 && !sent);
 
-// Faturar: Default → Loading → some
+// Faturar: Default → Loading → removed
 tbSend.onclick = async () => {
   tbSend.classList.add('busy'); tbSend.setAttribute('aria-busy', 'true');
   tbSend.querySelector('.ic .ms').textContent = 'progress_activity';
   tbSend.lastElementChild.textContent = 'Enviando…';
-  await api.enviarParaFaturamento(faturaId);
-  enviada = true; render();                        // tela fica só leitura
+  await api.sendToBilling(invoiceId);
+  sent = true; render();                          // screen becomes read-only
 };
 </script>
 <script type="text/plain" class="snip" data-id="paineis">
-// Painéis — prioridade quando falta largura (igual ao protótipo)
-const PRI  = ['det', 'pdf', 'act'];                      // Detalhes › Fatura › Atividade
+// Panels: priority when width runs out
+const PRI  = ['det', 'pdf', 'act'];               // Details › Invoice › Activity
 const MINW = { det: 520, pdf: 400, act: 284 }, GAP = 24;
 
-const fits = set => set.reduce((w, k) => w + MINW[k], 0) + GAP * Math.max(0, set.length - 1)
-                    <= cols.clientWidth;
+const fits = set => set.reduce((w, k) => w + MINW[k], 0) + GAP * Math.max(0, set.length - 1) <= cols.clientWidth;
 
-function visibleSet() {                                   // quem cabe, na ordem de prioridade
+function visibleSet() {                           // who fits, in priority order
   const v = [];
   PRI.forEach(k => { if (open[k] && fits([...v, k])) v.push(k); });
   return v;
@@ -167,7 +166,7 @@ function visibleSet() {                                   // quem cabe, na ordem
 function togglePanel(k) {
   if (visibleSet().includes(k)) { open[k] = false; return; }
   open[k] = true;
-  // abrir um painel que não cabe fecha os outros, do menos para o mais prioritário
+  // opening a panel that doesn't fit closes others, lowest priority first
   for (const o of [...PRI].reverse().filter(x => x !== k)) {
     if (visibleSet().includes(k)) break;
     open[o] = false;
@@ -176,7 +175,7 @@ function togglePanel(k) {
 
 function renderPanels() {
   const v = visibleSet();
-  PRI.forEach(k => panel[k].classList.toggle('min', !v.includes(k)));   // .min anima o fechamento
+  PRI.forEach(k => panel[k].classList.toggle('min', !v.includes(k)));   // .min animates the close
   cols.classList.toggle('no-pdf', !v.includes('pdf'));
   cols.classList.toggle('no-det', !v.includes('det'));
   emptyState.hidden = v.length > 0;                                      // "Nenhum painel aberto"
@@ -184,44 +183,42 @@ function renderPanels() {
 window.addEventListener('resize', renderPanels);
 </script>
 <script type="text/plain" class="snip" data-id="card">
-// Card de dado — visualização, edição, pendente, corrigido e só leitura
+// Data card: view, edit, pending, corrected, read-only
 function editCard(card, editBtn) {
-  const row = card.querySelector('.row'), old = row.querySelector('.v').textContent, u = card.dataset.u;
+  const row = card.querySelector('.row'), old = row.querySelector('.v').textContent, unit = card.dataset.u;
   card.classList.add('editing');
   const close = document.createElement('span'); close.className = 'ca';
-  close.innerHTML = '<button aria-label="Fechar edição">…close…</button>';
-  editBtn.replaceWith(close);                                  // fechar no lugar do lápis
+  close.innerHTML = '<button aria-label="Fechar edição">…</button>';
+  editBtn.replaceWith(close);                     // close replaces the pencil
 
-  const fld = document.createElement('label'); fld.className = 'fld';
-  const inp = document.createElement('input'); inp.value = old === '—' ? '' : old;
-  const kind = kindOf(old, u, card.dataset.edit); attachMask(inp, kind, { max: old.length });
-  // unidade dentro do campo: R$ antes, as outras depois
-  /* … monta fld com a unidade … */
-  const erow = document.createElement('div'); erow.className = 'erow';
-  const send = document.createElement('button'); send.className = 'cp send';   // enviar no lugar do copiar
-  erow.append(fld, send); row.replaceWith(erow); inp.focus(); inp.select();
+  const field = document.createElement('label'); field.className = 'fld';
+  const input = document.createElement('input'); input.value = old === '—' ? '' : old;
+  const kind = kindOf(old, unit, card.dataset.edit); attachMask(input, kind, { max: old.length });
+  // unit inside the field: R$ before, others after
+  const row2 = document.createElement('div'); row2.className = 'erow';
+  const send = document.createElement('button'); send.className = 'cp send';   // send replaces copy
+  row2.append(field, send); row.replaceWith(row2); input.focus(); input.select();
 
   const finish = save => {
-    const nv = inp.value.trim();
-    if (save && nv && nv !== old && invalid(inp, kind)) return;   // inválido: borda vermelha + aviso
-    erow.replaceWith(row); close.replaceWith(editBtn); card.classList.remove('editing');
-    if (save && nv && nv !== old) { row.querySelector('.v').textContent = nv; salvar(card.dataset.edit, old, nv); }
+    const value = input.value.trim();
+    if (save && value && value !== old && invalid(input, kind)) return;   // red border + toast
+    row2.replaceWith(row); close.replaceWith(editBtn); card.classList.remove('editing');
+    if (save && value && value !== old) { row.querySelector('.v').textContent = value; save(card.dataset.edit, old, value); }
   };
   send.onclick = () => finish(true);
   close.firstChild.onclick = () => finish(false);
-  inp.onkeydown = e => { if (e.key === 'Enter') finish(true); if (e.key === 'Escape') finish(false); };
+  input.onkeydown = e => { if (e.key === 'Enter') finish(true); if (e.key === 'Escape') finish(false); };
 }
-
-// pendente: enviar/Enter resolve → card vira "done" (borda verde) e continua editável
-// só leitura (fatura enviada): .ro .card .ib.edit { display: none }  — copiar continua
+// pending: send/Enter resolves → .done (green border), still editable
+// read-only: .ro .card .ib.edit { display: none } — copy stays
 </script>
 <script type="text/plain" class="snip" data-id="mascaras">
-// Máscaras — o tipo vem da unidade, do rótulo ou do formato do valor original
-function kindOf(v, u, t) {
-  if (u === 'R$') return 'money';
-  if (u === '%') return 'pct';
-  if (['kWh', 'kW', 'dias'].includes(u)) return 'int';
-  if (t === 'Constante') return 'dec';
+// Masks: type from unit, label or the original value format
+function kindOf(v, unit, label) {
+  if (unit === 'R$') return 'money';
+  if (unit === '%') return 'pct';
+  if (['kWh', 'kW', 'dias'].includes(unit)) return 'int';
+  if (label === 'Constante') return 'dec';
   if (/^\d{2}\/\d{2}\/\d{4}$/.test(v)) return 'date';
   if (/^\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}$/.test(v)) return 'cnpj';
   if (/^\d{5}-\d{3}$/.test(v)) return 'cep';
@@ -235,7 +232,7 @@ const NUM = { money: { dec: 2 }, pct: { dec: 2 }, int: { dec: 0 }, dec5: { dec: 
 
 function applyMask(kind, raw, opt = {}) {
   const d = raw.replace(/\D/g, '');
-  if (NUM[kind]) {                                   // digita da direita: "512399" → 5.123,99
+  if (NUM[kind]) {                                // typed from the right: 512399 → 5.123,99
     const neg = opt.signed && ((raw.match(/[-−]/g) || []).length % 2 === 1);
     if (!d) return neg ? '−' : '';
     const dec = NUM[kind].dec; let n = d.replace(/^0+(?=\d)/, ''), out;
@@ -243,7 +240,7 @@ function applyMask(kind, raw, opt = {}) {
     else out = Number(n).toLocaleString('pt-BR');
     return (neg && /[1-9]/.test(d) ? '−' : '') + out;
   }
-  if (PAT[kind]) return fmtPat(d, PAT[kind]);         // pontuação automática
+  if (PAT[kind]) return fmtPat(d, PAT[kind]);
   if (kind === 'digits') return d.slice(0, opt.max || 99);
   if (kind === 'dec') { const v = raw.replace(/[^\d,]/g, ''), i = v.indexOf(','); return i < 0 ? v : v.slice(0, i + 1) + v.slice(i + 1).replace(/,/g, ''); }
   return raw;
@@ -258,93 +255,90 @@ function validMask(kind, v) {
   return '';
 }
 
-function attachMask(inp, kind, opt = {}) {
-  inp.inputMode = NUM[kind] ? 'decimal' : 'numeric';   // teclado numérico no mobile
-  if (PAT[kind]) inp.maxLength = PAT[kind].length;
-  inp.addEventListener('input', () => {
-    const nv = applyMask(kind, inp.value, opt);
-    if (nv !== inp.value) { inp.value = nv; inp.setSelectionRange(nv.length, nv.length); }
-    inp.closest('.fld,.ufld,td')?.classList.remove('err');
+function attachMask(input, kind, opt = {}) {
+  input.inputMode = NUM[kind] ? 'decimal' : 'numeric';   // numeric keyboard on mobile
+  if (PAT[kind]) input.maxLength = PAT[kind].length;
+  input.addEventListener('input', () => {
+    const v = applyMask(kind, input.value, opt);
+    if (v !== input.value) { input.value = v; input.setSelectionRange(v.length, v.length); }
+    input.closest('.fld,.ufld,td')?.classList.remove('err');
   });
 }
 </script>
 <script type="text/plain" class="snip" data-id="planilha">
-// Planilha — edição na célula, soma dos itens e largura estável
-const TOTAL = 4440.13;                                     // Total da fatura
-const sum = () => Math.round(items.reduce((a, r) => a + (pn(r[7]) || 0), 0) * 100) / 100;
+// Line items: in-cell edit, sum check, stable column width
+const TOTAL = 4440.13;
+const sum = () => Math.round(items.reduce((a, r) => a + (parse(r[7]) || 0), 0) * 100) / 100;
 
-// soma ≠ total → a célula editada vira pendência, com o valor que fecha como sugestão
+// sum ≠ total → edited cell becomes pending; suggestion = value that closes the sum
 function checkSum(r, c) {
-  if (c !== 7) return false;                               // só a coluna Valor
+  if (c !== 7) return false;                      // Valor column only
   const gap = Math.round((TOTAL - sum()) * 100) / 100; if (!gap) return false;
-  pendencias.push({ cell: [r, 7], kind: 'Moeda', unit: 'R$', why: 'valor que fecha a soma',
-    ph: money((pn(items[r][7]) || 0) + gap), hint: 'A soma dos itens não fecha com o total da fatura' });
+  pending.push({ cell: [r, 7], kind: 'Moeda', unit: 'R$', why: 'valor que fecha a soma',
+    ph: money((parse(items[r][7]) || 0) + gap), hint: 'A soma dos itens não fecha com o total da fatura' });
   return true;
 }
 
-// editar sem mexer na largura da coluna:
-// o conteúdo antigo fica invisível (.ghost) segurando a largura natural; o input fica por cima.
-// Só cresce (min-width animado, 180 ms) se o valor ou a sugestão não couberem no espaço visível.
+// edit without moving the column: old content stays invisible (.ghost) holding the natural width,
+// input is absolutely positioned on top; grows (min-width, 180 ms) only if the text doesn't fit
 function edit(td) {
   const cs = getComputedStyle(td), w0 = td.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
   td.classList.add('ed');
   td.innerHTML = `<span class="ghost" aria-hidden="true">${td.innerHTML}</span><input size="1">`;
-  const inp = td.querySelector('input'), ghost = td.querySelector('.ghost');
-  const p = pendenciaDaCelula(td);
-  if (p) { inp.value = ''; inp.placeholder = p.ph; if (p.why) inp.dataset.sug = ''; }   // Tab aceita a sugestão
-  const nat = ghost.getBoundingClientRect().width; ghost.style.minWidth = nat + 'px';
-  const fit = () => { const need = textWidth(inp.value || inp.placeholder, inp) + 4; ghost.style.minWidth = (need > w0 ? need : nat) + 'px'; };
-  requestAnimationFrame(fit); inp.addEventListener('input', fit);
-  attachMask(inp, COLK[td.dataset.c], { signed: true });
-  inp.onkeydown = e => { if (e.key === 'Enter') done(true); if (e.key === 'Escape') done(false); e.stopPropagation(); };
-  inp.onblur = () => done(true);
+  const input = td.querySelector('input'), ghost = td.querySelector('.ghost');
+  const p = pendingFor(td);
+  if (p) { input.value = ''; input.placeholder = p.ph; if (p.why) input.dataset.sug = ''; }   // Tab accepts
+  const natural = ghost.getBoundingClientRect().width; ghost.style.minWidth = natural + 'px';
+  const fit = () => { const need = textWidth(input.value || input.placeholder, input) + 4; ghost.style.minWidth = (need > w0 ? need : natural) + 'px'; };
+  requestAnimationFrame(fit); input.addEventListener('input', fit);
+  attachMask(input, COLK[td.dataset.c], { signed: true });
+  input.onkeydown = e => { if (e.key === 'Enter') done(true); if (e.key === 'Escape') done(false); e.stopPropagation(); };
+  input.onblur = () => done(true);
 }
-// teclado na tabela: setas movem a seleção; Enter ou F2 edita; duplo clique edita
-// mobile: célula pendente abre com um toque
+// keys: arrows move · Enter/F2/double-click edit · mobile: one tap opens a pending cell
 </script>
 <script type="text/plain" class="snip" data-id="pendencias">
-// Pendências — card flutuante (desktop) e lista (mobile)
-const open = () => pendencias.filter(p => !p.done);
+// Pending items: floating card (desktop) and list (mobile)
+const openItems = () => pending.filter(p => !p.done);
 
-function resolve(p, v, field) {
+function resolve(p, value, field) {
   if (p.kind !== 'Seleção' && invalid(field, field.dataset.mask)) return;
-  p.done = fmt(p, v);                                   // "3" em % vira "3,00"
+  p.done = fmt(p, value);                          // "3" in % → "3,00"
   if (p.cell) { items[p.cell[0]][p.cell[1]] = p.done; checkSum(...p.cell); }
-  atividade.unshift({ tipo: 'edit', de: '', para: p.done });   // "pendente → valor"
-  if (!open().length) status = 'Sem pendências';        // card some; Faturar entra na tab bar
+  activity.unshift({ type: 'edit', from: '', to: p.done });   // "pendente → value"
+  if (!openItems().length) status = 'Sem pendências';         // card hides; Faturar appears
   render(); flash(document.getElementById('c-' + p.id));
 }
 
-// card: "N de total", anterior/próxima, Confirmar só com valor, Enter confirma
-field.oninput = () => { confirmar.disabled = !field.value.trim(); };
+field.oninput = () => { confirmBtn.disabled = !field.value.trim(); };
 field.onkeydown = e => { if (e.key === 'Enter' && field.value.trim()) resolve(p, field.value.trim(), field); };
-verNoCampo.onclick = () => { abrirAba(p.tab); cardDoDado.scrollIntoView({ block: 'center', behavior: 'smooth' }); flash(cardDoDado); };
-if (!ucValidada) body.innerHTML = 'Valide a UC primeiro … [Ir para a UC]';
+goToField.onclick = () => { openTab(p.tab); fieldCard.scrollIntoView({ block: 'center', behavior: 'smooth' }); flash(fieldCard); };
+if (!ucValidated) body.innerHTML = 'Valide a UC primeiro … [Ir para a UC]';
 
-// sugestão no placeholder: Tab com o campo vazio preenche (o usuário ainda confirma)
+// Tab on an empty field fills the placeholder suggestion (user still confirms)
 document.addEventListener('keydown', e => {
   const t = e.target;
   if (e.key !== 'Tab' || e.shiftKey || !(t instanceof HTMLInputElement) || !t.hasAttribute('data-sug') || t.value.trim() || !t.placeholder) return;
   e.preventDefault();
   t.value = t.placeholder;
-  t.dispatchEvent(new Event('input', { bubbles: true }));   // máscara + habilita Confirmar
+  t.dispatchEvent(new Event('input', { bubbles: true }));    // mask + enables Confirmar
   t.dispatchEvent(new Event('change', { bubbles: true }));
 }, true);
 </script>
 <script type="text/plain" class="snip" data-id="marcador">
-// Marcador de pendência fora da área visível (atualiza em scroll, resize e fim de transição)
-function offUpdate() {
+// Off-screen marker (runs on scroll, resize and transitionend)
+function update() {
   const cr = scroller.getBoundingClientRect(), tb = tabBar.getBoundingClientRect();
   const view = { left: cr.left, right: cr.right, top: cr.top,
-                 bottom: tb.top < cr.bottom ? Math.min(cr.bottom, tb.top - 8) : cr.bottom };   // desconta a tab bar
-  const items = [];
-  for (const p of pendenciasAbertas()) {
+                 bottom: tb.top < cr.bottom ? Math.min(cr.bottom, tb.top - 8) : cr.bottom };   // minus tab bar
+  const marks = [];
+  for (const p of openItems()) {
     const el = document.getElementById('c-' + p.id), r = el.getBoundingClientRect();
     let dir = null, x, y;
-    const grade = el.closest('.grade');
-    if (grade) {                                            // rolagem lateral da planilha
-      const g = grade.getBoundingClientRect(), stk = grade.querySelector('.stk').getBoundingClientRect().width;
-      const gv = clip({ left: g.left + stk, right: g.right, top: g.top, bottom: g.bottom }, view);
+    const grid = el.closest('.grade');
+    if (grid) {                                     // horizontal scroll in the table
+      const g = grid.getBoundingClientRect(), sticky = grid.querySelector('.stk').getBoundingClientRect().width;
+      const gv = clip({ left: g.left + sticky, right: g.right, top: g.top, bottom: g.bottom }, view);
       const inRows = r.bottom > gv.top && r.top < gv.bottom;
       if (inRows && r.left >= gv.right - 4)      { dir = 'r'; x = gv.right - 18; y = (r.top + r.bottom) / 2; }
       else if (inRows && r.right <= gv.left + 4) { dir = 'l'; x = gv.left + 18;  y = (r.top + r.bottom) / 2; }
@@ -354,167 +348,163 @@ function offUpdate() {
       else if (r.bottom <= view.top + 4) { dir = 'u'; y = view.top + 22; }
       if (dir) x = Math.min(Math.max((r.left + r.right) / 2, view.left + 20), view.right - 20);
     }
-    if (dir) items.push({ p, dir, x, y });
+    if (dir) marks.push({ p, dir, x, y });
   }
-  const ARW = { r: 'arrow_right', l: 'arrow_left', d: 'arrow_drop_down', u: 'arrow_drop_up' };
-  layer.innerHTML = items.map(o => `<button class="offi ${o.dir}" style="left:${o.x}px;top:${o.y}px" aria-label="Ir para a pendência: ${o.p.label}">
-    <span class="b">⚠</span><span class="ms f a">${ARW[o.dir]}</span></button>`).join('');
-  // clique: el.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' }) + flash
+  const ARROW = { r: 'arrow_right', l: 'arrow_left', d: 'arrow_drop_down', u: 'arrow_drop_up' };
+  layer.innerHTML = marks.map(m => `<button class="offi ${m.dir}" style="left:${m.x}px;top:${m.y}px" aria-label="Ir para a pendência: ${m.p.label}">
+    <span class="b">⚠</span><span class="ms f a">${ARROW[m.dir]}</span></button>`).join('');
+  // click: el.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' }) + flash
 }
 </script>
 <script type="text/plain" class="snip" data-id="atividade">
-// Atividade — linha do tempo, mais recente no topo
-// evento: [nome, tipo ('edit'|'alert'|'ok'|'def'), hora, novo?, autor?, {de, para}?]
-const icon = a => a.tipo === 'edit' ? 'edit' : a.tipo === 'ok' ? 'check' : a.tipo === 'alert' ? 'warning'
-  : { Recebida: 'inbox', 'Lendo fatura': 'hourglass_top', Lida: 'description' }[a.nome] || 'radio_button_checked';
+// Activity: timeline, newest first
+const icon = e => e.type === 'edit' ? 'edit' : e.type === 'ok' ? 'check' : e.type === 'alert' ? 'warning'
+  : { Recebida: 'inbox', 'Lendo fatura': 'hourglass_top', Lida: 'description' }[e.name] || 'radio_button_checked';
 
-const who = u => u.sys
-  ? `<span class="who sys" data-name="Sistema" aria-label="Feito pelo sistema">${LOGO_ENERSHARE}</span>`
-  : `<span class="who" data-name="${u.name}" aria-label="Editado por ${u.name}" style="background:${u.cor}">${u.ini}</span>`;
+const author = u => u.system
+  ? `<span class="who sys" data-name="Sistema" aria-label="Feito pelo sistema">${ENERSHARE_LOGO}</span>`
+  : `<span class="who" data-name="${u.name}" aria-label="Editado por ${u.name}" style="background:${u.color}">${u.initials}</span>`;
 
-const difHTML = d => `<div class="dif" aria-hidden="true">
-  <span class="o ${d.de ? '' : 'none'}">${d.de || 'pendente'}</span><span class="ms">arrow_forward</span><span class="t">${d.para}</span></div>`;
+const diff = d => `<div class="dif" aria-hidden="true">
+  <span class="o ${d.from ? '' : 'none'}">${d.from || 'pendente'}</span><span class="ms">arrow_forward</span><span class="t">${d.to}</span></div>`;
 
-list.innerHTML = eventos.map((a, i) => `${i ? '<div class="link"></div>' : ''}
-  <div class="ev ${a.novo ? 'new' : ''} ${a.dif ? 'has-dif' : ''}" ${a.dif ? `tabindex="0" aria-label="${a.nome}: de ${a.dif.de || 'pendente'} para ${a.dif.para}"` : ''}>
-    <span class="i c-${a.tipo}"><span class="ms f">${icon(a)}</span></span>${who(a.autor || SISTEMA)}
-    <div class="n">${a.nome}</div><div class="d">${a.data} às ${a.hora}</div>${a.dif ? difHTML(a.dif) : ''}
+list.innerHTML = events.map((e, i) => `${i ? '<div class="link"></div>' : ''}
+  <div class="ev ${e.isNew ? 'new' : ''} ${e.diff ? 'has-dif' : ''}" ${e.diff ? `tabindex="0" aria-label="${e.name}: de ${e.diff.from || 'pendente'} para ${e.diff.to}"` : ''}>
+    <span class="i c-${e.type}"><span class="ms f">${icon(e)}</span></span>${author(e.author || SYSTEM)}
+    <div class="n">${e.name}</div><div class="d">${e.date} às ${e.time}</div>${e.diff ? diff(e.diff) : ''}
   </div>`).join('');
-// de → para abre por CSS: .ev.has-dif:hover/.ev.has-dif:focus .dif { max-height: 60px; opacity: 1 }
+// from → to opens via CSS: .ev.has-dif:hover / :focus .dif { max-height: 60px; opacity: 1 }
 </script>
 <script type="text/plain" class="snip" data-id="identidade">
-// Validar UC — assets/identidade.js (o mesmo arquivo é usado no protótipo)
-// Identity.mount(el, estado, onChange)  estado = { read, uc, ok, sent }
+// Validate UC: assets/identidade.js (same file as the prototype)
+// Identity.mount(el, state, onChange)   state = { read, uc, ok, sent }
 const u = UCS.find(x => x.uc === S.uc);
-const naoConfere = !!(u && u.dist !== FATURA.distribuidora);   // regra: distribuidora da UC ≠ da fatura
+const mismatch = !!(u && u.dist !== INVOICE.utility);    // rule: UC utility ≠ invoice utility
 
-const titulo = naoConfere ? 'A unidade não confere com a fatura'
-             : S.read ? 'Confirme a unidade da fatura' : 'Vincule a unidade da fatura';
-const ajuda  = naoConfere ? `A fatura é da ${FATURA.distribuidora}, mas esta unidade é da ${u.dist}.`
-             : S.uc === S.read ? 'Encontrada pela leitura da fatura.' : `Lida na fatura: ${FATURA.ucLida}`;
-validar.disabled = !u || naoConfere;
+const title = mismatch ? 'A unidade não confere com a fatura'
+            : S.read ? 'Confirme a unidade da fatura' : 'Vincule a unidade da fatura';
+const help  = mismatch ? `A fatura é da ${INVOICE.utility}, mas esta unidade é da ${u.dist}.`
+            : S.uc === S.read ? 'Encontrada pela leitura da fatura.' : `Lida na fatura: ${INVOICE.readUc}`;
+validateBtn.disabled = !u || mismatch;
 
-// combobox: botão abre popover com busca + opções de rádio (UC · distribuidora · titular)
-trigger.onclick = open;                              // ↓ também abre
-search.oninput = () => { act = -1; draw(); };        // filtra por UC, distribuidora ou titular
+// combobox: trigger opens a popover with search + radio options (UC · utility · holder)
+trigger.onclick = open;                           // ↓ opens too
+search.oninput = () => { active = -1; draw(); };  // filters by UC, utility or holder
 search.onkeydown = e => {
-  if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { /* move a opção ativa */ }
-  else if (e.key === 'Enter')  pick((shown[Math.max(act, 0)]).uc);
-  else if (e.key === 'Escape') close(true);           // foco volta ao campo
+  if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { /* move active option */ }
+  else if (e.key === 'Enter')  pick(shown[Math.max(active, 0)].uc);
+  else if (e.key === 'Escape') close(true);        // focus back to the trigger
 };
-popover.style.top = (help.offsetTop + help.offsetHeight) + 'px';   // abre abaixo da ajuda (Figma)
+popover.style.top = (help.offsetTop + help.offsetHeight) + 'px';   // opens below the help text (Figma)
 
-validar.onclick = () => { S.ok = true; onChange('validar'); };      // pílula "UC … validada" + Alterar
-alterar.onclick = () => { S.ok = false; onChange('alterar'); };     // dados travam de novo
-// até validar: .content.wait { opacity: .45; pointer-events: none } e o card de pendências manda para a UC
+validateBtn.onclick = () => { S.ok = true; onChange('validar'); };  // pill "UC … validada" + Alterar
+changeBtn.onclick   = () => { S.ok = false; onChange('alterar'); }; // data locks again
+// until validated: .content.wait { opacity: .45; pointer-events: none }
 </script>
 <script type="text/plain" class="snip" data-id="extrair">
-// Extrair novamente — sem contador na tela; a contagem aparece só no diálogo
-function renderHead() {
-  if (enviada) { actions.innerHTML = `<span class="sent-by">Enviada por ${quem} em ${quando}</span>`; return; }
-  actions.innerHTML = `<button class="btn outline" id="reExt" ${tentativas ? '' : 'disabled title="Sem tentativas restantes"'}>
+// Extract again: no counter on screen; the count lives in the dialog
+function renderHeader() {
+  if (sent) { actions.innerHTML = `<span class="sent-by">Enviada por ${who} em ${when}</span>`; return; }
+  actions.innerHTML = `<button class="btn outline" id="reExt" ${attempts ? '' : 'disabled title="Sem tentativas restantes"'}>
     <span class="ms">refresh</span>Extrair novamente</button>`;
-  reExt.onclick = reExtract;
+  reExt.onclick = confirmExtract;
 }
 
-function reExtract() {
+function confirmExtract() {
   const ov = document.createElement('div'); ov.className = 'dlg-ov';
   ov.innerHTML = `<div class="dlg" role="alertdialog" aria-modal="true" aria-labelledby="dlgT" aria-describedby="dlgD">
     <h2 id="dlgT">Extrair a fatura novamente?</h2>
     <p id="dlgD">A leitura recomeça do zero e as correções feitas aqui são descartadas.
-      ${tentativas === 1 ? 'Esta é a última tentativa.' : `Restam ${tentativas} de 2 tentativas.`}</p>
+      ${attempts === 1 ? 'Esta é a última tentativa.' : `Restam ${attempts} de 2 tentativas.`}</p>
     <div class="acts"><button class="btn outline" data-x>Cancelar</button><button class="btn primary" data-y>Extrair novamente</button></div></div>`;
   document.body.appendChild(ov);
-  const close = () => { ov.remove(); document.getElementById('reExt')?.focus(); };   // foco volta ao botão
+  const close = () => { ov.remove(); document.getElementById('reExt')?.focus(); };   // focus back to the button
   ov.querySelector('[data-x]').onclick = close;
   ov.onclick = e => { if (e.target === ov) close(); };
-  ov.onkeydown = e => {
-    if (e.key === 'Escape') close();
-    if (e.key === 'Tab') { /* foco preso entre Cancelar e Extrair novamente */ }
-  };
-  ov.querySelector('[data-y]').onclick = async () => { close(); await api.extrairNovamente(faturaId); tentativas--; render(); };
+  ov.onkeydown = e => { if (e.key === 'Escape') close(); if (e.key === 'Tab') { /* trap focus in the dialog */ } };
+  ov.querySelector('[data-y]').onclick = async () => { close(); await api.extractAgain(invoiceId); attempts--; render(); };
   ov.querySelector('[data-x]').focus();
 }
 </script>
 <script type="text/plain" class="snip" data-id="mobile">
-// Mobile — header e tab bar saem ao rolar; badges abrem o painel do header
+// Mobile: header and tab bar hide on scroll; badges open the header sheet
 const setChrome = show => document.documentElement.classList.toggle('chrome-hide', !show);
-// CSS: .chrome-hide .m-head { margin-top: calc(var(--mh) * -1) }   .chrome-hide .tabbar { transform: translate(-50%, calc(100% + 40px)) }  (280 ms)
+// CSS: .chrome-hide .m-head { margin-top: calc(var(--mh) * -1) }
+//      .chrome-hide .tabbar { transform: translate(-50%, calc(100% + 40px)) }   (280 ms)
 
 const lastTop = new WeakMap();
 document.addEventListener('scroll', e => {
-  const el = e.target, t = el.scrollTop, p = lastTop.get(el); lastTop.set(el, t);
-  if (!mobile || p === undefined) return;
-  const d = t - p; if (Math.abs(d) < 4) return;       // rolagem lateral não muda scrollTop
-  if (t < 8) return setChrome(true);                  // topo: voltam
-  setChrome(d < 0);                                   // sobe: voltam · desce: saem
+  const el = e.target, t = el.scrollTop, prev = lastTop.get(el); lastTop.set(el, t);
+  if (!mobile || prev === undefined) return;
+  const d = t - prev; if (Math.abs(d) < 4) return;   // horizontal scroll doesn't change scrollTop
+  if (t < 8) return setChrome(true);               // top: show
+  setChrome(d < 0);                                // up: show · down: hide
 }, true);
-// trocar de tela pela tab bar → setChrome(true)
+// switching screens → setChrome(true)
 
-// painel do header
 badges.forEach(b => b.onclick = () => { trigger = b; overlay.hidden = false; show('info'); closeBtn.focus(); });
-historico.onclick = () => show('act');                // Atividade dentro do painel; ‹ volta
+historyBtn.onclick = () => show('activity');      // Activity inside the sheet; ‹ goes back
 const closeSheet = () => { overlay.hidden = true; trigger?.focus(); };
 overlay.onclick = e => { if (e.target === overlay) closeSheet(); };
-document.addEventListener('keydown', e => { if (e.key === 'Escape' && !overlay.hidden) view === 'act' ? show('info') : closeSheet(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !overlay.hidden) view === 'activity' ? show('info') : closeSheet(); });
 </script>
 <script type="text/plain" class="snip" data-id="filtro">
-// Filtros — padrão do Cadastro (index.html)
-const FDEF = [
-  { k: 'st',   label: 'Situação',       all: 'Todas', opts: situacoes },
+// Filters: registry pattern (index.html)
+const FILTERS = [
+  { k: 'st',   label: 'Situação',       all: 'Todas', opts: statuses },
   { k: 'pend', label: 'Pendências',     all: 'Todas', opts: ['Com pendências', 'Sem pendências', 'Não se aplica'] },
-  { k: 'conc', label: 'Concessionária', all: 'Todas', opts: concessionarias },
-  { k: 'env',  label: 'Enviado por',    all: 'Todos', opts: pessoas },
+  { k: 'conc', label: 'Concessionária', all: 'Todas', opts: utilities },
+  { k: 'env',  label: 'Enviado por',    all: 'Todos', opts: people },
   { k: 'dt',   label: 'Recebida em', date: true, opts: ['Qualquer data', 'Últimos 7 dias', 'Últimos 30 dias'] } ];
 
-function chipHTML(f) {                                // "Rótulo | até 2 valores +N ▾"
-  const vals = f.date ? [S.dt] : (S.F[f.k].length ? S.F[f.k] : [f.all]);
+function chipHTML(f) {                            // "Label | up to 2 values +N ▾"
+  const vals = f.date ? [S.date] : (S.sel[f.k].length ? S.sel[f.k] : [f.all]);
   const shown = vals.slice(0, 2), extra = vals.length - shown.length;
-  return `<button class="fchip ${S.fOpen === f.k ? 'open' : ''}" data-fk="${f.k}" aria-haspopup="dialog" aria-expanded="${S.fOpen === f.k}">
+  return `<button class="fchip ${S.open === f.k ? 'open' : ''}" data-fk="${f.k}" aria-haspopup="dialog" aria-expanded="${S.open === f.k}">
     <span class="fl">${f.label}</span><span class="fsep"></span>${shown.map(v => `<span class="fb">${v}</span>`).join('')}
     ${extra ? `<span class="fx">+${extra}</span>` : ''}<span class="msr">expand_more</span></button>`;
 }
 
-// escolher: checkbox aplica na hora e o menu continua aberto; data (rádio) aplica e fecha
+// checkbox applies and keeps the menu open; date (radio) applies and closes
 menu.onclick = e => {
-  const f = filtroAberto, o = e.target.closest('[data-fv]');
-  if (e.target.closest('#fclr')) f.date ? S.dt = 'Qualquer data' : S.F[f.k] = [];
-  else if (o) f.date ? S.dt = o.dataset.fv : S.F[f.k] = toggle(S.F[f.k], o.dataset.fv);
-  render(); if (!f.date) openFilter(chip(f.k)); else chip(f.k).focus();
+  const f = openFilter, o = e.target.closest('[data-fv]');
+  if (e.target.closest('.fclr')) f.date ? S.date = 'Qualquer data' : S.sel[f.k] = [];
+  else if (o) f.date ? S.date = o.dataset.fv : S.sel[f.k] = toggle(S.sel[f.k], o.dataset.fv);
+  render(); if (!f.date) open(chip(f.k)); else chip(f.k).focus();
 };
-// funil: mostra/esconde a linha; escondida, os filtros continuam valendo e o funil mostra quantos estão ativos
-// "Limpar todos" só aparece com algum filtro ativo · Esc ou clique fora fecha o menu
+// funnel shows/hides the row (hidden filters still apply; funnel shows the count)
+// "Limpar todos" only with an active filter · Esc or outside click closes
 </script>
 <script type="text/plain" class="snip" data-id="upload">
-// Nova fatura — conferir a lista e só então enviar; um arquivo por vez
-const MAXF = 20, MAXB = 20 * 1024 * 1024, OK = /^(application\/pdf|image\/(jpeg|png|webp))$/;
+// New invoice: review the list, then send; one file at a time
+const MAX_FILES = 20, MAX_BYTES = 20 * 1024 * 1024, OK = /^(application\/pdf|image\/(jpeg|png|webp))$/;
 
 function addFiles(list) {
   let extra = 0; const dup = [];
   for (const f of list) {
-    if (NF.files.some(x => x.name === f.name && x.bytes === f.size)) { dup.push(f.name); continue; }   // repetido não entra
-    if (NF.files.length >= MAXF) { extra++; continue; }
+    if (files.some(x => x.name === f.name && x.bytes === f.size)) { dup.push(f.name); continue; }   // duplicates not added
+    if (files.length >= MAX_FILES) { extra++; continue; }
     const it = { name: f.name, bytes: f.size, state: 'ready' };
-    if (!OK.test(f.type))  { it.state = 'err'; it.err = 'Formato não aceito. Envie PDF, JPG, PNG ou WebP.'; }
-    else if (!f.size)      { it.state = 'err'; it.err = 'Arquivo vazio. Escolha o arquivo de novo.'; }
-    else if (f.size > MAXB){ it.state = 'err'; it.err = 'Maior que 20 MB. Diminua o arquivo ou tire uma foto da fatura.'; }
-    NF.files.push(it);
+    if (!OK.test(f.type))         { it.state = 'err'; it.err = 'Formato não aceito. Envie PDF, JPG, PNG ou WebP.'; }
+    else if (!f.size)             { it.state = 'err'; it.err = 'Arquivo vazio. Escolha o arquivo de novo.'; }
+    else if (f.size > MAX_BYTES)  { it.state = 'err'; it.err = 'Maior que 20 MB. Diminua o arquivo ou tire uma foto da fatura.'; }
+    files.push(it);
   }
-  if (extra) toast(`Limite de ${MAXF} arquivos por envio. ${extra} ficaram de fora.`);
+  if (extra) toast(`Limite de ${MAX_FILES} arquivos por envio. ${extra} ficaram de fora.`);
   else if (dup.length) toast(`${dup[0]} já está na lista.`);
-  render();                                   // botão: "Enviar N faturas" conta só os válidos
+  render();                                       // "Enviar N faturas" counts valid files only
 }
 
 async function send() {
-  const q = NF.files.filter(f => f.state !== 'err'); NF.sending = true; NF.files = q; render();
-  for (const f of q) {                        // sequencial: barra + %
+  const queue = files.filter(f => f.state !== 'err'); sending = true; files = queue; render();
+  for (const f of queue) {                        // sequential: bar + %
     f.state = 'up'; render();
     await upload(f, pct => { f.pct = pct; updateBar(f); });
-    f.state = 'done'; render();               // "Enviada para leitura" + check
+    f.state = 'done'; render();                   // "Enviada para leitura" + check
   }
-  fecharModal();                              // entram no topo da listagem como "Lendo fatura", destacadas
+  closeModal();                                   // new rows on top as "Lendo fatura", highlighted
 }
-// arrastar: dragenter/dragleave com contador; a área mostra "Solte para adicionar N arquivos"
+// drag: dragenter/dragleave counter; drop zone shows "Solte para adicionar N arquivos"
 </script>
 
 <script src="assets/identidade.js"></script>

@@ -3,54 +3,55 @@
    Regra: a distribuidora vem do cadastro da UC; se não for a mesma da fatura, a unidade não confere e não valida.
    Uso: Identity.mount(el, state, onChange) — state = {read, uc, ok, sent}; chame de novo para redesenhar. */
 (function(){
-  /* valores do Figma (Detalhe › UC validation): bloco hover:secondary #f5f5f4, raio 16, padding 24 (mobile 16), gap 16 */
+  /* seletores prefixados com .idf-c: vencem estilos genéricos de botão de quem usa o componente.
+     valores do Figma (Detalhe › UC validation): bloco hover:secondary #f5f5f4, raio 16, padding 24 (mobile 16), gap 16 */
   const CSS=`
-  .idf{background:#f5f5f4;border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:16px;font:400 14px/1.7 Inter,sans-serif;color:#1c1917}
-  .idf-h{display:flex;flex-direction:column;gap:6px}
-  .idf-h b{display:block;font:600 20px/1.2 Poppins,Inter,sans-serif;color:#292524}
-  .idf-h span{display:block;font-size:14px;line-height:1.7;color:#78716c}
-  .idf.bad .idf-h b,.idf.bad .idf-l,.idf.bad .idf-help{color:#f43f5e}
-  .idf-r{display:flex;gap:16px;align-items:center}
-  .idf-f{flex:1;min-width:0;display:flex;flex-direction:column;gap:8px;position:relative}
-  .idf-l{font-size:14px;line-height:1.7;font-weight:400}
-  .idf-t{height:44px;display:flex;align-items:center;padding:10px 12px;border:1px solid #d6d3d1;border-radius:6px;background:#fafaf9;text-align:left;width:100%;font:inherit;color:#1c1917;cursor:pointer}
-  .idf-t .v{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .idf-t .v.ph{color:#78716c}
-  .idf-t svg{flex:none;margin-left:16px;color:#1c1917}
-  .idf-t:focus-visible,.idf-t[aria-expanded=true]{outline:0;border-color:#1c1917;box-shadow:0 0 0 1px #1c1917}
-  .idf-help{font-size:12px;line-height:1.4;color:#78716c}
-  .idf.bad .idf-help{font-size:14px;line-height:1.7}
-  .idf-b{height:40px;padding:8px 16px;border-radius:6px;border:0;background:#1c1917;color:#fafaf9;font:400 14px/1.7 Inter,sans-serif;cursor:pointer;white-space:nowrap;flex:none}
-  .idf-b:disabled{opacity:.5;cursor:not-allowed}
-  .idf-pop{position:absolute;z-index:30;top:101px;left:0;right:0;background:#fff;border:1px solid #f5f5f4;border-radius:8px;box-shadow:0 10px 15px -3px rgba(0,0,0,.1),0 4px 6px -4px rgba(0,0,0,.1);overflow:hidden;animation:idfIn .12s ease}
-  @keyframes idfIn{from{opacity:0;transform:translateY(-4px)}}
-  .idf-s{display:flex;align-items:center;gap:8px;height:44px;padding:10px 12px;border-bottom:1px solid #f5f5f4}
-  .idf-s .ms{font-family:"Material Symbols Rounded";font-size:16px;color:#1c1917;font-style:normal;line-height:1}
-  .idf-s input{flex:1;border:0;outline:0;font:inherit;background:none;color:#1c1917}
-  .idf-s input::placeholder{color:#78716c}
-  .idf-ls{padding:4px;max-height:240px;overflow:auto}
-  .idf-o{display:flex;align-items:center;gap:8px;width:100%;height:36px;padding:6px 8px 6px 32px;border:0;background:#fff;border-radius:4px;font:400 14px/1.7 Inter,sans-serif;color:#1c1917;text-align:left;cursor:pointer}
-  .idf-o .tx{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .idf-o .ms{font-family:"Material Symbols Rounded";font-size:16px;font-style:normal;line-height:1;color:#1c1917}
-  .idf-o:hover,.idf-o.act{background:#f5f5f4}
-  .idf-none{padding:8px 8px 8px 32px;font-size:14px;color:#78716c}
+  .idf-c .idf{background:#f5f5f4;border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:16px;font:400 14px/1.7 Inter,sans-serif;color:#1c1917}
+  .idf-c .idf-h{display:flex;flex-direction:column;gap:6px}
+  .idf-c .idf-h b{display:block;font:600 20px/1.2 Poppins,Inter,sans-serif;color:#292524}
+  .idf-c .idf-h span{display:block;font-size:14px;line-height:1.7;color:#78716c}
+  .idf-c .idf.bad .idf-h b,.idf-c .idf.bad .idf-l,.idf-c .idf.bad .idf-help{color:#f43f5e}
+  .idf-c .idf-r{display:flex;gap:16px;align-items:center}
+  .idf-c .idf-f{flex:1;min-width:0;display:flex;flex-direction:column;gap:8px;position:relative}
+  .idf-c .idf-l{font-size:14px;line-height:1.7;font-weight:400}
+  .idf-c .idf-t{height:44px;display:flex;align-items:center;padding:10px 12px;border:1px solid #d6d3d1;border-radius:6px;background:#fafaf9;text-align:left;width:100%;font:inherit;color:#1c1917;cursor:pointer}
+  .idf-c .idf-t .v{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .idf-c .idf-t .v.ph{color:#78716c}
+  .idf-c .idf-t svg{flex:none;margin-left:16px;color:#1c1917}
+  .idf-c .idf-t:focus-visible,.idf-c .idf-t[aria-expanded=true]{outline:0;border-color:#1c1917;box-shadow:0 0 0 1px #1c1917}
+  .idf-c .idf-help{font-size:12px;line-height:1.4;color:#78716c}
+  .idf-c .idf.bad .idf-help{font-size:14px;line-height:1.7}
+  .idf-c .idf-b{height:40px;padding:8px 16px;border-radius:6px;border:0;background:#1c1917;color:#fafaf9;font:400 14px/1.7 Inter,sans-serif;cursor:pointer;white-space:nowrap;flex:none}
+  .idf-c .idf-b:disabled{opacity:.5;cursor:not-allowed}
+  .idf-c .idf-pop{position:absolute;z-index:30;top:101px;left:0;right:0;background:#fff;border:1px solid #f5f5f4;border-radius:8px;box-shadow:0 10px 15px -3px rgba(0,0,0,.1),0 4px 6px -4px rgba(0,0,0,.1);overflow:hidden;animation:idfIn .12s ease}
+ @keyframes idfIn{from{opacity:0;transform:translateY(-4px)}}
+  .idf-c .idf-s{display:flex;align-items:center;gap:8px;height:44px;padding:10px 12px;border-bottom:1px solid #f5f5f4}
+  .idf-c .idf-s .ms{font-family:"Material Symbols Rounded";font-size:16px;color:#1c1917;font-style:normal;line-height:1}
+  .idf-c .idf-s input{flex:1;border:0;outline:0;font:inherit;background:none;color:#1c1917}
+  .idf-c .idf-s input::placeholder{color:#78716c}
+  .idf-c .idf-ls{padding:4px;max-height:240px;overflow:auto}
+  .idf-c .idf-o{display:flex;align-items:center;gap:8px;width:100%;height:36px;padding:6px 8px 6px 32px;border:0;background:#fff;border-radius:4px;font:400 14px/1.7 Inter,sans-serif;color:#1c1917;text-align:left;cursor:pointer}
+  .idf-c .idf-o .tx{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .idf-c .idf-o .ms{font-family:"Material Symbols Rounded";font-size:16px;font-style:normal;line-height:1;color:#1c1917}
+  .idf-c .idf-o:hover,.idf-c .idf-o.act{background:#f5f5f4}
+  .idf-c .idf-none{padding:8px 8px 8px 32px;font-size:14px;color:#78716c}
   /* validada / enviada: bloco padding 12; pílula 48 px, fundo view only rgba(245,245,244,.4), ícone verified #65a30d, texto Inter Bold 14 */
-  .idf.ok{flex-direction:row;align-items:center;gap:8px;padding:12px}
-  .idf-pill{display:inline-flex;align-items:center;gap:12px;height:48px;padding:12px 16px 12px 12px;border-radius:999px;background:rgba(245,245,244,.4);font:700 14px/1.7 Inter,sans-serif;color:#1c1917;min-width:0}
-  .idf-pill .ms{font-family:"Material Symbols Rounded";font-size:20px;font-style:normal;line-height:1;color:#65a30d;font-variation-settings:"FILL" 1}
-  .idf-pill .tx{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .idf-pill.lock .ms{color:#78716c}
-  .idf-sp{flex:1}
-  .idf-g{height:36px;padding:6px 12px;border:0;background:none;border-radius:6px;font:400 14px/1.7 Inter,sans-serif;color:#1c1917;cursor:pointer;flex:none}
-  .idf-g:hover{background:#e7e5e4}
+  .idf-c .idf.ok{flex-direction:row;align-items:center;gap:8px;padding:12px}
+  .idf-c .idf-pill{display:inline-flex;align-items:center;gap:12px;height:48px;padding:12px 16px 12px 12px;border-radius:999px;background:rgba(245,245,244,.4);font:700 14px/1.7 Inter,sans-serif;color:#1c1917;min-width:0}
+  .idf-c .idf-pill .ms{font-family:"Material Symbols Rounded";font-size:20px;font-style:normal;line-height:1;color:#65a30d;font-variation-settings:"FILL" 1}
+  .idf-c .idf-pill .tx{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .idf-c .idf-pill.lock .ms{color:#78716c}
+  .idf-c .idf-sp{flex:1}
+  .idf-c .idf-g{height:36px;padding:6px 12px;border:0;background:none;border-radius:6px;font:400 14px/1.7 Inter,sans-serif;color:#1c1917;cursor:pointer;flex:none}
+  .idf-c .idf-g:hover{background:#e7e5e4}
   /* estreito (mobile, Figma M1): padding 16 e botão em largura total abaixo do campo — pela largura do espaço, não da janela */
   .idf-c{container-type:inline-size}
-  @container (max-width:519px){
-    .idf{padding:16px}
-    .idf-r{flex-direction:column;align-items:stretch}
-    .idf.ok{padding:12px}
-    .idf-pill{height:auto}
-    .idf-pill .tx{white-space:normal}
+ @container (max-width:519px){
+    .idf-c .idf{padding:16px}
+    .idf-c .idf-r{flex-direction:column;align-items:stretch}
+    .idf-c .idf.ok{padding:12px}
+    .idf-c .idf-pill{height:auto}
+    .idf-c .idf-pill .tx{white-space:normal}
   }`;
   const st=document.createElement('style'); st.textContent=CSS; document.head.appendChild(st);
 
