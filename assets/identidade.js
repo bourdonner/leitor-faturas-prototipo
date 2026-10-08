@@ -81,7 +81,7 @@
   function mount(el,S,onChange){
     const u=of(S.uc), bad=!!(u && u.dist!==INV.dist);
     const nr='';
-    if(S.sent){ el.innerHTML=`<div class="idf-c"><div class="idf ok ${nr}"><span class="idf-pill lock"><span class="ms" aria-hidden="true">lock</span><span class="tx">Enviada para faturamento · ${esc(S.sent.at)} · ${esc(lab(u))}</span></span></div></div>`; return; }
+    if(S.sent){ el.innerHTML=`<div class="idf-c"><div class="idf ok ${nr}"><span class="idf-pill lock"><span class="ms" aria-hidden="true">lock</span><span class="tx">Enviada para faturamento no dia ${esc(S.sent.at)}</span></span></div></div>`; return; }
     if(S.ok){ el.innerHTML=`<div class="idf-c"><div class="idf ok ${nr}"><span class="idf-pill"><span class="ms" aria-hidden="true">verified</span><span class="tx">UC ${esc(u.uc)} validada · ${esc(u.dist)}</span></span><span class="idf-sp"></span><button class="idf-g" data-alt>Alterar</button></div></div>`;
       el.querySelector('[data-alt]').onclick=()=>{ S.ok=false; onChange('alterar'); el.querySelector('.idf-t')?.focus(); }; return; }
     const title = bad ? 'A unidade não confere com a fatura' : S.read ? 'Confirme a unidade da fatura' : 'Vincule a unidade da fatura';

@@ -229,7 +229,7 @@ Estados de demonstração: `detalhe.html?estado=` `identidade` · `nao-encontrad
 - **Soma dos itens**: a soma da coluna Valor tem que fechar com o Total da fatura (R$ 4.440,13). Editou e não fechou → a célula vira pendência com o valor que fecha como placeholder. Corrigiu com outro valor que ainda não fecha → continua pendência. O rodapé da planilha mostra a soma em vermelho enquanto não fecha.
 - **Sugestão no placeholder**: quando o valor é fácil de derivar, ele vai no placeholder (nunca preenchido): COFINS = valor ÷ base (3,38%), leitura atual = anterior + consumo (13.020), ICMS do item = 18% do valor (437,60), item da soma = valor que fecha. A dica abaixo do campo diz de onde veio.
 - **Faturar**: substitui o botão Pendências quando a UC está validada e não há pendência. Fundo brand, ícone sobre o texto no desktop e só ícone no mobile (aria-label "Enviar para faturamento"). Estados: hover (neon/800) e carregando ("Enviando…", ícone girando, não clicável).
-- **Enviada (só leitura)**: some a edição (lápis, planilha), some a tab bar de ação, a pílula vira cadeado "Enviada para faturamento · data · UC", o chip do cabeçalho vira "Enviada para faturamento" e no lugar de Extrair novamente aparece "Enviada por … em …".
+- **Enviada (só leitura)**: some a edição (lápis, planilha), some a tab bar de ação, a pílula vira cadeado "Enviada para faturamento no dia dd/mm/aaaa às hh:mm", o chip do cabeçalho vira "Enviada para faturamento" e no lugar de Extrair novamente aparece "Enviada por … em …".
 
 ---
 

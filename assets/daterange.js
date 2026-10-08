@@ -4,22 +4,23 @@
    Células 36×33, Poppins 14; início/fim #1c1917 com texto claro; meio do intervalo #f5f5f4 sem raio. */
 (function(){
   const CSS=`
+  /* seletores reforçados (.drp.drp.drp): o calendário entra em páginas que já estilizam 'button' (menus .dd), e precisa ganhar sempre */
   .drp{display:flex;gap:24px;font:400 14px/1.5 Inter,sans-serif;color:#0c0a09}
-  .drp .drp-m{display:flex;flex-direction:column;gap:8px}
-  .drp .drp-h{position:relative;display:flex;align-items:center;justify-content:center;height:28px;font:500 16px/1.5 Poppins,Inter,sans-serif;text-transform:capitalize}
-  .drp .drp-nav{height:28px;padding:0;position:absolute;top:0;width:28px;height:28px;border:1px solid #e7e5e4;border-radius:6px;background:#fff;display:grid;place-items:center;cursor:pointer;color:#0c0a09;padding:0}
-  .drp .drp-nav:hover{background:#f5f5f4}
-  .drp .drp-nav.p{left:0} .drp .drp-nav.n{right:0}
-  .drp .drp-g{display:grid;grid-template-columns:repeat(7,36px);row-gap:4px}
-  .drp .drp-w{height:24px;display:grid;place-items:center;font:400 12px/1 Poppins,Inter,sans-serif;color:#78716c}
-  .drp .drp-d{position:static;display:block;text-align:center;width:36px;height:33px;border:0;padding:0;background:none;border-radius:6px;font:500 14px/1 Poppins,Inter,sans-serif;color:#0c0a09;cursor:pointer}
-  .drp .drp-d:hover{background:#f5f5f4}
-  .drp .drp-d:focus-visible{outline:2px solid #71902f;outline-offset:-2px}
-  .drp .drp-d.out{color:#a8a29e;font-weight:400}
-  .drp .drp-d.in{background:#f5f5f4;border-radius:0}
-  .drp .drp-d.in.l{border-radius:6px 0 0 6px} .drp .drp-d.in.r{border-radius:0 6px 6px 0} .drp .drp-d.in.l.r{border-radius:6px}
-  .drp .drp-d.end{background:#1c1917;color:#fafaf9;border-radius:6px}
-  .drp .drp-d.today:not(.end){text-decoration:underline;text-underline-offset:3px}`;
+  .drp.drp.drp .drp-m{display:flex;flex-direction:column;gap:8px;flex:none}
+  .drp.drp.drp .drp-h{position:relative;display:flex;align-items:center;justify-content:center;height:28px;padding:0 36px;font:500 16px/1.5 Poppins,Inter,sans-serif;text-transform:capitalize;white-space:nowrap}
+  .drp.drp.drp .drp-nav{position:absolute;top:0;left:auto;right:auto;width:28px;height:28px;min-width:0;margin:0;padding:0;border:1px solid #e7e5e4;border-radius:6px;background:#fff;display:grid;place-items:center;cursor:pointer;color:#0c0a09;font:inherit;line-height:1;text-align:center;box-shadow:none}
+  .drp.drp.drp .drp-nav:hover{background:#f5f5f4}
+  .drp.drp.drp .drp-nav.p{left:0} .drp.drp.drp .drp-nav.n{right:0}
+  .drp.drp.drp .drp-g{display:grid;grid-template-columns:repeat(7,36px);row-gap:4px}
+  .drp.drp.drp .drp-w{height:24px;display:grid;place-items:center;font:400 12px/1 Poppins,Inter,sans-serif;color:#78716c}
+  .drp.drp.drp .drp-d{position:static;display:grid;place-items:center;width:36px;height:33px;min-width:0;margin:0;padding:0;border:0;border-radius:6px;background:none;box-shadow:none;font:500 14px/1 Poppins,Inter,sans-serif;color:#0c0a09;text-align:center;cursor:pointer}
+  .drp.drp.drp .drp-d:hover{background:#f5f5f4}
+  .drp.drp.drp .drp-d:focus-visible{outline:2px solid #71902f;outline-offset:-2px}
+  .drp.drp.drp .drp-d.blank{visibility:hidden;pointer-events:none}
+  .drp.drp.drp .drp-d.in{background:#f5f5f4;border-radius:0}
+  .drp.drp.drp .drp-d.in.l{border-radius:6px 0 0 6px} .drp.drp.drp .drp-d.in.r{border-radius:0 6px 6px 0} .drp.drp.drp .drp-d.in.l.r{border-radius:6px}
+  .drp.drp.drp .drp-d.end{background:#1c1917;color:#fafaf9;border-radius:6px}
+  .drp.drp.drp .drp-d.today:not(.end){text-decoration:underline;text-underline-offset:3px}`;
   const st=document.createElement('style'); st.textContent=CSS; document.head.appendChild(st);
   const MES=['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
   const DOW=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
@@ -42,8 +43,9 @@
         for(let i=0;i<42;i++){
           const d=new Date(start); d.setDate(start.getDate()+i); const out=d.getMonth()!==first.getMonth(), col=i%7;
           if(i===35 && d.getMonth()!==first.getMonth()) break; // não desenha a 6ª linha se ela for toda do mês seguinte
-          const inR=lo&&hi&&d>=lo&&d<=hi, end=same(d,a)||same(d,b);
-          const cls=['drp-d',out?'out':'',inR&&!end?'in':'',end?'end':'',same(d,today)?'today':'',inR&&(col===0||same(d,lo))?'l':'',inR&&(col===6||same(d,hi))?'r':''].join(' ');
+          const inR=lo&&hi&&d>=lo&&d<=hi, end=same(d,a)||same(d,b)||(!b&&same(d,hov));
+          if(out){ h+='<span class="drp-d blank" aria-hidden="true"></span>'; continue; }
+          const cls=['drp-d',inR&&!end?'in':'',end?'end':'',same(d,today)?'today':'',inR&&(col===0||same(d,lo)||d.getDate()===1)?'l':'',inR&&(col===6||same(d,hi)||new Date(d.getFullYear(),d.getMonth(),d.getDate()+1).getDate()===1)?'r':''].join(' ');
           h+=`<button type="button" class="${cls}" data-d="${d.getTime()}" aria-label="${fmt(d)}" aria-pressed="${end}">${d.getDate()}</button>`;
         }
         h+='</div></div>';
