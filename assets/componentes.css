@@ -73,7 +73,7 @@
 .cx.mob .tb{padding:15px 4px;min-width:0}
 .cx.mob .tb .ms{font-size:26px!important}
 .cx.mob .tb > span:not(.ic){position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-.cx.mob .tb-pend,.cx.mob .tb-send{flex:none;width:68px;padding:15px 4px;justify-content:center}
+.cx.mob .tb-pend,.cx.mob .tb-send{flex:none;width:71px;height:71px;padding:0;justify-content:center} /* círculo: largura = altura da barra */
 .cx.mob .tb[data-toggle=act]{display:none}
 @media (prefers-reduced-motion:reduce){.cx .tb::before,.cx .panel{transition:none}.cx .tb .ic,.cx .panel.opening{animation:none!important}}
 
