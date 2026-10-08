@@ -603,21 +603,69 @@ comp({id:'upload', grp:'Listagem', t:'Nova fatura (envio)', lib:'File Upload Ite
   $$('[data-s]',r).forEach(b=>b.onclick=()=>{ if(NF.sending) return toast('Aguarde o envio terminar.'); const k=b.dataset.s; addFiles(k==='many'?Array.from({length:22},(_,i)=>({name:`fatura-${String(i+1).padStart(2,'0')}.pdf`,type:'application/pdf',size:500000+i})):[SIM[k]]); });
   r._reset=()=>{ reset(); render(); }; reset(); render(); }});
 
+/* ---------- código: HTML do componente renderizado, CSS da folha de estilo, JS dos trechos da página ---------- */
+const CSSK={tabbar:['.tabbar','.tb','.cnt','tbOpen','tbClose','spin'],paineis:['.cols','.panel','.p-pdf','.p-det','.p-act','.cols-empty','panelIn'],card:['.card','.ufld','.fld','.badge','.grid','.g2','.full','kbd','.tabk'],mascaras:['.fld','.ufld','.err'],
+  planilha:['.grade','cellFlash'],pendencias:['.pend-card','.pc-','.bxs','.plist','.pl-','kbd','.tabk'],marcador:['.offi','.offl','offR','offL','offD','offU','offPing'],atividade:['.ev','.act-','.link','.c-def','.c-alert','.c-ok','.c-edit','.who'],
+  identidade:['.idf'],extrair:['.dlg-ov','.cx .dlg','.cx .btn','.sent-by','mOvIn'],mobile:['.m-','mSheetIn'],filtro:['.fbtn','.fcount','.frow','.fchip','.dd','.fp ','.fsearch','.fopts','.cbx','.rdo','.fnone','.field','.tools'],upload:['.nf','.dlg .d','.drop','.files','.fi','.ibtn','.dlg .x']};
+function cssFor(id){ const keys=CSSK[id]||[], out=[];
+  const sheets=[...document.styleSheets].filter(s=>(s.href||'').includes('componentes.css')||(s.ownerNode&&s.ownerNode.textContent.includes('.idf{')));
+  const clean=sel=>sel.replace(/\.cx\.mob /g,'[mobile] ').replace(/\.cx\.lst /g,'').replace(/\.cx /g,'');
+  const take=(r,ind)=>{
+    if(r.cssRules&&!r.selectorText&&!r.name){ const inner=[]; [...r.cssRules].forEach(x=>{ const t=take(x,ind+'  '); if(t) inner.push(t); }); return inner.length?(ind+r.cssText.split('{')[0].trim()+' {\n'+inner.join('\n')+'\n'+ind+'}'):''; }
+    const sel=r.selectorText||r.name||''; if(!keys.some(k=>sel.includes(k))) return '';
+    if(r.name) return ind+r.cssText.replace(/\s+/g,' ');
+    const body=r.style.cssText.split(';').map(x=>x.trim()).filter(Boolean).map(x=>ind+'  '+x+';').join('\n');
+    return ind+clean(sel)+' {\n'+body+'\n'+ind+'}'; };
+  sheets.forEach(s=>{ try{ [...s.cssRules].forEach(r=>{ const t=take(r,''); if(t) out.push(t); }); }catch(e){} });
+  return out.join('\n'); }
+function htmlOf(el){ const lines=[], VOID=/^(input|img|br|hr|meta|link)$/;
+  const walk=(n,d)=>{ const pad='  '.repeat(d);
+    if(n.nodeType===3){ const t=n.textContent.replace(/\s+/g,' ').trim(); if(t) lines.push(pad+t); return; }
+    if(n.nodeType!==1) return; const tag=n.tagName.toLowerCase();
+    if(tag==='svg'){ lines.push(pad+'<svg …/>'); return; }
+    const attrs=[...n.attributes].filter(a=>a.name!=='style').map(a=>a.value===''?' '+a.name:' '+a.name+'="'+a.value+'"').join('');
+    const kids=[...n.childNodes].filter(c=>c.nodeType===1||(c.nodeType===3&&c.textContent.trim()));
+    if(VOID.test(tag)){ lines.push(pad+'<'+tag+attrs+'>'); return; }
+    if(kids.length===1&&kids[0].nodeType===3){ lines.push(pad+'<'+tag+attrs+'>'+kids[0].textContent.replace(/\s+/g,' ').trim()+'</'+tag+'>'); return; }
+    lines.push(pad+'<'+tag+attrs+'>');
+    const els=kids.filter(c=>c.nodeType===1), same=els.length>3&&els.every(c=>c.tagName===els[0].tagName&&c.className.split(' ')[0]===els[0].className.split(' ')[0]);
+    (same?els.slice(0,2):kids).forEach(c=>walk(c,d+1)); if(same) lines.push(pad+'  <!-- … mais '+(els.length-2)+' iguais -->');
+    lines.push(pad+'</'+tag+'>'); };
+  walk(el,0); return lines.join('\n'); }
+const escH=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const hl={
+  // atributos antes das tags: senão o realce pega as próprias marcas que acabou de inserir
+  html:s=>escH(s).replace(/ ([a-z-]+)="([^"]*)"/g,' <i class="k-a">$1</i>="<span class="k-s">$2</span>"').replace(/(&lt;\/?)([a-z0-9-]+)/g,'$1<b class="k-t">$2</b>').replace(/(&lt;!--.*?--&gt;)/g,'<span class="k-c">$1</span>'),
+  css:s=>escH(s).replace(/^(\s*)([^\n{}]+?) \{$/gm,'$1<b class="k-t">$2</b> {').replace(/^(\s+)([a-z-]+):/gm,'$1<i class="k-a">$2</i>:'),
+  js:s=>escH(s).replace(/(\/\/[^\n]*)/g,'<span class="k-c">$1</span>').replace(/\b(const|let|function|return|if|else|for|of|new|await|async)\b(?![^<]*<\/span>)/g,'<b class="k-t">$1</b>') };
+const snip=id=>{ const s=document.querySelector('script.snip[data-id="'+id+'"]'); return s?s.textContent.replace(/^\n/,'').replace(/\s+$/,''):'// sem trecho'; };
+
 /* ---------- montagem ---------- */
 const main=$('#main'), nav=$('#navl'); let g='';
 C.forEach(c=>{
   if(c.grp!==g){ g=c.grp; nav.insertAdjacentHTML('beforeend',`<div class="grp">${g}</div>`); }
   nav.insertAdjacentHTML('beforeend',`<a href="#${c.id}" data-id="${c.id}">${c.t}</a>`);
   main.insertAdjacentHTML('beforeend',`<section class="cmp" id="${c.id}">
-    <div class="cmp-h"><h3>${c.t}</h3><span class="tags">${c.iss?`<a class="tag iss" href="https://linear.app/cogecom/issue/${c.iss}">${c.iss}</a>`:''}${c.lib?`<span class="tag">Lib: ${c.lib}</span>`:''}</span></div>
+    <div class="cmp-h"><h3>${c.t}</h3><span class="tags">${c.iss?`<a class="chip iss" href="https://linear.app/cogecom/issue/${c.iss}">${c.iss}</a>`:''}${c.lib?`<span class="chip">Lib: ${c.lib}</span>`:''}</span></div>
     <p class="lead">${c.lead}</p>
     <div class="ctrls">${c.ctrls||''}<button class="reset"><span class="pg-ms">restart_alt</span>Reiniciar</button></div>
     <div class="canvas ${['identidade','pendencias','filtro','upload','planilha','card','mascaras'].includes(c.id)?'top':''}"></div><div class="log" aria-live="polite"></div>
-    <div class="spec"><div><h4>Comportamento</h4><table class="bh">${c.beh.map(([a,b])=>`<tr><td>${a}</td><td>${b}</td></tr>`).join('')}</table></div><div><h4>Notas</h4><ul class="nt">${c.notes.map(n=>`<li>${n}</li>`).join('')}</ul></div></div></section>`);
+    <div class="dt"><div class="ptabs" role="tablist" aria-label="${c.t}"><button role="tab" class="ptab on" aria-selected="true" data-dt="beh">Comportamento</button><button role="tab" class="ptab" aria-selected="false" data-dt="notes">Notas</button><button role="tab" class="ptab" aria-selected="false" data-dt="code">Código</button></div>
+      <div class="dpane" data-p="beh"><table class="bh">${c.beh.map(([a,b])=>`<tr><td>${a}</td><td>${b}</td></tr>`).join('')}</table></div>
+      <div class="dpane" data-p="notes" hidden><ul class="nt">${c.notes.map(n=>`<li>${n}</li>`).join('')}</ul></div>
+      <div class="dpane" data-p="code" hidden><div class="code-h"><div class="ptabs sm" role="tablist"><button role="tab" class="ptab on" data-lang="html">HTML</button><button role="tab" class="ptab" data-lang="css">CSS</button><button role="tab" class="ptab" data-lang="js">JS</button></div><span class="code-src"></span><button class="copy"><span class="pg-ms">content_copy</span>Copiar</button></div><pre class="code"><code></code></pre></div></div></section>`);
   const r=$('#'+c.id); c.init(r);
+  const html0=htmlOf($('.canvas',r).firstElementChild);
   $('.reset',r).onclick=()=>{ r._reset&&r._reset(); log(r,''); };
+  const src={html:()=>html0, css:()=>cssFor(c.id), js:()=>snip(c.id)};
+  const from={html:'Estado inicial, gerado do componente renderizado', css:c.id==='identidade'?'assets/identidade.js (estilo injetado)':'assets/componentes.css · [mobile] = .cx.mob', js:'Lógica do protótipo (resumo comentado)'};
+  let lang='html', raw='';
+  const show=()=>{ raw=src[lang](); $('.code code',r).innerHTML=hl[lang](raw); $('.code-src',r).textContent=from[lang]; $$('[data-lang]',r).forEach(b=>{ b.classList.toggle('on',b.dataset.lang===lang); b.setAttribute('aria-selected',b.dataset.lang===lang); }); };
+  $$('[data-dt]',r).forEach(b=>b.onclick=()=>{ $$('[data-dt]',r).forEach(x=>{ x.classList.toggle('on',x===b); x.setAttribute('aria-selected',x===b); }); $$('.dpane',r).forEach(p=>p.hidden=p.dataset.p!==b.dataset.dt); if(b.dataset.dt==='code') show(); });
+  $$('[data-lang]',r).forEach(b=>b.onclick=()=>{ lang=b.dataset.lang; show(); });
+  $('.copy',r).onclick=()=>{ navigator.clipboard?.writeText(raw).catch(()=>{}); toast('Código copiado'); };
 });
-const io=new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting) $$('nav.side a[data-id]').forEach(a=>a.classList.toggle('on',a.dataset.id===e.target.id)); }),{rootMargin:'-30% 0px -65% 0px'});
+const io=new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting) $$('#navl a[data-id]').forEach(a=>a.classList.toggle('on',a.dataset.id===e.target.id)); }),{root:$('#sheet'),rootMargin:'-20% 0px -70% 0px'});
 $$('section.cmp').forEach(s=>io.observe(s));
 const ALIAS={cards:'card',listagem:'filtro'}; const h=location.hash.slice(1); if(ALIAS[h]) location.replace('#'+ALIAS[h]); else if(h) document.getElementById(h)?.scrollIntoView();
 })();
