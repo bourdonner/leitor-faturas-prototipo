@@ -645,7 +645,7 @@ const main=$('#main'), nav=$('#navl'); let g='';
 C.forEach(c=>{
   if(c.grp!==g){ g=c.grp; nav.insertAdjacentHTML('beforeend',`<div class="grp">${g}</div>`); }
   nav.insertAdjacentHTML('beforeend',`<a href="#${c.id}" data-id="${c.id}">${c.t}</a>`);
-  main.insertAdjacentHTML('beforeend',`<section class="cmp" id="${c.id}">
+  main.insertAdjacentHTML('beforeend',`<section class="cmp box" id="${c.id}">
     <div class="cmp-h"><h3>${c.t}</h3><span class="tags">${c.iss?`<a class="chip iss" href="https://linear.app/cogecom/issue/${c.iss}">${c.iss}</a>`:''}${c.lib?`<span class="chip">Lib: ${c.lib}</span>`:''}</span></div>
     <p class="lead">${c.lead}</p>
     <div class="ctrls">${c.ctrls||''}<button class="reset"><span class="pg-ms">restart_alt</span>Reiniciar</button></div>
@@ -667,5 +667,5 @@ C.forEach(c=>{
 });
 const io=new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting) $$('#navl a[data-id]').forEach(a=>a.classList.toggle('on',a.dataset.id===e.target.id)); }),{root:$('#sheet'),rootMargin:'-20% 0px -70% 0px'});
 $$('section.cmp').forEach(s=>io.observe(s));
-const ALIAS={cards:'card',listagem:'filtro'}; const h=location.hash.slice(1); if(ALIAS[h]) location.replace('#'+ALIAS[h]); else if(h) document.getElementById(h)?.scrollIntoView();
+const ALIAS={cards:'card',listagem:'filtro'}; const h=location.hash.slice(1); if(ALIAS[h]) location.replace('#'+ALIAS[h]); else if(h){ const go=()=>document.getElementById(h)?.scrollIntoView({behavior:'instant',block:'start'}); (document.fonts?document.fonts.ready:Promise.resolve()).then(()=>requestAnimationFrame(go)); } // espera as fontes: a altura das seções muda
 })();
