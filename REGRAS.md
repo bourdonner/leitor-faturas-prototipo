@@ -160,6 +160,12 @@ Inválido → borda vermelha + aviso, não salva. No iOS os campos usam 16 px pa
 - Páginas empilhadas em **rolagem contínua** (sem "Página 1 de N").
 - Desktop: zoom por botões, abrir, baixar, minimizar.
 
+### Cabeçalho dos painéis (desktop)
+- Fatura, Detalhes e Atividade: badge escuro 20 px (#292524, raio 6, ícone preenchido 12 px) + título 14 regular + ações à direita.
+- Fatura mostra só o nome do arquivo (sem páginas/tamanho); zoom, abrir e baixar são botões ghost; minimizar é botão secundário.
+- Detalhes tem cabeçalho próprio fixo ("Detalhes" + minimizar); as abas ficam centralizadas embaixo e rolam com o conteúdo.
+- Mobile não muda.
+
 ---
 
 ## 5. Animações

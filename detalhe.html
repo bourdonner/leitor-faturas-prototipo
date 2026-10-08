@@ -79,7 +79,7 @@
   .ib{width:28px;height:28px;border-radius:8px;display:grid;place-items:center;color:var(--ink)}
   a.ib{text-decoration:none}
   .ib:hover{background:var(--s200)}
-  .ib.sq{background:var(--white)}
+  .ib.sq{background:var(--s50)}
   /* pdf */
   /* páginas da fatura empilhadas em rolagem contínua; margin auto centraliza sem cortar quando o zoom passa da largura */
   .pdf-scroll{flex:1;overflow:auto;padding:8px 24px 24px;display:flex;flex-direction:column;align-items:flex-start;gap:16px}
@@ -213,7 +213,14 @@
   .medt{font-weight:500;font-size:13px}
   /* activity */
   .act-h{display:flex;align-items:center;gap:8px;padding:16px 16px 8px}
-  .act-h .ph{width:20px;height:20px;border-radius:6px;background:var(--brand);color:#fff;display:grid;place-items:center}
+  .ph{width:20px;height:20px;border-radius:6px;background:#292524;color:#fff;display:grid;place-items:center;flex:none}
+  .ph .ms{font-size:12px!important;font-variation-settings:"FILL" 1,"wght" 400,"GRAD" 0,"opsz" 24}
+  .bar .t{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  /* cabeçalho dos painéis (desktop): badge + título + ações; minimizar = botão secundário */
+  .p-pdf .bar,.det-h{padding:16px;min-height:0}
+  .det-h{padding-bottom:12px}
+  .p-det .det-scroll .bar{justify-content:center;padding:0 16px 12px;min-height:0}
+  .ib.sq{border-radius:6px}
   .act-h .t{flex:1}
   .act-list{flex:1;overflow:auto;padding:8px 16px 120px}
   .ev{background:var(--white);border-radius:12px;padding:14px;position:relative}
@@ -458,7 +465,8 @@
   [data-mode=mobile] .p-det .tab{height:36px;padding:0 10px;border-radius:6px;font-weight:700;color:var(--mid)}
   [data-mode=mobile] .p-det .tab.on{background:#fff;color:#0c0a09;box-shadow:0 1px 3px rgba(0,0,0,.08)}
   [data-mode=mobile] .p-pdf .bar{gap:4px}
-  [data-mode=mobile] .p-det .bar .sp{display:none}
+  [data-mode=mobile] .p-det .bar .sp,[data-mode=mobile] .det-h,[data-mode=mobile] .p-pdf .bar .ph{display:none}
+  [data-mode=mobile] .p-det .det-scroll .bar{justify-content:flex-start}
   [data-mode=mobile] .p-pdf .bar .file{flex:1;font-weight:700;color:#0c0a09;background:rgba(245,245,244,.4);border:1px solid var(--s100);border-radius:8px;padding:0 12px;height:46px;line-height:44px}
   [data-mode=mobile] .p-pdf .bar .sp{display:none}
   [data-mode=mobile] .act-h{margin:12px 24px 16px;padding:4px 12px;min-height:46px;background:rgba(245,245,244,.4);border:1px solid var(--s100);border-radius:8px;font-weight:700;color:#0c0a09}
@@ -607,8 +615,7 @@
         <!-- PDF -->
         <div class="panel p-pdf" id="pPdf">
           <div class="bar">
-            <span class="file">fatura-luzdovale-a4-mar25.pdf</span><span class="meta">1 página · 840 KB</span>
-            <span class="sp"></span>
+            <span class="ph"><span class="ms" aria-hidden="true">picture_as_pdf</span></span><span class="file t">fatura-luzdovale-a4-mar25.pdf</span>
             <button class="ib" id="zOut" aria-label="Diminuir zoom"><span class="ms" aria-hidden="true">zoom_out</span></button>
             <button class="ib" id="zIn" aria-label="Aumentar zoom"><span class="ms" aria-hidden="true">zoom_in</span></button>
             <a class="ib" href="assets/fatura-grupo-a.png" target="_blank" aria-label="Abrir em nova aba"><span class="ms" aria-hidden="true">open_in_new</span></a>
@@ -623,11 +630,11 @@
         <div class="panel p-det" id="pDet">
           <div class="idb-wrap" id="idbWrap"></div>
           <div class="det-box">
+          <div class="bar det-h"><span class="ph"><span class="ms" aria-hidden="true">description</span></span><span class="t">Detalhes</span>
+            <button class="ib sq" data-toggle="det" aria-label="Minimizar detalhes"><span class="ms" aria-hidden="true">hide</span></button></div>
           <div class="det-scroll" id="detScroll">
             <div class="bar">
               <div class="tabs" role="tablist" id="tabs"></div>
-              <span class="sp"></span>
-              <button class="ib sq" data-toggle="det" aria-label="Minimizar detalhes"><span class="ms" aria-hidden="true">hide</span></button>
             </div>
             <div class="content" id="content"></div>
           </div>
@@ -642,7 +649,7 @@
 
         <!-- Atividade -->
         <div class="panel p-act" id="pAct">
-          <div class="act-h"><span class="ph"><span class="ms" style="font-size:14px" aria-hidden="true">history</span></span><span class="t">Atividade</span>
+          <div class="act-h"><span class="ph"><span class="ms" aria-hidden="true">history</span></span><span class="t">Atividade</span>
             <button class="ib sq" data-toggle="act" aria-label="Minimizar atividade"><span class="ms" aria-hidden="true">hide</span></button></div>
           <div class="act-list" id="acts"></div>
         </div>

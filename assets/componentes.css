@@ -217,7 +217,7 @@
 
 /* atividade */
 .cx .act-h{display:flex;align-items:center;gap:8px;padding:16px 16px 8px}
-.cx .act-h .ph{width:20px;height:20px;border-radius:6px;background:var(--brand);color:#fff;display:grid;place-items:center}
+.cx .act-h .ph{width:20px;height:20px;border-radius:6px;background:#292524;color:#fff;display:grid;place-items:center}
 .cx .act-h .t{flex:1}
 .cx .act-list{flex:1;overflow:auto;padding:8px 16px 16px}
 .cx .ev{background:var(--white);border-radius:12px;padding:14px;position:relative}
