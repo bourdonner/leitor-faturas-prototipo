@@ -113,7 +113,10 @@
   .full{grid-column:1/-1}
   /* data card — um valor + unidade; mesma altura em visualização e edição */
   .card{background:var(--s50);border-radius:8px;padding:12px;border:1px solid transparent;transition:box-shadow .3s,border-color .3s,background .2s;min-width:0}
-  .card .ct{display:flex;align-items:center;gap:8px;font-weight:700;min-height:24px;line-height:1.4}
+  .card .ct{display:flex;align-items:center;gap:8px;font-weight:700;min-height:24px;line-height:1.4;text-wrap:balance}
+  /* cards da mesma linha têm a mesma altura (grid estica); o valor desce para a base, então títulos de 1 e 2 linhas ficam alinhados */
+  .grid > .card{display:flex;flex-direction:column}
+  .grid > .card > .row{margin-top:auto;padding-top:4px}
   .card .ct .ib.edit{width:20px;height:20px;border-radius:4px}
   .card .ct .badge{width:16px;height:16px;border-radius:5px}
   .card .ct .badge .ms{font-size:12px!important}
@@ -1419,6 +1422,24 @@ LOGO = (document.querySelector('.sb-brand svg')?.outerHTML||'').replace(/fill="#
   const d=$('#demo'); d.value=e; d.onchange=()=>{ const u=new URL(location.href); u.searchParams.set('estado',d.value); location.href=u; };
 })();
 render();
+/* linhas de cards balanceadas: escolhe o nº de colunas que deixa as linhas com a mesma quantidade (6 → 3+3, não 4+2)
+   e, se ainda sobrar, os cards da última linha dividem a largura toda (grade de 12) */
+function balanceGrids(){
+  const grids=document.querySelectorAll('#content .grid.g2:not(.cd-cards)');
+  const w=$('#pDet').clientWidth, mob=modeOf()==='mobile';
+  const maxC = mob ? 1 : w>=1248 ? 4 : w>=948 ? 3 : 2;
+  grids.forEach(g=>{
+    const kids=[...g.children];
+    if(mob){ g.style.gridTemplateColumns=''; kids.forEach(k=>k.style.gridColumn=''); return; }
+    g.style.gridTemplateColumns='repeat(12,minmax(0,1fr))';
+    let run=[]; const flush=()=>{ const n=run.length; if(!n) return; const rows=Math.ceil(n/maxC), c=Math.ceil(n/rows), r=n%c;
+      run.forEach((k,i)=>{ const last = r && i>=n-r; k.style.gridColumn='span '+(12/(last?r:c)); }); run=[]; };
+    kids.forEach(k=>{ if(k.classList.contains('full')){ flush(); k.style.gridColumn='1/-1'; } else run.push(k); }); flush();
+  });
+}
+new ResizeObserver(()=>balanceGrids()).observe($('#pDet'));
+new MutationObserver(()=>balanceGrids()).observe($('#content'),{childList:true});
+balanceGrids();
 </script>
 <script src="assets/select.js"></script>
 </body>
