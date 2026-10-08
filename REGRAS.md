@@ -163,7 +163,8 @@ Inválido → borda vermelha + aviso, não salva. No iOS os campos usam 16 px pa
 ### Cabeçalho dos painéis (desktop)
 - Fatura, Detalhes e Atividade: badge escuro 20 px (#292524, raio 6, ícone preenchido 12 px) + título 14 regular + ações à direita.
 - Fatura mostra só o nome do arquivo (sem páginas/tamanho); zoom, abrir e baixar são botões ghost; minimizar é botão secundário.
-- Detalhes tem cabeçalho próprio fixo ("Detalhes" + minimizar); as abas ficam centralizadas embaixo e rolam com o conteúdo.
+- Detalhes tem cabeçalho próprio fixo: "Detalhes" à esquerda, abas centralizadas no meio e minimizar à direita. Se o painel tiver menos de 660 px, as abas descem para uma 2ª linha do cabeçalho (com rolagem lateral se precisar).
+- Aba = Tabs Base / Tab Item `Type=Panel` da lib: selecionada com fundo branco, sem sombra e rótulo escuro; `Alert` mostra o badge de pendência.
 - Mobile não muda.
 
 ---
