@@ -126,6 +126,9 @@
 .cx.mob .card .ct .ib.edit{margin-right:-10px;width:80px;display:flex;align-items:center;justify-content:flex-end;padding-right:11px}
 .cx.mob .card .ca{gap:0;margin-right:-10px}
 .cx.mob .card .ct .ib.edit .ms,.cx.mob .card .ca .ms{font-size:18px!important}
+/* só leitura no mobile: sem lápis (a regra do mobile acima era mais forte) e cabeçalho com os mesmos 40 px (lib: Data Card State=Read only, Size=Mobile) */
+.cx.mob .ro .card .ct .ib.edit{display:none}
+.cx.mob .ro .card .ct{min-height:40px}
 .cx.mob .g2,.cx.mob .g3{grid-template-columns:minmax(0,1fr)}
 
 /* planilha */

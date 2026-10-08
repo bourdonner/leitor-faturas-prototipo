@@ -566,6 +566,8 @@
   .m-pill.sent,.m-bd.sent{background:var(--brand)}
   .sent-by{font-size:12px;color:var(--mid);align-self:center}
   .ro .card .ib.edit,.ro .card.pend .ca{display:none}
+  [data-mode=mobile] .ro .card .ct .ib.edit{display:none} /* a regra de 80 px do mobile vencia o "sem lápis" */
+  [data-mode=mobile] .ro .card .ct{min-height:40px}
 </style>
 </head>
 <body>
