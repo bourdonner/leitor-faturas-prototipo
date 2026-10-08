@@ -213,7 +213,7 @@
   .btn.sm{height:36px;padding:6px 12px}
   .lnk{text-decoration:none}
   .lnk:hover,.lnk:focus-visible{text-decoration:underline;text-underline-offset:3px}
-  .files{display:flex;flex-direction:column;gap:8px}
+  .files{display:flex;flex-direction:column;gap:8px;max-height:296px;padding-right:4px;flex:none} /* vários arquivos: a lista rola e esmaece em cima/embaixo (assets/scrollfade.js) */
   .fi{display:flex;align-items:center;gap:16px;padding:8px 16px 8px 8px;border:1px solid var(--s100);border-radius:8px;background:#fff}
   .fi .ty{width:40px;height:40px;border-radius:6px;background:var(--s50);display:grid;place-items:center;flex:none;color:var(--ink)}
   .fi .ty .msr{font-size:20px}
@@ -324,6 +324,7 @@
     .nf .mnav .ibtn{width:44px;height:44px;border-radius:6px}
     .nf .mnav .ibtn .msr{font-size:20px}
     .nf .db{padding:24px 24px 8px}
+    .files{max-height:40dvh}
     .nf .df{padding:12px 24px 24px;grid-template-columns:1fr}
     .nf .df.two{grid-template-columns:1fr 1fr}
     .fi .act,.fi .ok{width:40px;height:40px}
@@ -338,6 +339,7 @@
 </style>
 <script src="assets/toast.js"></script>
 <script src="assets/daterange.js"></script>
+<script src="assets/scrollfade.js"></script>
 </head>
 <body>
 
@@ -703,7 +705,8 @@ function nfRender(){
     else more=`<div class="drop" id="drop"><span class="msr big">upload_file</span><span class="t1">Arraste as faturas para cá</span><span class="or">ou</span><button type="button" class="btn out sm pick" id="nfPick">Escolher arquivos</button><span class="cap">PDF, JPG, PNG ou WebP · até 20 MB cada · até 20 arquivos</span></div>`;
   }
   const intro=m?`<p style="margin:0;color:var(--mid)">${NF.sending?`Enviando ${n} arquivo${n>1?'s':''}. Não feche esta tela até terminar.`:'Confira os arquivos antes de enviar.'}</p>`:'';
-  b.innerHTML=intro+list+more;
+  const keep=b.querySelector('.files')?.scrollTop||0; // redesenhar não pode voltar a lista para o topo
+  b.innerHTML=intro+list+more; scrollFade(b.querySelector('.files'),keep);
   const label=NF.sending?`<span class="msr spin">progress_activity</span>Enviando…`:n?`Enviar ${n} fatura${n>1?'s':''}`:'Enviar';
   const send=`<button type="submit" class="btn pri" ${n&&!NF.sending?'':'disabled'}>${label}</button>`;
   ft.innerHTML=m?send:`<button type="button" class="btn out" data-nfcancel>Cancelar</button>${send}`;

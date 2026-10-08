@@ -380,7 +380,7 @@
 .cx.lst .drop.over .or,.cx.lst .drop.over .pick{display:none}
 .cx.lst .drop.mini{min-height:0;flex-direction:row;padding:12px 16px;gap:4px}
 .cx.lst .drop.mini .big{font-size:20px}
-.cx.lst .files{display:flex;flex-direction:column;gap:8px}
+.cx.lst .files{display:flex;flex-direction:column;gap:8px;max-height:296px;padding-right:4px;flex:none}
 .cx.lst .fi{display:flex;align-items:center;gap:16px;padding:8px 16px 8px 8px;border:1px solid var(--s100);border-radius:8px;background:#fff}
 .cx.lst .fi .ty{width:40px;height:40px;border-radius:6px;background:var(--s50);display:grid;place-items:center;flex:none;color:var(--ink)}
 .cx.lst .fi .ty .msr{font-size:20px}
