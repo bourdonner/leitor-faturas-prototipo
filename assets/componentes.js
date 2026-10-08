@@ -695,12 +695,16 @@ const hl={
 const snip=id=>{ const s=document.querySelector('script.snip[data-id="'+id+'"]'); return s?s.textContent.replace(/^\n/,'').replace(/\s+$/,''):'// no snippet'; };
 
 /* ---------- montagem ---------- */
+/* link de cada componente no Figma: página do componente na lib (Style Guide Enershare) ou, sem componente próprio, as telas no Faturamento */
+const LIB='https://www.figma.com/design/SPhFty5YBmXlsWdFHri1Sq/Style-Guide-Enershare?node-id=', FAT='https://www.figma.com/design/EwAXXXwHEhfBp9L7N02InG/Faturamento?node-id=';
+const FIG={tabbar:[LIB+'2416-28279','Lib · Tab Bar'],paineis:[FAT+'1867-4760','Faturamento · layout dos painéis'],card:[LIB+'2415-2895','Lib · Data Card'],mascaras:[LIB+'2415-2895','Lib · Data Card'],planilha:[LIB+'2421-16','Lib · Spreadsheet'],pendencias:[LIB+'2420-16','Lib · Pending'],marcador:[LIB+'2422-16','Lib · Pending Marker'],atividade:[LIB+'1383-91','Lib · Activity'],identidade:[FAT+'1971-20200','Faturamento · Validar UC'],extrair:[FAT+'1973-26074','Faturamento · Extrair novamente'],mobile:[LIB+'1591-301','Lib · Header'],filtro:[LIB+'205-238','Lib · Filter'],upload:[LIB+'2450-35','Lib · File Upload']};
+const FIGI='<svg viewBox="0 0 38 57" width="8" height="12" aria-hidden="true"><path fill="#1abcfe" d="M19 28.5a9.5 9.5 0 1119 0 9.5 9.5 0 01-19 0z"/><path fill="#0acf83" d="M0 47.5A9.5 9.5 0 019.5 38H19v9.5a9.5 9.5 0 11-19 0z"/><path fill="#ff7262" d="M19 0v19h9.5a9.5 9.5 0 100-19H19z"/><path fill="#f24e1e" d="M0 9.5A9.5 9.5 0 009.5 19H19V0H9.5A9.5 9.5 0 000 9.5z"/><path fill="#a259ff" d="M0 28.5A9.5 9.5 0 009.5 38H19V19H9.5A9.5 9.5 0 000 28.5z"/></svg>';
 const main=$('#main'), nav=$('#navl'); let g='';
 C.forEach(c=>{
   if(c.grp!==g){ g=c.grp; nav.insertAdjacentHTML('beforeend',`<div class="grp">${g}</div>`); }
   nav.insertAdjacentHTML('beforeend',`<a href="#${c.id}" data-id="${c.id}">${c.t}</a>`);
   main.insertAdjacentHTML('beforeend',`<section class="cmp box" id="${c.id}">
-    <div class="cmp-h"><h3>${c.t}</h3><span class="tags">${c.iss?`<a class="chip iss" href="https://linear.app/cogecom/issue/${c.iss}">${c.iss}</a>`:''}${c.lib?`<span class="chip">Lib: ${c.lib}</span>`:''}</span></div>
+    <div class="cmp-h"><h3>${c.t}</h3><span class="tags">${c.iss?`<a class="chip iss" href="https://linear.app/cogecom/issue/${c.iss}">${c.iss}</a>`:''}${c.lib?`<span class="chip">Lib: ${c.lib}</span>`:''}${FIG[c.id]?`<a class="chip fig" href="${FIG[c.id][0]}" target="_blank" rel="noopener" title="${FIG[c.id][1]}">${FIGI} Figma</a>`:''}</span></div>
     <p class="lead">${c.lead}</p>
     <div class="ctrls">${c.ctrls||''}<button class="reset"><span class="pg-ms">restart_alt</span>Reset</button></div>
     <div class="canvas ${['identidade','pendencias','filtro','upload','planilha','card','mascaras'].includes(c.id)?'top':''} ${['identidade','extrair','filtro','upload'].includes(c.id)?'white':''}"></div><div class="log" aria-live="polite"></div>
