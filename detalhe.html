@@ -756,7 +756,7 @@ function card(t, v, u, opts={}){
     <div class="row">${valHTML(val,u)}<span class="sp"></span><button class="cp" aria-label="Copiar valor de ${t}">${I.copy}</button></div>
   </div>`;
 }
-const hintOf = p=>(p.hint||'Não encontrado na fatura')+(p.why?`. Sugestão: <span class="sg">${p.why}</span><span class="tabk"> · <kbd>Tab</kbd> para usar</span>`:'');
+const hintOf = p=>[p.hint, p.why&&`Sugestão: <span class="sg">${p.why}</span>`].filter(Boolean).join('. ');
 function fieldHTML(p,id){
   if (p.kind==='Seleção') return `<select class="input" id="${id}"><option value="">${p.ph}</option>${p.options.map(o=>`<option>${o}</option>`).join('')}</select>`;
   const u=p.unit?`<span class="u">${p.unit}</span>`:'';

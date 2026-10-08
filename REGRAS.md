@@ -112,7 +112,7 @@ O painel de menor prioridade sai primeiro. Se a pessoa fechar todos, aparece "Ne
 - Estados:
   - **Visualização**: lápis no cabeçalho.
   - **Edição**: campo com borda e unidade dentro; **enviar** ao lado do campo (como o copiar) e **fechar** no cabeçalho. Enter envia, Esc cancela.
-  - **Pendente**: borda laranja, badge de alerta, campo vazio, "Não encontrado na fatura", salvar/limpar.
+  - **Pendente**: borda laranja, badge de alerta, campo vazio, ajuda só com a sugestão ("Sugestão: …"), salvar/limpar.
   - **Corrigido**: borda verde.
 - Visualização e edição têm a **mesma altura**.
 - Mobile: botões do cabeçalho com toque de 40 px (ícone 18 px); o lápis ocupa 80 px para o título ter a mesma largura nos dois modos.
@@ -186,7 +186,7 @@ Com **reduzir movimento** ativado no sistema, as animações são desligadas.
 ## 6. Textos fixos
 
 - Ajuda da planilha: "Clique duas vezes numa célula para editar".
-- Pendente: "Não encontrado na fatura".
+- Pendente: ajuda mostra só "Sugestão: …", sem "Não encontrado na fatura" nem "Tab para usar".
 - Lista vazia: "Sem pendências — Todos os dados da fatura foram conferidos."
 - Não existe "Aprovar fatura".
 

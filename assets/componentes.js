@@ -73,7 +73,7 @@ const money=n=>(n<0?'−':'')+Math.abs(n).toLocaleString('pt-BR',{minimumFractio
 const isPre=u=>u==='R$';
 const withUnit=(v,u)=>!v||v==='—'||!u ? v : (u==='R$' ? 'R$ '+v : v+' '+u);
 function fmt(p,v){ if(p.kind==='Percentual'){ v=v.replace('%','').trim(); return v.includes(',')||v.includes('.')? v.replace('.',',') : v+',00'; } return v; }
-const hintOf=p=>(p.hint||'Não encontrado na fatura')+(p.why?`. Sugestão: <span class="sg">${p.why}</span><span class="tabk"> · <kbd>Tab</kbd> para usar</span>`:'');
+const hintOf=p=>[p.hint, p.why&&`Sugestão: <span class="sg">${p.why}</span>`].filter(Boolean).join('. ');
 /* Tab com o campo vazio aceita a sugestão do placeholder (igual ao protótipo) */
 document.addEventListener('keydown',e=>{ const t=e.target;
   if(e.key!=='Tab'||e.shiftKey||!(t instanceof HTMLInputElement)||!t.hasAttribute('data-sug')||t.value.trim()||!t.placeholder) return;
@@ -628,7 +628,7 @@ const DOC={
  pendencias:{grp:'Review',t:'Pending items',lead:'What the reading missed. Desktop: floating card above the tab bar. Mobile: a list screen.',
   ctrls:SZ+seg('uc','UC',[['ok','Validated'],['no','Not validated']],'ok'),
   beh:[['‹ ›','Navigate "N de total"'],['Type / Tab','Confirmar enables with a value; Tab fills the suggestion'],['Confirmar / Enter','Resolves; field card flashes; next item'],['Ver no Campo','Scrolls to the field and flashes it (1.2 s)'],['Minimize','Hides the card; Pendências reopens it'],['Last one resolved','Card hides; Faturar replaces Pendências'],['UC not validated','Card only points to the UC block']],
-  notes:['Suggestion = derived value, never prefilled (COFINS = value ÷ base, reading = previous + usage).','"Tab para usar" hint shows on desktop only.']},
+  notes:['Suggestion = derived value, never prefilled (COFINS = value ÷ base, reading = previous + usage).','Tab on an empty field still fills the suggestion; no on-screen hint.']},
  marcador:{grp:'Review',t:'Off-screen marker',lead:'When a pending item is scrolled out of view, a marker on the container edge points to it. Scroll the list and the table.',
   beh:[['Below / above','Marker on bottom / top edge'],['Left / right (table)','Marker on the table edge, in the item row'],['Click','Smooth scroll to the item + flash'],['Item visible','Marker hides']],
   notes:['Bobs 4 px (1 s) + pulsing ring (1.4 s); off with reduced motion.','The visible area excludes the floating tab bar and the sticky Item column.']},
