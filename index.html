@@ -151,14 +151,7 @@
   .btn.pri{background:var(--ink);color:var(--s50)}
   .btn.pri:disabled{opacity:.4;cursor:not-allowed}
   .dlg .x{position:absolute;right:16px;top:16px}
-  .toast{position:fixed;bottom:24px;left:50%;transform:translate(-50%,16px);background:var(--ink);color:#fff;padding:10px 16px;border-radius:8px;opacity:0;transition:.2s;z-index:70;font-size:13px;line-height:20px}
-  .toast.show{opacity:1;transform:translate(-50%,0)}
   /* Toast da Style Guide (card branco com título e descrição) — usado no fim do envio */
-  .ltoast{position:fixed;right:16px;bottom:16px;width:420px;max-width:calc(100vw - 32px);background:#fff;border:1px solid var(--s100);border-radius:8px;box-shadow:var(--pop);padding:24px;display:flex;flex-direction:column;gap:4px;opacity:0;transform:translateY(16px);transition:.2s;z-index:70;pointer-events:none}
-  .ltoast.show{opacity:1;transform:none;pointer-events:auto}
-  .ltoast b{font:600 14px/20px Inter;color:var(--ink2)}
-  .ltoast span{font:400 14px/20px Inter;color:var(--ink3)}
-  .ltoast .x{position:absolute;right:8px;top:8px}
   /* seletor de estados do protótipo */
   .proto{position:fixed;right:16px;top:14px;z-index:30;display:flex;align-items:center;gap:6px;font:500 11px/16px Inter;color:var(--mid);background:#fff;border:1px solid var(--s100);border-radius:999px;padding:3px 3px 3px 10px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
   .proto button{padding:2px 8px;border-radius:999px;color:var(--mid)}
@@ -325,15 +318,14 @@
     .fi .act,.fi .ok{width:40px;height:40px}
     .toast{bottom:16px;left:16px;right:16px;transform:translateY(16px)}
     .toast.show{transform:none}
-    .ltoast{left:0;right:0;bottom:0;width:auto;max-width:none;border-radius:8px 8px 0 0;padding:20px 24px calc(env(safe-area-inset-bottom) + 20px)}
     .fi.up .sz{display:none}
     .th .colbtn{width:40px;height:40px}
-    .ltoast .x{width:40px;height:40px}
     .card{padding-bottom:72px} /* espaço para a pílula do protótipo não tapar a paginação */
   }
   /* iOS Safari dá zoom em campo com fonte < 16px: só lá os campos sobem para 16px (a pinça continua liberada) */
   @supports (-webkit-touch-callout:none){ input,select,textarea{font-size:16px!important} }
 </style>
+<script src="assets/toast.js"></script>
 </head>
 <body>
 
@@ -442,8 +434,6 @@
   .proto .dlk svg{width:14px;height:14px}
   .proto .dlk svg[viewBox="0 0 38 57"]{width:10px;height:15px}
 </style>
-<div class="toast" id="toast" role="status"></div>
-<div class="ltoast" id="ltoast" role="status" aria-live="polite"><b id="ltT"></b><span id="ltD"></span><button type="button" class="ibtn x" id="ltX" aria-label="Fechar aviso"><span class="mss">close</span></button></div>
 
 <script>
 const BADGE = {'Para revisar':'b-alert','Erro na leitura':'b-danger','Erro no faturamento':'b-danger','Em revisão':'b-dark','Faturando':'b-soft','Lendo fatura':'b-soft','Faturada':'b-ok','Recusada':'b-grey','Duplicada':'b-grey'};
@@ -806,9 +796,6 @@ document.querySelectorAll('.sidebar [data-tip]').forEach(a=>{ a.setAttribute('ar
   a.addEventListener('mouseleave',()=>tip.style.opacity=0);
   if(!a.classList.contains('on')) a.addEventListener('click',e=>{ e.preventDefault(); toast(`${a.dataset.tip} fora do escopo do protótipo.`); });
 });
-function toast(t){ const el=$('#toast'); el.textContent=t; el.classList.add('show'); clearTimeout(el._t); el._t=setTimeout(()=>el.classList.remove('show'),2200); }
-function ltoast(t,d){ const el=$('#ltoast'); $('#ltT').textContent=t; $('#ltD').textContent=d; el.classList.add('show'); clearTimeout(el._t); el._t=setTimeout(()=>el.classList.remove('show'),5000); }
-$('#ltX').onclick=()=>$('#ltoast').classList.remove('show');
 /* carga inicial */
 syncProto(); render(); setTimeout(()=>{ S.view='lista'; syncProto(); render(); }, 900);
 </script>

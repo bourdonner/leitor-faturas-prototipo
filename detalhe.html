@@ -297,8 +297,6 @@
   .panel.opening{animation:panelIn .4s cubic-bezier(.2,.9,.3,1.1)}
   @keyframes panelIn{from{opacity:0;transform:translateY(32px) scale(.95)}to{opacity:1;transform:none}}
   @media (prefers-reduced-motion:reduce){.tb::before,.panel{transition:none}.tb .ic,.panel.opening{animation:none!important}}
-  .toast{position:fixed;top:24px;left:50%;transform:translate(-50%,-20px);background:var(--ink);color:#fff;padding:10px 16px;border-radius:10px;opacity:0;transition:.25s;z-index:50;font-size:13px}
-  .toast.show{opacity:1;transform:translate(-50%,0)}
   /* tab bar: Pendências é um botão à parte, ao lado da pílula Fatura/Detalhes/Atividade (todos os tamanhos) */
   .tabbar{background:none;box-shadow:none;padding:0;gap:10px;align-items:stretch}
   .tb-main{display:flex;gap:8px;padding:8px;background:var(--white);border-radius:999px;box-shadow:0 10px 15px rgba(0,0,0,.10),0 4px 6px rgba(0,0,0,.10)}
@@ -569,6 +567,7 @@
   [data-mode=mobile] .ro .card .ct .ib.edit{display:none} /* a regra de 80 px do mobile vencia o "sem lápis" */
   [data-mode=mobile] .ro .card .ct{min-height:40px}
 </style>
+<script src="assets/toast.js"></script>
 </head>
 <body>
 <!-- ===== Enershare Sidebar ===== -->
@@ -710,7 +709,6 @@
 </div>
 <!-- indicadores de pendência fora da área visível (Figma 1823:30676) -->
 <div id="offLayer" aria-live="polite"></div>
-<div class="toast" id="toast"></div>
 <div class="note demo"><label for="demo">Estado</label><select id="demo">
   <option value="identidade">1 · Validar UC</option>
   <option value="nao-encontrada">2 · UC não encontrada</option>
@@ -842,7 +840,7 @@ function attachMask(inp, kind, opt={}){
 }
 function invalid(inp, kind){
   const msg = validMask(kind, inp.value.trim());
-  if (msg){ inp.closest('.fld,.ufld,td')?.classList.add('err'); toast(msg); inp.focus(); }
+  if (msg){ inp.closest('.fld,.ufld,td')?.classList.add('err'); toast(msg,{err:true}); inp.focus(); }
   return !!msg;
 }
 
@@ -1228,7 +1226,6 @@ function editCard(c, btn){
   acts.children[0].onclick=()=>finish(false);
   inp.onkeydown=e=>{ if(e.key==='Enter') finish(true); if(e.key==='Escape') finish(false); };
 }
-function toast(t){ const el=$('#toast'); el.textContent=t; el.classList.add('show'); clearTimeout(el._t); el._t=setTimeout(()=>el.classList.remove('show'),1800); }
 
 window.addEventListener('resize', ()=>renderPanels());
 $('#colsReset').onclick=()=>{ S.open.pdf=S.open.det=S.open.act=true; renderPanels(); };
