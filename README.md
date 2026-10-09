@@ -9,3 +9,9 @@ Protótipo navegável do detalhe de uma fatura lida pelo sistema (Enershare / CO
 - Correções entram na Atividade; sem pendências, a fatura pode ser aprovada
 
 Todos os dados são fictícios (fatura Grupo A, A4 horária verde).
+
+## Faturamento Pendente (Tickets)
+
+- Tela navegável (faturamento-pendente.html): filtros com o Filter da lib, tabela com quantidade de UCs, seleção e ações em lote, Resumo do ticket com faturas em 5 por vez, importação em lote, registrar tentativa e histórico no componente Atividade do Leitor
+- Componentes (faturamento-pendente-componentes.html): cada componente do Figma em código, com o de → para do que muda no stg
+- Claro e escuro; dados fictícios. Figma: Tickets, página Faturamento Pendente

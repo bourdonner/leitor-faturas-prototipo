@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Faturamento Pendente · Componentes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0..1,0&family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@20..48,400,0..1,0&display=block" rel="stylesheet">
+<link rel="stylesheet" href="assets/fp.css">
+<style>
+/* casca igual à página de componentes do Leitor (interacoes.html) */
+:root{--ink:#1c1917;--mid:#78716c;--border:#d6d3d1;--s200:#e7e5e4;--s100:#f5f5f4;--s50:#fafaf9;--brand:#71902f;--paper:#fff;--lime:#f7fee7;--lime-ink:#3f6212;--rose:#be123c;
+  --box-shadow:0 1px 2px rgba(0,0,0,.04),0 8px 24px rgba(0,0,0,.06)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--ink:#f5f5f4;--mid:#a8a29e;--border:#57534e;--s200:#44403c;--s100:#292524;--s50:#1c1917;--brand:#baf743;--paper:#0c0a09;--lime:#1a2e05;--lime-ink:#d9f99d;--rose:#fda4af;color-scheme:dark}}
+:root[data-theme="dark"]{--ink:#f5f5f4;--mid:#a8a29e;--border:#57534e;--s200:#44403c;--s100:#292524;--s50:#1c1917;--brand:#baf743;--paper:#0c0a09;--lime:#1a2e05;--lime-ink:#d9f99d;--rose:#fda4af;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{font-family:Inter,system-ui,sans-serif;color:var(--ink);background:var(--s50);font-size:14px;-webkit-font-smoothing:antialiased;overflow:hidden}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;padding:0}
+.msr{font-family:"Material Symbols Rounded";font-weight:400;font-style:normal;line-height:1;display:inline-block;white-space:nowrap;font-size:16px;font-variation-settings:"FILL" 0,"wght" 400,"GRAD" 0,"opsz" 20;user-select:none}
+.box{background:var(--paper);border:1px solid var(--s100);border-radius:16px;box-shadow:var(--box-shadow)}
+.app{display:grid;grid-template-columns:280px minmax(0,1fr);gap:24px;height:100vh;padding:24px}
+.side{display:flex;flex-direction:column;min-height:0;overflow:hidden}
+.side-h{display:flex;align-items:center;gap:12px;padding:24px 24px 16px}
+.side-h .lg{width:40px;height:40px;border-radius:8px;background:var(--lime);display:grid;place-items:center;flex:none}
+.side-h b{display:block;font:600 16px/1.3 Poppins,Inter,sans-serif}
+.side-h span{display:block;font-size:12px;color:var(--mid)}
+.toc{flex:1;overflow:auto;padding:0 16px 16px}
+.toc .grp{font:400 10px/1.32 Inter;text-transform:uppercase;letter-spacing:.06em;color:var(--brand);margin:16px 8px 6px}
+.toc a{display:flex;align-items:center;gap:6px;padding:8px 10px;border-radius:8px;text-decoration:none;color:var(--mid);font-weight:500;line-height:1.5}
+.toc a:hover{background:var(--s50);color:var(--ink)}
+.toc a.on{background:var(--lime);color:var(--ink);font-weight:600}
+.toc a .nw{margin-left:auto;font:600 10px/1 Inter;padding:3px 6px;border-radius:999px;background:var(--brand);color:var(--paper)}
+.side-links{display:flex;flex-direction:column;gap:2px;padding:12px 16px 16px;border-top:1px solid var(--s100)}
+.side-links a{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;text-decoration:none;color:var(--ink);font:500 13px/1.4 Inter}
+.side-links a:hover{background:var(--s50)}
+.side-links .ri{width:28px;height:28px;border-radius:6px;background:var(--lime);display:grid;place-items:center}
+.side-links .go{margin-left:auto;color:var(--mid);font-size:14px}
+.sheet{min-height:0;overflow:auto;scroll-behavior:smooth;border-radius:16px}
+#main{padding:0 0 24px}
+.intro{padding:40px}
+.eyebrow{font:400 10px/1.32 Inter;letter-spacing:.06em;color:var(--brand);text-transform:uppercase}
+.intro h1{font:600 24px/1.33 Poppins,Inter,sans-serif;margin:8px 0;text-wrap:balance}
+.intro p{color:var(--mid);margin:0;max-width:760px;line-height:1.7}
+.news{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-top:24px}
+.news a{display:flex;flex-direction:column;gap:6px;padding:16px;border-radius:12px;background:var(--s50);border:1px solid var(--s100);text-decoration:none;color:var(--ink)}
+.news a:hover{background:var(--paper);box-shadow:var(--box-shadow)}
+.news .msr{font-size:20px;color:var(--brand)}
+.news b{font-weight:600} .news span{font-size:13px;color:var(--mid);line-height:1.5}
+.theme{display:flex;align-items:center;gap:12px;margin-top:24px;flex-wrap:wrap}
+.theme .k{font:400 10px/1 Inter;color:var(--brand);text-transform:uppercase;letter-spacing:.06em}
+.seg{display:inline-flex;gap:4px;padding:4px;background:var(--s50);border:1px solid var(--s100);border-radius:8px;flex-wrap:wrap}
+.seg button{height:30px;padding:0 10px;border-radius:6px;font:500 13px Inter;color:var(--mid)}
+.seg button:hover{color:var(--ink)}
+.seg button.on{background:var(--paper);color:var(--brand);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+section.cmp{margin-top:24px;padding:40px;scroll-margin-top:0}
+.cmp-h{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.cmp-h h3{font:600 20px/1.2 Poppins,Inter,sans-serif;margin:0}
+.chip{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 10px;border-radius:999px;background:var(--s100);font-weight:600;font-size:12px;color:var(--ink);text-decoration:none;white-space:nowrap}
+.chip.nw{background:var(--lime);color:var(--lime-ink)}
+.chip.fig{background:var(--paper);border:1px solid var(--s200)}
+.lead{color:var(--mid);margin:8px 0 20px;max-width:780px;line-height:1.7}
+.ctrls{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center;padding:16px 16px 0}
+.ctrls .k{font:400 10px/1 Inter;color:var(--brand);text-transform:uppercase;letter-spacing:.06em;margin-right:8px}
+.ctrls input[type=range]{accent-color:#71902f;width:220px}
+.stage{border-radius:16px;background:var(--fg);border:1px solid var(--s200)}
+.canvas{padding:32px 24px 40px;display:flex;justify-content:center;align-items:flex-start;gap:24px;flex-wrap:wrap;overflow:auto}
+.canvas.left{justify-content:flex-start}
+.w352{width:352px;max-width:100%;display:flex;flex-direction:column;gap:24px}
+.note{font-size:12px;color:var(--mid);margin-top:8px}
+/* de → para */
+.dp{margin-top:24px}
+.dp h4{margin:0 0 8px;font:600 14px/1.4 Inter}
+.dp h4 small{font-weight:400;color:var(--mid);margin-left:6px}
+.dps{overflow-x:auto}
+table.dpt{width:100%;border-collapse:collapse;font-size:13px;min-width:720px}
+table.dpt th{text-align:left;font:400 10px/1 Inter;text-transform:uppercase;letter-spacing:.06em;color:var(--brand);padding:8px 10px;border-bottom:1px solid var(--s200)}
+table.dpt td{padding:10px;border-bottom:1px solid var(--s100);vertical-align:top;line-height:1.5}
+table.dpt td:first-child{font-weight:600;width:16%}
+table.dpt .de{color:var(--mid);width:32%}
+table.dpt .ar{color:var(--mid);width:24px;text-align:center}
+table.dpt .pa{width:36%}
+table.dpt .rf{color:var(--mid);white-space:nowrap}
+table.dpt tr.nw td:first-child::after{content:"novo";margin-left:6px;font:600 10px/1 Inter;padding:2px 6px;border-radius:999px;background:var(--lime);color:var(--lime-ink);vertical-align:1px}
+.keep{font-size:13px;color:var(--mid);margin:10px 0 0;line-height:1.6;max-width:900px}
+/* stg real (só no link privado, quando stg.json existe) */
+.stgw{margin-top:16px}
+.stgw summary{cursor:pointer;font-weight:600;font-size:13px;color:var(--ink);display:flex;align-items:center;gap:8px;list-style:none}
+.stgw summary::-webkit-details-marker{display:none}
+.stgw summary .tg{font:600 10px/1 Inter;padding:3px 7px;border-radius:999px;background:var(--s100);text-transform:uppercase;letter-spacing:.06em}
+.stgw[open] summary .msr{transform:rotate(180deg)}
+.stgw .sbox{margin-top:12px;overflow:auto;border:1px solid var(--s100);border-radius:12px}
+.stg-surface{background:oklch(1 0 89.88);color:oklch(0.2161 0.0061 56.04);font-family:Inter,system-ui,sans-serif;font-size:14px;line-height:20px;border-radius:8px;width:max-content;min-width:100%;color-scheme:light}
+.stg-surface.dk{background:oklch(0.1405 0.0044 285.82);color:oklch(0.9699 0.0013 106.42);color-scheme:dark}
+.stg-surface *{box-sizing:border-box}
+.stg-surface input,.stg-surface textarea{font:inherit;color:inherit;background:transparent;border:0;outline:0}
+.stg-surface p,.stg-surface h1,.stg-surface h2,.stg-surface h3,.stg-surface ol{margin:0;padding:0}
+.stg-surface ol,.stg-surface ul{list-style:none;margin:0;padding:0}
+.stg-surface dl,.stg-surface dd,.stg-surface dt{margin:0}
+.stg-surface .w352{width:352px;padding:16px}
+@media (max-width:1000px){body{overflow:auto}.app{grid-template-columns:1fr;height:auto;padding:12px}.side{max-height:none}.toc{max-height:260px}.sheet{overflow:visible}.intro{padding:24px 16px}section.cmp{padding:20px 16px}.canvas{padding:16px}}
+</style>
+<script src="assets/toast.js"></script>
+</head>
+<body>
+<div class="app">
+  <aside class="side box">
+    <div class="side-h"><span class="lg"><span class="msr" style="font-size:20px;color:#71902f">confirmation_number</span></span><span><b>Faturamento Pendente</b><span>Componentes · Tickets</span></span></div>
+    <nav class="toc" id="toc" aria-label="Componentes">
+      <div class="grp">Lista</div>
+      <a href="#cabecalho">Cabeçalho e filtros</a>
+      <a href="#indicadores">Indicadores</a>
+      <a href="#tabela">Tabela <span class="nw">UCs</span></a>
+      <a href="#lote">Ações em lote <span class="nw">novo</span></a>
+      <div class="grp">Resumo do ticket</div>
+      <a href="#ticket">Ticket e cooperado</a>
+      <a href="#faturas">Faturas pendentes <span class="nw">novo</span></a>
+      <a href="#tentativas">Tentativas de contato</a>
+      <a href="#historico">Histórico de tentativas</a>
+      <div class="grp">Modais</div>
+      <a href="#registrar">Registrar tentativa</a>
+      <a href="#importar">Importar faturas <span class="nw">novo</span></a>
+      <div class="grp">Base</div>
+      <a href="#cores">Cores e dark mode</a>
+    </nav>
+    <div class="side-links">
+      <a href="faturamento-pendente.html"><span class="ri"><span class="msr">open_in_new</span></span>Tela navegável<span class="msr go">arrow_outward</span></a>
+      <a href="https://www.figma.com/design/Mg4zkZ9Js0HA8NZsiVa2d2/Tickets?node-id=35-8027" target="_blank" rel="noopener"><span class="ri"><span class="msr">design_services</span></span>Telas no Figma<span class="msr go">arrow_outward</span></a>
+      <a href="interacoes.html"><span class="ri"><span class="msr">electric_meter</span></span>Componentes do Leitor<span class="msr go">arrow_outward</span></a>
+    </div>
+  </aside>
+
+  <div class="sheet" id="sheet"><div id="main">
+    <header class="intro box">
+      <div class="eyebrow">Tickets · Faturamento Pendente</div>
+      <h1>Componentes do Faturamento Pendente</h1>
+      <p>Cada componente aqui é o do Figma, em código e interativo. Abaixo de cada um, o de → para do que muda no stg. Os dados são fictícios.</p>
+      <div class="news">
+        <a href="#tabela"><span class="msr">pin</span><b>Quantidade de UCs na linha</b><span>"2 UCs" no lugar do número da instalação</span></a>
+        <a href="#lote"><span class="msr">checklist</span><b>Ações em lote</b><span>Barra flutuante com Definir responsável, Mover de carteira, Devolver à triagem, Resolver</span></a>
+        <a href="#faturas"><span class="msr">expand_more</span><b>Carregar mais</b><span>5 faturas por vez, com o que falta no botão</span></a>
+        <a href="#importar"><span class="msr">upload_file</span><b>Importar faturas em lote</b><span>O mesmo componente da Nova fatura do Leitor</span></a>
+      </div>
+      <div class="theme"><span class="k">Tema dos componentes</span><div class="seg" role="group" aria-label="Tema"><button data-th="light" class="on">Claro</button><button data-th="dark">Escuro</button></div></div>
+    </header>
+
+    <!-- CABEÇALHO E FILTROS -->
+    <section class="cmp box" id="cabecalho">
+      <div class="cmp-h"><h3>Cabeçalho e filtros</h3><a class="chip fig" href="https://www.figma.com/design/Mg4zkZ9Js0HA8NZsiVa2d2/Tickets?node-id=108-37362" target="_blank" rel="noopener">Figma · Lista/Padrão</a></div>
+      <p class="lead">Ações do cabeçalho só com ícone, busca com o filtro dentro do campo e a barra de filtros com o componente Filter da lib: vazio mostra o nome e o chevron; com valor, o nome, os valores e o ×. Abra um filtro e marque opções.</p>
+      <div class="stage fp"><div class="canvas left"><div style="display:flex;flex-direction:column;gap:16px;width:100%;min-width:0">
+        <div style="display:flex;gap:24px;align-items:flex-start"><div style="flex:1"><div style="font:600 24px/32px Poppins;color:var(--brand)">Faturamento Pendente</div><div style="color:var(--mid)">Faturas que não foram recebidas</div></div><div style="display:flex;gap:8px"><button class="sq" aria-label="Indicadores"><span class="msr">bar_chart</span></button><button class="sq" aria-label="Configuração e detecção"><span class="msr">settings</span></button><button class="sq" aria-label="Adicionar"><span class="msr">add</span></button></div></div>
+        <div class="tools"><label class="field"><span class="msr">search</span><input placeholder="Buscar por ticket, cooperado, instalação ou concessionária" aria-label="Buscar"><span class="ib"><span class="msr fill">filter_alt</span></span></label><button class="sq52 on" aria-label="Resumo do ticket"><span class="msr">right_panel_close</span></button></div>
+        <div class="frow" data-m="filters"></div>
+      </div></div></div>
+      <div class="dp" data-dp="cabecalho"></div>
+      <details class="stgw" data-stg="title,tabs,filters" hidden><summary><span class="tg">stg</span>Como está no stg hoje<span class="msr">expand_more</span></summary><div class="sbox"></div></details>
+    </section>
+
+    <!-- INDICADORES -->
+    <section class="cmp box" id="indicadores">
+      <div class="cmp-h"><h3>Indicadores</h3><a class="chip fig" href="https://www.figma.com/design/Mg4zkZ9Js0HA8NZsiVa2d2/Tickets?node-id=347-18368" target="_blank" rel="noopener">Figma · Lista/Indicadores abertos</a></div>
+      <p class="lead">Tiles da lib (como no Cadastro) e o gráfico de colunas por tentativas. Os números são calculados dos tickets fictícios: resolva tickets em lote mais abaixo e veja mudar. Passe o mouse nas colunas.</p>
+      <div class="stage fp"><div class="canvas left"><div class="ind" data-m="ind" style="width:100%"></div></div></div>
+      <div class="dp" data-dp="indicadores"></div>
+      <details class="stgw" data-ind hidden><summary><span class="tg">stg</span>Como está no stg hoje<span class="msr">expand_more</span></summary><div class="sbox"></div></details>
+    </section>
+
+    <!-- TABELA -->
+    <section class="cmp box" id="tabela">
+      <div class="cmp-h"><h3>Tabela</h3><span class="chip nw">Quantidade de UCs</span><a class="chip fig" href="https://www.figma.com/design/Mg4zkZ9Js0HA8NZsiVa2d2/Tickets?node-id=350-32798" target="_blank" rel="noopener">Figma · Regra de colunas</a></div>
+      <p class="lead">O cooperado mostra a quantidade de UCs em vez do número da instalação. Diminua a largura: as colunas somem por prioridade até o Cooperado ter 240 px (Carteira, Aberto em, Status, Responsável, Faturas, Tentativa).</p>
+      <div class="stage fp"><div class="ctrls"><span><span class="k">Largura</span><input type="range" min="640" max="1400" value="1400" id="tw" aria-label="Largura da tabela"> <b id="twv">1400 px</b></span></div>
+        <div class="canvas left"><div id="twrap" style="width:1400px;max-width:100%"><div class="tbl" data-m="table"></div></div></div></div>
+      <div class="dp" data-dp="tabela"></div>
+      <details class="stgw" data-stg="table" hidden><summary><span class="tg">stg</span>Como está no stg hoje<span class="msr">expand_more</span></summary><div class="sbox"></div></details>
+    </section>
+
+    <!-- LOTE -->
+    <section class="cmp box" id="lote">
+      <div class="cmp-h"><h3>Ações em lote</h3><span class="chip nw">Novo</span><a class="chip fig" href="https://www.figma.com/design/Mg4zkZ9Js0HA8NZsiVa2d2/Tickets?node-id=371-99016" target="_blank" rel="noopener">Figma · Seleção em lote</a></div>
+      <p class="lead">Padrão de mercado (Linear, Gmail, Jira): marcar linhas abre uma barra flutuante no rodapé com a contagem e as ações; cada ação mostra um aviso com Desfazer. Na tabela acima, as linhas marcadas ficam verdes. O "Selecionar todos" do cabeçalho marca só o que está visível com os filtros.</p>
+      <div class="stage fp"><div class="canvas"><div class="bulk inline" id="bulk" role="toolbar" aria-label="Ações em lote">
+        <span class="n" id="bulkN"></span><span class="vs"></span>
+        <button class="b gh" data-bulk="resp"><span class="msr">person_add</span>Definir responsável</button>
+        <button class="b gh" data-bulk="cart"><span class="msr">swap_horiz</span>Mover de carteira</button>
+        <button class="b gh" data-bulk="triagem"><span class="msr">undo</span>Devolver à triagem</button>
+        <button class="b gh" data-bulk="resolver"><span class="msr">check_circle</span>Resolver</button>
+        <span class="vs"></span>
+        <button class="b gh" data-bulk="mais"><span class="msr">more_horiz</span>Mais</button>
+        <button class="ib" data-bulk="limpar" aria-label="Limpar seleção"><span class="msr">close</span></button>
+      </div></div></div>
+      <div class="dp" data-dp="lote"></div>
+    </section>
+
+    <!-- TICKET E COOPERADO -->
+    <section class="cmp box" id="ticket">
+      <div class="cmp-h"><h3>Ticket e cooperado</h3><a class="chip fig" href="https://www.figma.com/design/Mg4zkZ9Js0HA8NZsiVa2d2/Tickets?node-id=346-17597" target="_blank" rel="noopener">Figma · Menu do ticket</a></div>
+      <p class="lead">Barra do Resumo, card do ticket com o status ao lado do número e o "…" com as opções do ticket; card do cooperado cinza com os itens em branco e o chevron que recolhe.</p>
+      <div class="stage fp"><div class="canvas"><div class="w352" data-m="ticket"></div></div></div>
+      <div class="dp" data-dp="ticket"></div>
+      <details class="stgw" data-part="bar,ticket,coop" hidden><summary><span class="tg">stg</span>Como está no stg hoje<span class="msr">expand_more</span></summary><div class="sbox"></div></details>
+    </section>
+
+    <!-- FATURAS -->
+    <section class="cmp box" id="faturas">
+      <div class="cmp-h"><h3>Faturas pendentes</h3><span class="chip nw">Carregar mais · Importar</span><a class="chip fig" href="https://www.figma.com/design/Mg4zkZ9Js0HA8NZsiVa2d2/Tickets?node-id=371-102622" target="_blank" rel="noopener">Figma · Muitas faturas</a></div>
+      <p class="lead">Cada fatura é um card de Atividade: competência e "UC · motivo" à vista; leitura prevista e dias em atraso no hover ou no foco. O botão no canto envia a fatura daquela linha. Com muitas faturas, carrega 5 por vez; "Importar faturas" abre o envio em lote.</p>
+      <div class="stage fp"><div class="ctrls"><span class="k">Ticket</span><div class="seg" id="ftk" role="group" aria-label="Ticket"><button data-v="TK-04175" class="on">12 faturas</button><button data-v="TK-04166">4 faturas</button><button data-v="TK-04168">Nenhuma</button></div></div>
+        <div class="canvas"><div class="w352" data-m="faturas"></div></div></div>
+      <div class="dp" data-dp="faturas"></div>
+      <details class="stgw" data-part="fat" hidden><summary><span class="tg">stg</span>Como está no stg hoje<span class="msr">expand_more</span></summary><div class="sbox"></div></details>
+    </section>
+
+    <!-- TENTATIVAS -->
+    <section class="cmp box" id="tentativas">
+      <div class="cmp-h"><h3>Tentativas de contato</h3></div>
+      <p class="lead">Bolinhas preenchidas com a cor da etapa (cinza até 2, laranja de 3 a 6, vermelho na 7ª). Solicitar demissão só libera na 7ª tentativa.</p>
+      <div class="stage fp"><div class="ctrls"><span class="k">Ticket</span><div class="seg" id="ttk" role="group" aria-label="Ticket"><button data-v="TK-04182">0 de 7</button><button data-v="TK-04175" class="on">4 de 7</button><button data-v="TK-04166">7 de 7</button></div></div>
+        <div class="canvas"><div class="w352" data-m="tent"></div></div></div>
+      <div class="dp" data-dp="tentativas"></div>
+      <details class="stgw" data-part="tent" hidden><summary><span class="tg">stg</span>Como está no stg hoje<span class="msr">expand_more</span></summary><div class="sbox"></div></details>
+    </section>
+
+    <!-- HISTÓRICO -->
+    <section class="cmp box" id="historico">
+      <div class="cmp-h"><h3>Histórico de tentativas</h3><a class="chip fig" href="https://www.figma.com/design/Mg4zkZ9Js0HA8NZsiVa2d2/Tickets?node-id=358-33412" target="_blank" rel="noopener">Figma · Atividade base</a></div>
+      <p class="lead">O componente Atividade do Leitor de Faturas. Passe o mouse nos cards: as tentativas mostram Ver evidência e, na última, Desfazer; a troca de responsável mostra o de → para.</p>
+      <div class="stage fp"><div class="canvas"><div class="w352" data-m="hist"></div></div></div>
+      <div class="dp" data-dp="historico"></div>
+      <details class="stgw" data-part="hist" hidden><summary><span class="tg">stg</span>Como está no stg hoje<span class="msr">expand_more</span></summary><div class="sbox"></div></details>
+    </section>
+
+    <!-- REGISTRAR -->
+    <section class="cmp box" id="registrar">
+      <div class="cmp-h"><h3>Registrar tentativa</h3><a class="chip fig" href="https://www.figma.com/design/Mg4zkZ9Js0HA8NZsiVa2d2/Tickets?node-id=344-90725" target="_blank" rel="noopener">Figma · Modal</a></div>
+      <p class="lead">Canal com o escolhido em borda verde, evidência obrigatória (ou o protocolo) e "Mais detalhes" recolhido. Salvar sem evidência mostra o erro no próprio campo.</p>
+      <div class="stage fp"><div class="canvas"><button class="b pri" data-a="tent" data-tk="TK-04175">Abrir Registrar tentativa</button></div></div>
+      <div class="dp" data-dp="registrar"></div>
+      <details class="stgw" data-stg="modal" hidden><summary><span class="tg">stg</span>Como está no stg hoje<span class="msr">expand_more</span></summary><div class="sbox"></div></details>
+    </section>
+
+    <!-- IMPORTAR -->
+    <section class="cmp box" id="importar">
+      <div class="cmp-h"><h3>Importar faturas</h3><span class="chip nw">Novo</span><a class="chip fig" href="https://www.figma.com/design/Mg4zkZ9Js0HA8NZsiVa2d2/Tickets?node-id=373-23896" target="_blank" rel="noopener">Figma · Importar em lote</a><a class="chip" href="interacoes.html#upload">Leitor · Nova fatura</a></div>
+      <p class="lead">Mesmo componente da Nova fatura do Leitor: área de arrastar, lista com progresso, erro por arquivo (formato ou mais de 20 MB). Cada arquivo é ligado a uma fatura pendente pela competência no nome do arquivo e dá para trocar em "Vai para". Arraste arquivos de verdade ou use os de exemplo.</p>
+      <div class="stage fp"><div class="canvas"><button class="b pri" data-a="imp" data-tk="TK-04175">Importar faturas · lote</button><button class="b out" id="impOne">Enviar uma fatura · 09/2025</button></div></div>
+      <div class="dp" data-dp="importar"></div>
+    </section>
+
+    <!-- CORES -->
+    <section class="cmp box" id="cores">
+      <div class="cmp-h"><h3>Cores e dark mode</h3></div>
+      <p class="lead">Tudo vem das variables da Style Guide Enershare, com valor no claro e no escuro. Troque o tema no topo da página.</p>
+      <div class="stage fp"><div class="canvas left" id="tokens" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px"></div></div>
+      <div class="dp" data-dp="cores"></div>
+    </section>
+  </div></div>
+</div>
+
+<!-- peças compartilhadas com a tela (pop-over e modais) -->
+<div class="fp" id="fpRoot">
+<div class="pop" id="pop" hidden role="menu"></div>
+<div class="ov" id="ovTent" role="dialog" aria-modal="true" aria-labelledby="tT">
+  <form class="dlg" id="fTent" novalidate>
+    <div class="dh"><h2 id="tT">Registrar tentativa de contato</h2><p id="tSub"></p></div>
+    <div class="db">
+      <div><span class="lbl">Canal utilizado</span><div class="chs" role="radiogroup" aria-label="Canal" id="chs">
+        <button type="button" class="chn" role="radio" aria-checked="true" data-v="Telefone"><span class="msr">call</span>Telefone</button>
+        <button type="button" class="chn" role="radio" aria-checked="false" data-v="WhatsApp"><span class="msr">chat</span>WhatsApp</button>
+        <button type="button" class="chn" role="radio" aria-checked="false" data-v="E-mail"><span class="msr">mail</span>E-mail</button></div></div>
+      <div><label class="lbl" for="tRes">Resultado da tentativa</label><select class="sel" id="tRes"><option>Sem contato</option><option>Caixa postal</option><option>Sem retorno</option><option selected>Cooperado informou que enviará</option><option>Número errado</option></select></div>
+      <div><span class="lbl">Evidência (obrigatória)</span><div class="fileline"><label class="inp" id="evLbl"><span class="msr">attach_file</span><span id="evName">Escolher arquivo</span><input type="file" id="evIn" accept="image/png,image/jpeg,application/pdf" hidden></label><button type="button" class="b out" id="evBtn">Anexar</button></div><div class="help">Print de tela, protocolo da ligação ou comprovante de envio · PNG, JPG ou PDF até 10 MB</div></div>
+      <button type="button" class="b gh more-t" id="mdT" aria-expanded="false" style="padding:0">Mais detalhes (opcional)<span class="msr chev">expand_more</span></button>
+      <div id="md" hidden style="display:flex;flex-direction:column;gap:16px">
+        <div class="row2"><div><label class="lbl" for="tDt">Data e hora do contato</label><input class="inp" id="tDt" value="09/10/2026 11:12"></div><div class="w140"><label class="lbl" for="tDur">Duração</label><input class="inp" id="tDur" placeholder="min:seg"></div></div>
+        <div><label class="lbl" for="tPr">Protocolo da ligação</label><input class="inp" id="tPr" placeholder="Ex.: 8842-119"><div class="help">Quando informado, o protocolo conta como evidência.</div></div>
+        <div><label class="lbl" for="tObs">Observação</label><textarea class="ta" id="tObs" placeholder="Contexto do contato (opcional)"></textarea></div>
+      </div>
+    </div>
+    <div class="df"><button type="button" class="b out" data-close>Cancelar</button><button type="submit" class="b pri" id="tSave">Salvar tentativa</button></div>
+    <button type="button" class="ib x" data-close aria-label="Fechar"><span class="msr">close</span></button>
+  </form>
+</div>
+<div class="ov" id="ovImp" role="dialog" aria-modal="true" aria-labelledby="iT">
+  <form class="dlg w560" id="fImp" novalidate>
+    <div class="dh"><h2 id="iT">Importar faturas</h2><p id="iSub"></p></div>
+    <div class="db" id="iBody"></div>
+    <div class="df"><button type="button" class="b out" data-close>Cancelar</button><button type="submit" class="b pri" id="iSend" disabled>Enviar faturas</button></div>
+    <button type="button" class="ib x" data-close aria-label="Fechar"><span class="msr">close</span></button>
+  </form>
+</div>
+<input type="file" id="iIn" multiple accept="application/pdf,image/jpeg,image/png,image/webp,.pdf,.jpg,.jpeg,.png,.webp" hidden>
+</div>
+
+<script src="assets/fp.js"></script>
+<script src="assets/fp-dp.js"></script>
+<script>
+const {S,H,tk,mount,mountTable,refresh}=FP;
+FP.wireCommon();
+S.f={}; S.sel=new Set(['TK-04175','TK-04170','TK-04163']);
+const M=k=>document.querySelector(`[data-m="${k}"]`);
+mount(M('filters'),H.filters);
+mount(M('ind'),H.indicators);
+mountTable(M('table'));
+let fT='TK-04175', tT='TK-04175';
+mount(M('ticket'),()=>{ const t=tk('TK-04175'); return H.rbar()+H.ticket(t)+H.coop(t); });
+mount(M('faturas'),()=>H.faturasPnl(tk(fT)));
+mount(M('tent'),()=>H.tentPnl(tk(tT)));
+mount(M('hist'),()=>H.hist(tk('TK-04175')));
+refresh();
+function segs(id,fn){ document.querySelectorAll('#'+id+' button').forEach(b=>b.onclick=()=>{ document.querySelectorAll('#'+id+' button').forEach(x=>x.classList.toggle('on',x===b)); fn(b.dataset.v); refresh(); }); }
+segs('ftk',v=>fT=v); segs('ttk',v=>tT=v);
+document.getElementById('impOne').onclick=()=>{ const t=tk('TK-04175'); if(t.fat[0]) FP.openImp('TK-04175',t.fat[0].id); };
+const tw=document.getElementById('tw'); tw.oninput=()=>{ document.getElementById('twrap').style.width=tw.value+'px'; document.getElementById('twv').textContent=tw.value+' px'; };
+// tokens
+const TOK=[['enershare/foreground','#ffffff','#0c0a09','Fundo de card e de item'],['enershare/secondary','#fafaf9','#292524','Fundo da página, campos'],['enershare/hover:secondary','#f5f5f4','#1c1917','Painéis do Resumo, tiles'],['enershare/brand:primary','#71902f','#baf743','Título da página, canal escolhido'],['enershare/primary','#1c1917','#f5f5f4','Texto, botão primário'],['enershare/inputed','#44403c','#e7e5e4','Ícones dos itens'],['enershare/middle','#78716c','#a8a29e','Texto de apoio'],['enershare/border','#d6d3d1','#57534e','Bordas'],['feedback/success','#65a30d','#a3e635','Resolvido'],['feedback/alert','#f97316','#fbbf24','Aguardando, atraso, 3 a 6 tentativas'],['feedback/destructive','#f43f5e','#f43f5e','Demissão, 7ª tentativa, erro'],['enershare/row:selected','#f7fee7','#365314','Linha marcada']];
+const paintTok=()=>{ const dk=document.querySelector('.stage.fp').classList.contains('dk'); document.getElementById('tokens').innerHTML=TOK.map(t=>`<div style="background:var(--fg);border:1px solid var(--fsec);border-radius:12px;padding:12px;display:flex;gap:12px;align-items:center"><span style="width:40px;height:40px;border-radius:8px;background:${dk?t[2]:t[1]};border:1px solid var(--border);flex:none"></span><span style="min-width:0"><b style="display:block;font-size:12px;color:var(--ink)">${t[0]}</b><span style="font:500 12px ui-monospace,Consolas,monospace;color:var(--mid)">${dk?t[2]:t[1]}</span><span style="display:block;font-size:12px;color:var(--mid)">${t[3]}</span></span></div>`).join(''); };
+paintTok();
+// tema: componentes + casca
+document.querySelectorAll('.theme [data-th]').forEach(b=>b.onclick=()=>{ applyTh(b.dataset.th); });
+function applyTh(t){ FP.setTheme(t); document.documentElement.dataset.theme=t; document.querySelectorAll('.stg-surface').forEach(s=>s.classList.toggle('dk',t==='dark')); document.querySelectorAll('.theme [data-th]').forEach(x=>x.classList.toggle('on',x.dataset.th===t)); paintTok(); }
+let th0=null; try{ th0=localStorage.getItem('fp-theme'); }catch(e){} applyTh(th0||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'));
+// de → para
+document.querySelectorAll('[data-dp]').forEach(el=>{ const d=FPDP[el.dataset.dp]; if(!d) return; const e=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+  el.innerHTML=`<h4>De → para<small>o que muda no stg para ficar como o Figma</small></h4><div class="dps"><table class="dpt"><thead><tr><th>Item</th><th>De · stg hoje</th><th aria-hidden="true"></th><th>Para · Figma</th><th>Ref.</th></tr></thead><tbody>${d.rows.map(r=>`<tr class="${r[4]?'nw':''}"><td>${e(r[0])}</td><td class="de">${e(r[1])}</td><td class="ar" aria-hidden="true">→</td><td class="pa">${e(r[2])}</td><td class="rf">${e(r[3])}</td></tr>`).join('')}</tbody></table></div>${d.keep?`<p class="keep">${e(d.keep)}</p>`:''}`; });
+// sumário ativo
+const links=[...document.querySelectorAll('#toc a')]; const secs=links.map(a=>document.querySelector(a.getAttribute('href')));
+document.getElementById('sheet').addEventListener('scroll',()=>{ let cur=0; secs.forEach((s,i)=>{ if(s.getBoundingClientRect().top<160) cur=i; }); links.forEach((a,i)=>a.classList.toggle('on',i===cur)); },{passive:true});
+// stg real: só existe no link privado (stg.json não vai para o repositório público)
+fetch('stg.json').then(r=>{ if(!r.ok) throw 0; return r.json(); }).then(j=>{
+  const st=document.createElement('style'); st.textContent=j.css.replace(/\.(a[0-9a-z]+)\{/g,'.stg-surface .$1{')+j.dcss.replace(/\.dk \.(d[0-9a-z]+)\{/g,'.stg-surface.dk .$1{'); document.head.appendChild(st);
+  const dk=document.documentElement.dataset.theme==='dark';
+  document.querySelectorAll('details[data-stg]').forEach(d=>{ d.querySelector('.sbox').innerHTML=`<div class="stg-surface ${dk?'dk':''}" style="padding:20px">${d.dataset.stg.split(',').map(k=>`<div style="margin-bottom:16px">${j.out[k]||''}</div>`).join('')}</div>`; d.querySelectorAll('.a2p.a2q').forEach(el=>el.classList.remove('a2o','a2p','a2q')); d.hidden=false; });
+  const tmp=document.createElement('div'); tmp.innerHTML=j.out.resumo; const col=tmp.querySelector('aside').firstElementChild; const kids=[...col.children]; const head=kids[0];
+  const parts={bar:head.children[0],ticket:head.children[1],coop:kids[1],fat:kids[2],tent:kids[3],hist:kids[4]};
+  document.querySelectorAll('details[data-part]').forEach(d=>{ const s=document.createElement('div'); s.className='stg-surface'+(dk?' dk':''); const w=document.createElement('div'); w.className='w352'; d.dataset.part.split(',').forEach(k=>{ if(parts[k]) w.append(parts[k].cloneNode(true)); }); s.append(w); d.querySelector('.sbox').append(s); d.hidden=false; });
+}).catch(()=>{});
+fetch('ind.json').then(r=>{ if(!r.ok) throw 0; return r.json(); }).then(j=>{ const st=document.createElement('style'); st.textContent=j.css.replace(/\.(i[0-9a-z]+)\{/g,'.stg-surface .$1{')+j.dcss.replace(/\.dk \.(j[0-9a-z]+)\{/g,'.stg-surface.dk .$1{'); document.head.appendChild(st);
+  const d=document.querySelector('details[data-ind]'); d.querySelector('.sbox').innerHTML=`<div class="stg-surface ${document.documentElement.dataset.theme==='dark'?'dk':''}" style="padding:20px">${j.html}</div>`; d.hidden=false; }).catch(()=>{});
+</script>
+</body>
+</html>
