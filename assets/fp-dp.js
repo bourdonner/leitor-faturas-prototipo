@@ -88,3 +88,31 @@ cores:{rows:[
  ['Badges','Cores fixas, iguais nos dois temas','Variables da lib, que mudam com o tema','cores'],
  ['Verde da marca','oklch(0.61 0.13 125) · oklch(0.91 0.21 127)','#71902f · #baf743 (enershare/brand:primary)','cores']]}
 };
+
+Object.assign(window.FPDP,{
+kanban:{rows:[
+ ['Visão em kanban','Não existe (fora do escopo desta entrega)','Botão ao lado da busca alterna lista e kanban; o endereço guarda a visão (#kanban)','—',1],
+ ['Colunas','—','Sem Atendimento, 1ª a 7ª tentativa e Demissões; ícone na cor da etapa (cinza, cinza escuro, laranja de 3 a 5, vermelho em 6, 7 e Demissões) e a contagem','—',1],
+ ['Card','—','Ticket e avatar do responsável, nome do cooperado, "2 UCs · concessionária" e chips de situação, UCs e faturas pendentes; o aberto no Resumo com borda verde','—',1],
+ ['Arrastar','—','Só para a próxima coluna, e abre Registrar tentativa; para Demissões só a partir da 7ª, e abre Solicitar demissão; o resto avisa e não move','—',1]],
+ keep:'O kanban foi deixado de fora no stg; fica registrado aqui para a próxima entrega.'},
+estados:{rows:[
+ ['Faturas lidas','Fatura lida some da lista','Fica na lista com o check verde e "UC · Fatura lida"; o título vira "1 de 3 faturas lidas"','—',1],
+ ['Limite de tentativas','Registrar continua ativo','Na 7ª: "7 de 7 realizadas · limite atingido", Registrar desabilitado e Solicitar demissão liberado','—'],
+ ['Herdado','Sem indicação','Etiqueta "Herdado" no card de tentativas, "herdadas da Carteira Norte" e a carteira com "· antes Norte"','—',1],
+ ['Demissão solicitada','Sem indicação no Resumo','Card rosa "Demissão solicitada" com Ver cancelamento; o card de tentativas sai','—',1],
+ ['Resolvido','Card de tentativas continua','Sem tentativas e sem importar; situação com check verde; histórico com "Fatura importada por…" ou "Fatura capturada automaticamente"','—']]},
+evidencia:{rows:[
+ ['Abertura','Ver evidência sempre visível no card','No hover do card do histórico; abre o modal com canal, data e autor','R7'],
+ ['Arquivo','—','Linha do arquivo com o tipo (PNG, PDF), tamanho e data; Baixar e Fechar','—']]},
+demissao:{rows:[
+ ['Solicitar demissão','Desabilitado: "Disponível na integração com a SPEC de Cancelamento"','Modal próprio a partir da 7ª tentativa: motivo, temperatura, meio de contato, data e descrição; avisos do que acontece ao registrar','A1',1],
+ ['Botão','—','"Registrar demissão" em vermelho (destructive), desabilitado até escolher a temperatura','—',1]]},
+adicionar:{rows:[
+ ['Estilo','Campos e rótulos fora do padrão das outras telas','Mesmo modal dos outros: título H5 verde, campos de 44 px, Cancelar e Criar ticket','C1'],
+ ['Ticket ativo','—','Ao escolher um cooperado com ticket ativo, o aviso diz qual e as faturas entram nele','—',1]]},
+config:{rows:[
+ ['Estrutura','Uma tela única','Três abas: Detecção, Parâmetros, Temas de atendimento','C1'],
+ ['Detecção','—','Parâmetros vigentes em bloco cinza; Simular sempre disponível, Executar só com a detecção ligada','C1'],
+ ['Parâmetros','—','Switches da lib com descrição, campos em duas colunas com ajuda embaixo e elegibilidade em chips; valida ao salvar','C1']]}
+});

@@ -69,7 +69,7 @@
 <script src="assets/toast.js"></script>
 </head>
 <body>
-<div class="fp shell" id="app">
+<div class="fp shell" id="app" data-fp-root>
 
 <nav class="sidebar" aria-label="Menu principal">
   <div class="sb-head"><a class="sb-brand" href="index.html" aria-label="Enershare"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M7.98755 0.0722733C8.21864 1.12089 8.45227 2.15362 8.71118 2.93555C8.84282 3.33304 8.98251 3.67018 9.13403 3.91309C9.28312 4.15207 9.45604 4.3197 9.66138 4.3379C9.79849 4.35053 9.93839 4.29404 10.0784 4.15919C10.2173 4.02523 10.3619 3.80915 10.5129 3.49024C10.8077 2.86795 11.1355 1.83339 11.4983 0.188484L13.6077 2.29786C13.0275 3.20033 12.4647 4.09355 12.0959 4.82813C11.9084 5.20176 11.769 5.5387 11.7043 5.81739C11.6408 6.0915 11.6442 6.33196 11.7747 6.49024C11.8626 6.59711 12.0018 6.6565 12.1965 6.66016C12.39 6.66372 12.6455 6.61265 12.9788 6.49317C13.6291 6.26001 14.5955 5.75727 16.0198 4.84571V7.88184C14.9762 8.10809 13.95 8.34044 13.1731 8.59864C12.7781 8.72994 12.4429 8.86933 12.2014 9.02052C11.9639 9.16925 11.7972 9.34187 11.7786 9.54591L11.7756 9.58009L11.7815 9.58497C11.7805 9.71008 11.8344 9.83758 11.9563 9.96485C12.0895 10.1039 12.3043 10.2484 12.6223 10.3994C13.243 10.6941 14.2759 11.022 15.9182 11.3848L13.8176 13.4893C12.9204 12.9093 12.0304 12.3478 11.2981 11.9805C10.9255 11.7936 10.5895 11.6551 10.3118 11.5908C10.0386 11.5276 9.79876 11.5307 9.64185 11.6611C9.5352 11.7491 9.47647 11.8883 9.4729 12.083C9.46942 12.2766 9.52015 12.5323 9.63989 12.8662C9.87412 13.5193 10.3795 14.4913 11.2971 15.9258H7.99634C7.76523 14.8544 7.53205 13.8 7.27563 13.0107C7.14529 12.6095 7.00759 12.2719 6.85864 12.0342C6.7128 11.8014 6.54092 11.6401 6.33521 11.6445C6.12824 11.649 5.95036 11.8192 5.7981 12.0606C5.64255 12.3071 5.49751 12.6525 5.36353 13.0566C5.10702 13.8305 4.88579 14.8357 4.70337 15.8154L2.40942 13.5215C3.00475 12.599 3.58617 11.6862 3.96313 10.9453C4.15462 10.5689 4.29596 10.2324 4.35864 9.95899C4.41228 9.72483 4.41312 9.51474 4.31274 9.3711L4.26294 9.31348C4.11288 9.1699 3.8672 9.16356 3.58911 9.22559C3.30512 9.28894 2.95975 9.43029 2.58032 9.62012C1.85394 9.98358 0.989455 10.5341 0.170166 11.0947V7.89259C1.24377 7.65663 2.29999 7.423 3.09009 7.16602C3.49168 7.0354 3.82985 6.89749 4.06763 6.74805C4.3007 6.60157 4.46129 6.42789 4.4563 6.22071C4.45158 6.01393 4.28194 5.83634 4.04126 5.68458C3.79523 5.52946 3.45036 5.38558 3.04712 5.25196C2.27515 4.99615 1.2727 4.77478 0.295166 4.58985L2.57544 2.31153C3.49287 2.90182 4.39835 3.47606 5.13306 3.84864C5.50652 4.03801 5.84104 4.17745 6.11255 4.23927C6.37836 4.29975 6.61174 4.29182 6.75317 4.14454C6.8961 3.9969 6.9027 3.75389 6.84106 3.47852C6.778 3.19692 6.63814 2.85313 6.44946 2.47559C6.08821 1.75274 5.53959 0.891472 4.98169 0.0722733H7.98755Z" fill="#71902F" stroke="#71902F" stroke-width=".145"/></svg></a></div>
@@ -97,8 +97,8 @@
       <div class="tc"><h1>Faturamento Pendente</h1><p>Faturas que não foram recebidas</p></div>
       <div class="acts">
         <button class="sq tip" id="bInd" data-tip="Indicadores" aria-label="Indicadores" aria-pressed="false"><span class="msr">bar_chart</span></button>
-        <button class="sq tip" data-tip="Configuração e detecção" aria-label="Configuração e detecção" data-toast="Abriria Configuração e detecção"><span class="msr">settings</span></button>
-        <button class="sq tip" data-tip="Adicionar Faturamento Pendente" aria-label="Adicionar Faturamento Pendente" data-toast="Abriria Adicionar Faturamento Pendente"><span class="msr">add</span></button>
+        <button class="sq tip" data-tip="Configuração e detecção" aria-label="Configuração e detecção" data-a="cfg"><span class="msr">settings</span></button>
+        <button class="sq tip" data-tip="Adicionar Faturamento Pendente" aria-label="Adicionar Faturamento Pendente" data-a="add"><span class="msr">add</span></button>
       </div>
     </div>
 
@@ -108,11 +108,13 @@
       <div class="lst">
         <div class="tools">
           <label class="field"><span class="msr" aria-hidden="true">search</span><input id="q" placeholder="Buscar por ticket, cooperado, instalação ou concessionária" aria-label="Buscar" autocomplete="off"><button class="ib" type="button" id="bFlt" aria-label="Mostrar ou esconder filtros" aria-pressed="true"><span class="msr fill">filter_alt</span></button></label>
+          <button class="sq52 tip" id="bView" data-tip="Ver em kanban" aria-label="Ver em kanban"><span class="msr">view_kanban</span></button>
           <button class="sq52 on tip" id="bRail" data-tip="Resumo do ticket" aria-label="Resumo do ticket" aria-pressed="true"><span class="msr">right_panel_close</span></button>
         </div>
         <div class="frow" id="frow"></div>
-        <div class="tblw"><div class="tbl" id="tbl" role="table" aria-label="Tickets"></div></div>
-        <div class="tfoot"><span id="count"></span><span>Selecione linhas para ações em lote</span></div>
+        <div id="vList"><div class="tblw"><div class="tbl" id="tbl" role="table" aria-label="Tickets"></div></div>
+        <div class="tfoot"><span id="count"></span><span>Selecione linhas para ações em lote</span></div></div>
+        <div id="vKan" hidden><div class="board" id="kan" aria-label="Kanban por tentativas"></div><div class="tfoot"><span>Arraste um ticket para a próxima coluna para registrar a tentativa; para Demissões, para solicitar a demissão.</span></div></div>
       </div>
       <aside class="rail" id="rail" aria-label="Resumo do ticket"></aside>
     </div>
@@ -130,41 +132,6 @@
   <button class="b gh" data-bulk="mais"><span class="msr">more_horiz</span>Mais</button>
   <button class="ib" data-bulk="limpar" aria-label="Limpar seleção"><span class="msr">close</span></button>
 </div>
-
-<div class="pop" id="pop" hidden role="menu"></div>
-
-<!-- modais -->
-<div class="ov" id="ovTent" role="dialog" aria-modal="true" aria-labelledby="tT">
-  <form class="dlg" id="fTent" novalidate>
-    <div class="dh"><h2 id="tT">Registrar tentativa de contato</h2><p id="tSub"></p></div>
-    <div class="db">
-      <div><span class="lbl">Canal utilizado</span><div class="chs" role="radiogroup" aria-label="Canal" id="chs">
-        <button type="button" class="chn" role="radio" aria-checked="true" data-v="Telefone"><span class="msr">call</span>Telefone</button>
-        <button type="button" class="chn" role="radio" aria-checked="false" data-v="WhatsApp"><span class="msr">chat</span>WhatsApp</button>
-        <button type="button" class="chn" role="radio" aria-checked="false" data-v="E-mail"><span class="msr">mail</span>E-mail</button></div></div>
-      <div><label class="lbl" for="tRes">Resultado da tentativa</label><select class="sel" id="tRes"><option>Sem contato</option><option>Caixa postal</option><option>Sem retorno</option><option selected>Cooperado informou que enviará</option><option>Número errado</option></select></div>
-      <div><span class="lbl">Evidência (obrigatória)</span><div class="fileline"><label class="inp" id="evLbl"><span class="msr">attach_file</span><span id="evName">Escolher arquivo</span><input type="file" id="evIn" accept="image/png,image/jpeg,application/pdf" hidden></label><button type="button" class="b out" id="evBtn">Anexar</button></div><div class="help">Print de tela, protocolo da ligação ou comprovante de envio · PNG, JPG ou PDF até 10 MB</div></div>
-      <button type="button" class="b gh more-t" id="mdT" aria-expanded="false" style="padding:0">Mais detalhes (opcional)<span class="msr chev">expand_more</span></button>
-      <div id="md" hidden style="display:flex;flex-direction:column;gap:16px">
-        <div class="row2"><div><label class="lbl" for="tDt">Data e hora do contato</label><input class="inp" id="tDt" value="09/10/2026 11:12"></div><div class="w140"><label class="lbl" for="tDur">Duração</label><input class="inp" id="tDur" placeholder="min:seg"></div></div>
-        <div><label class="lbl" for="tPr">Protocolo da ligação</label><input class="inp" id="tPr" placeholder="Ex.: 8842-119"><div class="help">Quando informado, o protocolo conta como evidência.</div></div>
-        <div><label class="lbl" for="tObs">Observação</label><textarea class="ta" id="tObs" placeholder="Contexto do contato (opcional)"></textarea></div>
-      </div>
-    </div>
-    <div class="df"><button type="button" class="b out" data-close>Cancelar</button><button type="submit" class="b pri" id="tSave">Salvar tentativa</button></div>
-    <button type="button" class="ib x" data-close aria-label="Fechar"><span class="msr">close</span></button>
-  </form>
-</div>
-
-<div class="ov" id="ovImp" role="dialog" aria-modal="true" aria-labelledby="iT">
-  <form class="dlg w560" id="fImp" novalidate>
-    <div class="dh"><h2 id="iT">Importar faturas</h2><p id="iSub">Envie as faturas em PDF ou imagem. Cada arquivo entra na leitura e é ligado à fatura pendente da mesma UC e competência.</p></div>
-    <div class="db" id="iBody"></div>
-    <div class="df"><button type="button" class="b out" data-close>Cancelar</button><button type="submit" class="b pri" id="iSend" disabled>Enviar faturas</button></div>
-    <button type="button" class="ib x" data-close aria-label="Fechar"><span class="msr">close</span></button>
-  </form>
-</div>
-<input type="file" id="iIn" multiple accept="application/pdf,image/jpeg,image/png,image/webp,.pdf,.jpg,.jpeg,.png,.webp" hidden>
 
 <div class="proto" aria-label="Opções do protótipo">Tema
   <button data-th="light" class="on">Claro</button><button data-th="dark">Escuro</button>

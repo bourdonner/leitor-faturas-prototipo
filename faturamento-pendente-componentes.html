@@ -86,12 +86,7 @@ table.dpt .rf{color:var(--mid);white-space:nowrap}
 table.dpt tr.nw td:first-child::after{content:"novo";margin-left:6px;font:600 10px/1 Inter;padding:2px 6px;border-radius:999px;background:var(--lime);color:var(--lime-ink);vertical-align:1px}
 .keep{font-size:13px;color:var(--mid);margin:10px 0 0;line-height:1.6;max-width:900px}
 /* stg real (só no link privado, quando stg.json existe) */
-.stgw{margin-top:16px}
-.stgw summary{cursor:pointer;font-weight:600;font-size:13px;color:var(--ink);display:flex;align-items:center;gap:8px;list-style:none}
-.stgw summary::-webkit-details-marker{display:none}
-.stgw summary .tg{font:600 10px/1 Inter;padding:3px 7px;border-radius:999px;background:var(--s100);text-transform:uppercase;letter-spacing:.06em}
-.stgw[open] summary .msr{transform:rotate(180deg)}
-.stgw .sbox{margin-top:12px;overflow:auto;border:1px solid var(--s100);border-radius:12px}
+
 .stg-surface{background:oklch(1 0 89.88);color:oklch(0.2161 0.0061 56.04);font-family:Inter,system-ui,sans-serif;font-size:14px;line-height:20px;border-radius:8px;width:max-content;min-width:100%;color-scheme:light}
 .stg-surface.dk{background:oklch(0.1405 0.0044 285.82);color:oklch(0.9699 0.0013 106.42);color-scheme:dark}
 .stg-surface *{box-sizing:border-box}
@@ -101,6 +96,23 @@ table.dpt tr.nw td:first-child::after{content:"novo";margin-left:6px;font:600 10
 .stg-surface dl,.stg-surface dd,.stg-surface dt{margin:0}
 .stg-surface .w352{width:352px;padding:16px}
 @media (max-width:1000px){body{overflow:auto}.app{grid-template-columns:1fr;height:auto;padding:12px}.side{max-height:none}.toc{max-height:260px}.sheet{overflow:visible}.intro{padding:24px 16px}section.cmp{padding:20px 16px}.canvas{padding:16px}}
+
+/* comparação lado a lado */
+.mode{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.side .mode{padding:0 24px 12px}
+.pair{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
+body.cmp .pair{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.pane-h{display:flex;align-items:center;gap:8px;font:600 12px/1 Inter;margin:0 0 8px}
+.pane-h .tg{font:600 10px/1 Inter;padding:4px 7px;border-radius:999px;text-transform:uppercase;letter-spacing:.06em}
+.pane-h .tg.s{background:var(--s100);color:var(--ink)} .pane-h .tg.f{background:var(--lime);color:var(--lime-ink)}
+.pane-h small{font-weight:400;color:var(--mid)}
+.stgpane{display:none;min-width:0}
+body.cmp .stgpane{display:block}
+.pane-f{display:none} body.cmp .pane-f{display:flex}
+.sbox{overflow:auto;border:1px solid var(--s200);border-radius:16px;max-height:900px}
+.sbox.none{display:grid;place-items:center;min-height:200px;color:var(--mid);font-size:13px;padding:24px;text-align:center;background:var(--s50)}
+.zoomed{zoom:.62}
+@media (max-width:1300px){body.cmp .pair{grid-template-columns:minmax(0,1fr)}}
 </style>
 <script src="assets/toast.js"></script>
 </head>
@@ -108,20 +120,27 @@ table.dpt tr.nw td:first-child::after{content:"novo";margin-left:6px;font:600 10
 <div class="app">
   <aside class="side box">
     <div class="side-h"><span class="lg"><span class="msr" style="font-size:20px;color:#71902f">confirmation_number</span></span><span><b>Faturamento Pendente</b><span>Componentes · Tickets</span></span></div>
+    <div class="mode"><div class="seg" role="group" aria-label="Modo da página"><button data-mode="comp" class="on" aria-pressed="true">Componentes</button><button data-mode="cmp" aria-pressed="false">Comparação</button></div></div>
     <nav class="toc" id="toc" aria-label="Componentes">
       <div class="grp">Lista</div>
       <a href="#cabecalho">Cabeçalho e filtros</a>
       <a href="#indicadores">Indicadores</a>
       <a href="#tabela">Tabela <span class="nw">UCs</span></a>
       <a href="#lote">Ações em lote <span class="nw">novo</span></a>
+      <a href="#kanban">Kanban</a>
       <div class="grp">Resumo do ticket</div>
       <a href="#ticket">Ticket e cooperado</a>
       <a href="#faturas">Faturas pendentes <span class="nw">novo</span></a>
       <a href="#tentativas">Tentativas de contato</a>
       <a href="#historico">Histórico de tentativas</a>
+      <a href="#estados">Estados do Resumo</a>
       <div class="grp">Modais</div>
       <a href="#registrar">Registrar tentativa</a>
       <a href="#importar">Importar faturas <span class="nw">novo</span></a>
+      <a href="#evidencia">Visualizador de evidência</a>
+      <a href="#demissao">Solicitar demissão</a>
+      <a href="#adicionar">Adicionar Faturamento Pendente</a>
+      <a href="#config">Configuração e detecção</a>
       <div class="grp">Base</div>
       <a href="#cores">Cores e dark mode</a>
     </nav>
@@ -136,53 +155,52 @@ table.dpt tr.nw td:first-child::after{content:"novo";margin-left:6px;font:600 10
     <header class="intro box">
       <div class="eyebrow">Tickets · Faturamento Pendente</div>
       <h1>Componentes do Faturamento Pendente</h1>
-      <p>Cada componente aqui é o do Figma, em código e interativo. Abaixo de cada um, o de → para do que muda no stg. Os dados são fictícios.</p>
+      <p>Cada componente aqui é o do Figma, em código e interativo, com o de → para do que muda no stg. Em <b>Comparação</b>, o stg de hoje aparece ao lado, com o DOM e os estilos reais da página e dados fictícios.</p>
       <div class="news">
         <a href="#tabela"><span class="msr">pin</span><b>Quantidade de UCs na linha</b><span>"2 UCs" no lugar do número da instalação</span></a>
         <a href="#lote"><span class="msr">checklist</span><b>Ações em lote</b><span>Barra flutuante com Definir responsável, Mover de carteira, Devolver à triagem, Resolver</span></a>
         <a href="#faturas"><span class="msr">expand_more</span><b>Carregar mais</b><span>5 faturas por vez, com o que falta no botão</span></a>
         <a href="#importar"><span class="msr">upload_file</span><b>Importar faturas em lote</b><span>O mesmo componente da Nova fatura do Leitor</span></a>
+        <a href="#kanban"><span class="msr">view_kanban</span><b>Kanban</b><span>Uma coluna por tentativa; arrastar registra a próxima</span></a>
       </div>
-      <div class="theme"><span class="k">Tema dos componentes</span><div class="seg" role="group" aria-label="Tema"><button data-th="light" class="on">Claro</button><button data-th="dark">Escuro</button></div></div>
+      <div class="theme"><span class="k">Modo</span><div class="seg" role="group" aria-label="Modo da página"><button data-mode="comp" class="on" aria-pressed="true">Componentes</button><button data-mode="cmp" aria-pressed="false">Comparação com o stg</button></div>
+        <span class="k" style="margin-left:12px">Tema</span><div class="seg" role="group" aria-label="Tema"><button data-th="light" class="on">Claro</button><button data-th="dark">Escuro</button></div></div>
     </header>
 
-    <!-- CABEÇALHO E FILTROS -->
     <section class="cmp box" id="cabecalho">
       <div class="cmp-h"><h3>Cabeçalho e filtros</h3><a class="chip fig" href="https://www.figma.com/design/Mg4zkZ9Js0HA8NZsiVa2d2/Tickets?node-id=108-37362" target="_blank" rel="noopener">Figma · Lista/Padrão</a></div>
       <p class="lead">Ações do cabeçalho só com ícone, busca com o filtro dentro do campo e a barra de filtros com o componente Filter da lib: vazio mostra o nome e o chevron; com valor, o nome, os valores e o ×. Abra um filtro e marque opções.</p>
-      <div class="stage fp"><div class="canvas left"><div style="display:flex;flex-direction:column;gap:16px;width:100%;min-width:0">
-        <div style="display:flex;gap:24px;align-items:flex-start"><div style="flex:1"><div style="font:600 24px/32px Poppins;color:var(--brand)">Faturamento Pendente</div><div style="color:var(--mid)">Faturas que não foram recebidas</div></div><div style="display:flex;gap:8px"><button class="sq" aria-label="Indicadores"><span class="msr">bar_chart</span></button><button class="sq" aria-label="Configuração e detecção"><span class="msr">settings</span></button><button class="sq" aria-label="Adicionar"><span class="msr">add</span></button></div></div>
-        <div class="tools"><label class="field"><span class="msr">search</span><input placeholder="Buscar por ticket, cooperado, instalação ou concessionária" aria-label="Buscar"><span class="ib"><span class="msr fill">filter_alt</span></span></label><button class="sq52 on" aria-label="Resumo do ticket"><span class="msr">right_panel_close</span></button></div>
-        <div class="frow" data-m="filters"></div>
-      </div></div></div>
+      <div class="pair" data-stg="title,tabs,filters">
+        <div class="stage fp"><div class="canvas left"><div style="display:flex;flex-direction:column;gap:16px;width:100%;min-width:0">
+          <div style="display:flex;gap:24px;align-items:flex-start"><div style="flex:1"><div style="font:600 24px/32px Poppins;color:var(--brand)">Faturamento Pendente</div><div style="color:var(--mid)">Faturas que não foram recebidas</div></div><div style="display:flex;gap:8px"><button class="sq" aria-label="Indicadores"><span class="msr">bar_chart</span></button><button class="sq" data-a="cfg" aria-label="Configuração e detecção"><span class="msr">settings</span></button><button class="sq" data-a="add" aria-label="Adicionar"><span class="msr">add</span></button></div></div>
+          <div class="tools"><label class="field"><span class="msr">search</span><input placeholder="Buscar por ticket, cooperado, instalação ou concessionária" aria-label="Buscar"><span class="ib"><span class="msr fill">filter_alt</span></span></label><button class="sq52" aria-label="Ver em kanban"><span class="msr">view_kanban</span></button><button class="sq52 on" aria-label="Resumo do ticket"><span class="msr">right_panel_close</span></button></div>
+          <div class="frow" data-m="filters"></div>
+        </div></div></div>
+      </div>
       <div class="dp" data-dp="cabecalho"></div>
-      <details class="stgw" data-stg="title,tabs,filters" hidden><summary><span class="tg">stg</span>Como está no stg hoje<span class="msr">expand_more</span></summary><div class="sbox"></div></details>
     </section>
 
-    <!-- INDICADORES -->
     <section class="cmp box" id="indicadores">
       <div class="cmp-h"><h3>Indicadores</h3><a class="chip fig" href="https://www.figma.com/design/Mg4zkZ9Js0HA8NZsiVa2d2/Tickets?node-id=347-18368" target="_blank" rel="noopener">Figma · Lista/Indicadores abertos</a></div>
       <p class="lead">Tiles da lib (como no Cadastro) e o gráfico de colunas por tentativas. Os números são calculados dos tickets fictícios: resolva tickets em lote mais abaixo e veja mudar. Passe o mouse nas colunas.</p>
-      <div class="stage fp"><div class="canvas left"><div class="ind" data-m="ind" style="width:100%"></div></div></div>
+      <div class="pair" data-stg="ind"><div class="stage fp"><div class="canvas left"><div class="ind" data-m="ind" style="width:100%"></div></div></div></div>
       <div class="dp" data-dp="indicadores"></div>
-      <details class="stgw" data-ind hidden><summary><span class="tg">stg</span>Como está no stg hoje<span class="msr">expand_more</span></summary><div class="sbox"></div></details>
     </section>
 
-    <!-- TABELA -->
     <section class="cmp box" id="tabela">
       <div class="cmp-h"><h3>Tabela</h3><span class="chip nw">Quantidade de UCs</span><a class="chip fig" href="https://www.figma.com/design/Mg4zkZ9Js0HA8NZsiVa2d2/Tickets?node-id=350-32798" target="_blank" rel="noopener">Figma · Regra de colunas</a></div>
       <p class="lead">O cooperado mostra a quantidade de UCs em vez do número da instalação. Diminua a largura: as colunas somem por prioridade até o Cooperado ter 240 px (Carteira, Aberto em, Status, Responsável, Faturas, Tentativa).</p>
-      <div class="stage fp"><div class="ctrls"><span><span class="k">Largura</span><input type="range" min="640" max="1400" value="1400" id="tw" aria-label="Largura da tabela"> <b id="twv">1400 px</b></span></div>
-        <div class="canvas left"><div id="twrap" style="width:1400px;max-width:100%"><div class="tbl" data-m="table"></div></div></div></div>
+      <div class="pair" data-stg="table">
+        <div class="stage fp"><div class="ctrls"><span><span class="k">Largura</span><input type="range" min="640" max="1400" value="1400" id="tw" aria-label="Largura da tabela"> <b id="twv">1400 px</b></span></div>
+          <div class="canvas left"><div id="twrap" style="width:1400px;max-width:100%"><div class="tbl" data-m="table"></div></div></div></div>
+      </div>
       <div class="dp" data-dp="tabela"></div>
-      <details class="stgw" data-stg="table" hidden><summary><span class="tg">stg</span>Como está no stg hoje<span class="msr">expand_more</span></summary><div class="sbox"></div></details>
     </section>
 
-    <!-- LOTE -->
     <section class="cmp box" id="lote">
       <div class="cmp-h"><h3>Ações em lote</h3><span class="chip nw">Novo</span><a class="chip fig" href="https://www.figma.com/design/Mg4zkZ9Js0HA8NZsiVa2d2/Tickets?node-id=371-99016" target="_blank" rel="noopener">Figma · Seleção em lote</a></div>
-      <p class="lead">Padrão de mercado (Linear, Gmail, Jira): marcar linhas abre uma barra flutuante no rodapé com a contagem e as ações; cada ação mostra um aviso com Desfazer. Na tabela acima, as linhas marcadas ficam verdes. O "Selecionar todos" do cabeçalho marca só o que está visível com os filtros.</p>
-      <div class="stage fp"><div class="canvas"><div class="bulk inline" id="bulk" role="toolbar" aria-label="Ações em lote">
+      <p class="lead">Padrão de mercado (Linear, Gmail, Jira): marcar linhas abre uma barra flutuante no rodapé com a contagem e as ações; cada ação mostra um aviso com Desfazer. Na tabela acima, as linhas marcadas ficam verdes.</p>
+      <div class="pair" data-stg="-"><div class="stage fp"><div class="canvas"><div class="bulk inline" id="bulk" role="toolbar" aria-label="Ações em lote">
         <span class="n" id="bulkN"></span><span class="vs"></span>
         <button class="b gh" data-bulk="resp"><span class="msr">person_add</span>Definir responsável</button>
         <button class="b gh" data-bulk="cart"><span class="msr">swap_horiz</span>Mover de carteira</button>
@@ -191,109 +209,107 @@ table.dpt tr.nw td:first-child::after{content:"novo";margin-left:6px;font:600 10
         <span class="vs"></span>
         <button class="b gh" data-bulk="mais"><span class="msr">more_horiz</span>Mais</button>
         <button class="ib" data-bulk="limpar" aria-label="Limpar seleção"><span class="msr">close</span></button>
-      </div></div></div>
+      </div></div></div></div>
       <div class="dp" data-dp="lote"></div>
     </section>
 
-    <!-- TICKET E COOPERADO -->
+    <section class="cmp box" id="kanban">
+      <div class="cmp-h"><h3>Kanban</h3><a class="chip fig" href="https://www.figma.com/design/Mg4zkZ9Js0HA8NZsiVa2d2/Tickets?node-id=111-46540" target="_blank" rel="noopener">Figma · Kanban</a></div>
+      <p class="lead">Uma coluna por etapa: Sem Atendimento, 1ª a 7ª tentativa e Demissões; resolvidos não entram. O ícone da coluna segue a cor da etapa. Clique num card para selecioná-lo (borda verde). Arraste para a próxima coluna para registrar a tentativa; para Demissões, só a partir da 7ª.</p>
+      <div class="pair" data-stg="-"><div class="stage fp"><div class="canvas left" style="display:block"><div class="board" data-m="kanban"></div></div></div></div>
+      <div class="dp" data-dp="kanban"></div>
+    </section>
+
     <section class="cmp box" id="ticket">
       <div class="cmp-h"><h3>Ticket e cooperado</h3><a class="chip fig" href="https://www.figma.com/design/Mg4zkZ9Js0HA8NZsiVa2d2/Tickets?node-id=346-17597" target="_blank" rel="noopener">Figma · Menu do ticket</a></div>
       <p class="lead">Barra do Resumo, card do ticket com o status ao lado do número e o "…" com as opções do ticket; card do cooperado cinza com os itens em branco e o chevron que recolhe.</p>
-      <div class="stage fp"><div class="canvas"><div class="w352" data-m="ticket"></div></div></div>
+      <div class="pair" data-part="bar,ticket,coop"><div class="stage fp"><div class="canvas"><div class="w352" data-m="ticket"></div></div></div></div>
       <div class="dp" data-dp="ticket"></div>
-      <details class="stgw" data-part="bar,ticket,coop" hidden><summary><span class="tg">stg</span>Como está no stg hoje<span class="msr">expand_more</span></summary><div class="sbox"></div></details>
     </section>
 
-    <!-- FATURAS -->
     <section class="cmp box" id="faturas">
       <div class="cmp-h"><h3>Faturas pendentes</h3><span class="chip nw">Carregar mais · Importar</span><a class="chip fig" href="https://www.figma.com/design/Mg4zkZ9Js0HA8NZsiVa2d2/Tickets?node-id=371-102622" target="_blank" rel="noopener">Figma · Muitas faturas</a></div>
-      <p class="lead">Cada fatura é um card de Atividade: competência e "UC · motivo" à vista; leitura prevista e dias em atraso no hover ou no foco. O botão no canto envia a fatura daquela linha. Com muitas faturas, carrega 5 por vez; "Importar faturas" abre o envio em lote.</p>
-      <div class="stage fp"><div class="ctrls"><span class="k">Ticket</span><div class="seg" id="ftk" role="group" aria-label="Ticket"><button data-v="TK-04175" class="on">12 faturas</button><button data-v="TK-04166">4 faturas</button><button data-v="TK-04168">Nenhuma</button></div></div>
-        <div class="canvas"><div class="w352" data-m="faturas"></div></div></div>
+      <p class="lead">Cada fatura é um card de Atividade: competência e "UC · motivo" à vista; leitura prevista e dias em atraso no hover ou no foco. O botão no canto envia a fatura daquela linha. Com muitas faturas, carrega 5 por vez; lidas aparecem com o check verde.</p>
+      <div class="pair" data-part="fat"><div class="stage fp"><div class="ctrls"><span class="k">Ticket</span><div class="seg" id="ftk" role="group" aria-label="Ticket"><button data-v="TK-04175" class="on">12 faturas</button><button data-v="TK-04170">1 de 3 lidas</button><button data-v="TK-04168">Todas lidas</button></div></div>
+        <div class="canvas"><div class="w352" data-m="faturas"></div></div></div></div>
       <div class="dp" data-dp="faturas"></div>
-      <details class="stgw" data-part="fat" hidden><summary><span class="tg">stg</span>Como está no stg hoje<span class="msr">expand_more</span></summary><div class="sbox"></div></details>
     </section>
 
-    <!-- TENTATIVAS -->
     <section class="cmp box" id="tentativas">
       <div class="cmp-h"><h3>Tentativas de contato</h3></div>
-      <p class="lead">Bolinhas preenchidas com a cor da etapa (cinza até 2, laranja de 3 a 6, vermelho na 7ª). Solicitar demissão só libera na 7ª tentativa.</p>
-      <div class="stage fp"><div class="ctrls"><span class="k">Ticket</span><div class="seg" id="ttk" role="group" aria-label="Ticket"><button data-v="TK-04182">0 de 7</button><button data-v="TK-04175" class="on">4 de 7</button><button data-v="TK-04166">7 de 7</button></div></div>
-        <div class="canvas"><div class="w352" data-m="tent"></div></div></div>
+      <p class="lead">Bolinhas preenchidas com a cor da etapa (cinza até 2, laranja de 3 a 6, vermelho na 7ª). No limite, Registrar desabilita e Solicitar demissão libera. Ticket herdado ganha a etiqueta e mostra de onde vieram as tentativas.</p>
+      <div class="pair" data-part="tent"><div class="stage fp"><div class="ctrls"><span class="k">Ticket</span><div class="seg" id="ttk" role="group" aria-label="Ticket"><button data-v="TK-04182">0 de 7</button><button data-v="TK-04175" class="on">4 de 7</button><button data-v="TK-04163">Herdado</button><button data-v="TK-04166">Limite</button></div></div>
+        <div class="canvas"><div class="w352" data-m="tent"></div></div></div></div>
       <div class="dp" data-dp="tentativas"></div>
-      <details class="stgw" data-part="tent" hidden><summary><span class="tg">stg</span>Como está no stg hoje<span class="msr">expand_more</span></summary><div class="sbox"></div></details>
     </section>
 
-    <!-- HISTÓRICO -->
     <section class="cmp box" id="historico">
       <div class="cmp-h"><h3>Histórico de tentativas</h3><a class="chip fig" href="https://www.figma.com/design/Mg4zkZ9Js0HA8NZsiVa2d2/Tickets?node-id=358-33412" target="_blank" rel="noopener">Figma · Atividade base</a></div>
-      <p class="lead">O componente Atividade do Leitor de Faturas. Passe o mouse nos cards: as tentativas mostram Ver evidência e, na última, Desfazer; a troca de responsável mostra o de → para.</p>
-      <div class="stage fp"><div class="canvas"><div class="w352" data-m="hist"></div></div></div>
+      <p class="lead">O componente Atividade do Leitor de Faturas. Passe o mouse nos cards: as tentativas mostram Ver evidência (abre o visualizador) e, na última, Desfazer; a troca de responsável mostra o de → para.</p>
+      <div class="pair" data-part="hist"><div class="stage fp"><div class="canvas"><div class="w352" data-m="hist"></div></div></div></div>
       <div class="dp" data-dp="historico"></div>
-      <details class="stgw" data-part="hist" hidden><summary><span class="tg">stg</span>Como está no stg hoje<span class="msr">expand_more</span></summary><div class="sbox"></div></details>
     </section>
 
-    <!-- REGISTRAR -->
+    <section class="cmp box" id="estados">
+      <div class="cmp-h"><h3>Estados do Resumo</h3><a class="chip fig" href="https://www.figma.com/design/Mg4zkZ9Js0HA8NZsiVa2d2/Tickets?node-id=74-9529" target="_blank" rel="noopener">Figma · Resumo/*</a></div>
+      <p class="lead">O Resumo inteiro em cada estado desenhado no Figma. Tudo continua interativo.</p>
+      <div class="pair" data-part="bar,ticket,coop,fat,tent,hist"><div class="stage fp"><div class="ctrls"><div class="seg" id="stk" role="group" aria-label="Estado"><button data-v="TK-04182" class="on">Sem atendimento</button><button data-v="TK-04175">Aguardando fatura</button><button data-v="TK-04170">1 de 3 lidas</button><button data-v="TK-04166">7ª tentativa</button><button data-v="TK-04163">Herdado de outra carteira</button><button data-v="TK-04159">Demissão solicitada</button><button data-v="TK-04168">Resolvido por importação</button><button data-v="TK-04165">Resolvido por captura</button></div></div>
+        <div class="canvas"><div class="w352" data-m="estado"></div></div></div></div>
+      <div class="dp" data-dp="estados"></div>
+    </section>
+
     <section class="cmp box" id="registrar">
-      <div class="cmp-h"><h3>Registrar tentativa</h3><a class="chip fig" href="https://www.figma.com/design/Mg4zkZ9Js0HA8NZsiVa2d2/Tickets?node-id=344-90725" target="_blank" rel="noopener">Figma · Modal</a></div>
-      <p class="lead">Canal com o escolhido em borda verde, evidência obrigatória (ou o protocolo) e "Mais detalhes" recolhido. Salvar sem evidência mostra o erro no próprio campo.</p>
-      <div class="stage fp"><div class="canvas"><button class="b pri" data-a="tent" data-tk="TK-04175">Abrir Registrar tentativa</button></div></div>
+      <div class="cmp-h"><h3>Registrar tentativa</h3><a class="chip fig" href="https://www.figma.com/design/Mg4zkZ9Js0HA8NZsiVa2d2/Tickets?node-id=61-9375" target="_blank" rel="noopener">Figma · Evidência obrigatória</a></div>
+      <p class="lead">Canal com o escolhido em borda verde, evidência obrigatória (ou o protocolo) e "Mais detalhes" recolhido. Salvar sem evidência deixa o campo em vermelho e desabilita o botão até anexar.</p>
+      <div class="pair" data-stg="modal"><div class="stage fp"><div class="canvas"><button class="b pri" data-a="tent" data-tk="TK-04175">Abrir Registrar tentativa</button></div></div></div>
       <div class="dp" data-dp="registrar"></div>
-      <details class="stgw" data-stg="modal" hidden><summary><span class="tg">stg</span>Como está no stg hoje<span class="msr">expand_more</span></summary><div class="sbox"></div></details>
     </section>
 
-    <!-- IMPORTAR -->
     <section class="cmp box" id="importar">
       <div class="cmp-h"><h3>Importar faturas</h3><span class="chip nw">Novo</span><a class="chip fig" href="https://www.figma.com/design/Mg4zkZ9Js0HA8NZsiVa2d2/Tickets?node-id=373-23896" target="_blank" rel="noopener">Figma · Importar em lote</a><a class="chip" href="interacoes.html#upload">Leitor · Nova fatura</a></div>
-      <p class="lead">Mesmo componente da Nova fatura do Leitor: área de arrastar, lista com progresso, erro por arquivo (formato ou mais de 20 MB). Cada arquivo é ligado a uma fatura pendente pela competência no nome do arquivo e dá para trocar em "Vai para". Arraste arquivos de verdade ou use os de exemplo.</p>
-      <div class="stage fp"><div class="canvas"><button class="b pri" data-a="imp" data-tk="TK-04175">Importar faturas · lote</button><button class="b out" id="impOne">Enviar uma fatura · 09/2025</button></div></div>
+      <p class="lead">Mesmo componente da Nova fatura do Leitor: área de arrastar, lista com progresso, erro por arquivo (formato ou mais de 20 MB). Cada arquivo é ligado a uma fatura pendente pela competência no nome do arquivo e dá para trocar em "Vai para". Substitui o modal "Importar fatura da concessionária" (76:10563).</p>
+      <div class="pair" data-stg="-"><div class="stage fp"><div class="canvas"><button class="b pri" data-a="imp" data-tk="TK-04175">Importar faturas · lote</button><button class="b out" id="impOne">Enviar uma fatura</button></div></div></div>
       <div class="dp" data-dp="importar"></div>
     </section>
 
-    <!-- CORES -->
+    <section class="cmp box" id="evidencia">
+      <div class="cmp-h"><h3>Visualizador de evidência</h3><a class="chip fig" href="https://www.figma.com/design/Mg4zkZ9Js0HA8NZsiVa2d2/Tickets?node-id=117-93605" target="_blank" rel="noopener">Figma · Visualizador</a></div>
+      <p class="lead">Abre pelo "Ver evidência" do histórico: canal, data e quem registrou, a imagem ou o PDF e o arquivo com Baixar.</p>
+      <div class="pair" data-stg="-"><div class="stage fp"><div class="canvas"><button class="b pri" data-ev="1">4ª tentativa · WhatsApp</button><button class="b out" data-ev="2">3ª tentativa · Telefone (PDF)</button></div></div></div>
+      <div class="dp" data-dp="evidencia"></div>
+    </section>
+
+    <section class="cmp box" id="demissao">
+      <div class="cmp-h"><h3>Solicitar demissão</h3><a class="chip fig" href="https://www.figma.com/design/Mg4zkZ9Js0HA8NZsiVa2d2/Tickets?node-id=311-16802" target="_blank" rel="noopener">Figma · Solicitar demissão</a></div>
+      <p class="lead">Libera na 7ª tentativa sem retorno. Registrar fica desabilitado até escolher a temperatura do cooperado; ao registrar, o ticket vai para Demissões e o Resumo mostra "Demissão solicitada".</p>
+      <div class="pair" data-stg="-"><div class="stage fp"><div class="canvas"><button class="b danger" data-a="dem" data-tk="TK-04166">Solicitar demissão · TK-04166</button></div></div></div>
+      <div class="dp" data-dp="demissao"></div>
+    </section>
+
+    <section class="cmp box" id="adicionar">
+      <div class="cmp-h"><h3>Adicionar Faturamento Pendente</h3><a class="chip fig" href="https://www.figma.com/design/Mg4zkZ9Js0HA8NZsiVa2d2/Tickets?node-id=346-18206" target="_blank" rel="noopener">Figma · Adicionar</a></div>
+      <p class="lead">Cria um ticket manual. Se o cooperado escolhido já tem ticket ativo (Fernanda Lima, Solaris), o aviso muda e as faturas entram nele.</p>
+      <div class="pair" data-stg="-"><div class="stage fp"><div class="canvas"><button class="b pri" data-a="add">Adicionar Faturamento Pendente</button></div></div></div>
+      <div class="dp" data-dp="adicionar"></div>
+    </section>
+
+    <section class="cmp box" id="config">
+      <div class="cmp-h"><h3>Configuração e detecção</h3><a class="chip fig" href="https://www.figma.com/design/Mg4zkZ9Js0HA8NZsiVa2d2/Tickets?node-id=346-44918" target="_blank" rel="noopener">Figma · Configuração</a></div>
+      <p class="lead">Três abas: Detecção (simular sempre; executar só com a detecção ligada), Parâmetros (com validação ao salvar) e Temas de atendimento. Mudar o limite de tentativas muda quando a demissão libera.</p>
+      <div class="pair" data-stg="-"><div class="stage fp"><div class="canvas"><button class="b pri" data-cfgtab="det">Detecção</button><button class="b out" data-cfgtab="par">Parâmetros</button><button class="b out" data-cfgtab="tem">Temas de atendimento</button></div></div></div>
+      <div class="dp" data-dp="config"></div>
+    </section>
+
     <section class="cmp box" id="cores">
       <div class="cmp-h"><h3>Cores e dark mode</h3></div>
       <p class="lead">Tudo vem das variables da Style Guide Enershare, com valor no claro e no escuro. Troque o tema no topo da página.</p>
-      <div class="stage fp"><div class="canvas left" id="tokens" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px"></div></div>
+      <div class="pair" data-stg="-"><div class="stage fp"><div class="canvas left" id="tokens" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px"></div></div></div>
       <div class="dp" data-dp="cores"></div>
     </section>
   </div></div>
 </div>
 
-<!-- peças compartilhadas com a tela (pop-over e modais) -->
-<div class="fp" id="fpRoot">
-<div class="pop" id="pop" hidden role="menu"></div>
-<div class="ov" id="ovTent" role="dialog" aria-modal="true" aria-labelledby="tT">
-  <form class="dlg" id="fTent" novalidate>
-    <div class="dh"><h2 id="tT">Registrar tentativa de contato</h2><p id="tSub"></p></div>
-    <div class="db">
-      <div><span class="lbl">Canal utilizado</span><div class="chs" role="radiogroup" aria-label="Canal" id="chs">
-        <button type="button" class="chn" role="radio" aria-checked="true" data-v="Telefone"><span class="msr">call</span>Telefone</button>
-        <button type="button" class="chn" role="radio" aria-checked="false" data-v="WhatsApp"><span class="msr">chat</span>WhatsApp</button>
-        <button type="button" class="chn" role="radio" aria-checked="false" data-v="E-mail"><span class="msr">mail</span>E-mail</button></div></div>
-      <div><label class="lbl" for="tRes">Resultado da tentativa</label><select class="sel" id="tRes"><option>Sem contato</option><option>Caixa postal</option><option>Sem retorno</option><option selected>Cooperado informou que enviará</option><option>Número errado</option></select></div>
-      <div><span class="lbl">Evidência (obrigatória)</span><div class="fileline"><label class="inp" id="evLbl"><span class="msr">attach_file</span><span id="evName">Escolher arquivo</span><input type="file" id="evIn" accept="image/png,image/jpeg,application/pdf" hidden></label><button type="button" class="b out" id="evBtn">Anexar</button></div><div class="help">Print de tela, protocolo da ligação ou comprovante de envio · PNG, JPG ou PDF até 10 MB</div></div>
-      <button type="button" class="b gh more-t" id="mdT" aria-expanded="false" style="padding:0">Mais detalhes (opcional)<span class="msr chev">expand_more</span></button>
-      <div id="md" hidden style="display:flex;flex-direction:column;gap:16px">
-        <div class="row2"><div><label class="lbl" for="tDt">Data e hora do contato</label><input class="inp" id="tDt" value="09/10/2026 11:12"></div><div class="w140"><label class="lbl" for="tDur">Duração</label><input class="inp" id="tDur" placeholder="min:seg"></div></div>
-        <div><label class="lbl" for="tPr">Protocolo da ligação</label><input class="inp" id="tPr" placeholder="Ex.: 8842-119"><div class="help">Quando informado, o protocolo conta como evidência.</div></div>
-        <div><label class="lbl" for="tObs">Observação</label><textarea class="ta" id="tObs" placeholder="Contexto do contato (opcional)"></textarea></div>
-      </div>
-    </div>
-    <div class="df"><button type="button" class="b out" data-close>Cancelar</button><button type="submit" class="b pri" id="tSave">Salvar tentativa</button></div>
-    <button type="button" class="ib x" data-close aria-label="Fechar"><span class="msr">close</span></button>
-  </form>
-</div>
-<div class="ov" id="ovImp" role="dialog" aria-modal="true" aria-labelledby="iT">
-  <form class="dlg w560" id="fImp" novalidate>
-    <div class="dh"><h2 id="iT">Importar faturas</h2><p id="iSub"></p></div>
-    <div class="db" id="iBody"></div>
-    <div class="df"><button type="button" class="b out" data-close>Cancelar</button><button type="submit" class="b pri" id="iSend" disabled>Enviar faturas</button></div>
-    <button type="button" class="ib x" data-close aria-label="Fechar"><span class="msr">close</span></button>
-  </form>
-</div>
-<input type="file" id="iIn" multiple accept="application/pdf,image/jpeg,image/png,image/webp,.pdf,.jpg,.jpeg,.png,.webp" hidden>
-</div>
+<div class="fp" id="fpRoot" data-fp-root></div>
 
 <script src="assets/fp.js"></script>
 <script src="assets/fp-dp.js"></script>
@@ -305,41 +321,54 @@ const M=k=>document.querySelector(`[data-m="${k}"]`);
 mount(M('filters'),H.filters);
 mount(M('ind'),H.indicators);
 mountTable(M('table'));
-let fT='TK-04175', tT='TK-04175';
+const kb=M('kanban'); mount(kb,H.kanban); FP.wireKanban(kb);
+let fT='TK-04175', tT='TK-04175', sT='TK-04182';
 mount(M('ticket'),()=>{ const t=tk('TK-04175'); return H.rbar()+H.ticket(t)+H.coop(t); });
 mount(M('faturas'),()=>H.faturasPnl(tk(fT)));
-mount(M('tent'),()=>H.tentPnl(tk(tT)));
+mount(M('tent'),()=>H.tentPnl(tk(tT))||'<p class="cap">Sem o card de tentativas neste estado.</p>');
 mount(M('hist'),()=>H.hist(tk('TK-04175')));
+mount(M('estado'),()=>H.rail(tk(sT)));
 refresh();
 function segs(id,fn){ document.querySelectorAll('#'+id+' button').forEach(b=>b.onclick=()=>{ document.querySelectorAll('#'+id+' button').forEach(x=>x.classList.toggle('on',x===b)); fn(b.dataset.v); refresh(); }); }
-segs('ftk',v=>fT=v); segs('ttk',v=>tT=v);
-document.getElementById('impOne').onclick=()=>{ const t=tk('TK-04175'); if(t.fat[0]) FP.openImp('TK-04175',t.fat[0].id); };
+segs('ftk',v=>fT=v); segs('ttk',v=>tT=v); segs('stk',v=>sT=v);
+document.getElementById('impOne').onclick=()=>{ const t=tk('TK-04175'); const f=t.fat.find(x=>!x.lida); if(f) FP.openImp('TK-04175',f.id); };
+document.querySelectorAll('[data-ev]').forEach(b=>b.onclick=()=>{ const t=tk('TK-04175'); const i=t.hist.findIndex(e=>e.ev&&e.ev.n===4+1-Number(b.dataset.ev)); FP.openEv('TK-04175',i>=0?i:0); });
+document.querySelectorAll('[data-cfgtab]').forEach(b=>b.onclick=()=>FP.openCfg(b.dataset.cfgtab));
 const tw=document.getElementById('tw'); tw.oninput=()=>{ document.getElementById('twrap').style.width=tw.value+'px'; document.getElementById('twv').textContent=tw.value+' px'; };
 // tokens
-const TOK=[['enershare/foreground','#ffffff','#0c0a09','Fundo de card e de item'],['enershare/secondary','#fafaf9','#292524','Fundo da página, campos'],['enershare/hover:secondary','#f5f5f4','#1c1917','Painéis do Resumo, tiles'],['enershare/brand:primary','#71902f','#baf743','Título da página, canal escolhido'],['enershare/primary','#1c1917','#f5f5f4','Texto, botão primário'],['enershare/inputed','#44403c','#e7e5e4','Ícones dos itens'],['enershare/middle','#78716c','#a8a29e','Texto de apoio'],['enershare/border','#d6d3d1','#57534e','Bordas'],['feedback/success','#65a30d','#a3e635','Resolvido'],['feedback/alert','#f97316','#fbbf24','Aguardando, atraso, 3 a 6 tentativas'],['feedback/destructive','#f43f5e','#f43f5e','Demissão, 7ª tentativa, erro'],['enershare/row:selected','#f7fee7','#365314','Linha marcada']];
-const paintTok=()=>{ const dk=document.querySelector('.stage.fp').classList.contains('dk'); document.getElementById('tokens').innerHTML=TOK.map(t=>`<div style="background:var(--fg);border:1px solid var(--fsec);border-radius:12px;padding:12px;display:flex;gap:12px;align-items:center"><span style="width:40px;height:40px;border-radius:8px;background:${dk?t[2]:t[1]};border:1px solid var(--border);flex:none"></span><span style="min-width:0"><b style="display:block;font-size:12px;color:var(--ink)">${t[0]}</b><span style="font:500 12px ui-monospace,Consolas,monospace;color:var(--mid)">${dk?t[2]:t[1]}</span><span style="display:block;font-size:12px;color:var(--mid)">${t[3]}</span></span></div>`).join(''); };
-paintTok();
-// tema: componentes + casca
-document.querySelectorAll('.theme [data-th]').forEach(b=>b.onclick=()=>{ applyTh(b.dataset.th); });
-function applyTh(t){ FP.setTheme(t); document.documentElement.dataset.theme=t; document.querySelectorAll('.stg-surface').forEach(s=>s.classList.toggle('dk',t==='dark')); document.querySelectorAll('.theme [data-th]').forEach(x=>x.classList.toggle('on',x.dataset.th===t)); paintTok(); }
+const TOK=[['enershare/foreground','#ffffff','#0c0a09','Fundo de card e de item'],['enershare/secondary','#fafaf9','#292524','Fundo da página, campos'],['enershare/hover:secondary','#f5f5f4','#1c1917','Painéis do Resumo, tiles, colunas do kanban'],['enershare/brand:primary','#71902f','#baf743','Título da página, canal escolhido, card selecionado'],['enershare/primary','#1c1917','#f5f5f4','Texto, botão primário'],['enershare/inputed','#44403c','#e7e5e4','Ícones dos itens, 1ª e 2ª tentativa'],['enershare/middle','#78716c','#a8a29e','Texto de apoio, Sem Atendimento'],['enershare/border','#d6d3d1','#57534e','Bordas'],['feedback/success','#65a30d','#a3e635','Resolvido, fatura lida'],['feedback/alert','#f97316','#fbbf24','Aguardando, atraso, 3ª a 5ª tentativa'],['feedback/destructive','#f43f5e','#f43f5e','Demissão, 6ª e 7ª tentativa, erro'],['enershare/row:selected','#f7fee7','#365314','Linha marcada']];
+const paintTok=()=>{ const dk=document.documentElement.dataset.theme==='dark'; document.getElementById('tokens').innerHTML=TOK.map(t=>`<div style="background:var(--fg);border:1px solid var(--fsec);border-radius:12px;padding:12px;display:flex;gap:12px;align-items:center"><span style="width:40px;height:40px;border-radius:8px;background:${dk?t[2]:t[1]};border:1px solid var(--border);flex:none"></span><span style="min-width:0"><b style="display:block;font-size:12px;color:var(--ink)">${t[0]}</b><span style="font:500 12px ui-monospace,Consolas,monospace;color:var(--mid)">${dk?t[2]:t[1]}</span><span style="display:block;font-size:12px;color:var(--mid)">${t[3]}</span></span></div>`).join(''); };
+// tema
+document.querySelectorAll('[data-th]').forEach(b=>b.onclick=()=>applyTh(b.dataset.th));
+function applyTh(t){ FP.setTheme(t); document.documentElement.dataset.theme=t; document.querySelectorAll('.stg-surface').forEach(s=>s.classList.toggle('dk',t==='dark')); document.querySelectorAll('[data-th]').forEach(x=>x.classList.toggle('on',x.dataset.th===t)); paintTok(); }
 let th0=null; try{ th0=localStorage.getItem('fp-theme'); }catch(e){} applyTh(th0||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'));
+// modo: componentes ou comparação
+function applyMode(m){ document.body.classList.toggle('cmp',m==='cmp'); document.querySelectorAll('[data-mode]').forEach(x=>{ x.classList.toggle('on',x.dataset.mode===m); x.setAttribute('aria-pressed',String(x.dataset.mode===m)); }); try{ localStorage.setItem('fp-mode',m); }catch(e){} }
+document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>applyMode(b.dataset.mode));
+let m0=null; try{ m0=localStorage.getItem('fp-mode'); }catch(e){} applyMode(location.hash==='#comparacao'?'cmp':(m0||'comp'));
+// cabeçalhos dos painéis e coluna do stg
+document.querySelectorAll('.pair').forEach(p=>{ const st=p.querySelector('.stage'); const fig=document.createElement('div'); fig.style.minWidth='0';
+  fig.innerHTML='<div class="pane-h pane-f"><span class="tg f">Figma</span>em código<small>proposta</small></div>'; p.insertBefore(fig,st); fig.append(st);
+  const sp=document.createElement('div'); sp.className='stgpane'; sp.innerHTML='<div class="pane-h"><span class="tg s">stg</span>hoje<small>DOM e estilos reais, dados fictícios</small></div><div class="sbox none">Não existe no stg hoje.</div>'; p.insertBefore(sp,fig); });
 // de → para
 document.querySelectorAll('[data-dp]').forEach(el=>{ const d=FPDP[el.dataset.dp]; if(!d) return; const e=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
   el.innerHTML=`<h4>De → para<small>o que muda no stg para ficar como o Figma</small></h4><div class="dps"><table class="dpt"><thead><tr><th>Item</th><th>De · stg hoje</th><th aria-hidden="true"></th><th>Para · Figma</th><th>Ref.</th></tr></thead><tbody>${d.rows.map(r=>`<tr class="${r[4]?'nw':''}"><td>${e(r[0])}</td><td class="de">${e(r[1])}</td><td class="ar" aria-hidden="true">→</td><td class="pa">${e(r[2])}</td><td class="rf">${e(r[3])}</td></tr>`).join('')}</tbody></table></div>${d.keep?`<p class="keep">${e(d.keep)}</p>`:''}`; });
 // sumário ativo
 const links=[...document.querySelectorAll('#toc a')]; const secs=links.map(a=>document.querySelector(a.getAttribute('href')));
 document.getElementById('sheet').addEventListener('scroll',()=>{ let cur=0; secs.forEach((s,i)=>{ if(s.getBoundingClientRect().top<160) cur=i; }); links.forEach((a,i)=>a.classList.toggle('on',i===cur)); },{passive:true});
-// stg real: só existe no link privado (stg.json não vai para o repositório público)
+// stg (captura com dados fictícios: stg.json e ind.json)
+const surf=html=>`<div class="stg-surface ${document.documentElement.dataset.theme==='dark'?'dk':''}" style="padding:20px">${html}</div>`;
+const put=(p,html)=>{ const b=p.querySelector('.stgpane .sbox'); b.classList.remove('none'); b.innerHTML=html; };
 fetch('stg.json').then(r=>{ if(!r.ok) throw 0; return r.json(); }).then(j=>{
   const st=document.createElement('style'); st.textContent=j.css.replace(/\.(a[0-9a-z]+)\{/g,'.stg-surface .$1{')+j.dcss.replace(/\.dk \.(d[0-9a-z]+)\{/g,'.stg-surface.dk .$1{'); document.head.appendChild(st);
-  const dk=document.documentElement.dataset.theme==='dark';
-  document.querySelectorAll('details[data-stg]').forEach(d=>{ d.querySelector('.sbox').innerHTML=`<div class="stg-surface ${dk?'dk':''}" style="padding:20px">${d.dataset.stg.split(',').map(k=>`<div style="margin-bottom:16px">${j.out[k]||''}</div>`).join('')}</div>`; d.querySelectorAll('.a2p.a2q').forEach(el=>el.classList.remove('a2o','a2p','a2q')); d.hidden=false; });
-  const tmp=document.createElement('div'); tmp.innerHTML=j.out.resumo; const col=tmp.querySelector('aside').firstElementChild; const kids=[...col.children]; const head=kids[0];
-  const parts={bar:head.children[0],ticket:head.children[1],coop:kids[1],fat:kids[2],tent:kids[3],hist:kids[4]};
-  document.querySelectorAll('details[data-part]').forEach(d=>{ const s=document.createElement('div'); s.className='stg-surface'+(dk?' dk':''); const w=document.createElement('div'); w.className='w352'; d.dataset.part.split(',').forEach(k=>{ if(parts[k]) w.append(parts[k].cloneNode(true)); }); s.append(w); d.querySelector('.sbox').append(s); d.hidden=false; });
+  document.querySelectorAll('.pair[data-stg]').forEach(p=>{ const ks=p.dataset.stg.split(',').filter(k=>j.out[k]); if(!ks.length) return;
+    put(p,surf(ks.map(k=>`<div style="margin-bottom:16px">${j.out[k]}</div>`).join(''))); p.querySelectorAll('.a2p.a2q').forEach(el=>el.classList.remove('a2o','a2p','a2q')); });
+  if(j.out.resumo){ const tmp=document.createElement('div'); tmp.innerHTML=j.out.resumo; const col=tmp.querySelector('aside')?.firstElementChild; if(!col) return; const kids=[...col.children]; const head=kids[0];
+    const parts={bar:head.children[0],ticket:head.children[1],coop:kids[1],fat:kids[2],tent:kids[3],hist:kids[4]};
+    document.querySelectorAll('.pair[data-part]').forEach(p=>{ const w=document.createElement('div'); w.className='w352'; p.dataset.part.split(',').forEach(k=>{ if(parts[k]) w.append(parts[k].cloneNode(true)); }); const s=document.createElement('div'); s.className='stg-surface'+(document.documentElement.dataset.theme==='dark'?' dk':''); s.append(w); const b=p.querySelector('.stgpane .sbox'); b.classList.remove('none'); b.innerHTML=''; b.append(s); }); }
 }).catch(()=>{});
 fetch('ind.json').then(r=>{ if(!r.ok) throw 0; return r.json(); }).then(j=>{ const st=document.createElement('style'); st.textContent=j.css.replace(/\.(i[0-9a-z]+)\{/g,'.stg-surface .$1{')+j.dcss.replace(/\.dk \.(j[0-9a-z]+)\{/g,'.stg-surface.dk .$1{'); document.head.appendChild(st);
-  const d=document.querySelector('details[data-ind]'); d.querySelector('.sbox').innerHTML=`<div class="stg-surface ${document.documentElement.dataset.theme==='dark'?'dk':''}" style="padding:20px">${j.html}</div>`; d.hidden=false; }).catch(()=>{});
+  const p=document.querySelector('.pair[data-stg="ind"]'); put(p,surf(j.html)); }).catch(()=>{});
 </script>
 </body>
 </html>
