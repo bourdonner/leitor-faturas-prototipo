@@ -24,11 +24,11 @@ O modo é recalculado a cada `resize`. Ao mudar de modo, a tela volta para Detal
 | Painel | Largura | Mínimo |
 |---|---|---|
 | Fatura (PDF) | 686 px — largura da página do PDF (encolhe até o mínimo) | 400 px |
-| Detalhes | ocupa o espaço livre | 580 px (as 5 abas cabem sem rolar) |
+| Detalhes | ocupa o espaço livre | 600 px (as 5 abas cabem sem rolar) |
 | Atividade | 284 px fixo | 284 px |
 
 - Espaço entre painéis: 24 px.
-- Margem lateral da página: 56 px; com janela < 1024 px, 24 px (é o que deixa Detalhes com ≥ 580 px a 768).
+- Margem lateral da página: 56 px; com janela < 1024 px, 24 px (é o que deixa Detalhes com ≥ 600 px a 768).
 - A Fatura nunca cresce além da página do PDF, para não sobrar vão. Quem cresce é Detalhes.
 - Sem Detalhes, a Fatura ocupa o espaço livre.
 - Os painéis ocupam a altura disponível; nenhum passa por cima do título nem da tab bar.
@@ -45,7 +45,7 @@ O modo é recalculado a cada `resize`. Ao mudar de modo, a tela volta para Detal
 
 | Largura do painel Detalhes | Colunas |
 |---|---|
-| 580–623 px | 1 |
+| 600–623 px | 1 |
 | 624–919 px | 2 |
 | 920–1215 px | 3 |
 | ≥ 1216 px | 4 |
@@ -170,7 +170,7 @@ Inválido → borda vermelha + aviso, não salva. No iOS os campos usam 16 px pa
 ### Cabeçalho dos painéis (desktop)
 - Fatura, Detalhes e Atividade: badge escuro 20 px (#292524, raio 6, ícone preenchido 12 px) + título 14 regular + ações à direita.
 - Fatura mostra só o nome do arquivo (sem páginas/tamanho); zoom, abrir e baixar são botões ghost; minimizar é botão secundário.
-- Detalhes tem cabeçalho próprio fixo: "Detalhes" à esquerda, abas centralizadas no meio e minimizar à direita. Abas na linha do título só com painel ≥ 820 px (as 5 abas ocupam 548 px e precisam de folga para o título e o minimizar). Abaixo disso, descem para uma 2ª linha, centralizadas. Como Detalhes tem mínimo de 580 px, no desktop as abas nunca rolam; só no mobile.
+- Detalhes tem cabeçalho próprio fixo: "Detalhes" à esquerda, abas centralizadas no meio e minimizar à direita. Abas na linha do título só com painel ≥ 820 px (as 5 abas ocupam até 567 px e precisam de folga para o título e o minimizar). Abaixo disso, descem para uma 2ª linha, centralizadas. Como Detalhes tem mínimo de 600 px, no desktop as abas nunca rolam; só no mobile.
 - Aba = Tabs Base / Tab Item `Type=Panel` da lib: selecionada com fundo branco, sem sombra e rótulo escuro; `Alert` mostra o badge de pendência.
 - Mobile não muda.
 

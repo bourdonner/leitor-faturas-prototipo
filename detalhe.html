@@ -53,7 +53,7 @@
   .crumb .cur{color:var(--brand);overflow:hidden;text-overflow:ellipsis}
   .main{display:flex;flex-direction:column;gap:12px;min-width:0;min-height:0;padding:16px 24px 24px 0}
   .sheet{flex:1;min-height:0;background:var(--white);border-radius:24px;padding:32px 56px 32px;display:flex;flex-direction:column;box-shadow:0 0 40px rgba(0,0,0,.04)}
-  @media (max-width:1023px){ .sheet{padding:32px 24px} } /* janela estreita: margem menor para Detalhes caber com 580 */
+  @media (max-width:1023px){ .sheet{padding:32px 24px} } /* janela estreita: margem menor para Detalhes caber com 600 */
   /* header */
   .head{display:flex;align-items:flex-start;gap:16px}
   .head h1{font-family:Poppins,Inter,sans-serif;font-weight:600;font-size:24px;color:var(--brand);margin:0 0 12px}
@@ -69,7 +69,7 @@
   .cols{flex:1;min-height:0;display:flex;gap:24px;margin-top:20px;position:relative}
   .panel{background:var(--s100);border-radius:var(--r);display:flex;flex-direction:column;min-width:0;min-height:0;transition:flex-basis .35s ease,opacity .25s ease,margin .35s ease,transform .35s ease}
   .p-pdf{flex:0 1 686px;min-width:400px}
-  .p-det{flex:1 1 0;min-width:580px} /* 580 = as 5 abas (548) + 32 de respiro: as abas nunca rolam no desktop */
+  .p-det{flex:1 1 0;min-width:600px} /* 600 = as 5 abas (até 567 com a fonte da lib) + 32 de respiro: as abas nunca rolam no desktop */
   .cols.no-pdf .p-det,.cols.no-det .p-pdf{flex:1 1 0}
   .p-act{flex:0 0 284px}
   .panel.min{flex:0 0 0!important;min-width:0!important;opacity:0;margin-left:-24px;overflow:hidden;pointer-events:none}
@@ -1109,7 +1109,7 @@ function renderPend(){
   $('#pendCard').classList.toggle('hide', !S.open.pend);
 }
 /* painéis: na falta de espaço fica o de maior prioridade — 1. detalhes, 2. fatura, 3. atividade */
-const PRI=['det','pdf','act'], MINW={det:580,pdf:400,act:284}, GAP=24, PANEL={det:'#pDet',pdf:'#pPdf',act:'#pAct'};
+const PRI=['det','pdf','act'], MINW={det:600,pdf:400,act:284}, GAP=24, PANEL={det:'#pDet',pdf:'#pPdf',act:'#pAct'};
 const fits=set=>set.reduce((w,k)=>w+MINW[k],0)+GAP*Math.max(0,set.length-1) <= $('#cols').clientWidth;
 function visibleSet(){ const v=[]; PRI.forEach(k=>{ if(S.open[k] && fits([...v,k])) v.push(k); }); return v; }
 /* um breakpoint só: mobile < 768 ≤ desktop (no desktop, a falta de largura é resolvida pela prioridade dos painéis) */
