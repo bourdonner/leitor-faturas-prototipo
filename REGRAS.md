@@ -24,10 +24,11 @@ O modo é recalculado a cada `resize`. Ao mudar de modo, a tela volta para Detal
 | Painel | Largura | Mínimo |
 |---|---|---|
 | Fatura (PDF) | 686 px — largura da página do PDF (encolhe até o mínimo) | 400 px |
-| Detalhes | ocupa o espaço livre | 520 px |
+| Detalhes | ocupa o espaço livre | 580 px (as 5 abas cabem sem rolar) |
 | Atividade | 284 px fixo | 284 px |
 
 - Espaço entre painéis: 24 px.
+- Margem lateral da página: 56 px; com janela < 1024 px, 24 px (é o que deixa Detalhes com ≥ 580 px a 768).
 - A Fatura nunca cresce além da página do PDF, para não sobrar vão. Quem cresce é Detalhes.
 - Sem Detalhes, a Fatura ocupa o espaço livre.
 - Os painéis ocupam a altura disponível; nenhum passa por cima do título nem da tab bar.
@@ -40,15 +41,18 @@ O modo é recalculado a cada `resize`. Ao mudar de modo, a tela volta para Detal
 - As **abas rolam junto com o conteúdo** (não ficam presas no topo).
 - Os cards de dado se arrumam pela largura do painel:
 
-| Largura do conteúdo | Colunas |
+- **Card nunca fica abaixo de 280 px** (é o que cabe o título mais longo, "Mediana de consumo (12 meses)", em uma linha com o lápis). As colunas saem dessa conta: colunas = piso((conteúdo + 16) ÷ 296), de 1 a 4; conteúdo = painel − 48.
+
+| Largura do painel Detalhes | Colunas |
 |---|---|
-| < 900 px | 2 |
-| 900–1199 px | 3 |
-| ≥ 1200 px | 4 |
+| 580–623 px | 1 |
+| 624–919 px | 2 |
+| 920–1215 px | 3 |
+| ≥ 1216 px | 4 |
 
 - Cards marcados como largura total continuam ocupando a linha inteira.
 - Cards da mesma linha têm a **mesma altura**; o conteúdo fica alinhado ao topo.
-- **Consumo e demanda** com painel largo (≥ 1100 px): cards em 2 colunas à esquerda e gráfico de 12 meses à direita, na mesma altura — o gráfico não estica na largura toda. Abaixo disso, gráfico embaixo dos cards.
+- **Unidade e consumo** com painel largo (≥ 1216 px, para os cards ao lado do gráfico manterem 280 px): cards em 2 colunas à esquerda e gráfico de 12 meses à direita, na mesma altura — o gráfico não estica na largura toda. Abaixo disso, gráfico embaixo dos cards.
 
 ### Prioridade quando falta largura
 1. **Detalhes**
@@ -166,7 +170,7 @@ Inválido → borda vermelha + aviso, não salva. No iOS os campos usam 16 px pa
 ### Cabeçalho dos painéis (desktop)
 - Fatura, Detalhes e Atividade: badge escuro 20 px (#292524, raio 6, ícone preenchido 12 px) + título 14 regular + ações à direita.
 - Fatura mostra só o nome do arquivo (sem páginas/tamanho); zoom, abrir e baixar são botões ghost; minimizar é botão secundário.
-- Detalhes tem cabeçalho próprio fixo: "Detalhes" à esquerda, abas centralizadas no meio e minimizar à direita. Se o painel tiver menos de 760 px, as abas descem para uma 2ª linha do cabeçalho (com rolagem lateral se precisar).
+- Detalhes tem cabeçalho próprio fixo: "Detalhes" à esquerda, abas centralizadas no meio e minimizar à direita. Abas na linha do título só com painel ≥ 820 px (as 5 abas ocupam 548 px e precisam de folga para o título e o minimizar). Abaixo disso, descem para uma 2ª linha, centralizadas. Como Detalhes tem mínimo de 580 px, no desktop as abas nunca rolam; só no mobile.
 - Aba = Tabs Base / Tab Item `Type=Panel` da lib: selecionada com fundo branco, sem sombra e rótulo escuro; `Alert` mostra o badge de pendência.
 - Mobile não muda.
 

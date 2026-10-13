@@ -53,6 +53,7 @@
   .crumb .cur{color:var(--brand);overflow:hidden;text-overflow:ellipsis}
   .main{display:flex;flex-direction:column;gap:12px;min-width:0;min-height:0;padding:16px 24px 24px 0}
   .sheet{flex:1;min-height:0;background:var(--white);border-radius:24px;padding:32px 56px 32px;display:flex;flex-direction:column;box-shadow:0 0 40px rgba(0,0,0,.04)}
+  @media (max-width:1023px){ .sheet{padding:32px 24px} } /* janela estreita: margem menor para Detalhes caber com 580 */
   /* header */
   .head{display:flex;align-items:flex-start;gap:16px}
   .head h1{font-family:Poppins,Inter,sans-serif;font-weight:600;font-size:24px;color:var(--brand);margin:0 0 12px}
@@ -68,7 +69,7 @@
   .cols{flex:1;min-height:0;display:flex;gap:24px;margin-top:20px;position:relative}
   .panel{background:var(--s100);border-radius:var(--r);display:flex;flex-direction:column;min-width:0;min-height:0;transition:flex-basis .35s ease,opacity .25s ease,margin .35s ease,transform .35s ease}
   .p-pdf{flex:0 1 686px;min-width:400px}
-  .p-det{flex:1 1 0;min-width:520px}
+  .p-det{flex:1 1 0;min-width:580px} /* 580 = as 5 abas (548) + 32 de respiro: as abas nunca rolam no desktop */
   .cols.no-pdf .p-det,.cols.no-det .p-pdf{flex:1 1 0}
   .p-act{flex:0 0 284px}
   .panel.min{flex:0 0 0!important;min-width:0!important;opacity:0;margin-left:-24px;overflow:hidden;pointer-events:none}
@@ -98,14 +99,15 @@
   .content > *{flex-shrink:0}
   .sec-t{font-family:Poppins,Inter,sans-serif;font-weight:600;font-size:14px;color:var(--brand);margin-top:6px}
   .grid{display:grid;gap:16px}
-  .g2{grid-template-columns:1fr 1fr} .g3{grid-template-columns:1fr 1fr 1fr}
+  .g2,.g3{grid-template-columns:minmax(0,1fr)} /* card nunca abaixo de 280 px: 1 col < 624, 2 cols 624–919, 3 cols 920–1215, 4 cols ≥ 1216 (largura do painel) */
   /* colunas dos cards pela largura do painel Detalhes: 2 → 3 (conteúdo ≥ 900) → 4 (conteúdo ≥ 1200) */
   .p-det{container-type:inline-size}
-  @container (min-width:948px){ .g2{grid-template-columns:repeat(3,minmax(0,1fr))} }
-  @container (min-width:1248px){ .g2{grid-template-columns:repeat(4,minmax(0,1fr))} }
+  @container (min-width:624px){ .g2,.g3{grid-template-columns:repeat(2,minmax(0,1fr))} }
+  @container (min-width:920px){ .g2,.g3{grid-template-columns:repeat(3,minmax(0,1fr))} }
+  @container (min-width:1216px){ .g2,.g3{grid-template-columns:repeat(4,minmax(0,1fr))} }
   /* Consumo e demanda: com Detalhes largo, cards (2 colunas) à esquerda e gráfico à direita — o gráfico não estica (Figma 1867:8641) */
   .cd-split{display:flex;flex-direction:column;gap:16px}
-  @container (min-width:1100px){
+  @container (min-width:1216px){ /* cards em 2 colunas (≥ 280) + gráfico ao lado */
     .cd-split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:stretch}
     .cd-split .cd-cards{grid-template-columns:repeat(2,minmax(0,1fr));align-content:start}
     .cd-split .ccard{display:flex;flex-direction:column}
@@ -236,7 +238,7 @@
   .det-tt{display:flex;align-items:center;gap:8px;min-width:0}
   .det-h>.ib{justify-self:end}
   [data-mode=desk] #detScroll>.bar{display:none}
-  @container (max-width:760px){ .det-h{grid-template-columns:1fr auto} .det-h>.ib{grid-row:1;grid-column:2} .det-tabs{grid-row:2;grid-column:1/-1;justify-self:stretch;min-width:0;display:flex;justify-content:safe center;overflow-x:auto;scrollbar-width:none} .det-tabs .tab{flex:none} }
+  @container (max-width:819px){ /* abas na linha do título só com ≥ 820 px (548 das abas + título e minimizar dos dois lados) */ .det-h{grid-template-columns:1fr auto} .det-h>.ib{grid-row:1;grid-column:2} .det-tabs{grid-row:2;grid-column:1/-1;justify-self:stretch;min-width:0;display:flex;justify-content:safe center;overflow-x:auto;scrollbar-width:none} .det-tabs .tab{flex:none} }
   .p-det .det-scroll .bar{justify-content:center;padding:0 16px 12px;min-height:0}
   .ib.sq{border-radius:6px}
   .act-h .t{flex:1}
@@ -1107,7 +1109,7 @@ function renderPend(){
   $('#pendCard').classList.toggle('hide', !S.open.pend);
 }
 /* painéis: na falta de espaço fica o de maior prioridade — 1. detalhes, 2. fatura, 3. atividade */
-const PRI=['det','pdf','act'], MINW={det:520,pdf:400,act:284}, GAP=24, PANEL={det:'#pDet',pdf:'#pPdf',act:'#pAct'};
+const PRI=['det','pdf','act'], MINW={det:580,pdf:400,act:284}, GAP=24, PANEL={det:'#pDet',pdf:'#pPdf',act:'#pAct'};
 const fits=set=>set.reduce((w,k)=>w+MINW[k],0)+GAP*Math.max(0,set.length-1) <= $('#cols').clientWidth;
 function visibleSet(){ const v=[]; PRI.forEach(k=>{ if(S.open[k] && fits([...v,k])) v.push(k); }); return v; }
 /* um breakpoint só: mobile < 768 ≤ desktop (no desktop, a falta de largura é resolvida pela prioridade dos painéis) */
@@ -1486,9 +1488,10 @@ render();
 /* linhas de cards balanceadas: escolhe o nº de colunas que deixa as linhas com a mesma quantidade (6 → 3+3, não 4+2)
    e, se ainda sobrar, os cards da última linha dividem a largura toda (grade de 12) */
 function balanceGrids(){
-  const grids=document.querySelectorAll('#content .grid.g2:not(.cd-cards)');
+  const grids=document.querySelectorAll('#content .grid.g2:not(.cd-cards), #content .grid.g3');
   const w=$('#pDet').clientWidth, mob=modeOf()==='mobile';
-  const maxC = mob ? 1 : w>=1248 ? 4 : w>=948 ? 3 : 2;
+  const CARD=280, GAPC=16, cw=w-48; // conteúdo = painel − 24 de cada lado
+  const maxC = mob ? 1 : Math.max(1, Math.min(4, Math.floor((cw+GAPC)/(CARD+GAPC))));
   grids.forEach(g=>{
     const kids=[...g.children];
     if(mob){ g.style.gridTemplateColumns=''; kids.forEach(k=>k.style.gridColumn=''); return; }
