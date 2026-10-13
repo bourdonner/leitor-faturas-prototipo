@@ -3,10 +3,12 @@
 Protótipo navegável do detalhe de uma fatura lida pelo sistema (Enershare / COGECOM).
 
 - Listagem (index.html), fiel ao Figma: busca, filtro por situação, ordenação, seleção, menu da linha (revisar, atribuir, recusar com motivo) e estados vazia, carregando e busca sem resultado; a fatura da Padaria Estrela do Sul abre o detalhe
-- Detalhe (detalhe.html): abas do painel de dados: Resumo, Itens, Consumo, Identificação (alerta na aba com item pendente)
+- Detalhe (detalhe.html): abas do painel de dados: Resumo, Itens, Leituras, Consumo, Identificação (alerta na aba com item pendente)
+- Planilhas de Itens e Leituras: colunas de seleção (Categoria, Modalidade, Tipo tarifa, Posto) com rótulo traduzido e o código do sistema como atalho no menu; PIS e COFINS separados; em Itens a planilha vem antes dos Totais
+- Larguras: Detalhes com mínimo de 600 px, abas na linha do título só com 820 px ou mais, card nunca abaixo de 280 px (1 a 4 colunas) — ver REGRAS.md
 - Tab bar flutuante para abrir/minimizar Detalhes, Atividade e Pendências
 - Pendências com navegação (1 de 3) e campo conforme o tipo de dado (percentual, número, seleção)
-- Correções entram na Atividade; sem pendências, a fatura pode ser aprovada
+- Correções entram na Atividade; sem pendências e com a UC validada, aparece Faturar
 
 Todos os dados são fictícios (fatura Grupo A, A4 horária verde).
 

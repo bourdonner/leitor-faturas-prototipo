@@ -110,6 +110,7 @@ pre.code code{background:none;padding:0;font:400 12px/1.65 'JetBrains Mono',ui-m
 <script src="assets/toast.js"></script>
 <script src="assets/daterange.js"></script>
 <script src="assets/scrollfade.js"></script>
+<script src="assets/select.js"></script>
 </head>
 <body>
 <div class="app">
@@ -311,7 +312,21 @@ function edit(td) {
   input.onkeydown = e => { if (e.key === 'Enter') done(true); if (e.key === 'Escape') done(false); e.stopPropagation(); };
   input.onblur = () => done(true);
 }
-// keys: arrows move · Enter/F2/double-click edit · mobile: one tap opens a pending cell
+// keys: arrows move (in column order) · Enter/F2/double-click edit · mobile: one tap opens a pending cell
+
+// choice columns (Categoria, Modalidade, Tipo tarifa, Posto): store the system code, show the translated label,
+// the menu shows the code as Shortcut (lib: Spreadsheet Cell Type=Select + CMDK Item Wrapped Icons)
+const POSTO = { FP: ['Fora ponta', 'FP'], PT: ['Ponta', 'PT'], /* … */ NA: ['Não se aplica', 'NA'] };
+function editOption(td, col, old) {
+  td.classList.add('ed', 'eds');
+  td.innerHTML = `<span class="ghost">${td.innerHTML}</span><select aria-label="${col.h}">` +
+    Object.entries(col.options).map(([code, [label, sc]]) =>
+      `<option value="${code}" data-sc="${sc || ''}" ${code === old ? 'selected' : ''}>${label}</option>`).join('') + '</select>`;
+  const sel = td.querySelector('select');              // select.js draws the Style Guide menu and opens it in the cell
+  sel.onchange = () => { if (sel.value !== old) save(td, sel.value, { from: col.options[old][0], to: col.options[sel.value][0] }); };
+  // Esc (menu already closed) or blur without change → back to the label, nothing saved
+}
+// Leituras: same engine, columns Descrição (sticky) · Categoria · Posto tarifário · Leitura anterior · Leitura · Quantidade · Constante; no total row
 </script>
 <script type="text/plain" class="snip" data-id="pendencias">
 // Pending items: floating card (desktop) and list (mobile)

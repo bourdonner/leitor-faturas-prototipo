@@ -137,7 +137,7 @@ const segSet=(r,n,v)=>$$(`[data-seg="${n}"] button`,r).forEach(b=>b.classList.to
 const log=(r,t)=>{ $('.log',r).innerHTML=t; };
 
 /* ===== 1. Tab bar ===== */
-comp({id:'tabbar', grp:'Navegação', t:'Tab bar', lib:'Tab Bar · Tab Bar Item', iss:'COG-288',
+comp({id:'tabbar', grp:'Navegação', t:'Tab bar', lib:'Tab Bar · Tab Bar Item', iss:'COG-287',
  lead:'No desktop, cada item abre e fecha um painel; no mobile, troca a tela. O botão da direita depende do estado da fatura.',
  ctrls:seg('acao','Botão da direita',[['pend','Pendências'],['send','Faturar'],['sent','Enviada']],'pend')+seg('size','Tamanho',[['desk','Desktop'],['mob','Mobile']],'desk'),
  beh:[['Desktop · clique em Fatura, Detalhes ou Atividade','Abre/fecha o painel; vários podem ficar ativos. Quem decide se cabe é a prioridade dos painéis.'],
@@ -177,10 +177,10 @@ comp({id:'tabbar', grp:'Navegação', t:'Tab bar', lib:'Tab Bar · Tab Bar Item'
 comp({id:'paineis', grp:'Navegação', t:'Painéis por prioridade', iss:'COG-287',
  lead:'Até três painéis lado a lado, em tamanho real (a moldura só reduz a escala). Quando falta largura, sai o de menor prioridade: Detalhes › Fatura › Atividade.',
  ctrls:`<span><span class="k">Largura da área</span><input type="range" min="560" max="1700" step="10" value="1440" data-w style="width:220px;vertical-align:middle;accent-color:#71902f"> <b data-wv style="font-size:12px">1440 px</b></span>`,
- beh:[['Estreitar a área','Sai Atividade, depois Fatura; Detalhes fica até 520 px'],['Abrir um painel que não cabe','Fecha os outros, do menos para o mais prioritário, até ele caber'],['Fechar todos','"Nenhum painel aberto" + Voltar ao padrão (reabre os três, respeitando a largura)'],['Painel fechando','350 ms ease: largura → 0, opacidade → 0, desce 24 px e escala .96'],['Painel abrindo','400 ms cubic-bezier(.2,.9,.3,1.1): sobe 32 px, escala .95 → 1']],
- notes:['Fatura 686 px (encolhe até 400); Detalhes ocupa o resto (mín. 520); Atividade 284 fixo. Gap 24.','A Fatura não cresce além da página do PDF; sem Detalhes, ela ocupa o espaço.','Dentro de Detalhes, cards em 2/3/4 colunas pela largura do painel (container query: conteúdo ≥ 900 → 3, ≥ 1200 → 4).','Abaixo de 768 px vira uma tela por vez (tab bar mobile).'],
+ beh:[['Estreitar a área','Sai Atividade, depois Fatura; Detalhes fica até 600 px'],['Abrir um painel que não cabe','Fecha os outros, do menos para o mais prioritário, até ele caber'],['Fechar todos','"Nenhum painel aberto" + Voltar ao padrão (reabre os três, respeitando a largura)'],['Painel fechando','350 ms ease: largura → 0, opacidade → 0, desce 24 px e escala .96'],['Painel abrindo','400 ms cubic-bezier(.2,.9,.3,1.1): sobe 32 px, escala .95 → 1']],
+ notes:['Fatura 686 px (encolhe até 400); Detalhes ocupa o resto (mín. 600, para as 5 abas caberem sem rolar); Atividade 284 fixo. Gap 24.','Abas de Detalhes na linha do título só com Detalhes ≥ 820 px; abaixo disso, 2ª linha centralizada.','Margem lateral da página 56 px; com janela < 1024 px, 24 px.','A Fatura não cresce além da página do PDF; sem Detalhes, ela ocupa o espaço.','Dentro de Detalhes, card nunca abaixo de 280 px: 600–623 → 1 coluna · 624–919 → 2 · 920–1215 → 3 · ≥ 1216 → 4 (largura do painel).','Abaixo de 768 px vira uma tela por vez (tab bar mobile).'],
  init(r){
-  const cv=$('.canvas',r), PRI=['det','pdf','act'], MINW={det:520,pdf:400,act:284}, NM={pdf:'Fatura',det:'Detalhes',act:'Atividade'}, IC={pdf:'picture_as_pdf',det:'description',act:'history'}, SPEC={pdf:'686 · min 400',det:'fill · min 520',act:'284 fixed'};
+  const cv=$('.canvas',r), PRI=['det','pdf','act'], MINW={det:600,pdf:400,act:284}, NM={pdf:'Fatura',det:'Detalhes',act:'Atividade'}, IC={pdf:'picture_as_pdf',det:'description',act:'history'}, SPEC={pdf:'686 · min 400',det:'fill · min 600',act:'284 fixed'};
   const S={open:{pdf:true,det:true,act:true},W:1440,vis:[]};
   cv.innerHTML=`<div class="cx" style="width:100%"><div data-box style="position:relative;overflow:hidden;background:#fff;border-radius:16px;box-shadow:0 0 40px rgba(0,0,0,.04)"><div data-sc style="transform-origin:0 0;padding:24px;box-sizing:border-box"><div class="cols" style="height:300px">
     ${['pdf','det','act'].map(k=>`<div class="panel p-${k}" data-p="${k}"><div style="margin:auto;text-align:center;white-space:nowrap;display:flex;flex-direction:column;gap:4px"><b style="font-size:20px">${NM[k]}</b><span style="color:var(--mid);font-size:16px">${SPEC[k]}</span><span data-wd style="font-size:16px;font-weight:600"></span></div></div>`).join('')}
@@ -214,7 +214,7 @@ comp({id:'card', grp:'Dados', t:'Card de dado', lib:'Data Card', iss:'COG-289',
  lead:'Um rótulo, um valor e a unidade. Precisa de legenda? Vira outro card.',
  ctrls:seg('st','Fatura',[['rev','Em revisão'],['ro','Enviada (só leitura)']],'rev')+seg('size','Tamanho',[['desk','Desktop'],['mob','Mobile']],'desk'),
  beh:[['Lápis','Edição: o valor vira campo com a unidade dentro; enviar fica ao lado (no lugar do copiar) e fechar no cabeçalho (no lugar do lápis)'],['Enter ou enviar','Valida a máscara. Inválido: borda vermelha + aviso, não salva. Válido: salva e volta à visualização'],['Esc ou fechar','Cancela; volta o valor anterior'],['Enviar sem mudar nada ou vazio','Só fecha a edição'],['Copiar','Copia só o valor, sem unidade'],['Pendente · enviar ou Enter','Resolve: o card vira Corrigido (borda verde) e continua editável'],['Pendente · fechar (×)','Limpa o campo e devolve o foco']],
- notes:['Visualização e edição têm a mesma altura.','R$ antes do valor; as outras unidades depois.','Pendente: borda laranja, campo vazio, sugestão no placeholder (nunca preenchida) e a dica de onde ela veio.','Só leitura (fatura enviada): sem lápis; copiar continua. Lib: <code>State=Read only</code>.','Mobile: fundo rgba(245,245,244,.4), borda #f5f5f4, raio 12, padding 16; lápis e fechar com toque de 40 px.'],
+ notes:['Visualização e edição têm a mesma altura.','Largura mínima 280 px (cabe "Mediana de consumo (12 meses)" numa linha com o lápis). As colunas saem dessa conta e as linhas ficam balanceadas (6 → 3+3; 3 em 2 colunas → 2 + 1 na largura toda).','R$ antes do valor; as outras unidades depois.','Pendente: borda laranja, campo vazio, sugestão no placeholder (nunca preenchida) e a dica de onde ela veio.','Só leitura (fatura enviada): sem lápis; copiar continua. Lib: <code>State=Read only</code>.','Mobile: fundo rgba(245,245,244,.4), borda #f5f5f4, raio 12, padding 16; lápis e fechar com toque de 40 px.'],
  init(r){
   const cv=$('.canvas',r), S={};
   const reset=()=>Object.assign(S,{st:'rev',size:'desk',p:{id:'cofins',kind:'Percentual',unit:'%',ph:'3,38',why:'COFINS (valor) ÷ base de cálculo',label:'COFINS (alíquota)',done:null}});
@@ -249,76 +249,108 @@ comp({id:'mascaras', grp:'Dados', t:'Campos com máscara', iss:'COG-289',
     bindCards(cv,(t,old,nv)=>{ if(t==='copy') return; log(r, nv?`<b>${t}</b> saved: ${nv}`:`<b>${t}</b>: closed, no change`); }, (c,k)=>log(r,`<b>${c.dataset.edit}</b> · mask <code>${k}</code>`)); };
   r._reset=draw; draw(); }});
 
-/* ===== 5. Planilha de itens ===== */
-const COLS=['Quant.','Preço c/ tributos','Tarifa s/ tributos','PIS/COFINS','ICMS','Valor'];
-const COLK={2:'int',3:'dec5',4:'dec5',5:'money',6:'money',7:'money'};
+/* ===== 5. Planilhas (Itens e Leituras) ===== */
+// colunas de seleção: guarda o código do sistema; a célula mostra o rótulo traduzido e o menu mostra o código como atalho
+const CAT={CONSUMPTION:['Consumo'],SYSTEM_USAGE:['Uso do sistema'],INJECTION_FROM_OTHER_UNIT:['Injeção de outra unidade'],INJECTION_SAME_UNIT:['Injeção da mesma unidade'],INJECTION:['Injeção'],FLAG:['Bandeira'],DEMAND:['Demanda'],CONSUMPTION_FLAG:['Bandeira de consumo'],OTHER:['Outros']};
+const MODG={GD_I:['GD I','GD_I'],GD_II:['GD II','GD_II'],GD_III:['GD III','GD_III'],NA:['Não se aplica','NA']};
+const TIPO={TE:['Tarifa de energia','TE'],TUSD:['Tarifa de uso do sistema','TUSD'],OTHER:['Outra','OTHER']};
+const POSTO={FP:['Fora ponta','FP'],PT:['Ponta','PT'],PTU:['Ponta úmido','PTU'],PTS:['Ponta seco','PTS'],FPU:['Fora ponta úmido','FPU'],FPS:['Fora ponta seco','FPS'],IT:['Intermediário','IT'],AP:['Posto único','AP'],NA:['Não se aplica','NA']};
 const cellUnit=(r,c)=> c===2 ? [r[1],0] : (c===3||c===4) ? ['R$/'+r[1],0] : ['R$',1];
-const ITEMS=()=>[['Consumo ponta TUSD','kWh','540','1,48213','1,15443','32,89','144,06','800,35'],['Consumo ponta TE','kWh','540','0,51237','0,39909','11,37','49,80','276,68'],['Consumo fora ponta TUSD','kWh','5.960','0,11845','0,09226','29,02','127,07','705,96'],['Consumo fora ponta TE','kWh','5.960','0,32971','0,25681','80,76','353,71','1.965,07'],['Energia injetada fora ponta TUSD','kWh','−4.100','0,11845','0,09226','−19,96','−87,42','−485,65'],['Energia injetada fora ponta TE','kWh','−4.100','0,32971','0,25681','−55,56','−243,33','−1.351,81'],['Demanda','kW','75','32,41500','25,24804','99,92','','2.431,13'],['Contrib. ilum. pública municipal','—','—','—','—','—','—','98,40']];
+// itens: 0 nome · 1 unid. · 2 quant. · 3 preço c/ trib. · 4 tarifa s/ trib. · 5 PIS/COFINS · 6 ICMS · 7 valor · 8 categoria · 9 modalidade · 10 tipo tarifa · 11 posto · 12 PIS · 13 COFINS
+const ITEMS=()=>[['Consumo ponta TUSD','kWh','540','1,48213','1,15443','32,89','144,06','800,35','SYSTEM_USAGE','NA','TUSD','PT','5,84','27,05'],['Consumo ponta TE','kWh','540','0,51237','0,39909','11,37','49,80','276,68','CONSUMPTION','NA','TE','PT','2,02','9,35'],['Consumo fora ponta TUSD','kWh','5.960','0,11845','0,09226','29,02','127,07','705,96','SYSTEM_USAGE','NA','TUSD','FP','5,15','23,87'],['Consumo fora ponta TE','kWh','5.960','0,32971','0,25681','80,76','353,71','1.965,07','CONSUMPTION','NA','TE','FP','14,34','66,42'],['Energia injetada fora ponta TUSD','kWh','−4.100','0,11845','0,09226','−19,96','−87,42','−485,65','INJECTION_FROM_OTHER_UNIT','GD_II','TUSD','FP','−3,55','−16,41'],['Energia injetada fora ponta TE','kWh','−4.100','0,32971','0,25681','−55,56','−243,33','−1.351,81','INJECTION_FROM_OTHER_UNIT','GD_II','TE','FP','−9,87','−45,69'],['Demanda','kW','75','32,41500','25,24804','99,92','','2.431,13','DEMAND','NA','TUSD','NA','17,75','82,17'],['Contrib. ilum. pública municipal','—','—','—','—','—','—','98,40','OTHER','NA','OTHER','NA','—','—']];
+// leituras: 0 categoria · 1 posto · 2 descrição · 3 leitura anterior · 4 leitura · 5 quantidade · 6 constante · 7 unidade
+const LEIT=()=>[['CONSUMPTION','PT','Energia ativa ponta','12.480','','540','1','kWh'],['CONSUMPTION','FP','Energia ativa fora ponta','88.200','94.160','5.960','1','kWh'],['INJECTION','FP','Energia injetada fora ponta','51.300','55.400','4.100','1','kWh'],['DEMAND','FP','Demanda fora ponta','—','—','68','1','kW']];
+const SHEETS={
+  itens:{h:'Item', name:r=>r[0], foot:true,
+    cols:[{k:8,h:'Categoria',o:CAT},{k:9,h:'Modalidade',o:MODG},{k:10,h:'Tipo tarifa',o:TIPO},{k:11,h:'Posto',o:POSTO},{k:2,h:'Quant.',m:'int'},{k:3,h:'Preço c/ tributos',m:'dec5',pos:1},{k:4,h:'Tarifa s/ tributos',m:'dec5',pos:1},{k:5,h:'PIS/COFINS',m:'money'},{k:12,h:'PIS',m:'money'},{k:13,h:'COFINS',m:'money'},{k:6,h:'ICMS',m:'money'},{k:7,h:'Valor',m:'money'}],
+    unit:(r,c)=>r[1]==='—'&&c<5 ? null : cellUnit(r,c)},
+  leit:{h:'Descrição', name:r=>r[2],
+    cols:[{k:0,h:'Categoria',o:CAT},{k:1,h:'Posto tarifário',o:POSTO},{k:3,h:'Leitura anterior',m:'int',pos:1},{k:4,h:'Leitura',m:'int',pos:1},{k:5,h:'Quantidade',m:'int'},{k:6,h:'Constante',m:'int',pos:1}],
+    unit:(r,c)=>c>=3&&c<=5 ? [r[7],0] : null}
+};
 const _cv=document.createElement('canvas').getContext('2d');
 function midFit(t,max){ const w=x=>_cv.measureText(x).width; if(w(t)<=max) return t; let lo=2,hi=t.length-1,best=t.slice(0,1)+'…';
   while(lo<=hi){ const n=(lo+hi)>>1, a=Math.ceil(n/2), x=t.slice(0,a).trimEnd()+'…'+t.slice(t.length-(n-a)).trimStart(); if(w(x)<=max){ best=x; lo=n+1; } else hi=n-1; } return best; }
-comp({id:'planilha', grp:'Dados', t:'Planilha de itens e soma', iss:'COG-290',
- lead:'Itens da nota fiscal. A soma da coluna Valor tem que fechar com o Total da fatura (R$ 4.440,13); se não fecha, a célula editada vira pendência.',
- ctrls:seg('size','Tamanho',[['desk','Desktop'],['mob','Mobile']],'desk')+`<button class="cbtn" data-err>Simular valor errado na Demanda</button>`,
- beh:[['Clique','Seleciona a célula (borda verde)'],['Duplo clique, Enter ou F2','Edita com a máscara da coluna; quantidade e valores aceitam "−"'],['Setas ← → ↑ ↓','Movem a seleção'],['Enter na edição / sair do campo','Salva (inválido: borda vermelha + aviso)'],['Esc na edição','Cancela'],['Célula pendente','Fundo laranja + ícone; ao editar, campo vazio com a sugestão no placeholder. No mobile abre com um toque'],['Tab com a célula pendente vazia','Preenche com a sugestão; Enter confirma'],['Largura ao editar','A coluna mantém a largura; só cresce (180 ms, ease) se o valor ou a sugestão não couberem'],['Valor editado e soma ≠ total','A célula vira pendência, com o valor que fecha no placeholder; rodapé e aviso em vermelho'],['Corrigiu com um valor que ainda não fecha','Continua pendência, com nova sugestão']],
- notes:['Unidade dentro da célula, em cinza: "540 kWh", "1,48213 R$/kWh", "R$ 800,35". Sem coluna "Unid.".','Cabeçalho e coluna Item fixos no desktop. No mobile, Item rola junto e ocupa até metade da largura; nome longo é cortado no meio ("Energia in…onta TUSD").','Célula alterada: fundo #f7fee7. Negativos em verde-escuro.','Barra de rolagem no estilo Scroll-area (alça 8 px).'],
+comp({id:'planilha', grp:'Dados', t:'Planilhas (Itens e Leituras)', lib:'Spreadsheet · Invoice Items · Spreadsheet · Readings · Spreadsheet Cell (Type=Select) · CMDK Item (Wrapped Icons)', iss:'COG-289',
+ lead:'Itens da nota fiscal e Leituras do medidor. Categoria, Modalidade, Tipo tarifa e Posto são células de seleção: mostram o rótulo traduzido e o menu traz o código do sistema como atalho. Em Itens, a soma da coluna Valor tem que fechar com o Total da fatura (R$ 4.440,13); se não fecha, a célula editada vira pendência.',
+ ctrls:seg('sh','Planilha',[['itens','Itens'],['leit','Leituras']],'itens')+seg('size','Tamanho',[['desk','Desktop'],['mob','Mobile']],'desk')+`<button class="cbtn" data-err>Simular valor errado na Demanda</button>`,
+ beh:[['Clique','Seleciona a célula (borda verde); célula de seleção ganha um chevron'],['Duplo clique, Enter ou F2','Número: edita com a máscara da coluna (quantidade e valores aceitam "−"). Seleção: abre o menu dentro da célula'],['Menu de seleção','Rótulo traduzido à esquerda, código do sistema como atalho (FP, TE, GD_II), check na opção atual; setas, Enter e a primeira letra (do rótulo ou do código) navegam'],['Esc no menu','Fecha sem mudar; escolher outra opção salva e registra "de → para" na Atividade'],['Setas ← → ↑ ↓','Movem a seleção na ordem das colunas'],['Enter na edição / sair do campo','Salva (inválido: borda vermelha + aviso)'],['Esc na edição','Cancela'],['Célula pendente','Fundo laranja + ícone; ao editar, campo vazio com a sugestão no placeholder. No mobile abre com um toque'],['Tab com a célula pendente vazia','Preenche com a sugestão; Enter confirma'],['Largura ao editar','A coluna mantém a largura; só cresce (180 ms, ease) se o valor ou a sugestão não couberem'],['Itens · valor editado e soma ≠ total','A célula vira pendência, com o valor que fecha no placeholder; rodapé e aviso em vermelho'],['Corrigiu com um valor que ainda não fecha','Continua pendência, com nova sugestão']],
+ notes:['Itens: Item · Categoria · Modalidade · Tipo tarifa · Posto · Quant. · Preço c/ tributos · Tarifa s/ tributos · PIS/COFINS · PIS · COFINS · ICMS · Valor. Na aba, a planilha vem primeiro e os Totais ficam embaixo.','Leituras (aba própria): espelha a tabela "Leituras" da fatura — Descrição · Categoria · Posto tarifário · Leitura anterior · Leitura · Quantidade · Constante. Sem linha de total. Convive com as Medições da aba Consumo; a leitura não encontrada é pendência nas duas.','Valores das colunas de seleção = códigos do sistema (CONSUMPTION, GD_II, TUSD, FP…). Só o rótulo é traduzido.','Unidade dentro da célula, em cinza: "540 kWh", "1,48213 R$/kWh", "R$ 800,35". Sem coluna "Unid.".','Cabeçalho e primeira coluna fixos no desktop. No mobile, a primeira coluna rola junto e ocupa até metade da largura; nome longo é cortado no meio ("Energia in…onta TUSD").','Célula alterada: fundo #f7fee7. Negativos em verde-escuro.','Barra de rolagem no estilo Scroll-area (alça 8 px).'],
  init(r){
   const cv=$('.canvas',r), TOTAL=4440.13; let S;
-  const reset=()=>{ S={size:'desk',items:ITEMS(),chg:{'7-7':1},n:0,pend:[{id:'item',label:'ICMS do item Demanda',kind:'Moeda',unit:'R$',ph:'437,60',why:'18% de R$ 2.431,13',cell:[6,6],done:null}]}; };
+  const reset=()=>{ S={sh:'itens',size:'desk',items:ITEMS(),leit:LEIT(),chg:{itens:{'7-7':1},leit:{}},n:0,pend:[{id:'item',sh:'itens',label:'ICMS do item Demanda',kind:'Moeda',unit:'R$',ph:'437,60',why:'18% de R$ 2.431,13',cell:[6,6],done:null},{id:'leit',sh:'leit',label:'Leitura atual ponta (kWh)',kind:'Número',unit:'kWh',ph:'13.020',why:'leitura anterior + consumo medido',cell:[0,4],done:null}]}; };
+  const rows=()=>S.sh==='itens'?S.items:S.leit, cf=()=>SHEETS[S.sh], colOf=c=>cf().cols.find(x=>x.k===c), lab=(o,v)=>o[v]?o[v][0]:'';
   const open=()=>S.pend.filter(p=>!p.done);
-  const cellPend=(ri,c)=>open().find(p=>p.cell[0]===ri&&p.cell[1]===c);
-  const cellHTML=(ri,c)=>{ const v=S.items[ri][c]; if(!v||v==='—'||(c<5&&S.items[ri][1]==='—')) return v||''; const [u,pre]=cellUnit(S.items[ri],c); return pre?`<span class="cu">${u}</span> ${v}`:`${v} <span class="cu">${u}</span>`; };
+  const cellPend=(ri,c)=>open().find(p=>p.sh===S.sh&&p.cell[0]===ri&&p.cell[1]===c);
+  const unitOf=(ri,c)=>{ const u=cf().unit(rows()[ri],c); return u?u[0]:''; };
+  const cellHTML=(ri,c)=>{ const col=colOf(c), v=rows()[ri][c]; if(col.o) return v?lab(col.o,v):'<span class="cu">—</span>'; if(!v||v==='—') return v||''; const u=cf().unit(rows()[ri],c); if(!u) return v; return u[1]?`<span class="cu">${u[0]}</span> ${v}`:`${v} <span class="cu">${u[0]}</span>`; };
   const sum=()=>Math.round(S.items.reduce((a,x)=>a+(pn(x[7])||0),0)*100)/100;
-  const checkSum=(ri,c)=>{ if(c!==7) return false; const gap=Math.round((TOTAL-sum())*100)/100; if(!gap) return false; const nm=S.items[ri][0];
-    S.pend.push({id:'sum'+(++S.n),label:nm+' · valor',kind:'Moeda',unit:'R$',ph:money((pn(S.items[ri][7])||0)+gap),why:'valor que fecha a soma',hint:'A soma dos itens não fecha com o total da fatura',cell:[ri,7],done:null});
+  const checkSum=(ri,c)=>{ if(S.sh!=='itens'||c!==7) return false; const gap=Math.round((TOTAL-sum())*100)/100; if(!gap) return false; const nm=S.items[ri][0];
+    S.pend.push({id:'sum'+(++S.n),sh:'itens',label:nm+' · valor',kind:'Moeda',unit:'R$',ph:money((pn(S.items[ri][7])||0)+gap),why:'valor que fecha a soma',hint:'A soma dos itens não fecha com o total da fatura',cell:[ri,7],done:null});
     toast('A soma dos itens não fecha com o total da fatura'); return true; };
-  const draw=(sel)=>{ const tot=sum(), off=tot!==TOTAL;
+  const draw=(sel)=>{ const c0=cf(), tot=sum(), off=c0.foot&&tot!==TOTAL;
+    $('[data-err]',r).hidden=S.sh!=='itens';
     cv.innerHTML=`<div class="cx ${S.size==='mob'?'mob':''}" style="width:${S.size==='mob'?'345px':'100%'}"><div class="grade-h"><span>${S.size==='mob'?'Toque duas vezes numa célula para editar':'Clique duas vezes numa célula para editar'}</span>${off?`<span class="off">Soma ≠ total da fatura (R$ ${money(TOTAL)})</span>`:''}</div>
-      <div class="grade"><table><thead><tr><th class="stk">Item</th>${COLS.map(c=>`<th>${c}</th>`).join('')}</tr></thead>
-      <tbody>${S.items.map((x,ri)=>`<tr><td class="stk">${x[0]}</td>${x.slice(2).map((v,ci)=>{ const c=ci+2, p=cellPend(ri,c);
+      <div class="grade"><table><thead><tr><th class="stk">${c0.h}</th>${c0.cols.map(c=>`<th class="${c.o?'opt':''}">${c.h}</th>`).join('')}</tr></thead>
+      <tbody>${rows().map((x,ri)=>`<tr><td class="stk">${c0.name(x)}</td>${c0.cols.map(col=>{ const c=col.k, p=cellPend(ri,c), v=x[c];
         return p?`<td class="num pend" data-r="${ri}" data-c="${c}" data-pend="${p.id}" tabindex="-1" title="${p.hint||'Não encontrado na fatura'}"><span class="pw">${I.warn}</span></td>`
-          :`<td class="num ${String(v).startsWith('−')?'neg':''} ${S.chg[ri+'-'+c]?'chg':''}" data-r="${ri}" data-c="${c}" tabindex="-1">${cellHTML(ri,c)}</td>`; }).join('')}</tr>`).join('')}</tbody>
-      <tfoot><tr><td class="stk">Total</td><td colspan="5"></td><td class="${off?'off':''}"><span class="cu">R$</span> ${money(tot)}</td></tr></tfoot></table></div></div>`;
+          :`<td class="num ${col.o?'opt':''} ${String(v).startsWith('−')?'neg':''} ${S.chg[S.sh][ri+'-'+c]?'chg':''}" data-r="${ri}" data-c="${c}" tabindex="-1">${cellHTML(ri,c)}</td>`; }).join('')}</tr>`).join('')}</tbody>
+      ${c0.foot?`<tfoot><tr><td class="stk">Total</td><td colspan="${c0.cols.length-1}"></td><td class="${off?'off':''}"><span class="cu">R$</span> ${money(tot)}</td></tr></tfoot>`:''}</table></div></div>`;
     fit(); bind(); if(sel){ const n=at(...sel); if(n) select(n); } };
   const fit=()=>{ const g=$('.grade',cv), mob=S.size==='mob', half=Math.floor(g.clientWidth/2); g.style.setProperty('--stkw',mob?half+'px':'');
     $$('tbody td.stk',g).forEach(td=>{ const full=td.textContent; if(!mob) return; const cs=getComputedStyle(td); _cv.font=`${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`; const s=midFit(full,half-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight)-2); td.textContent=s; if(s!==full){ td.title=full; td.setAttribute('aria-label',full); } }); };
   const at=(ri,c)=>$(`td[data-r="${ri}"][data-c="${c}"]`,cv);
   const select=td=>{ $$('td.sel',cv).forEach(x=>x.classList.remove('sel')); td.classList.add('sel'); td.focus(); };
+  const editOpt=td=>{
+    const ri=+td.dataset.r, c=+td.dataset.c, col=colOf(c), old=rows()[ri][c]; let fin=false;
+    td.classList.add('ed','eds');
+    td.innerHTML=`<span class="ghost" aria-hidden="true">${td.innerHTML}</span><select aria-label="${c0name(ri)} · ${col.h}"><option value="">Selecione</option>${Object.entries(col.o).map(([k,[l,sc]])=>`<option value="${k}" ${sc?`data-sc="${sc}"`:''} ${k===old?'selected':''}>${l}</option>`).join('')}</select>`;
+    const sel=td.querySelector('select');
+    const done=()=>{ if(fin) return; fin=true; td.classList.remove('ed','eds'); td.innerHTML=cellHTML(ri,c); select(td); };
+    sel.addEventListener('change',()=>{ if(fin) return; const nv=sel.value; if(!nv||nv===old){ done(); return; } fin=true;
+      rows()[ri][c]=nv; S.chg[S.sh][ri+'-'+c]=1; toast(`${c0name(ri)} atualizado`); draw([ri,c]); log(r,`<b>${c0name(ri)}</b> · ${col.h}: ${lab(col.o,old)} → ${lab(col.o,nv)} <span style="color:var(--mid)">(${nv})</span>`); });
+    setTimeout(()=>{ const w=td.querySelector('.cs'), t=w&&w.querySelector('.cs-trig'); if(!t){ done(); return; }
+      w.addEventListener('keydown',e=>{ if(e.key==='Escape' && !e.defaultPrevented){ e.preventDefault(); done(); log(r,'Menu closed, no change'); } e.stopPropagation(); });
+      t.addEventListener('blur',()=>setTimeout(()=>{ if(!w.classList.contains('open') && document.activeElement!==t) done(); },0));
+      t.focus(); t.click(); });
+  };
+  const c0name=ri=>cf().name(rows()[ri]);
   const edit=td=>{
     if(td.classList.contains('ed')) return;
-    const ri=+td.dataset.r, c=+td.dataset.c, old=S.items[ri][c], kind=COLK[c];
+    const ri=+td.dataset.r, c=+td.dataset.c, col=colOf(c), old=rows()[ri][c], kind=col.m;
+    if(col.o && !td.dataset.pend) return editOpt(td);
     const cs0=getComputedStyle(td), w0=td.clientWidth-parseFloat(cs0.paddingLeft)-parseFloat(cs0.paddingRight);
     td.classList.add('ed'); td.innerHTML=`<span class="ghost" aria-hidden="true">${td.innerHTML}</span><input size="1">`; const inp=td.querySelector('input'); inp.value=old==='—'?'':old;
     const p=td.dataset.pend && S.pend.find(x=>x.id===td.dataset.pend); if(p){ inp.value=''; inp.placeholder=p.ph||''; if(p.why) inp.dataset.sug='1'; }
     const gh=td.querySelector('.ghost'), nat=gh.getBoundingClientRect().width; gh.style.minWidth=nat+'px';
-    const grow=()=>{ const cs=getComputedStyle(inp); _cv.font=`${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`; const need=Math.ceil(Math.max(_cv.measureText(inp.value).width,_cv.measureText(inp.placeholder).width))+4; gh.style.minWidth=(need>w0?need:nat)+'px'; if(need>w0) log(r,`Column grows <b>${Math.round(w0)} → ${need} px</b> (animated) to fit the ${inp.value?'value':'suggestion'}`); };
+    const grow=()=>{ const cs=getComputedStyle(inp); _cv.font=`${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`; const need=Math.ceil(Math.max(_cv.measureText(inp.value).width,_cv.measureText(inp.placeholder).width))+4; gh.style.minWidth=(need>w0?need:nat)+'px'; if(need>w0) log(r,`Column grows <b>${Math.round(need-w0)} px</b> to fit`); };
     requestAnimationFrame(grow); inp.addEventListener('input',grow);
-    inp.setAttribute('aria-label',`${S.items[ri][0]} · ${COLS[c-2]}`); inp.focus(); inp.select();
-    attachMask(inp,kind,{signed:c!==3&&c!==4});
+    inp.setAttribute('aria-label',`${c0name(ri)} · ${col.h}`); inp.focus(); inp.select();
+    attachMask(inp,kind,{signed:!col.pos});
     const done=save=>{ const nv=inp.value.trim();
       if(save && nv && (p || nv!==old) && invalid(inp,kind)) return;
       td.classList.remove('ed','err');
-      if(p){ if(save&&nv){ p.done=nv; S.items[ri][c]=nv; S.chg[ri+'-'+c]=1; const bad=checkSum(ri,c); if(!bad) toast(`${p.label}: ${nv}`);
+      if(p){ if(save&&nv){ p.done=nv; rows()[ri][c]=nv; S.chg[S.sh][ri+'-'+c]=1; const bad=checkSum(ri,c); if(!bad) toast(`${p.label}: ${nv}`);
           draw([ri,c]); log(r,bad?`Still off → <b>new pending</b>, suggestion R$ ${open().slice(-1)[0].ph}`:`Resolved: <b>${nv}</b>`); }
         else { td.innerHTML=`<span class="pw">${I.warn}</span>`; select(td); } return; }
-      if(save && nv && nv!==old){ S.items[ri][c]=nv; S.chg[ri+'-'+c]=1; const bad=checkSum(ri,c); if(!bad) toast(`${S.items[ri][0]} atualizado`);
-        draw([ri,c]); log(r,bad?`Sum is off → cell becomes <b>pending</b>, suggestion R$ ${open().slice(-1)[0].ph}`:`<b>${S.items[ri][0]}</b> · ${COLS[c-2]}: ${old} → ${nv}`); return; }
+      if(save && nv && nv!==old){ rows()[ri][c]=nv; S.chg[S.sh][ri+'-'+c]=1; const bad=checkSum(ri,c); if(!bad) toast(`${c0name(ri)} atualizado`);
+        draw([ri,c]); log(r,bad?`Sum is off → cell becomes <b>pending</b>, suggestion R$ ${open().slice(-1)[0].ph}`:`<b>${c0name(ri)}</b> · ${col.h}: ${old} → ${nv} ${unitOf(ri,c)}`); return; }
       td.innerHTML=cellHTML(ri,c); select(td); };
     inp.onkeydown=e=>{ if(e.key==='Enter'){ e.preventDefault(); done(true); } if(e.key==='Escape'){ e.preventDefault(); done(false); } e.stopPropagation(); };
     inp.onblur=()=>{ if(td.classList.contains('ed')) done(true); };
   };
-  const bind=()=>$$('td.num',cv).forEach(td=>{
-    td.onclick=()=>{ if(S.size==='mob' && td.classList.contains('pend')) edit(td); else select(td); };
+  const bind=()=>{ const order=cf().cols.map(x=>x.k); $$('td.num',cv).forEach(td=>{
+    td.onclick=()=>{ if(td.classList.contains('ed')) return; if(S.size==='mob' && td.classList.contains('pend')) edit(td); else select(td); };
     td.ondblclick=()=>edit(td);
-    td.onkeydown=e=>{ const ri=+td.dataset.r, c=+td.dataset.c, mv={ArrowUp:[ri-1,c],ArrowDown:[ri+1,c],ArrowLeft:[ri,c-1],ArrowRight:[ri,c+1]}[e.key];
-      if(mv){ const n=at(...mv); if(n){ e.preventDefault(); select(n); } } else if(e.key==='Enter'||e.key==='F2'){ e.preventDefault(); edit(td); } }; });
+    td.onkeydown=e=>{ if(td.classList.contains('ed')) return; const ri=+td.dataset.r, c=+td.dataset.c, i=order.indexOf(c), mv={ArrowUp:[ri-1,c],ArrowDown:[ri+1,c],ArrowLeft:[ri,order[i-1]],ArrowRight:[ri,order[i+1]]}[e.key];
+      if(mv){ const n=mv[1]!=null&&at(...mv); if(n){ e.preventDefault(); select(n); } } else if(e.key==='Enter'||e.key==='F2'){ e.preventDefault(); edit(td); } }; }); };
   onSeg(r,(n,v)=>{ S[n]=v; draw(); log(r,''); });
-  $('[data-err]',r).onclick=()=>{ S.items[6][7]='2.400,00'; S.chg['6-7']=1; checkSum(6,7); draw([6,7]); log(r,'Demanda = 2.400,00 → sum is off. Double-click (or Enter) the orange cell.'); };
-  r._reset=()=>{ reset(); segSet(r,'size','desk'); draw(); };
+  $('[data-err]',r).onclick=()=>{ S.sh='itens'; segSet(r,'sh','itens'); S.items[6][7]='2.400,00'; S.chg.itens['6-7']=1; checkSum(6,7); draw([6,7]); log(r,'Demanda = 2.400,00 → sum is off. Double-click (or Enter) the orange cell.'); };
+  r._reset=()=>{ reset(); segSet(r,'size','desk'); segSet(r,'sh','itens'); draw(); };
   reset(); draw(); }});
 
 /* ===== 6. Pendências ===== */
-comp({id:'pendencias', grp:'Revisão', t:'Pendências', iss:'COG-291',
+comp({id:'pendencias', grp:'Revisão', t:'Pendências', iss:'COG-289',
  lead:'O que a leitura não encontrou. No desktop, um card flutuante acima da tab bar percorre os itens; no mobile, uma tela com a lista. O card no próprio dado também resolve.',
  ctrls:seg('size','Tamanho',[['desk','Desktop'],['mob','Mobile']],'desk')+seg('uc','UC',[['ok','Validada'],['no','Não validada']],'ok'),
  beh:[['Anterior / próxima','Navega "N de total"; nas pontas o botão fica desabilitado'],['Digitar','Confirmar só habilita com valor'],['Confirmar ou Enter','Valida, resolve e passa para a próxima; o card do dado fica verde e pisca'],['Ver no Campo','Leva até o card do dado e pisca laranja (1,2 s)'],['Minimizar (↙)','Fecha o card; o botão Pendências da tab bar reabre'],['Seleção (modalidade)','Escolher a opção já resolve'],['Última resolvida','O card some; na tab bar, Pendências sai e entra Faturar'],['UC não validada','O card só diz para validar a UC e leva até ela']],
@@ -382,17 +414,17 @@ comp({id:'pendencias', grp:'Revisão', t:'Pendências', iss:'COG-291',
   reset(); draw(); }});
 
 /* ===== 7. Marcador fora da área ===== */
-comp({id:'marcador', grp:'Revisão', t:'Marcador de pendência fora da área', iss:'COG-291',
+comp({id:'marcador', grp:'Revisão', t:'Marcador de pendência fora da área', iss:'COG-289',
  lead:'Quando a pendência está escondida pela rolagem, aparece na borda do container um marcador apontando para ela. Role a lista e a planilha.',
  beh:[['Pendência abaixo da área visível','Marcador na borda de baixo, seta ↓, na altura horizontal do item'],['Acima','Borda de cima, seta ↑'],['À direita/esquerda na planilha (rolagem lateral)','Marcador na borda da planilha, seta → ou ←, na linha do item'],['Clique no marcador','Rola até o item (suave) e ele pisca'],['Item visível','O marcador some']],
  notes:['Animação: o marcador balança 4 px na direção da seta (1 s, ease-in-out) + anel pulsando (1,4 s).','Na planilha, a coluna Item fixa conta como área escondida.','A área visível desconta a tab bar flutuante.','Com "reduzir movimento", sem animação.'],
  init(r){ const cv=$('.canvas',r);
   const draw=()=>{
     cv.innerHTML=`<div class="cx" style="position:relative;width:420px"><div data-sc style="height:320px;overflow:auto;background:var(--s100);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px">
-      ${['Crédito compensado fora ponta','Saldo fora ponta','Consumo fora ponta'].map(t=>cardHTML(t,'1.250','kWh',{uid:'mk2'})).join('')}
-      <div class="grade" data-g style="flex:none"><table><thead><tr><th class="stk">Item</th>${COLS.map(c=>`<th>${c}</th>`).join('')}</tr></thead><tbody>
-        <tr><td class="stk">Demanda</td><td>75 <span class="cu">kW</span></td><td>32,41500 <span class="cu">R$/kW</span></td><td>25,24804 <span class="cu">R$/kW</span></td><td><span class="cu">R$</span> 99,92</td><td class="num pend" data-pid="icms"><span class="pw">${I.warn}</span></td><td><span class="cu">R$</span> 2.431,13</td></tr></tbody></table></div>
-      ${['Demanda medida','Demanda contratada','Dias de leitura'].map(t=>cardHTML(t,'68','kW',{uid:'mk2'})).join('')}
+      ${['Saldo fora ponta','Saldo ponta','Saldo a expirar'].map(t=>cardHTML(t,'1.250','kWh',{uid:'mk2'})).join('')}
+      <div class="grade" data-g style="flex:none"><table><thead><tr><th class="stk">Item</th>${['Categoria','Modalidade','Tipo tarifa','Posto','Quant.','Preço c/ tributos','Tarifa s/ tributos','PIS/COFINS','PIS','COFINS','ICMS','Valor'].map(c=>`<th>${c}</th>`).join('')}</tr></thead><tbody>
+        <tr><td class="stk">Demanda</td><td class="opt">Demanda</td><td class="opt">Não se aplica</td><td class="opt">Tarifa de uso do sistema</td><td class="opt">Não se aplica</td><td>75 <span class="cu">kW</span></td><td>32,41500 <span class="cu">R$/kW</span></td><td>25,24804 <span class="cu">R$/kW</span></td><td><span class="cu">R$</span> 99,92</td><td><span class="cu">R$</span> 17,75</td><td><span class="cu">R$</span> 82,17</td><td class="num pend" data-pid="icms"><span class="pw">${I.warn}</span></td><td><span class="cu">R$</span> 2.431,13</td></tr></tbody></table></div>
+      ${[['Tipo de unidade','Beneficiária',''],['Geração','—',''],['Dias de leitura','32','dias']].map(([t,v,u])=>cardHTML(t,v,u,{uid:'mk2'})).join('')}
       <div class="card pend" data-pid="cofins"><div class="ct"><span class="badge">${I.warn}</span>COFINS (alíquota)</div><div class="in erow"><label class="ufld"><input placeholder="3,38" aria-label="COFINS (alíquota)"><span class="u">%</span></label><button class="cp send" aria-label="Enviar">${I.send}</button></div><div class="hint">Não encontrado na fatura</div></div>
       ${['Total a pagar','Vencimento'].map(t=>cardHTML(t,'—','',{uid:'mk2'})).join('')}
       </div><div class="offl"></div></div>`;
@@ -415,13 +447,13 @@ comp({id:'marcador', grp:'Revisão', t:'Marcador de pendência fora da área', i
   r._reset=draw; draw(); }});
 
 /* ===== 8. Atividade ===== */
-comp({id:'atividade', grp:'Revisão', t:'Atividade', iss:'COG-292',
+comp({id:'atividade', grp:'Revisão', t:'Atividade', iss:'COG-293',
  lead:'Linha do tempo da fatura, mais recente no topo. Passe o mouse (ou foque com Tab) num evento de edição.',
  ctrls:`<button class="cbtn" data-a="edit">Simular edição de card</button><button class="cbtn" data-a="pend">Simular pendência resolvida</button><button class="cbtn" data-a="sys">Simular status do sistema</button>`,
  beh:[['Hover, foco ou toque num evento de edição','Abre o de → para (200 ms): antigo riscado sobre cinza, novo em negrito sobre verde-claro'],['Pendência resolvida','"pendente" em itálico → valor'],['Hover no autor','Mostra o nome'],['Evento novo','Entra no topo com um leve deslize (500 ms)']],
  notes:['Autor no canto: sistema = círculo preto com a marca Enershare; pessoa = iniciais com cor própria.','Ícone do evento por tipo: edição (cinza), alerta (laranja), ok (verde), status (preto).','Status do sistema em 1–2 palavras + data e hora.','Mobile: a Atividade abre pelo painel do header (botão histórico).'],
  init(r){ const cv=$('.canvas',r); let A;
-  const reset=()=>{ A=[['Contrib. ilum. pública municipal editado','edit','11:20',false,ANA,{from:'R$ 89,40',to:'R$ 98,40'}],['Demanda contratada editado','edit','11:05',false,CAR,{from:'70 kW',to:'75 kW'}],['Vencimento editado','edit','10:51',false,ANA,{from:'24/03/2025',to:'25/03/2025'}],['Para revisar','alert','10:42'],['Lida','def','10:42'],['Lendo fatura','def','10:41'],['Recebida','def','10:40']]; };
+  const reset=()=>{ A=[['Contrib. ilum. pública municipal editado','edit','11:20',false,ANA,{from:'R$ 89,40',to:'R$ 98,40'}],['Dias de leitura editado','edit','11:05',false,CAR,{from:'31 dias',to:'32 dias'}],['Vencimento editado','edit','10:51',false,ANA,{from:'24/03/2025',to:'25/03/2025'}],['Para revisar','alert','10:42'],['Lida','def','10:42'],['Lendo fatura','def','10:41'],['Recebida','def','10:40']]; };
   const difHTML=d=>`<div class="dif" aria-hidden="true"><span class="o ${d.from?'':'none'}">${d.from||'pendente'}</span><span class="ms" aria-hidden="true">arrow_forward</span><span class="t">${d.to}</span></div>`;
   const draw=()=>{ cv.innerHTML=`<div class="cx"><div class="panel p-act" style="width:284px;height:560px"><div class="act-h"><span class="ph">${MS('history',14)}</span><span class="t">Atividade</span><button class="ib sq" aria-label="Minimizar atividade">${MS('hide')}</button></div>
     <div class="act-list">${A.map((a,i)=>`${i?'<div class="link"></div>':''}<div class="ev ${a[3]?'new':''} ${a[5]?'has-dif':''}" ${a[5]?`tabindex="0" aria-label="${a[0]}: de ${a[5].from||'pendente'} para ${a[5].to}"`:''}><span class="i c-${a[1]}">${a[1]==='edit'?I.pen:a[1]==='ok'?I.check:a[1]==='alert'?I.warn:a[0]==='Recebida'?I.inbox:a[0]==='Lendo fatura'?I.hour:a[0]==='Lida'?I.doc:I.dot}</span>${who(a[4]||SYS)}<div class="n">${a[0]}</div><div class="d">13/03 às ${a[2]}</div>${a[5]?difHTML(a[5]):''}</div>`).join('')}</div></div></div>`;
@@ -442,7 +474,7 @@ comp({id:'identidade', grp:'Fatura', t:'Validar UC', lib:'Card Header md · Comb
  init(r){ const cv=$('.canvas',r); let S, min=false;
   const set=v=>{ S={read:v==='nf'?null:'3014567890',uc:v==='nf'?'':v==='bad'?'3014002210':'3014567890',ok:v==='ok',sent:v==='sent'?{at:'07/10/2026 às 14:32'}:null}; draw(); };
   const draw=()=>{ cv.innerHTML=`<div class="cx" style="width:680px;max-width:100%"><div class="panel p-det" data-w style="background:none;gap:16px;min-width:0;${min?'display:none':''}"><div data-id></div>
-      <div style="background:var(--s100);border-radius:16px;padding:16px;${S.ok||S.sent?'':'opacity:.45;pointer-events:none;user-select:none'}"><div class="sec-t" style="margin:0 0 12px">Créditos</div><div class="grid g2">${cardHTML('Crédito compensado','4.100','kWh',{uid:'id2'})}${cardHTML('Crédito abatido','1.837,46','R$',{uid:'id2'})}</div></div></div>
+      <div style="background:var(--s100);border-radius:16px;padding:16px;${S.ok||S.sent?'':'opacity:.45;pointer-events:none;user-select:none'}"><div class="sec-t" style="margin:0 0 12px">Saldos GD</div><div class="grid g2">${cardHTML('Saldo fora ponta','1.250','kWh',{uid:'id2'})}${cardHTML('Saldo a expirar','0','kWh',{uid:'id2'})}</div></div></div>
       ${min?`<div style="text-align:center;color:var(--mid);padding:24px">Details minimized: the UC block hides too.</div>`:''}</div>`;
     if(min) return;
     Identity.mount($('[data-id]',cv),S,ev=>{ const u=Identity.UCS.find(x=>x.uc===S.uc); draw();
@@ -479,7 +511,7 @@ comp({id:'extrair', grp:'Fatura', t:'Extrair novamente', lib:'Button · Alert Di
   draw(); }});
 
 /* ===== 11. Mobile: header e painel ===== */
-comp({id:'mobile', grp:'Mobile', t:'Header e barra ao rolar', lib:'Header Size=Mobile, Context=Invoice', iss:'COG-294',
+comp({id:'mobile', grp:'Mobile', t:'Header e barra ao rolar', lib:'Header Size=Mobile, Context=Invoice', iss:'COG-287',
  lead:'No mobile, header e tab bar saem do caminho quando se rola para baixo. Os badges do header abrem um painel com o resumo da fatura.',
  beh:[['Rolar para baixo (≥ 4 px)','Header sobe e tab bar desce (280 ms, ease)'],['Rolar para cima ou chegar ao topo (< 8 px)','Voltam'],['Trocar de tela pela tab bar','Voltam'],['Rolagem lateral (planilha)','Não conta'],['Tocar num badge ou na pílula','Painel sobre fundo desfocado: status, referência, distribuidora ↗, UC ↗, histórico, baixar, abrir'],['Histórico','Mostra a Atividade dentro do painel; "‹" volta'],['×, toque fora ou Esc','Fecha; o foco volta ao badge (Esc na Atividade volta ao resumo)']],
  notes:['Badges de 34 px sobrepostos (−12 px): UC, distribuidora, referência; a pílula de pendências fica por cima (vira check verde sem número quando zera).','Painel: fundo rgba(245,245,244,.4) + blur 6 px; entra descendo 8 px e de .98 para 1 (250 ms).','Fatura (PDF) no mobile: pinça 1×–4× mantendo o ponto entre os dedos; toque duplo alterna cabe na tela ↔ 2×.'],
@@ -493,7 +525,7 @@ comp({id:'mobile', grp:'Mobile', t:'Header e barra ao rolar', lib:'Header Size=M
       <header class="m-head" data-head><button class="m-menu" aria-label="Menu"><span class="mss" aria-hidden="true">menu</span></button><div class="m-tt"><b>Padaria Estrela do Sul Ltda</b><span>Fatura · Mar/2025</span></div>
         <div class="m-badges"><button class="m-bd uc" data-info aria-label="Unidade consumidora 3014567890"><span class="msr fill" aria-hidden="true">electrical_services</span></button><button class="m-bd ink" data-info aria-label="Distribuidora: Luz do Vale"><span class="msr fill" aria-hidden="true">electric_meter</span></button><button class="m-bd brand" data-info aria-label="Referência: março de 2025"><span class="msr fill" aria-hidden="true">calendar_today</span></button><button class="m-pill alert" data-info aria-label="3 pendências"><span class="msr fill" aria-hidden="true">warning</span>3</button></div></header>
       <div data-sc style="flex:1;overflow:auto"><div class="bar"><div class="tabs"><button class="tab on">Resumo</button><button class="tab">Itens</button><button class="tab">Consumo</button><button class="tab">Identificação</button></div></div>
-        <div style="padding:0 24px 120px;display:flex;flex-direction:column;gap:20px"><div class="sec-t">Créditos</div><div class="grid g2">${['Crédito compensado fora ponta','Crédito abatido fora ponta','Crédito compensado ponta','Crédito abatido ponta','Saldo fora ponta','Saldo ponta','Consumo fora ponta','Consumo ponta'].map((t,i)=>cardHTML(t,(1000+i*137).toLocaleString('pt-BR'),'kWh',{uid:'mb'})).join('')}</div></div></div>
+        <div style="padding:0 24px 120px;display:flex;flex-direction:column;gap:20px"><div class="sec-t">Saldos GD</div><div class="grid g2">${['Saldo fora ponta','Saldo ponta','Saldo a expirar','Leitura anterior','Leitura atual','Consumo medido','Injetado no período','Média de consumo (12 meses)'].map((t,i)=>cardHTML(t,(1000+i*137).toLocaleString('pt-BR'),'kWh',{uid:'mb'})).join('')}</div></div></div>
       <nav class="tabbar" data-tb style="position:absolute;left:50%;bottom:16px;transform:translateX(-50%);transition:transform .28s ease"><span class="tb-main"><button class="tb" data-scr><span class="ic">${MS('picture_as_pdf',26,1)}</span><span>Fatura</span></button><button class="tb on" data-scr><span class="ic">${MS('description',26,1)}</span><span>Detalhes</span></button></span><button class="tb tb-pend" data-scr><span class="ic">${MS('warning',26,1)}<b class="cnt">3</b></span><span>Pendências</span></button></nav>
       <div class="m-ov" hidden><div class="m-sheet" role="dialog" aria-modal="true" aria-labelledby="mbT"><div class="m-nav"><button class="m-nb" data-back aria-label="Voltar" hidden><span class="msr fill" aria-hidden="true">chevron_left</span></button><b id="mbT">Padaria Estrela do Sul Ltda</b><button class="m-nb" data-close aria-label="Fechar"><span class="msr" aria-hidden="true">close</span></button></div><div class="m-body"></div></div></div></div></div>`;
     const ph=$('[data-ph]',cv), head=$('[data-head]',cv), tb=$('[data-tb]',cv), sc=$('[data-sc]',cv), ov=$('.m-ov',cv); let last=0, trig=null, view=null;
@@ -620,19 +652,19 @@ const DOC={
   notes:['Right button sits 10 px from the pill (mobile 4 px).','Mobile: icons only (label kept for screen readers); Atividade moves to the header sheet.','Lib: <code>Tab Bar Item Type=Send</code> (Default · Hover · Loading).']},
  paineis:{grp:'Navigation',t:'Panels by priority',lead:'Up to 3 panels side by side, real size (scaled to fit). When space runs out, the lowest priority leaves: Details › Invoice › Activity.',
   ctrls:'<span><span class="k">Available width</span><input type="range" min="560" max="1700" step="10" value="1440" data-w style="width:220px;vertical-align:middle;accent-color:#71902f"> <b data-wv style="font-size:12px">1440 px</b></span>',
-  beh:[['Narrow the area','Activity leaves, then Invoice; Details stays (min 520)'],['Open a panel that doesn\'t fit','Closes others, lowest priority first'],['Close all','"Nenhum painel aberto" + Voltar ao padrão'],['Close / open','350 ms ease (width, opacity) / 400 ms spring']],
-  notes:['Invoice 686 (min 400) · Details fills (min 520) · Activity 284. Gap 24.','Card grid inside Details: 2/3/4 columns by panel width (container query).','Below 768 px: one screen at a time.']},
+  beh:[['Narrow the area','Activity leaves, then Invoice; Details stays (min 600)'],['Open a panel that doesn\'t fit','Closes others, lowest priority first'],['Close all','"Nenhum painel aberto" + Voltar ao padrão'],['Close / open','350 ms ease (width, opacity) / 400 ms spring']],
+  notes:['Invoice 686 (min 400) · Details fills (min 600, so the 5 tabs never scroll) · Activity 284. Gap 24.','Details tabs on the title line only when Details ≥ 820 px; below that, a centered 2nd line.','Data card never below 280 px: Details 600–623 → 1 column · 624–919 → 2 · 920–1215 → 3 · ≥ 1216 → 4.','Page side margin 56 px; 24 px when the window is < 1024 px.','Below 768 px: one screen at a time.']},
  card:{grp:'Data',t:'Data card',lead:'One label, one value, its unit.',
   ctrls:seg('st','Invoice',[['rev','In review'],['ro','Sent (read-only)']],'rev')+SZ,
   beh:[['Pencil','Edit: field with unit inside; send replaces copy, close replaces pencil'],['Enter / send','Validates the mask; invalid = red border + toast'],['Esc / close','Cancels'],['Copy','Copies the value only'],['Pending · Tab','Fills the placeholder suggestion'],['Pending · send','Resolved → green border, still editable']],
-  notes:['View and edit have the same height.','R$ before the value; other units after.','Read-only: no pencil, copy stays (<code>State=Read only</code>).','Mobile: 16 px padding, radius 12, 40 px touch targets.','Rows stay balanced in the Details panel: the column count is picked so every row has the same number of cards (6 → 3+3, not 4+2); if a few are still left, they split the full width (12-column grid). Titles use <code>text-wrap: balance</code> and the value sits at the card bottom, so 1- and 2-line titles line up.']},
+  notes:['View and edit have the same height.','Min width 280 px (fits "Mediana de consumo (12 meses)" on one line with the pencil); the column count comes from that.','R$ before the value; other units after.','Read-only: no pencil, copy stays (<code>State=Read only</code>).','Mobile: 16 px padding, radius 12, 40 px touch targets.','Rows stay balanced in the Details panel: the column count is picked so every row has the same number of cards (6 → 3+3, not 4+2); if a few are still left, they split the full width (12-column grid). Titles use <code>text-wrap: balance</code> and the value sits at the card bottom, so 1- and 2-line titles line up.']},
  mascaras:{grp:'Data',t:'Masked fields',lead:'Mask comes from the value type. Click the pencil, type, press Enter.',
   beh:[['Money / %','2 decimals, typed from the right: 512399 → 5.123,99'],['kWh / kW / days','Integer with thousands'],['Date','dd/mm/yyyy, must be a real date'],['CNPJ / CEP / barcode','Auto punctuation, must be complete'],['IDs (UC, NF, series)','Digits only, original length'],['Invalid','Red border + message, not saved']],
   notes:['Type: unit → label → value format (<code>kindOf</code>).','Numeric keyboard on mobile; 16 px fields on iOS.','Spreadsheet allows "−" and 5-decimal rates.']},
- planilha:{grp:'Data',t:'Line items & sum',lead:'The Valor column must add up to the invoice total (R$ 4.440,13). If not, the edited cell becomes pending.',
-  ctrls:SZ+'<button class="cbtn" data-err>Simulate wrong Demanda value</button>',
-  beh:[['Click / arrows','Select / move'],['Double-click, Enter, F2','Edit (Esc cancels, Enter or blur saves)'],['Editing','Column keeps its width; grows (180 ms) only if the text doesn\'t fit'],['Sum ≠ total','Cell turns pending; placeholder = value that closes the sum'],['Pending cell · Tab','Fills the suggestion'],['Still off after fixing','Stays pending with a new suggestion']],
-  notes:['Unit inside the cell, gray. No unit column.','Header and Item column sticky on desktop; on mobile Item scrolls and takes ≤ 50%, middle-truncated.','Changed cell #f7fee7 · pending cell orange.']},
+ planilha:{grp:'Data',t:'Spreadsheets (Items & Readings)',lead:'Invoice line items and meter readings. Categoria, Modalidade, Tipo tarifa and Posto are choice cells: translated label in the cell, system code as shortcut in the menu. In Items, the Valor column must add up to the invoice total (R$ 4.440,13); if not, the edited cell becomes pending.',
+  ctrls:seg('sh','Sheet',[['itens','Items'],['leit','Readings']],'itens')+SZ+'<button class="cbtn" data-err>Simulate wrong Demanda value</button>',
+  beh:[['Click / arrows','Select / move in column order; a selected choice cell shows a chevron'],['Double-click, Enter, F2','Number: edit (Esc cancels, Enter or blur saves). Choice: opens the menu in the cell'],['Choice menu','Translated label, system code as shortcut (FP, TE, GD_II), check on the current option (CMDK Item · Wrapped Icons); Esc closes without change; a new choice logs "de → para"'],['Editing','Column keeps its width; grows (180 ms) only if the text doesn\'t fit'],['Sum ≠ total','Cell turns pending; placeholder = value that closes the sum'],['Pending cell · Tab','Fills the suggestion'],['Still off after fixing','Stays pending with a new suggestion']],
+  notes:['Items: Item · Categoria · Modalidade · Tipo tarifa · Posto · Quant. · Preço c/ tributos · Tarifa s/ tributos · PIS/COFINS · PIS · COFINS · ICMS · Valor. In the tab, the sheet comes first and Totais below.','Readings (own tab, mirrors the invoice "Leituras" table): Descrição · Categoria · Posto tarifário · Leitura anterior · Leitura · Quantidade · Constante. No total row; coexists with Medições in Consumo.','Choice values are the system codes (CONSUMPTION, GD_II, TUSD, FP…); only the label is translated.','Unit inside the cell, gray. No unit column.','Header and Item column sticky on desktop; on mobile Item scrolls and takes ≤ 50%, middle-truncated.','Changed cell #f7fee7 · pending cell orange.']},
  pendencias:{grp:'Review',t:'Pending items',lead:'What the reading missed. Desktop: floating card above the tab bar. Mobile: a list screen.',
   ctrls:SZ+seg('uc','UC',[['ok','Validated'],['no','Not validated']],'ok'),
   beh:[['‹ ›','Navigate "N de total"'],['Type / Tab','Confirmar enables with a value; Tab fills the suggestion'],['Confirmar / Enter','Resolves; field card flashes; next item'],['Ver no Campo','Scrolls to the field and flashes it (1.2 s)'],['Minimize','Hides the card; Pendências reopens it'],['Last one resolved','Card hides; Faturar replaces Pendências'],['UC not validated','Card only points to the UC block']],

@@ -154,6 +154,14 @@
 .cx .grade td.ed input{position:absolute;inset:0;width:100%;height:100%;border:0;padding:0 12px;text-align:right;font:inherit;background:#fff;outline:2px solid var(--brand);outline-offset:-2px}
 .cx .grade td.ed input::placeholder{color:var(--s400)}
 .cx .grade td.ed.err input{outline-color:var(--danger)}
+.cx .grade th.opt,.cx .grade td.opt{text-align:left}
+.cx .grade td.opt.sel{position:relative;padding-right:34px}
+.cx .grade td.opt.sel::after{content:"keyboard_arrow_down";font-family:"Material Symbols Rounded";font-size:16px;line-height:1;position:absolute;right:12px;top:50%;transform:translateY(-50%)}
+.cx .grade td.opt.eds::after{content:none}
+.cx .grade td.eds{padding:0}
+.cx .grade td.eds .ghost{padding:0 12px}
+.cx .grade td.eds .cs{position:absolute;inset:0}
+.cx .grade td.eds .cs-trig{height:100%;border:0;border-radius:0;background:#fff;outline:2px solid var(--brand);outline-offset:-2px;padding:0 10px 0 12px;gap:8px;font:inherit}
 .cx .grade td.chg{background:#f7fee7}
 .cx .grade td.pend{background:#fff7ed!important;box-shadow:inset 0 0 0 1.5px var(--alert);text-align:center}
 .cx .grade td.pend.sel{box-shadow:inset 0 0 0 2px var(--alert)}
