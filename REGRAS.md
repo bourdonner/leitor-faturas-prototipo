@@ -72,7 +72,7 @@ O painel de menor prioridade sai primeiro. Se a pessoa fechar todos, aparece "Ne
   - Badges redondos 34 px, sobrepostos (−12 px): **UC**, **distribuidora**, **referência**.
   - Por cima de todos: pílula cinza de **pendências** com ícone + quantidade (vira check verde sem número quando zera).
   - Separador de 1 px abaixo.
-- **Navegação interna**: caixa `rgba(245,245,244,.4)`, borda `#f5f5f4`, raio 8, padding 4 (hoje: abas Resumo/Itens/Consumo/Identificação).
+- **Navegação interna**: caixa `rgba(245,245,244,.4)`, borda `#f5f5f4`, raio 8, padding 4 (hoje: abas Resumo/Itens/Leituras/Consumo/Identificação).
 - Conteúdo com **24 px** de margem lateral, fundo branco, títulos de seção Poppins SemiBold 20.
 - Sidebar e card flutuante de pendências ficam escondidos.
 
@@ -134,7 +134,10 @@ Inválido → borda vermelha + aviso, não salva. No iOS os campos usam 16 px pa
 - Menu branco, raio 6, sombra nível 4, itens com 32 px à esquerda para o check da opção escolhida.
 - Teclado: setas, Enter, Esc, letra pula para a opção. Abre para cima se não couber.
 
-### Planilha (Itens da nota fiscal)
+### Planilhas (Itens e Leituras)
+- **Itens**: a planilha vem primeiro na aba; Totais ficam abaixo. Colunas: Item · Categoria · Modalidade · Tipo tarifa · Posto · Quant. · Preço c/ tributos · Tarifa s/ tributos · PIS/COFINS · PIS · COFINS · ICMS · Valor.
+- **Leituras** (aba própria, espelha a tabela "Leituras" da fatura): Descrição · Categoria · Posto tarifário · Leitura anterior · Leitura · Quantidade · Constante. Convive com as Medições da aba Consumo.
+- **Colunas de seleção** (Categoria, Modalidade, Tipo tarifa, Posto): a célula mostra o rótulo traduzido ("Fora ponta", "Tarifa de energia", "GD II"); duplo clique abre o Select da Style Guide na própria célula; o menu mostra o **código original como atalho** à direita (FP, TE, GD_II). Esc fecha sem mudar. Categoria não tem atalho (o sistema já mostra em português).
 - Coluna Item fixa no desktop; **no mobile rola com as demais** e ocupa no máximo **metade** da tabela, com nome longo cortado no meio ("Energia in…onta TUSD").
 - **Unidade dentro da célula**, em cinza: "540 kWh", "1,48213 R$/kWh", "R$ 800,35". Sem coluna "Unid.".
 - Duplo clique (ou Enter/F2) edita; setas navegam; total recalcula. No mobile, célula **pendente** abre com **um toque**.

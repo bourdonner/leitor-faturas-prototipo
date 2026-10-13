@@ -15,6 +15,10 @@
   .cs-menu .cs-sec{background:#fff;border-top:1px solid #f5f5f4;padding:4px;display:flex;flex-direction:column;max-height:280px;overflow:auto}
   .cs-opt{position:relative;min-width:128px;padding:6px 8px 6px 32px;border-radius:4px;font:400 14px/1.7 Inter,sans-serif;color:#0c0a09;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;background:#fff;border:0}
   .cs-opt:hover,.cs-opt.act{background:#f5f5f4}
+  /* atalho do Dropdown Menu: o código original do sistema à direita (ex.: FP, TUSD, GD_I) */
+  .cs-opt.has-sc{display:flex;align-items:center;gap:24px}
+  .cs-opt .lb{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis}
+  .cs-opt .sc{margin-left:auto;flex:none;font-size:12px;letter-spacing:.1em;color:#78716c}
   .cs-opt .ck{position:absolute;left:8px;top:50%;transform:translateY(-50%);font-family:"Material Symbols Rounded";font-size:16px;line-height:1;font-variation-settings:"FILL" 0,"wght" 400,"GRAD" 0,"opsz" 20;display:none;-webkit-font-smoothing:antialiased}
   .cs-opt[aria-selected="true"] .ck{display:block}
   @keyframes csIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
@@ -64,7 +68,8 @@
     const menu=document.createElement('div'); menu.className='cs-menu'; menu.setAttribute('role','listbox');
     const sec=document.createElement('div'); sec.className='cs-sec'; menu.appendChild(sec);
     const items=list.map(o=>{ const b=document.createElement('button'); b.type='button'; b.className='cs-opt'; b.setAttribute('role','option');
-      b.setAttribute('aria-selected', String(o.selected && o.value!=='')); b.innerHTML=CHECK; b.append(o.textContent);
+      b.setAttribute('aria-selected', String(o.selected && o.value!=='')); b.innerHTML=CHECK;
+      if(o.dataset.sc){ b.classList.add("has-sc"); const l=document.createElement("span"); l.className="lb"; l.textContent=o.textContent; const k=document.createElement("span"); k.className="sc"; k.textContent=o.dataset.sc; b.append(l,k); } else b.append(o.textContent);
       b.onmousedown=e=>e.preventDefault(); b.onclick=()=>choose(o); b.onmouseenter=()=>setAct(items.indexOf(b)); sec.appendChild(b); return b; });
     document.body.appendChild(menu);
     wrap.classList.add('open'); wrap.querySelector('.cs-trig').setAttribute('aria-expanded','true');
@@ -88,7 +93,7 @@
       else if(e.key==='Enter'||e.key===' '){ e.preventDefault(); if(isOpen) choose(open.list[open.idx]); else openMenu(wrap); }
       else if(e.key==='Escape' && isOpen){ e.preventDefault(); e.stopPropagation(); close(true); }
       else if(e.key==='Tab') close();
-      else if(isOpen && e.key.length===1){ const i=open.list.findIndex(o=>o.textContent.toLowerCase().startsWith(e.key.toLowerCase())); if(i>=0) setAct(i); }
+      else if(isOpen && e.key.length===1){ const q=e.key.toLowerCase(), i=open.list.findIndex(o=>o.textContent.toLowerCase().startsWith(q)||(o.dataset.sc||"").toLowerCase().startsWith(q)); if(i>=0) setAct(i); }
     };
     sel.addEventListener('change',()=>paint(wrap));
     if(sel.form) sel.form.addEventListener('reset',()=>setTimeout(()=>paint(wrap)));

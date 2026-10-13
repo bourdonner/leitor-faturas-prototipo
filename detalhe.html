@@ -58,7 +58,7 @@
   .head h1{font-family:Poppins,Inter,sans-serif;font-weight:600;font-size:24px;color:var(--brand);margin:0 0 12px}
   .chips{display:flex;gap:8px;flex-wrap:wrap}
   .chip{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 12px;border-radius:999px;background:var(--s100);font-weight:600;font-size:12px}
-  .chip.alert .ms{color:var(--alert)} .chip.ok .ms{color:var(--success)} .chip.info .ms{color:var(--mid)}
+  .chip.alert .ms,.chip.sev .ms{color:var(--alert)} .chip.ok .ms{color:var(--success)} .chip.info .ms{color:var(--mid)}
   .head .actions{margin-left:auto;display:flex;gap:8px}
   .btn{height:36px;padding:0 16px;border-radius:8px;font-weight:500;display:inline-flex;align-items:center;gap:8px}
   .btn.primary{background:var(--ink);color:#fff}
@@ -203,6 +203,11 @@
   .grade td.ed{position:relative}
   .grade td.ed .ghost{display:inline-block;visibility:hidden;transition:min-width .18s ease;text-align:right}
   .grade td.ed input{position:absolute;inset:0;width:100%;height:100%;border:0;padding:0 12px;text-align:right;font:inherit;background:#fff;outline:2px solid var(--brand);outline-offset:-2px}
+  .grade th.opt,.grade td.opt{text-align:left}
+  .grade td.eds{padding:0}
+  .grade td.eds .ghost{padding:0 12px}
+  .grade td.eds .cs{position:absolute;inset:0}
+  .grade td.eds .cs-trig{height:100%;border:0;border-radius:0;background:#fff;outline:2px solid var(--brand);outline-offset:-2px;padding:0 10px 0 12px;gap:8px;font:inherit}
   .grade td.chg{background:#f7fee7}
   .grade td.pend{background:#fff7ed!important;box-shadow:inset 0 0 0 1.5px var(--alert);text-align:center}
   .grade td.pend.sel{box-shadow:inset 0 0 0 2px var(--alert)}
@@ -613,7 +618,8 @@
           <div class="chips">
             <span class="chip info"><span class="ms f" style="font-size:16px" aria-hidden="true">calendar_today</span>Março de 2025</span>
             <span class="chip info"><span class="ms f" style="font-size:16px" aria-hidden="true">electric_meter</span>Luz do Vale</span>
-            <span class="chip info"><span class="ms f" style="font-size:16px" aria-hidden="true">electrical_services</span>UC 3014567890</span>
+            <span class="chip info" id="ucChip"></span>
+            <span class="chip sev" title="Severidade da revisão"><span class="ms f" style="font-size:16px" aria-hidden="true">priority_high</span>Severidade alta</span>
             <span class="chip alert" id="stChip"></span>
           </div>
         </div>
@@ -748,16 +754,18 @@ const who = u=>u&&u.sys
 /* ---------- estado ---------- */
 const S = {
   tab:'Resumo', open:{pdf:true,det:true,act:true,pend:true}, status:'revisar', locked:false, id:'pend', tries:2, sent:null, busy:false, pIdx:0, ov:{}, chartSel:null, itemChg:{'7-7':1},
-  items:[['Consumo ponta TUSD','kWh','540','1,48213','1,15443','32,89','144,06','800,35'],['Consumo ponta TE','kWh','540','0,51237','0,39909','11,37','49,80','276,68'],['Consumo fora ponta TUSD','kWh','5.960','0,11845','0,09226','29,02','127,07','705,96'],['Consumo fora ponta TE','kWh','5.960','0,32971','0,25681','80,76','353,71','1.965,07'],['Energia injetada fora ponta TUSD','kWh','−4.100','0,11845','0,09226','−19,96','−87,42','−485,65'],['Energia injetada fora ponta TE','kWh','−4.100','0,32971','0,25681','−55,56','−243,33','−1.351,81'],['Demanda','kW','75','32,41500','25,24804','99,92','','2.431,13'],['Contrib. ilum. pública municipal','—','—','—','—','—','—','98,40']],
+  items:[['Consumo ponta TUSD','kWh','540','1,48213','1,15443','32,89','144,06','800,35','SYSTEM_USAGE','NA','TUSD','PT','5,84','27,05'],['Consumo ponta TE','kWh','540','0,51237','0,39909','11,37','49,80','276,68','CONSUMPTION','NA','TE','PT','2,02','9,35'],['Consumo fora ponta TUSD','kWh','5.960','0,11845','0,09226','29,02','127,07','705,96','SYSTEM_USAGE','NA','TUSD','FP','5,15','23,87'],['Consumo fora ponta TE','kWh','5.960','0,32971','0,25681','80,76','353,71','1.965,07','CONSUMPTION','NA','TE','FP','14,34','66,42'],['Energia injetada fora ponta TUSD','kWh','−4.100','0,11845','0,09226','−19,96','−87,42','−485,65','INJECTION_FROM_OTHER_UNIT','GD_II','TUSD','FP','−3,55','−16,41'],['Energia injetada fora ponta TE','kWh','−4.100','0,32971','0,25681','−55,56','−243,33','−1.351,81','INJECTION_FROM_OTHER_UNIT','GD_II','TE','FP','−9,87','−45,69'],['Demanda','kW','75','32,41500','25,24804','99,92','','2.431,13','DEMAND','NA','TUSD','NA','17,75','82,17'],['Contrib. ilum. pública municipal','—','—','—','—','—','—','98,40','OTHER','NA','OTHER','NA','—','—']],
+  // leituras do medidor, como a tabela "Leituras" da fatura: categoria, posto, descrição, leitura anterior, leitura, quantidade, constante, unidade
+  leit:[['CONSUMPTION','PT','Energia ativa ponta','12.480','','540','1','kWh'],['CONSUMPTION','FP','Energia ativa fora ponta','88.200','94.160','5.960','1','kWh'],['INJECTION','FP','Energia injetada fora ponta','51.300','55.400','4.100','1','kWh'],['DEMAND','FP','Demanda fora ponta','—','—','68','1','kW']], leitChg:{},
   pend:[
     {id:'cofins', tab:'Resumo', title:'COFINS', label:'COFINS (alíquota)', kind:'Percentual', unit:'%', ph:'3,38', why:'COFINS (valor) ÷ base de cálculo', legend:'R$ 146,75', done:null, act:'COFINS corrigido'},
-    {id:'leit', tab:'Consumo', title:'Leitura atual', label:'Leitura atual ponta (kWh)', kind:'Número', unit:'kWh', ph:'13.020', why:'leitura anterior + consumo medido', legend:'kWh', done:null, act:'Leitura atual corrigida'},
+    {id:'leit', tab:'Consumo', title:'Leitura atual', label:'Leitura atual ponta (kWh)', kind:'Número', unit:'kWh', ph:'13.020', why:'leitura anterior + consumo medido', legend:'kWh', lcell:[0,4], done:null, act:'Leitura atual corrigida'},
     {id:'item', tab:'Itens', title:'ICMS · Demanda', label:'ICMS do item Demanda', kind:'Moeda', unit:'R$', ph:'437,60', why:'18% de ICMS sobre R$ 2.431,13', cell:[6,6], done:null, act:'ICMS do item corrigido'},
     {id:'mod', tab:'Identificação', title:'Modalidade tarifária', label:'Modalidade tarifária', kind:'Seleção', ph:'Selecione', options:['Convencional','Horária verde','Horária azul','Branca'], done:null, act:'Modalidade corrigida'}
   ],
   acts:[
     ['Contrib. ilum. pública municipal editado','edit','11:20',false,ANA,{from:'R$ 89,40',to:'R$ 98,40'}],
-    ['Demanda contratada editado','edit','11:05',false,CAR,{from:'70 kW',to:'75 kW'}],
+    ['Dias de leitura editado','edit','11:05',false,CAR,{from:'31 dias',to:'32 dias'}],
     ['Vencimento editado','edit','10:51',false,ANA,{from:'24/03/2025',to:'25/03/2025'}],
     ['Para revisar','alert','10:42'],['Lida','def','10:42'],['Lendo fatura','def','10:41'],['Recebida','def','10:40']]
 };
@@ -877,19 +885,38 @@ function bindChart(){
   pick(S.chartSel ?? v.length-1);
 }
 
-/* ---------- planilha de itens ---------- */
-const COLS=['Quant.','Preço c/ tributos','Tarifa s/ tributos','PIS/COFINS','ICMS','Valor'];
+/* ---------- planilhas (Itens e Leituras) ---------- */
+// colunas de seleção: o código do sistema fica guardado; a célula mostra o rótulo traduzido e o menu mostra o código como atalho
+const CAT={CONSUMPTION:['Consumo'],SYSTEM_USAGE:['Uso do sistema'],INJECTION_FROM_OTHER_UNIT:['Injeção de outra unidade'],INJECTION_SAME_UNIT:['Injeção da mesma unidade'],INJECTION:['Injeção'],FLAG:['Bandeira'],DEMAND:['Demanda'],CONSUMPTION_FLAG:['Bandeira de consumo'],OTHER:['Outros']};
+const MODG={GD_I:['GD I','GD_I'],GD_II:['GD II','GD_II'],GD_III:['GD III','GD_III'],NA:['Não se aplica','NA']};
+const TIPO={TE:['Tarifa de energia','TE'],TUSD:['Tarifa de uso do sistema','TUSD'],OTHER:['Outra','OTHER']};
+const POSTO={FP:['Fora ponta','FP'],PT:['Ponta','PT'],PTU:['Ponta úmido','PTU'],PTS:['Ponta seco','PTS'],FPU:['Fora ponta úmido','FPU'],FPS:['Fora ponta seco','FPS'],IT:['Intermediário','IT'],AP:['Posto único','AP'],NA:['Não se aplica','NA']};
 // a unidade fica dentro da célula: quantidade na unidade do item, preço e tarifa por unidade, valores em R$
 const cellUnit=(r,c)=> c===2 ? [r[1],0] : (c===3||c===4) ? ['R$/'+r[1],0] : ['R$',1];
-function cellHTML(r,c){
-  const v=S.items[r][c]; if(!v || v==='—' || (c<5 && S.items[r][1]==='—')) return v||'';
-  const [u,pre]=cellUnit(S.items[r],c);
+const SHEETS={
+  itens:{ rows:()=>S.items, chg:()=>S.itemChg, h:'Item', name:r=>r[0], foot:true,
+    cols:[{k:8,h:'Categoria',o:CAT},{k:9,h:'Modalidade',o:MODG},{k:10,h:'Tipo tarifa',o:TIPO},{k:11,h:'Posto',o:POSTO},
+      {k:2,h:'Quant.',m:'int'},{k:3,h:'Preço c/ tributos',m:'dec5',pos:1},{k:4,h:'Tarifa s/ tributos',m:'dec5',pos:1},{k:5,h:'PIS/COFINS',m:'money'},{k:12,h:'PIS',m:'money'},{k:13,h:'COFINS',m:'money'},{k:6,h:'ICMS',m:'money'},{k:7,h:'Valor',m:'money'}],
+    unit:(r,c)=>r[1]==='—'&&c<5 ? null : cellUnit(r,c),
+    pend:(r,c)=>openPend().find(p=>p.cell&&p.cell[0]===r&&p.cell[1]===c) },
+  leit:{ rows:()=>S.leit, chg:()=>S.leitChg, h:'Descrição', name:r=>r[2],
+    cols:[{k:0,h:'Categoria',o:CAT},{k:1,h:'Posto tarifário',o:POSTO},{k:3,h:'Leitura anterior',m:'int',pos:1},{k:4,h:'Leitura',m:'int',pos:1},{k:5,h:'Quantidade',m:'int'},{k:6,h:'Constante',m:'int',pos:1}],
+    unit:(r,c)=>c>=3&&c<=5 ? [r[7],0] : null,
+    pend:(r,c)=>openPend().find(p=>p.lcell&&p.lcell[0]===r&&p.lcell[1]===c) }
+};
+const colOf=(sh,c)=>SHEETS[sh].cols.find(x=>x.k===c);
+const optLabel=(o,v)=>o[v]?o[v][0]:'';
+function cellHTML(sh,r,c){
+  const cf=SHEETS[sh], row=cf.rows()[r], col=colOf(sh,c), v=row[c];
+  if(col.o) return v ? optLabel(col.o,v) : '<span class="cu">—</span>';
+  if(!v || v==='—') return v||'';
+  const uu=cf.unit(row,c); if(!uu) return v;
+  const [u,pre]=uu;
   return pre ? `<span class="cu">${u}</span> ${v}` : `${v} <span class="cu">${u}</span>`;
 }
-const COLK={2:'int',3:'dec5',4:'dec5',5:'money',6:'money',7:'money'}; // quantidade e valores aceitam negativo (créditos)
+const cellUnitOf=(sh,r,c)=>{ const uu=SHEETS[sh].unit(SHEETS[sh].rows()[r],c); return uu?uu[0]:''; };
 const pn = t=>parseFloat(String(t).replace(/[^\d,−-]/g,'').replace(/\./g,'').replace(',','.').replace('−','-'));
 const money = n=>(n<0?'−':'')+Math.abs(n).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
-const cellPend=(r,c)=>openPend().find(p=>p.cell&&p.cell[0]===r&&p.cell[1]===c);
 const TOTAL=4440.13; let SUMN=0;
 const itemsSum=()=>Math.round(S.items.reduce((a,r)=>a+(pn(r[7])||0),0)*100)/100;
 /* a soma dos valores dos itens tem que fechar com o total da fatura; se não fecha, a célula editada vira pendência com o valor que fecha como sugestão */
@@ -902,14 +929,14 @@ function checkSum(r,c){
   toast('A soma dos itens não fecha com o total da fatura');
   return true;
 }
-function sheetHTML(){
-  const tot=itemsSum(), off=tot!==TOTAL;
+function sheetHTML(sh='itens'){
+  const cf=SHEETS[sh], chg=cf.chg(), tot=itemsSum(), off=cf.foot && tot!==TOTAL;
   return `<div class="grade-h"><span>${S.sent?'Fatura enviada: somente leitura':'Clique duas vezes numa célula para editar'}</span>${off?`<span class="off">Soma ≠ total da fatura (R$ ${money(TOTAL)})</span>`:''}</div>
-  <div class="grade" id="sheet"><table><thead><tr><th class="stk">Item</th>${COLS.map(c=>`<th>${c}</th>`).join('')}</tr></thead>
-  <tbody>${S.items.map((r,ri)=>`<tr><td class="stk">${r[0]}</td>${r.slice(2).map((c,ci)=>{ const p=cellPend(ri,ci+2);
-    return p ? `<td class="num pend" id="c-${p.id}" data-r="${ri}" data-c="${ci+2}" data-pend="${p.id}" tabindex="-1" title="Não encontrado na fatura"><span class="pw">${I.warn}</span></td>`
-      : `<td class="num ${String(c).startsWith('−')?'neg':''} ${S.itemChg[ri+'-'+(ci+2)]?'chg':''}" data-r="${ri}" data-c="${ci+2}" tabindex="-1">${cellHTML(ri,ci+2)}</td>`; }).join('')}</tr>`).join('')}</tbody>
-  <tfoot><tr><td class="stk">Total</td><td colspan="5"></td><td class="${off?'off':''}"><span class="cu">R$</span> ${money(tot)}</td></tr></tfoot></table></div>`;
+  <div class="grade" data-sheet="${sh}"><table><thead><tr><th class="stk">${cf.h}</th>${cf.cols.map(c=>`<th class="${c.o?'opt':''}">${c.h}</th>`).join('')}</tr></thead>
+  <tbody>${cf.rows().map((r,ri)=>`<tr><td class="stk">${cf.name(r)}</td>${cf.cols.map(col=>{ const c=col.k, p=cf.pend(ri,c), v=r[c];
+    return p ? `<td class="num pend" id="c-${p.id}" data-s="${sh}" data-r="${ri}" data-c="${c}" data-pend="${p.id}" tabindex="-1" title="Não encontrado na fatura"><span class="pw">${I.warn}</span></td>`
+      : `<td class="num ${col.o?'opt':''} ${String(v).startsWith('−')?'neg':''} ${chg[ri+'-'+c]?'chg':''}" data-s="${sh}" data-r="${ri}" data-c="${c}" tabindex="-1">${cellHTML(sh,ri,c)}</td>`; }).join('')}</tr>`).join('')}</tbody>
+  ${cf.foot?`<tfoot><tr><td class="stk">Total</td><td colspan="${cf.cols.length-1}"></td><td class="${off?'off':''}"><span class="cu">R$</span> ${money(tot)}</td></tr></tfoot>`:''}</table></div>`;
 }
 /* edição na planilha: a célula mantém a largura; só cresce (animando) se o valor ou a sugestão não couberem */
 function growCell(td, inp, w0){
@@ -922,37 +949,58 @@ function growCell(td, inp, w0){
   requestAnimationFrame(fit); inp.addEventListener('input',fit);
 }
 function bindSheet(){
-  const sh=$('#sheet'); if(!sh) return;
-  const cells=[...sh.querySelectorAll('td.num')];
-  const at=(r,c)=>sh.querySelector(`td[data-r="${r}"][data-c="${c}"]`);
-  const select=td=>{ sh.querySelectorAll('td.sel').forEach(x=>x.classList.remove('sel')); td.classList.add('sel'); td.focus(); };
+  document.querySelectorAll('.grade[data-sheet]').forEach(bindGrid);
+}
+function bindGrid(gr){
+  const sh=gr.dataset.sheet, cf=SHEETS[sh], order=cf.cols.map(x=>x.k);
+  const cells=[...gr.querySelectorAll('td.num')];
+  const at=(r,c)=>gr.querySelector(`td[data-r="${r}"][data-c="${c}"]`);
+  const select=td=>{ document.querySelectorAll('.grade td.sel').forEach(x=>x.classList.remove('sel')); td.classList.add('sel'); td.focus(); };
+  const again=(r,c)=>{ const g=document.querySelector(`.grade[data-sheet="${sh}"]`); const n=g&&g.querySelector(`td[data-r="${r}"][data-c="${c}"]`); if(n) select(n); };
+  const log=(r,c,from,to)=>{ const nm=cf.name(cf.rows()[r]); S.acts.unshift([`${nm} editado`,'edit',now(),true,ME,{from,to}]); renderActs(); return nm; };
+  // seleção (Categoria, Modalidade, Tipo tarifa, Posto): o menu da Style Guide abre dentro da célula
+  const editOpt=td=>{
+    const r=+td.dataset.r, c=+td.dataset.c, col=colOf(sh,c), old=cf.rows()[r][c];
+    td.classList.add('ed','eds');
+    td.innerHTML=`<span class="ghost" aria-hidden="true">${td.innerHTML}</span><select aria-label="${col.h}"><option value="">Selecione</option>${Object.entries(col.o).map(([k,[l,sc]])=>`<option value="${k}" ${sc?`data-sc="${sc}"`:''} ${k===old?'selected':''}>${l}</option>`).join('')}</select>`;
+    const sel=td.querySelector('select'); let fin=false;
+    const done=()=>{ if(fin) return; fin=true; td.classList.remove('ed','eds'); td.innerHTML=cellHTML(sh,r,c); select(td); };
+    sel.addEventListener('change',()=>{ if(fin) return; const nv=sel.value; if(!nv||nv===old){ done(); return; } fin=true;
+      cf.rows()[r][c]=nv; cf.chg()[r+'-'+c]=1; const nm=log(r,c,optLabel(col.o,old),optLabel(col.o,nv)); toast(`${nm} atualizado`); render(); again(r,c); });
+    setTimeout(()=>{ const w=td.querySelector('.cs'), t=w&&w.querySelector('.cs-trig'); if(!t){ done(); return; }
+      w.addEventListener('keydown',e=>{ if(e.key==='Escape' && !e.defaultPrevented){ e.preventDefault(); done(); } e.stopPropagation(); });
+      t.addEventListener('blur',()=>setTimeout(()=>{ if(!w.classList.contains('open') && document.activeElement!==t) done(); },0));
+      t.focus(); t.click(); });
+  };
   const edit=td=>{
     if(td.classList.contains('ed') || S.sent || S.id!=='ok') return;
-    const r=+td.dataset.r, c=+td.dataset.c, old=S.items[r][c];
+    const r=+td.dataset.r, c=+td.dataset.c, col=colOf(sh,c), old=cf.rows()[r][c];
+    if(col.o && !td.dataset.pend) return editOpt(td);
     const cs0=getComputedStyle(td), w0=td.clientWidth-parseFloat(cs0.paddingLeft)-parseFloat(cs0.paddingRight);
     td.classList.add('ed'); td.innerHTML=`<span class="ghost" aria-hidden="true">${td.innerHTML}</span><input size="1">`; const inp=td.querySelector('input'); inp.value=old==='—'?'':old;
     if(td.dataset.pend){ const pp=S.pend.find(x=>x.id===td.dataset.pend); inp.value=''; inp.placeholder=pp.ph||''; if(pp.why) inp.dataset.sug='1'; } // pendente: campo vazio, sugestão no placeholder (Tab aceita)
     inp.focus(); inp.select();
-    const kind=COLK[c]; attachMask(inp, kind, {signed:c!==3&&c!==4});
+    const kind=col.m; attachMask(inp, kind, {signed:!col.pos});
     growCell(td, inp, w0);
     const done=save=>{ const nv=inp.value.trim();
       if(save && nv && nv!==old && invalid(inp, kind)) return;
       if(td.dataset.pend){ const p=S.pend.find(x=>x.id===td.dataset.pend); td.classList.remove('ed','err');
-        if(save && nv){ resolve(p, nv); const n=at(r,c); if(n) select(n); } else { td.innerHTML=`<span class="pw">${I.warn}</span>`; select(td); } return; }
+        if(save && nv){ resolve(p, nv); again(r,c); } else { td.innerHTML=`<span class="pw">${I.warn}</span>`; select(td); } return; }
       td.classList.remove('ed','err');
-      if(save && nv && nv!==old){ S.items[r][c]=nv; S.itemChg[r+'-'+c]=1; S.acts.unshift([`${S.items[r][0]} editado`,'edit',now(),true,ME,{from:old==='—'?'':withUnit(old,cellUnit(S.items[r],c)[0]),to:withUnit(nv,cellUnit(S.items[r],c)[0])}]); renderActs(); if(!checkSum(r,c)) toast(`${S.items[r][0]} atualizado`);
-        render(); const n=at(r,c); if(n) select(n); return; }
-      td.innerHTML=cellHTML(r,c); select(td); };
+      if(save && nv && nv!==old){ const u=cellUnitOf(sh,r,c); cf.rows()[r][c]=nv; cf.chg()[r+'-'+c]=1; const nm=log(r,c,old==='—'?'':withUnit(old,u),withUnit(nv,u)); if(!(sh==='itens' && checkSum(r,c))) toast(`${nm} atualizado`);
+        render(); again(r,c); return; }
+      td.innerHTML=cellHTML(sh,r,c); select(td); };
     inp.onkeydown=e=>{ if(e.key==='Enter'){e.preventDefault();done(true);} if(e.key==='Escape'){e.preventDefault();done(false);} e.stopPropagation(); };
     inp.onblur=()=>{ if(td.classList.contains('ed')) done(true); };
   };
   cells.forEach(td=>{
-    td.onclick=()=>{ if(modeOf()==='mobile' && td.classList.contains('pend')) edit(td); else select(td); }; // no mobile a pendência abre com um toque
+    td.onclick=()=>{ if(td.classList.contains('ed')) return; if(modeOf()==='mobile' && td.classList.contains('pend')) edit(td); else select(td); }; // no mobile a pendência abre com um toque
     td.ondblclick=()=>edit(td);
     td.onkeydown=e=>{
-      const r=+td.dataset.r, c=+td.dataset.c;
-      const mv={ArrowUp:[r-1,c],ArrowDown:[r+1,c],ArrowLeft:[r,c-1],ArrowRight:[r,c+1]}[e.key];
-      if(mv){ const n=at(...mv); if(n){ e.preventDefault(); select(n);} }
+      if(td.classList.contains('ed')) return;
+      const r=+td.dataset.r, c=+td.dataset.c, i=order.indexOf(c);
+      const mv={ArrowUp:[r-1,c],ArrowDown:[r+1,c],ArrowLeft:[r,order[i-1]],ArrowRight:[r,order[i+1]]}[e.key];
+      if(mv){ const n=mv[1]!=null&&at(...mv); if(n){ e.preventDefault(); select(n);} }
       else if(e.key==='Enter'||e.key==='F2'){ e.preventDefault(); edit(td); }
     };
   });
@@ -961,13 +1009,10 @@ function bindSheet(){
 /* ---------- abas ---------- */
 const TABS = {
   Resumo(){
-    return sec('Créditos')+`<div class="grid g2">
-      ${card('Crédito compensado fora ponta','4.100','kWh')}${card('Crédito abatido fora ponta','1.837,46','R$')}
-      ${card('Crédito compensado ponta','0','kWh')}${card('Crédito abatido ponta','0,00','R$')}
-      ${card('Saldo fora ponta','1.250','kWh')}${card('Saldo ponta','0','kWh')}</div>`
-      +sec('Consumo e demanda')+`<div class="cd-split"><div class="grid g2 cd-cards">
-      ${card('Consumo fora ponta','5.960','kWh')}${card('Consumo ponta','540','kWh')}
-      ${card('Demanda medida','68','kW')}${card('Demanda contratada','75','kW')}
+    return sec('Saldos GD')+`<div class="grid g2">
+      ${card('Saldo fora ponta','1.250','kWh')}${card('Saldo ponta','0','kWh')}
+      ${card('Saldo a expirar','0','kWh')}</div>`
+      +sec('Unidade e consumo')+`<div class="cd-split"><div class="grid g2 cd-cards">
       ${card('Tipo de unidade','Beneficiária')}${card('Geração','—')}</div>`
       +chartHTML()+`</div>`
       +sec('Valores')+`<div class="grid g2">${card('Total a pagar','4.440,13','R$')}${card('Vencimento','25/03/2025')}</div>`
@@ -975,8 +1020,11 @@ const TABS = {
       +sec('Datas')+`<div class="grid g2">${card('Leitura anterior','07/02/2025')}${card('Leitura atual','11/03/2025')}${card('Dias de leitura','32','dias')}${card('Próxima leitura','08/04/2025')}${card('Emissão','12/03/2025')}</div>`;
   },
   Itens(){
-    return sec('Totais')+`<div class="grid g2">${card('Total da fatura','4.440,13','R$',{cls:'full'})}${card('PIS/COFINS (valor)','178,44','R$')}${card('PIS/COFINS (base de cálculo)','4.341,73','R$')}${card('ICMS (valor)','781,49','R$')}${card('ICMS (base de cálculo)','4.341,73','R$')}</div>`
-      +sec('Itens da nota fiscal')+sheetHTML();
+    return sec('Itens da nota fiscal')+sheetHTML('itens')
+      +sec('Totais')+`<div class="grid g2">${card('Total da fatura','4.440,13','R$',{cls:'full'})}${card('PIS/COFINS (valor)','178,44','R$')}${card('PIS/COFINS (base de cálculo)','4.341,73','R$')}${card('ICMS (valor)','781,49','R$')}${card('ICMS (base de cálculo)','4.341,73','R$')}</div>`;
+  },
+  Leituras(){
+    return sec('Leituras')+sheetHTML('leit');
   },
   Consumo(){
     const h=[['mar/25','6.500','68','32'],['fev/25','6.120','66','28'],['jan/25','6.340','70','30'],['dez/24','7.010','74','33'],['nov/24','6.880','72','28'],['out/24','6.450','69','31'],['set/24','6.230','67','33'],['ago/24','6.050','65','29'],['jul/24','5.980','64','30'],['jun/24','6.210','66','33'],['mai/24','6.400','67','29'],['abr/24','6.620','70','29']];
@@ -984,14 +1032,13 @@ const TABS = {
     return sec('Medições')
       +med('Consumo ponta · medidor ELO0045123')+`${card('Leitura anterior','12.480','kWh')}${card('Data da leitura anterior','07/02/2025')}${card('Leitura atual','','kWh',{pend:'leit'})}${card('Data da leitura atual','11/03/2025')}${card('Constante','1')}${card('Consumo medido','540','kWh')}</div>`
       +med('Consumo fora ponta · medidor ELO0045123')+`${card('Leitura anterior','88.200','kWh')}${card('Data da leitura anterior','07/02/2025')}${card('Leitura atual','94.160','kWh')}${card('Data da leitura atual','11/03/2025')}${card('Constante','1')}${card('Consumo medido','5.960','kWh')}</div>`
-      +med('Demanda')+`${card('Demanda medida','68','kW')}${card('Demanda contratada','75','kW')}${card('Demanda faturada','75','kW')}${card('Ultrapassagem','0','kW')}</div>`
       +med('Energia injetada fora ponta')+`${card('Leitura anterior','51.300','kWh')}${card('Data da leitura anterior','07/02/2025')}${card('Leitura atual','55.400','kWh')}${card('Data da leitura atual','11/03/2025')}${card('Constante','1')}${card('Injetado no período','4.100','kWh')}</div>`
       +sec('Histórico de consumo')+`<div class="grid g2">${card('Média de consumo (12 meses)','6.399','kWh')}${card('Mediana de consumo (12 meses)','6.370','kWh')}</div>`
       +`<div class="grade"><table><thead><tr><th class="stk">Mês</th><th>Consumo</th><th>Demanda</th><th>Dias</th></tr></thead><tbody>${h.map(r=>`<tr><td class="stk">${r[0]}</td>${r.slice(1).map((c,k)=>`<td>${c} <span class="cu">${['kWh','kW','dias'][k]}</span></td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
   },
   'Identificação'(){
     return sec('Fatura')+`<div class="grid g2">${card('Nota fiscal','247971120')}${card('Série','000')}${card('Referência','Mar/2025')}${card('Emissão','12/03/2025')}${card('Débito automático','—')}${card('Chave de acesso','31250300000000000100660002479711201000000029',null,{cls:'full'})}${card('Código de barras','83610000044-2 40130138004-3 11989574712-4 30145678901-7',null,{cls:'full'})}</div>`
-      +sec('Unidade consumidora')+`<div class="grid g2">${card('Distribuidora','Luz do Vale Distribuição S.A.')}${card('Nº da instalação','3014567890')}${card('Classe','Comercial')}${card('Subclasse','Comercial')}${card('Subgrupo tarifário','A4')}${card('Modalidade tarifária','',null,{pend:'mod'})}${card('Tipo de rede','Trifásico')}${card('Demanda contratada','75','kW')}${card('Tarifa social','Não')}</div>`
+      +sec('Unidade consumidora')+`<div class="grid g2">${card('Distribuidora','Luz do Vale Distribuição S.A.')}${card('Nº da instalação','3014567890')}${card('Classe','Comercial')}${card('Subclasse','Comercial')}${card('Subgrupo tarifário','A4')}${card('Modalidade tarifária','',null,{pend:'mod'})}${card('Tipo de rede','Trifásico')}${card('Tarifa social','Não')}</div>`
       +sec('Titular')+`<div class="grid g2">${card('Razão social','Padaria Estrela do Sul Ltda')}${card('CNPJ','12.345.678/0001-90')}</div>`
       +sec('Endereço')+`<div class="grid g3">${card('Logradouro','Avenida Brasil',null,{cls:'full'})}${card('Número','1200')}${card('Complemento','Loja 2')}${card('Bairro','Centro')}${card('Cidade','Ibirité')}${card('Estado','MG')}${card('CEP','32400-000')}</div>`;
   }
@@ -1000,7 +1047,7 @@ const TABS = {
 /* ---------- render ---------- */
 function renderTabs(){
   $('#tabs').innerHTML = Object.keys(TABS).map(t=>{
-    const warn = openPend().some(p=>p.tab===t);
+    const warn = openPend().some(p=>p.tab===t || (t==="Leituras" && p.lcell)); // a leitura pendente aparece também na aba Leituras
     return `<button role="tab" class="tab ${S.tab===t?'on':''}" data-tab="${t}" aria-selected="${S.tab===t}">${t}${warn?`<span class="warn">${I.warn}</span>`:''}</button>`;
   }).join('');
 }
@@ -1014,6 +1061,9 @@ function renderActs(){
 }
 function renderStatus(){
   const n = openPend().length, chip=$('#stChip');
+  // vínculo: a UC lida só conta como vinculada depois de validada
+  $('#ucChip').innerHTML = S.id==='ok' ? MS('link',16,1)+'UC 3014567890 · vinculada' : MS('link_off',16,1)+'UC 3014567890 · sem vínculo';
+  $('#ucChip').className = 'chip '+(S.id==='ok'?'info':'alert');
   if (S.sent){ chip.className='chip sent'; chip.innerHTML=MS('send',16,1)+'Enviada para faturamento';
     const b=$('#mSt'); b.className='m-pill sent'; b.dataset.info='Enviada para faturamento'; b.setAttribute('aria-label','Enviada para faturamento'); b.innerHTML='<span class="msr fill" aria-hidden="true">send</span>'; return; }
   const map = {revisar:[`${n} pendência${n>1?'s':''}`,'alert'], pronta:['Sem pendências','ok']};
@@ -1059,7 +1109,7 @@ function visibleSet(){ const v=[]; PRI.forEach(k=>{ if(S.open[k] && fits([...v,k
 /* um breakpoint só: mobile < 768 ≤ desktop (no desktop, a falta de largura é resolvida pela prioridade dos painéis) */
 const modeOf = ()=> innerWidth < 768 ? 'mobile' : 'desk';
 function renderPendList(){
-  const list=S.sent?[]:openPend(), TABN={Resumo:'Resumo',Itens:'Itens',Consumo:'Consumo','Identificação':'Identificação'};
+  const list=S.sent?[]:openPend(), TABN={Resumo:'Resumo',Itens:'Itens',Leituras:'Leituras',Consumo:'Consumo','Identificação':'Identificação'};
   $('#plCnt').textContent = list.length ? `${list.length} para conferir` : '';
   if (list.length && S.id!=='ok'){ // UC ainda não validada: nada de campo nem "Ver no Campo" para campo travado — leva para a UC
     $('#plist').innerHTML = `<div class="pl-item"><div class="pl-h"><span class="badge">${I.warn}</span>Valide a UC primeiro</div>
@@ -1180,6 +1230,7 @@ function resolve(p, v){
   if (p.kind!=='Seleção' && f && invalid(f, f.dataset.mask)) return;
   p.done = fmt(p,v);
   if (p.cell){ S.items[p.cell[0]][p.cell[1]] = p.done; S.itemChg[p.cell.join('-')] = 1; }
+  if (p.lcell){ S.leit[p.lcell[0]][p.lcell[1]] = p.done; S.leitChg[p.lcell.join('-')] = 1; }
   S.acts.unshift([p.act,'edit',now(),true,ME,{from:'',to:withUnit(p.done,p.unit)}]);
   if (!(p.cell && checkSum(p.cell[0],p.cell[1]))) toast(`${p.label}: ${p.done}`);
   if (!openPend().length){ S.status='pronta'; S.acts.unshift(['Sem pendências','ok',now(),true]); }
@@ -1415,7 +1466,7 @@ LOGO = (document.querySelector('.sb-brand svg')?.outerHTML||'').replace(/fill="#
 (function(){
   const qs=new URLSearchParams(location.search), e=qs.get('estado')||'identidade';
   const fill={cofins:'3,38', leit:'13.020', item:'437,60', mod:'Horária verde'};
-  const allDone=()=>{ S.pend.forEach(p=>{ p.done=fill[p.id]; if(p.cell) S.items[p.cell[0]][p.cell[1]]=p.done; }); S.status='pronta'; };
+  const allDone=()=>{ S.pend.forEach(p=>{ p.done=fill[p.id]; if(p.cell) S.items[p.cell[0]][p.cell[1]]=p.done; if(p.lcell) S.leit[p.lcell[0]][p.lcell[1]]=p.done; }); S.status='pronta'; };
   if (e==='nao-encontrada'){ IDS.read=null; IDS.uc=''; }
   if (e==='divergente') IDS.uc='3014002210';
   if (['pendencias','soma','pronta','enviada','sem-tentativas'].includes(e)) IDS.ok=true;
