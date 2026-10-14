@@ -98,23 +98,6 @@
   .ib:hover{background:var(--s200)}
   .ib.sq{background:var(--s50)}
   .ib .ms{font-size:18px}
-  /* ===== abas das prévias (fases) ===== */
-  .ptabs{display:flex;gap:4px;padding:0 16px 12px;flex:none}
-  .ptab{flex:1;min-width:0;display:flex;align-items:center;gap:8px;height:44px;padding:0 12px;border-radius:8px;color:var(--mid);text-align:left;position:relative}
-  .ptab .n{width:20px;height:20px;border-radius:999px;display:grid;place-items:center;font:600 11px Inter;background:var(--s200);color:var(--mid);flex:none}
-  .ptab .n .ms{font-size:14px}
-  .ptab .tx{display:flex;flex-direction:column;min-width:0;line-height:1.25}
-  .ptab .tx b{font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .ptab .tx small{font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .ptab:hover:not(:disabled){background:var(--s50)}
-  .ptab.on{background:#fff;color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.05)}
-  .ptab.done .n{background:var(--success);color:#fff}
-  .ptab.cur .n{background:var(--ink);color:#fff}
-  .ptab.err .n{background:var(--danger);color:#fff}
-  .ptab:disabled{opacity:.55}
-  .ptab:disabled .n{background:transparent;border:1px dashed var(--s400)}
-  .ptab[data-tip]:disabled:hover::after{content:attr(data-tip);position:absolute;left:12px;top:calc(100% + 4px);background:var(--ink);color:#fff;font:500 12px/16px Inter;padding:6px 8px;border-radius:6px;white-space:nowrap;z-index:10}
-  .chev{color:var(--s400);align-self:center;flex:none}
   /* ===== documento ===== */
   .doc-scroll{flex:1;min-height:0;overflow:auto;padding:4px 24px 120px;display:flex;flex-direction:column;align-items:center;gap:16px;position:relative}
   .doc-page{width:600px;max-width:100%;flex:none;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.08);transition:width .2s ease}
@@ -235,7 +218,26 @@
   .link{width:1px;height:16px;background:var(--border);margin:0 auto}
   .c-def{background:var(--ink)} .c-alert{background:var(--alert)} .c-ok{background:var(--success)} .c-danger{background:var(--danger)} .c-info{background:var(--info)} .c-mid{background:var(--mid)}
   /* ===== tab bar ===== */
-  .tabbar{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);z-index:30;display:flex;gap:8px;padding:8px;background:#fff;border-radius:999px;box-shadow:0 10px 15px rgba(0,0,0,.10),0 4px 6px rgba(0,0,0,.10)}
+  .tabdock{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);z-index:30;display:flex;gap:12px;align-items:stretch}
+  .tabbar{display:flex;align-items:center;gap:8px;padding:8px;background:#fff;border-radius:999px;box-shadow:0 10px 15px rgba(0,0,0,.10),0 4px 6px rgba(0,0,0,.10)}
+  .tsep{width:1px;height:32px;background:var(--s200);flex:none}
+  /* fases: seleção única, num trilho (segmented) */
+  .phs{display:flex;gap:2px;padding:2px;background:var(--s50);border-radius:999px;align-self:stretch}
+  .tp{width:116px;padding:6px 12px;border-radius:999px;display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--mid);position:relative;isolation:isolate}
+  .tp::before{content:'';position:absolute;inset:0;border-radius:999px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.10);transform:scale(.55);opacity:0;transition:transform .35s cubic-bezier(.3,1.5,.5,1),opacity .2s;z-index:-1}
+  .tp.on::before{transform:scale(1);opacity:1}
+  .tp:hover:not(:disabled):not(.on){color:var(--ink)}
+  .tp .n{width:24px;height:24px;border-radius:999px;display:grid;place-items:center;font:600 12px Inter;background:var(--s200);color:var(--mid)}
+  .tp .n .ms{font-size:15px}
+  .tp .l{font-size:13px;font-weight:500;white-space:nowrap}
+  .tp .l.s{display:none}
+  .tp.on .l{color:var(--ink);font-weight:600}
+  .tp.done .n{background:var(--success);color:#fff}
+  .tp.cur .n{background:var(--ink);color:#fff}
+  .tp.err .n{background:var(--danger);color:#fff}
+  .tp:disabled{opacity:.5}
+  .tp:disabled .n{background:transparent;border:1px dashed var(--s400)}
+  .tp[data-tip]:hover::after{content:attr(data-tip);position:absolute;left:50%;bottom:calc(100% + 14px);transform:translateX(-50%);background:var(--ink);color:#fff;font:500 12px/16px Inter;padding:6px 8px;border-radius:6px;white-space:nowrap;z-index:10;pointer-events:none}
   .tb{width:124px;padding:8px 16px;border-radius:999px;display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--s400);position:relative;isolation:isolate}
   .tb span.l{font-size:13px;font-weight:500;color:var(--mid)}
   .tb::before{content:'';position:absolute;inset:0;border-radius:999px;background:var(--s100);transform:scale(.55);opacity:0;transition:transform .35s cubic-bezier(.3,1.5,.5,1),opacity .2s;z-index:-1}
@@ -282,14 +284,19 @@
     .panel.min{display:none}
     .panel:not(.min){margin:0}
     .p-doc,.p-det,.p-act{flex:none}
-    .ptabs{overflow-x:auto;scrollbar-width:none}
-    .ptab{flex:none;width:auto}
-    .ptab .tx small{display:none}
-    .chev{display:none}
     .doc-scroll{padding:4px 12px 120px}
     .content{padding:8px 16px 120px}
-    .tabbar{left:16px;right:16px;transform:none;justify-content:space-between}
-    .tb{width:auto;flex:1;padding:8px 4px}
+    .tabdock{left:16px;right:16px;transform:none;gap:8px}
+    .tabbar{padding:6px;gap:4px}
+    .tabbar.main-bar{flex:1;min-width:0}
+    .phs{flex:3;min-width:0}
+    .tp{width:auto;flex:1;min-width:0;padding:6px 2px}
+    .tp .l{font-size:11px}
+    .tp .l.w{display:none} .tp .l.s{display:inline}
+    .tb{width:auto;flex:1;min-width:0;padding:8px 2px}
+    .tb span.l{font-size:11px}
+    .tb .ms{font-size:22px!important}
+    .tsep{height:28px}
     .note{left:16px;right:auto;top:auto;bottom:108px}
     .cg{padding:16px}
     .cg-grid{grid-template-columns:1fr}
@@ -352,7 +359,6 @@
             <button class="ib" id="dl" aria-label="Baixar"><span class="ms" aria-hidden="true">download</span></button>
             <button class="ib sq" data-toggle="doc" aria-label="Minimizar prévias"><span class="ms" aria-hidden="true">hide</span></button>
           </div>
-          <div class="ptabs" role="tablist" aria-label="Fases do faturamento" id="ptabs"></div>
           <div class="doc-scroll" id="doc"></div>
         </div>
 
@@ -374,11 +380,17 @@
   </div>
 </div>
 
-<nav class="tabbar" id="tabbar" aria-label="Painéis">
-  <button class="tb" data-toggle="doc"><span class="ms f" style="font-size:26px" aria-hidden="true">picture_as_pdf</span><span class="l">Prévias</span></button>
-  <button class="tb" data-toggle="det"><span class="ms f" style="font-size:26px" aria-hidden="true">description</span><span class="l">Detalhes</span></button>
-  <button class="tb" data-toggle="act"><span class="ms f" style="font-size:26px" aria-hidden="true">history</span><span class="l">Atividade</span></button>
-</nav>
+<div class="tabdock">
+  <nav class="tabbar main-bar" aria-label="Fase e painéis">
+    <div class="phs" id="phs" role="tablist" aria-label="Fases do faturamento"></div>
+    <span class="tsep" aria-hidden="true"></span>
+    <button class="tb" data-toggle="doc"><span class="ms f" style="font-size:26px" aria-hidden="true">picture_as_pdf</span><span class="l">Prévias</span></button>
+    <button class="tb" data-toggle="det"><span class="ms f" style="font-size:26px" aria-hidden="true">description</span><span class="l">Detalhes</span></button>
+  </nav>
+  <nav class="tabbar" aria-label="Atividade">
+    <button class="tb" data-toggle="act"><span class="ms f" style="font-size:26px" aria-hidden="true">history</span><span class="l">Atividade</span></button>
+  </nav>
+</div>
 
 <div class="ov" id="recalc" hidden>
   <div class="dlg" role="dialog" aria-modal="true" aria-labelledby="rcT">
@@ -542,18 +554,23 @@ function phaseSub(k){
   if(k===2) return st.err?'Falha no cálculo':'Prévia · '+brl(US.aPagar);
   return (st.btr||'')+' · '+brl(BTR.valor);
 }
+/* a seleção de fase fica na tab bar: escolher uma fase troca prévias e detalhes juntos */
+const PH_SHORT=['Concessionária','Estudo','A receber'];
 function renderPhaseTabs(){
-  const h=document.getElementById('ptabs');
-  h.innerHTML = PHASES.map((p,i)=>{
-    const ps=phaseState(p.k), on=S.sel===p.k;
+  const h=document.getElementById('phs'), st=STATES[S.st];
+  h.innerHTML = PHASES.map(p=>{
+    const ps=phaseState(p.k), on=st.phase>0&&S.sel===p.k;
     const n = ps==='done'?'<span class="ms" aria-hidden="true">check</span>':ps==='err'?'<span class="ms" aria-hidden="true">priority_high</span>':p.k;
-    const tip = ps==='locked' ? (p.k===2?'Disponível depois da leitura da fatura':p.k===3?'Disponível depois de faturar':'Disponível quando a fatura chegar') : '';
-    return (i?'<span class="ms chev" aria-hidden="true">chevron_right</span>':'') +
-      `<button class="ptab ${ps}${on?' on':''}" role="tab" aria-selected="${on}" ${ps==='locked'?'disabled':''} ${tip?`data-tip="${tip}"`:''} data-k="${p.k}">
-        <span class="n">${n}</span><span class="tx"><b>${p.t}</b><small>${esc(phaseSub(p.k))}</small></span></button>`;
+    const tip = ps==='locked' ? (p.k===2?'Disponível depois da leitura da fatura':p.k===3?'Disponível depois de faturar':'Disponível quando a fatura chegar') : `Fase ${p.k} · ${phaseSub(p.k)}`;
+    return `<button class="tp ${ps}${on?' on':''}" role="tab" aria-selected="${on}" aria-label="Fase ${p.k}: ${p.t}" ${ps==='locked'?'disabled':''} data-tip="${esc(tip)}" data-k="${p.k}">
+        <span class="n">${n}</span><span class="l w">${PH_SHORT[p.k-1]}</span><span class="l s">Fase ${p.k}</span></button>`;
   }).join('');
-  h.querySelectorAll('.ptab:not(:disabled)').forEach(b=>b.onclick=()=>{ S.sel=+b.dataset.k; renderPhase(); });
-  const on=h.querySelector('.ptab.on'); if(on) h.scrollLeft=on.offsetLeft-h.offsetLeft-16; // no mobile a barra rola: a fase ativa fica à vista
+  h.querySelectorAll('.tp:not(:disabled)').forEach(b=>b.onclick=()=>{
+    S.sel=+b.dataset.k;
+    // se prévias e detalhes estão fechados, a troca de fase não apareceria: abre os dois (no mobile, as prévias)
+    if(!S.open.doc&&!S.open.det){ if(isMob()){ for(const x in PN) S.open[x]=x==='doc'; } else { S.open.doc=S.open.det=true; } applyPanels(); }
+    renderPhase();
+  });
 }
 
 /* ===== documento de cada fase ===== */
