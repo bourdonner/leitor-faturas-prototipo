@@ -17,3 +17,12 @@ Todos os dados são fictícios (fatura Grupo A, A4 horária verde).
 - Tela navegável (faturamento-pendente.html): filtros com o Filter da lib, tabela com quantidade de UCs, seleção e ações em lote, Resumo do ticket com faturas em 5 por vez, importação em lote, registrar tentativa e histórico no componente Atividade do Leitor
 - Componentes (faturamento-pendente-componentes.html): cada componente do Figma em código, com o de → para do que muda no stg
 - Claro e escuro; dados fictícios. Figma: Tickets, página Faturamento Pendente
+
+## Contas a Faturar · detalhe do faturamento
+
+- Listagem simples (faturamento.html): uma linha por fatura, com fase (3 passos), status, valor e vencimento; filtros Fase, Status e Concessionária; sem modais nas células
+- Detalhe (faturamento-detalhe.html): header com cooperado, UC, concessionária, carteira, status atual e ações (principal = próximo passo; menu agrupado por fase, com fase não alcançada bloqueada)
+- Prévias no mesmo painel, uma aba por fase: Fatura concessionária → Estudo (prévia sem cobrança) → Fatura a receber (fatura COGECOM com boleto + fatura da concessionária). A aba da fase mais avançada abre ativa; fase não alcançada fica desabilitada
+- Detalhes acompanham a fase escolhida; Atividade junta os eventos das três fases
+- Estados de demonstração em `?estado=`: aguardando, lida, falha-calculo, estudo, emissao, aberto, atrasado, liquidado
+- Dados fictícios (mesma fatura do Leitor: Padaria Estrela do Sul, Luz do Vale, mar/2025)

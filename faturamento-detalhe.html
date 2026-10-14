@@ -1,0 +1,730 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Contas a Faturar · Detalhe</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&family=Geist:wght@500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300..600,0..1,0&family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@20..48,400,0..1,0&display=block" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1c1917; --ink2:#0c0a09; --ink3:#44403c; --mid:#78716c; --s400:#a8a29e; --border:#d6d3d1; --s200:#e7e5e4; --s100:#f5f5f4; --s50:#fafaf9; --white:#fff;
+    --brand:#71902f; --success:#65a30d; --alert:#f97316; --danger:#ef4444; --info:#2563eb;
+    --r:16px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{font-family:Inter,system-ui,sans-serif;color:var(--ink);background:var(--white);font-size:14px;-webkit-font-smoothing:antialiased;overflow:hidden}
+  button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;padding:0}
+  button:disabled{cursor:not-allowed}
+  .ms,.msr,.mss{font-weight:400;font-style:normal;line-height:1;display:inline-block;white-space:nowrap;-webkit-font-smoothing:antialiased;user-select:none;font-size:18px;letter-spacing:normal;text-transform:none}
+  .ms,.msr{font-family:"Material Symbols Rounded";font-variation-settings:"FILL" 0,"wght" 400,"GRAD" 0,"opsz" 20}
+  .mss{font-family:"Material Symbols Sharp";font-variation-settings:"FILL" 0,"wght" 400,"GRAD" 0,"opsz" 20;font-size:16px}
+  .f,.fill{font-variation-settings:"FILL" 1,"wght" 400,"GRAD" 0,"opsz" 24}
+  .app{display:grid;grid-template-columns:80px 1fr;height:100vh}
+  /* ===== Enershare Sidebar (48px) ===== */
+  .sidebar{position:fixed;left:16px;top:16px;bottom:24px;width:48px;display:flex;flex-direction:column;z-index:20}
+  .sidebar a{text-decoration:none}
+  .sidebar .sb-head,.sidebar .sb-foot{padding:8px}
+  .sidebar .sb-brand{width:32px;height:32px;border-radius:8px;background:var(--s50);display:grid;place-items:center}
+  .sidebar .sb-content{flex:1}
+  .sidebar .sb-sec{padding:8px;display:flex;flex-direction:column}
+  .sidebar .sb-item{width:32px;height:36px;border-radius:4px;display:grid;place-items:center;color:var(--ink)}
+  .sidebar .sb-item:hover,.sidebar .sb-item.on{background:var(--s100)}
+  .sidebar .sb-item.t .mss{color:var(--ink3)}
+  .sidebar .sb-av{width:32px;height:32px;border-radius:8px;background:linear-gradient(140deg,#c7d9a4,#71902f);display:grid;place-items:center;color:#fff;font:600 12px Inter}
+  .sb-tip{position:fixed;left:72px;background:var(--ink);color:#fff;font-size:12px;line-height:16px;padding:6px 8px;border-radius:6px;pointer-events:none;opacity:0;transition:opacity .12s;z-index:60;white-space:nowrap}
+  /* ===== topo ===== */
+  .main{display:flex;flex-direction:column;gap:12px;min-width:0;min-height:0;padding:16px 24px 24px 0}
+  .topbar{height:52px;padding:12px;display:flex;align-items:center;flex:none}
+  .crumb{display:flex;align-items:center;gap:8px;min-width:0}
+  .crumb .rp{display:flex;align-items:center;gap:8px;padding-right:8px}
+  .ibtn{width:28px;height:28px;border-radius:6px;display:grid;place-items:center;color:var(--ink2)}
+  .ibtn:hover{background:var(--s100)}
+  .vsep{width:1px;height:16px;background:var(--border)}
+  .crumb a,.crumb span.cur{font:500 14px/21px Poppins,sans-serif;text-decoration:none;white-space:nowrap}
+  .crumb a{color:var(--mid)} .crumb a:hover{color:var(--ink)}
+  .crumb .cur{color:var(--brand);overflow:hidden;text-overflow:ellipsis}
+  .sheet{flex:1;min-height:0;background:var(--white);border-radius:24px;padding:32px 56px;display:flex;flex-direction:column;box-shadow:0 0 40px rgba(0,0,0,.04)}
+  @media (max-width:1279px){ .sheet{padding:28px 24px} }
+  /* ===== header ===== */
+  .head{display:flex;align-items:flex-start;gap:16px}
+  .head .tc{flex:1;min-width:0}
+  .head h1{font:600 24px/32px Poppins,Inter,sans-serif;color:var(--brand);margin:0 0 12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .chips{display:flex;gap:8px;flex-wrap:wrap}
+  .chip{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 12px;border-radius:999px;background:var(--s100);font-weight:600;font-size:12px;white-space:nowrap}
+  .chip .ms{font-size:16px;color:var(--mid)}
+  .chip.st .dot{width:8px;height:8px;border-radius:999px;background:var(--mid)}
+  .chip.st.ok .dot{background:var(--success)} .chip.st.alert .dot{background:var(--alert)} .chip.st.danger .dot{background:var(--danger)} .chip.st.info .dot{background:var(--info)}
+  .chip.st.danger{background:#fef2f2;color:#b91c1c}
+  .actions{display:flex;gap:8px;flex:none;position:relative}
+  .btn{height:36px;padding:0 16px;border-radius:8px;font-weight:500;display:inline-flex;align-items:center;gap:8px;white-space:nowrap}
+  .btn .ms{font-size:18px}
+  .btn.primary{background:var(--ink);color:#fff}
+  .btn.primary:hover{background:#292524}
+  .btn.outline{border:1px solid var(--border);background:#fff}
+  .btn.outline:hover{background:var(--s50)}
+  .btn:disabled{opacity:.4}
+  /* menu de ações (Dropdown Menu da lib) */
+  .menu{position:absolute;right:0;top:calc(100% + 6px);width:300px;background:#fff;border:1px solid var(--s100);border-radius:8px;box-shadow:0 10px 15px -3px rgba(0,0,0,.10),0 4px 6px -4px rgba(0,0,0,.10);padding:4px;z-index:50;max-height:calc(100vh - 160px);overflow:auto}
+  .menu[hidden]{display:none}
+  .menu .grp{padding:8px 8px 4px;font:600 12px/16px Inter;color:var(--mid);display:flex;align-items:center;gap:6px}
+  .menu .grp .lk{margin-left:auto;font-weight:500;font-size:11px;color:var(--s400);display:inline-flex;align-items:center;gap:2px}
+  .menu .grp .lk .ms{font-size:13px}
+  .menu .it{width:100%;display:flex;align-items:center;gap:8px;height:34px;padding:0 8px;border-radius:6px;text-align:left}
+  .menu .it .ms{font-size:16px;color:var(--ink3)}
+  .menu .it:hover:not(:disabled){background:var(--s100)}
+  .menu .it:disabled{color:var(--s400)} .menu .it:disabled .ms{color:var(--s400)}
+  .menu .it.danger{color:#dc2626} .menu .it.danger .ms{color:#dc2626}
+  .menu .it.danger:disabled{color:#fca5a5} .menu .it.danger:disabled .ms{color:#fca5a5}
+  .menu .sep{height:1px;background:var(--s100);margin:4px -4px}
+  /* ===== colunas ===== */
+  .cols{flex:1;min-height:0;display:flex;gap:24px;margin-top:24px;position:relative}
+  .panel{background:var(--s100);border-radius:var(--r);display:flex;flex-direction:column;min-width:0;min-height:0;transition:flex-basis .35s ease,opacity .25s ease,margin .35s ease,transform .35s ease;transform-origin:50% 100%}
+  .p-doc{flex:0 1 700px;min-width:420px}
+  .p-det{flex:1 1 0;min-width:520px;container-type:inline-size}
+  .cols.no-doc .p-det,.cols.no-det .p-doc{flex:1 1 0}
+  .p-act{flex:0 0 284px}
+  .panel.min{flex:0 0 0!important;min-width:0!important;opacity:0;margin-left:-24px;overflow:hidden;pointer-events:none;transform:translateY(24px) scale(.96)}
+  .p-doc.min{margin-left:0;margin-right:-24px}
+  .bar{display:flex;align-items:center;gap:8px;padding:16px;flex:none}
+  .bar .t{font-weight:500;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ph{width:20px;height:20px;border-radius:6px;background:#292524;color:#fff;display:grid;place-items:center;flex:none}
+  .ph .ms{font-size:12px!important;font-variation-settings:"FILL" 1,"wght" 400,"GRAD" 0,"opsz" 24}
+  .ib{width:28px;height:28px;border-radius:6px;display:grid;place-items:center;color:var(--ink);flex:none}
+  a.ib{text-decoration:none}
+  .ib:hover{background:var(--s200)}
+  .ib.sq{background:var(--s50)}
+  .ib .ms{font-size:18px}
+  /* ===== abas das prévias (fases) ===== */
+  .ptabs{display:flex;gap:4px;padding:0 16px 12px;flex:none}
+  .ptab{flex:1;min-width:0;display:flex;align-items:center;gap:8px;height:44px;padding:0 12px;border-radius:8px;color:var(--mid);text-align:left;position:relative}
+  .ptab .n{width:20px;height:20px;border-radius:999px;display:grid;place-items:center;font:600 11px Inter;background:var(--s200);color:var(--mid);flex:none}
+  .ptab .n .ms{font-size:14px}
+  .ptab .tx{display:flex;flex-direction:column;min-width:0;line-height:1.25}
+  .ptab .tx b{font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ptab .tx small{font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ptab:hover:not(:disabled){background:var(--s50)}
+  .ptab.on{background:#fff;color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.05)}
+  .ptab.done .n{background:var(--success);color:#fff}
+  .ptab.cur .n{background:var(--ink);color:#fff}
+  .ptab.err .n{background:var(--danger);color:#fff}
+  .ptab:disabled{opacity:.55}
+  .ptab:disabled .n{background:transparent;border:1px dashed var(--s400)}
+  .ptab[data-tip]:disabled:hover::after{content:attr(data-tip);position:absolute;left:12px;top:calc(100% + 4px);background:var(--ink);color:#fff;font:500 12px/16px Inter;padding:6px 8px;border-radius:6px;white-space:nowrap;z-index:10}
+  .chev{color:var(--s400);align-self:center;flex:none}
+  /* ===== documento ===== */
+  .doc-scroll{flex:1;min-height:0;overflow:auto;padding:4px 24px 120px;display:flex;flex-direction:column;align-items:center;gap:16px;position:relative}
+  .doc-page{width:600px;max-width:100%;flex:none;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.08);transition:width .2s ease}
+  .doc-page img{width:100%;display:block}
+  .doc-lbl{align-self:stretch;max-width:600px;margin:0 auto;width:100%;display:flex;align-items:center;gap:6px;font-size:12px;color:var(--mid);font-weight:500}
+  .doc-lbl .ms{font-size:16px}
+  .doc-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center;color:var(--mid);padding:24px}
+  .doc-empty .ms{font-size:40px;color:var(--s400)}
+  .doc-empty b{font-size:16px;color:var(--ink)}
+  .doc-empty.err .ms{color:var(--danger)}
+  .preview-tag{position:sticky;bottom:0;margin-top:-8px;align-self:center;display:inline-flex;align-items:center;gap:6px;background:#facc15;color:#422006;font-weight:600;font-size:12px;padding:6px 12px;border-radius:999px;box-shadow:0 4px 10px rgba(0,0,0,.08);z-index:2}
+  .preview-tag .ms{font-size:16px}
+  /* fatura COGECOM (prévia e oficial) */
+  .cg{padding:28px 28px 24px;font-size:11px;color:#1c1917;font-family:Inter,sans-serif;position:relative;overflow:hidden}
+  .cg .wm{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;z-index:1}
+  .cg .wm span{transform:rotate(-28deg);font:800 64px/1 Poppins,sans-serif;color:rgba(249,115,22,.16);letter-spacing:4px;white-space:nowrap}
+  .cg-top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:16px}
+  .cg-logo{font:700 30px/1 Poppins,sans-serif;letter-spacing:-1px}
+  .cg-logo small{display:block;text-align:right;font:400 11px Inter;letter-spacing:0;margin-top:2px}
+  .cg-co{text-align:right;font-size:10px;line-height:1.5;color:#44403c}
+  .cg-co b{font-size:11px;color:#1c1917}
+  .cg-grid{display:grid;grid-template-columns:1fr 160px;gap:10px}
+  .cg-box{background:#f5f5f4;border-radius:8px;padding:12px}
+  .cg-box .k{font-size:9px;text-transform:uppercase;color:#57534e;letter-spacing:.2px}
+  .cg-box .v{font-weight:700;font-size:11px}
+  .cg-row{display:flex;gap:16px;flex-wrap:wrap;margin-top:8px}
+  .cg-pay{background:#1c1917;color:#fff;border-radius:8px;display:flex;flex-direction:column;overflow:hidden}
+  .cg-pay .in{padding:12px;flex:1}
+  .cg-pay .k{font-size:10px;font-weight:700}
+  .cg-pay .big{font:400 13px Inter} .cg-pay .big b{font-size:20px;font-weight:700}
+  .cg-pay .dt{display:flex;justify-content:space-between;font-size:9px;margin-top:10px;opacity:.9}
+  .cg-pay .dt b{font-weight:700}
+  .cg-pay .promo{background:#16a34a;padding:8px 12px;font-size:10px}
+  .cg-disc{background:#dcfce7;border-radius:8px;padding:12px;display:flex;flex-direction:column;gap:10px}
+  .cg-disc .k{font-size:9px;text-transform:uppercase;color:#166534}
+  .cg-disc .v{font:700 15px Inter;color:#166534}
+  .cg-chart{display:flex;align-items:flex-end;gap:5px;height:84px;margin-top:10px;border-bottom:1px solid #d6d3d1}
+  .cg-chart i{flex:1;display:flex;gap:2px;align-items:flex-end;height:100%}
+  .cg-chart i span{flex:1;background:#d6d3d1;border-radius:2px 2px 0 0}
+  .cg-chart i span+span{background:#1c1917}
+  .cg-x{display:flex;gap:5px;font-size:8px;color:#78716c;margin-top:4px}
+  .cg-x span{flex:1;text-align:center}
+  .cg-leg{display:flex;gap:12px;font-size:9px;color:#57534e;margin-top:8px}
+  .cg-leg b{color:#16a34a}
+  .cg-kv{display:grid;grid-template-columns:1fr 1fr;gap:10px 16px}
+  .cg-bar{margin-top:18px;display:flex;flex-direction:column;align-items:center;gap:6px}
+  .cg-bar .bc{height:44px;width:100%;background:repeating-linear-gradient(90deg,#1c1917 0 2px,#fff 2px 3px,#1c1917 3px 4px,#fff 4px 7px,#1c1917 7px 10px,#fff 10px 11px)}
+  .cg-bar .ld{font:500 10px/1 "Courier New",monospace;letter-spacing:.5px}
+  .cg-foot{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin-top:16px;font-size:9px;color:#44403c}
+  .cg-foot b{color:#1c1917}
+  .cg-pend{margin-top:18px;border:1px dashed #a8a29e;border-radius:8px;padding:14px;text-align:center;color:#57534e;font-size:11px}
+  /* ===== detalhes ===== */
+  .det-h{display:flex;align-items:center;gap:8px;padding:16px 16px 4px;flex:none}
+  .det-h .t{font-weight:500;flex:1;min-width:0}
+  .det-scroll{flex:1;min-height:0;overflow:auto}
+  .content{padding:8px 24px 120px;display:flex;flex-direction:column;gap:16px}
+  .sec-t{display:flex;align-items:center;gap:8px;font:600 14px Poppins,Inter,sans-serif;color:var(--brand);margin-top:8px}
+  .sec-t .sp{flex:1}
+  .sec-t small{font:500 12px Inter;color:var(--mid)}
+  .grid{display:grid;gap:12px;grid-template-columns:minmax(0,1fr)}
+  @container (min-width:560px){ .grid{grid-template-columns:repeat(2,minmax(0,1fr))} }
+  @container (min-width:860px){ .grid{grid-template-columns:repeat(3,minmax(0,1fr))} }
+  @container (min-width:1160px){ .grid{grid-template-columns:repeat(4,minmax(0,1fr))} }
+  .full{grid-column:1/-1}
+  .card{background:var(--s50);border-radius:8px;padding:12px;min-width:0;display:flex;flex-direction:column}
+  .card .ct{display:flex;align-items:center;gap:6px;font-weight:700;min-height:22px;line-height:1.35}
+  .card .ct .tag{margin-left:auto}
+  .card .row{display:flex;align-items:center;gap:8px;margin-top:auto;padding-top:6px}
+  .card .val{flex:1;display:flex;align-items:center;gap:6px;min-width:0;height:40px;padding:0 12px;border-radius:6px;background:rgba(245,245,244,.6);color:var(--ink2)}
+  .card .v{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;font-variant-numeric:tabular-nums}
+  .card .u{color:var(--mid);white-space:nowrap}
+  .card .cp{color:var(--mid);width:40px;height:40px;border-radius:8px;display:grid;place-items:center;flex:none}
+  .card .cp:hover{background:var(--s200);color:var(--ink)}
+  .card.hl .val{background:#f7fee7}
+  .card.hl .v{font-weight:600;color:#3f6212}
+  .card.warn .val{background:#fff7ed}
+  .card.danger .val{background:#fef2f2;color:#b91c1c}
+  .tag{display:inline-flex;align-items:center;gap:4px;height:20px;padding:0 8px;border-radius:999px;font:600 11px Inter;background:var(--s200);color:var(--ink3);white-space:nowrap}
+  .tag.ok{background:#ecfccb;color:#3f6212} .tag.alert{background:#ffedd5;color:#c2410c} .tag.danger{background:#fee2e2;color:#b91c1c} .tag.info{background:#dbeafe;color:#1d4ed8} .tag.dark{background:var(--ink);color:#fff}
+  /* tabelas simples (itens, histórico, bandeiras, comunicações) */
+  .tbl{background:#fff;border:1px solid var(--border);border-radius:12px;overflow:auto}
+  .tbl table{border-collapse:separate;border-spacing:0;width:100%;font-size:13px;font-variant-numeric:tabular-nums}
+  .tbl th,.tbl td{padding:0 12px;height:40px;text-align:right;white-space:nowrap;border-bottom:1px solid var(--s200)}
+  .tbl th{background:var(--s50);color:var(--mid);font-weight:500;font-size:12px;position:sticky;top:0}
+  .tbl th:first-child,.tbl td:first-child{text-align:left}
+  .tbl td.l,.tbl th.l{text-align:left}
+  .tbl tbody tr:last-child td{border-bottom:0}
+  .tbl tfoot td{font-weight:600;background:var(--s50);border-bottom:0;border-top:1px solid var(--s200)}
+  .tbl .neg{color:#3f6212}
+  .tbl .cu{color:var(--mid);font-size:12px}
+  /* aviso e comparação */
+  .note-box{display:flex;gap:10px;align-items:flex-start;background:#fff;border-radius:12px;padding:14px;border:1px solid var(--s200)}
+  .note-box .ms{font-size:20px;color:var(--info)}
+  .note-box.err{border-color:#fecaca;background:#fef2f2} .note-box.err .ms{color:var(--danger)}
+  .note-box.warn{border-color:#fed7aa;background:#fff7ed} .note-box.warn .ms{color:var(--alert)}
+  .note-box b{display:block;margin-bottom:2px}
+  .note-box p{margin:0;color:var(--ink3);line-height:1.5}
+  .note-box .btn{margin-top:10px;height:32px;padding:0 12px}
+  .cmp{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-variant-numeric:tabular-nums}
+  .cmp .o{color:var(--mid);text-decoration:line-through;padding:2px 8px;border-radius:6px;background:var(--s100)}
+  .cmp .n{font-weight:600;padding:2px 8px;border-radius:6px;background:#f7fee7}
+  .linha{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--s200);border-radius:8px;padding:0 0 0 12px;height:44px}
+  .linha code{flex:1;min-width:0;font:500 13px/1 "Courier New",monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  /* ===== atividade ===== */
+  .act-list{flex:1;overflow:auto;padding:8px 16px 120px}
+  .ev{background:var(--white);border-radius:12px;padding:14px;position:relative}
+  .ev .i{width:20px;height:20px;border-radius:6px;display:grid;place-items:center;color:#fff}
+  .ev .i .ms{font-size:13px}
+  .ev .n{margin-top:12px;font-weight:500}
+  .ev .d{font-size:11px;color:var(--mid);margin-top:4px}
+  .ev .ph2{position:absolute;top:14px;right:40px;font-size:11px;color:var(--mid)}
+  .ev .who{position:absolute;top:12px;right:12px;width:20px;height:20px;border-radius:999px;background:linear-gradient(140deg,#c7d9a4,#71902f);color:#fff;font:600 9px Inter;display:grid;place-items:center}
+  .ev .who.sys{background:var(--ink)}
+  .ev .who::after{content:attr(data-name);position:absolute;right:0;top:calc(100% + 6px);background:var(--ink);color:#fff;font:500 12px Inter;padding:4px 8px;border-radius:6px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .15s;z-index:5}
+  .ev .who:hover::after{opacity:1}
+  .ev.new{animation:pop .5s ease}
+  @keyframes pop{from{transform:translateY(-6px);opacity:0}to{transform:none;opacity:1}}
+  .link{width:1px;height:16px;background:var(--border);margin:0 auto}
+  .c-def{background:var(--ink)} .c-alert{background:var(--alert)} .c-ok{background:var(--success)} .c-danger{background:var(--danger)} .c-info{background:var(--info)} .c-mid{background:var(--mid)}
+  /* ===== tab bar ===== */
+  .tabbar{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);z-index:30;display:flex;gap:8px;padding:8px;background:#fff;border-radius:999px;box-shadow:0 10px 15px rgba(0,0,0,.10),0 4px 6px rgba(0,0,0,.10)}
+  .tb{width:124px;padding:8px 16px;border-radius:999px;display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--s400);position:relative;isolation:isolate}
+  .tb span.l{font-size:13px;font-weight:500;color:var(--mid)}
+  .tb::before{content:'';position:absolute;inset:0;border-radius:999px;background:var(--s100);transform:scale(.55);opacity:0;transition:transform .35s cubic-bezier(.3,1.5,.5,1),opacity .2s;z-index:-1}
+  .tb.on{color:var(--ink)} .tb.on span.l{color:var(--ink);font-weight:600}
+  .tb.on::before{transform:scale(1);opacity:1}
+  .cols-empty{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center;color:var(--mid);background:var(--s50);border-radius:var(--r)}
+  .cols-empty[hidden]{display:none}
+  .cols-empty .ms{font-size:40px;color:var(--s400)}
+  .cols-empty b{font-size:16px;color:var(--ink)}
+  /* ===== modal (recálculo) ===== */
+  .ov{position:fixed;inset:0;z-index:70;background:rgba(12,10,9,.4);display:grid;place-items:center;padding:24px}
+  .ov[hidden]{display:none}
+  .dlg{width:100%;max-width:520px;background:#fff;border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:16px;box-shadow:0 20px 40px rgba(0,0,0,.2)}
+  .dlg h2{margin:0;font:600 18px Poppins,sans-serif;color:var(--brand)}
+  .dlg p{margin:4px 0 0;color:var(--mid)}
+  .opt{display:flex;gap:12px;align-items:center;text-align:left;width:100%;padding:12px;border:1px solid var(--s200);border-radius:8px}
+  .opt:hover{background:var(--s50)}
+  .opt.on{border-color:var(--ink);background:var(--s50)}
+  .opt .oi{width:32px;height:32px;border-radius:999px;background:var(--s100);display:grid;place-items:center;flex:none}
+  .opt.on .oi{background:var(--ink);color:#fff}
+  .opt b{display:block;font-weight:600}
+  .opt small{color:var(--mid)}
+  .dlg .ft{display:flex;justify-content:flex-end;gap:8px}
+  /* ===== seletor de estado (demo) ===== */
+  .note{position:fixed;right:16px;top:12px;font-size:11px;color:var(--mid);background:var(--white);border:1px solid var(--s200);padding:2px 4px 2px 10px;border-radius:999px;z-index:40;display:flex;align-items:center;gap:6px}
+  .note select{font:inherit;font-weight:600;color:var(--ink);border:0;background:var(--s100);border-radius:999px;padding:3px 6px}
+  .note .dlk{width:26px;height:26px;border-radius:999px;display:grid;place-items:center;color:var(--ink);text-decoration:none}
+  .note .dlk:hover{background:var(--s100)}
+  .note .dlk .ms{font-size:16px}
+  /* ===== mobile (< 768): um painel por vez ===== */
+  @media (max-width:767px){
+    body{overflow:auto}
+    .app{display:block;height:auto}
+    .sidebar,.topbar,.sb-tip{display:none}
+    .main{padding:0}
+    .sheet{border-radius:0;padding:16px;box-shadow:none;min-height:100vh}
+    .head{flex-direction:column;gap:12px}
+    .head h1{font-size:18px;line-height:26px;white-space:normal}
+    .actions{width:100%}
+    .actions .btn.primary{flex:1;justify-content:center}
+    .menu{width:min(300px,calc(100vw - 32px))}
+    .cols{display:block;margin-top:16px}
+    .panel{min-width:0!important;width:100%;min-height:70vh}
+    .panel.min{display:none}
+    .panel:not(.min){margin:0}
+    .p-doc,.p-det,.p-act{flex:none}
+    .ptabs{overflow-x:auto;scrollbar-width:none}
+    .ptab{flex:none;width:auto}
+    .ptab .tx small{display:none}
+    .chev{display:none}
+    .doc-scroll{padding:4px 12px 120px}
+    .content{padding:8px 16px 120px}
+    .tabbar{left:16px;right:16px;transform:none;justify-content:space-between}
+    .tb{width:auto;flex:1;padding:8px 4px}
+    .note{left:16px;right:auto;top:auto;bottom:108px}
+    .cg{padding:16px}
+    .cg-grid{grid-template-columns:1fr}
+    .ib.sq[data-toggle]{display:none}
+  }
+  @media (prefers-reduced-motion:reduce){ .panel,.tb::before{transition:none} .ev.new{animation:none} }
+</style>
+<script src="assets/toast.js"></script>
+</head>
+<body>
+<nav class="sidebar" aria-label="Menu principal">
+  <div class="sb-head"><a class="sb-brand" href="faturamento.html" aria-label="Enershare"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M7.98755 0.0722733C8.21864 1.12089 8.45227 2.15362 8.71118 2.93555C8.84282 3.33304 8.98251 3.67018 9.13403 3.91309C9.28312 4.15207 9.45604 4.3197 9.66138 4.3379C9.79849 4.35053 9.93839 4.29404 10.0784 4.15919C10.2173 4.02523 10.3619 3.80915 10.5129 3.49024C10.8077 2.86795 11.1355 1.83339 11.4983 0.188484L13.6077 2.29786C13.0275 3.20033 12.4647 4.09355 12.0959 4.82813C11.9084 5.20176 11.769 5.5387 11.7043 5.81739C11.6408 6.0915 11.6442 6.33196 11.7747 6.49024C11.8626 6.59711 12.0018 6.6565 12.1965 6.66016C12.39 6.66372 12.6455 6.61265 12.9788 6.49317C13.6291 6.26001 14.5955 5.75727 16.0198 4.84571V7.88184C14.9762 8.10809 13.95 8.34044 13.1731 8.59864C12.7781 8.72994 12.4429 8.86933 12.2014 9.02052C11.9639 9.16925 11.7972 9.34187 11.7786 9.54591L11.7815 9.58497C11.7805 9.71008 11.8344 9.83758 11.9563 9.96485C12.0895 10.1039 12.3043 10.2484 12.6223 10.3994C13.243 10.6941 14.2759 11.022 15.9182 11.3848L13.8176 13.4893C12.9204 12.9093 12.0304 12.3478 11.2981 11.9805C10.9255 11.7936 10.5895 11.6551 10.3118 11.5908C10.0386 11.5276 9.79876 11.5307 9.64185 11.6611C9.5352 11.7491 9.47647 11.8883 9.4729 12.083C9.46942 12.2766 9.52015 12.5323 9.63989 12.8662C9.87412 13.5193 10.3795 14.4913 11.2971 15.9258H7.99634C7.76523 14.8544 7.53205 13.8 7.27563 13.0107C7.14529 12.6095 7.00759 12.2719 6.85864 12.0342C6.7128 11.8014 6.54092 11.6401 6.33521 11.6445C6.12824 11.649 5.95036 11.8192 5.7981 12.0606C5.64255 12.3071 5.49751 12.6525 5.36353 13.0566C5.10702 13.8305 4.88579 14.8357 4.70337 15.8154L2.40942 13.5215C3.00475 12.599 3.58617 11.6862 3.96313 10.9453C4.15462 10.5689 4.29596 10.2324 4.35864 9.95899C4.41228 9.72483 4.41312 9.51474 4.31274 9.3711L4.26294 9.31348C4.11288 9.1699 3.8672 9.16356 3.58911 9.22559C3.30512 9.28894 2.95975 9.43029 2.58032 9.62012C1.85394 9.98358 0.989455 10.5341 0.170166 11.0947V7.89259C1.24377 7.65663 2.29999 7.423 3.09009 7.16602C3.49168 7.0354 3.82985 6.89749 4.06763 6.74805C4.3007 6.60157 4.46129 6.42789 4.4563 6.22071C4.45158 6.01393 4.28194 5.83634 4.04126 5.68458C3.79523 5.52946 3.45036 5.38558 3.04712 5.25196C2.27515 4.99615 1.2727 4.77478 0.295166 4.58985L2.57544 2.31153C3.49287 2.90182 4.39835 3.47606 5.13306 3.84864C5.50652 4.03801 5.84104 4.17745 6.11255 4.23927C6.37836 4.29975 6.61174 4.29182 6.75317 4.14454C6.8961 3.9969 6.9027 3.75389 6.84106 3.47852C6.778 3.19692 6.63814 2.85313 6.44946 2.47559C6.08821 1.75274 5.53959 0.891472 4.98169 0.0722733H7.98755Z" fill="#71902F"/></svg></a></div>
+  <div class="sb-content">
+    <div class="sb-sec">
+      <a class="sb-item on" href="faturamento.html" data-tip="Consumidores" aria-current="page"><span class="mss fill">badge</span></a>
+      <a class="sb-item" href="#" data-tip="Financeiro"><span class="mss fill">account_balance</span></a>
+      <a class="sb-item" href="index.html" data-tip="Leitor de Faturas"><span class="mss fill">electric_meter</span></a>
+      <a class="sb-item" href="#" data-tip="Usinas"><span class="mss fill">wind_power</span></a>
+      <a class="sb-item t" href="#" data-tip="Pré-cadastro"><span class="mss fill">fact_check</span></a>
+    </div>
+  </div>
+  <div class="sb-foot"><div class="sb-av" aria-label="Você">EM</div></div>
+</nav>
+<div class="sb-tip" id="sbTip"></div>
+
+<div class="app">
+  <div aria-hidden="true"></div>
+  <div class="main">
+    <div class="topbar"><nav class="crumb" aria-label="Você está em"><span class="rp"><button class="ibtn" aria-label="Recolher menu"><span class="msr">vertical_split</span></button><span class="vsep"></span></span><a href="faturamento.html">Contas a Faturar</a><span class="mss" style="color:#0c0a09" aria-hidden="true">chevron_right</span><span class="cur">Padaria Estrela do Sul Ltda · Mar/2025</span></nav></div>
+
+    <section class="sheet">
+      <div class="head">
+        <div class="tc">
+          <h1>Padaria Estrela do Sul Ltda</h1>
+          <div class="chips">
+            <span class="chip"><span class="ms f" aria-hidden="true">calendar_today</span>Março de 2025</span>
+            <span class="chip" title="Unidade consumidora"><span class="ms f" aria-hidden="true">electrical_services</span>UC 3014567890</span>
+            <span class="chip" title="Concessionária"><span class="ms f" aria-hidden="true">electric_meter</span>Luz do Vale</span>
+            <span class="chip" title="Carteira"><span class="ms f" aria-hidden="true">folder_shared</span>Carteira Comercial MG</span>
+            <span class="chip st" id="stChip"></span>
+          </div>
+        </div>
+        <div class="actions" id="actions"></div>
+      </div>
+
+      <div class="cols" id="cols">
+        <div class="cols-empty" id="colsEmpty" hidden>
+          <span class="ms" aria-hidden="true">view_column</span>
+          <b>Nenhum painel aberto</b>
+          <span>Abra um painel pela barra abaixo.</span>
+          <button class="btn primary" id="colsReset">Voltar ao padrão</button>
+        </div>
+
+        <!-- Prévias: as três fases no mesmo lugar -->
+        <div class="panel p-doc" id="pDoc">
+          <div class="bar">
+            <span class="ph"><span class="ms" aria-hidden="true">picture_as_pdf</span></span><span class="t" id="docT">Prévias</span>
+            <button class="ib" id="zOut" aria-label="Diminuir zoom"><span class="ms" aria-hidden="true">zoom_out</span></button>
+            <button class="ib" id="zIn" aria-label="Aumentar zoom"><span class="ms" aria-hidden="true">zoom_in</span></button>
+            <button class="ib" id="dl" aria-label="Baixar"><span class="ms" aria-hidden="true">download</span></button>
+            <button class="ib sq" data-toggle="doc" aria-label="Minimizar prévias"><span class="ms" aria-hidden="true">hide</span></button>
+          </div>
+          <div class="ptabs" role="tablist" aria-label="Fases do faturamento" id="ptabs"></div>
+          <div class="doc-scroll" id="doc"></div>
+        </div>
+
+        <!-- Detalhes da fase escolhida -->
+        <div class="panel p-det" id="pDet">
+          <div class="det-h"><span class="ph"><span class="ms" aria-hidden="true">description</span></span><span class="t" id="detT">Detalhes</span>
+            <button class="ib sq" data-toggle="det" aria-label="Minimizar detalhes"><span class="ms" aria-hidden="true">hide</span></button></div>
+          <div class="det-scroll"><div class="content" id="content"></div></div>
+        </div>
+
+        <!-- Atividade -->
+        <div class="panel p-act" id="pAct">
+          <div class="bar"><span class="ph"><span class="ms" aria-hidden="true">history</span></span><span class="t">Atividade</span>
+            <button class="ib sq" data-toggle="act" aria-label="Minimizar atividade"><span class="ms" aria-hidden="true">hide</span></button></div>
+          <div class="act-list" id="acts"></div>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<nav class="tabbar" id="tabbar" aria-label="Painéis">
+  <button class="tb" data-toggle="doc"><span class="ms f" style="font-size:26px" aria-hidden="true">picture_as_pdf</span><span class="l">Prévias</span></button>
+  <button class="tb" data-toggle="det"><span class="ms f" style="font-size:26px" aria-hidden="true">description</span><span class="l">Detalhes</span></button>
+  <button class="tb" data-toggle="act"><span class="ms f" style="font-size:26px" aria-hidden="true">history</span><span class="l">Atividade</span></button>
+</nav>
+
+<div class="ov" id="recalc" hidden>
+  <div class="dlg" role="dialog" aria-modal="true" aria-labelledby="rcT">
+    <div><h2 id="rcT">Recalcular faturamento</h2><p>Escolha o tipo de recálculo.</p></div>
+    <div id="rcOpts" style="display:flex;flex-direction:column;gap:8px"></div>
+    <div class="ft"><button class="btn outline" id="rcNo">Cancelar</button><button class="btn primary" id="rcGo">Continuar</button></div>
+  </div>
+</div>
+
+<div class="note"><label for="demo">Estado</label><select id="demo">
+  <option value="aguardando">0 · Aguardando fatura</option>
+  <option value="lida">1 · Leitura concluída</option>
+  <option value="falha-calculo">2 · Falha no cálculo</option>
+  <option value="estudo">2 · Estudo calculado</option>
+  <option value="emissao">3 · Emissão pendente</option>
+  <option value="aberto">3 · Aberto</option>
+  <option value="atrasado">3 · Atrasado</option>
+  <option value="liquidado">3 · Liquidado</option>
+</select>
+  <a class="dlk" href="faturamento.html" aria-label="Voltar à listagem" title="Listagem"><span class="ms" aria-hidden="true">list</span></a>
+  <a class="dlk" href="https://github.com/bourdonner/leitor-faturas-prototipo" target="_blank" rel="noopener" aria-label="Código no GitHub" title="Código no GitHub"><svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg></a>
+</div>
+
+<script>
+/* ===== dados fictícios (mesma fatura do Leitor: Padaria Estrela do Sul, Luz do Vale, mar/2025) ===== */
+const brl = n => 'R$ ' + n.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+const num = (n,d=0) => n.toLocaleString('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d});
+const esc = s => String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+const UB = { // fase 1 · fatura concessionária (lida + campos da COGECOM)
+  valor:4440.13, consumo:6500, consP:540, consFP:5960, injFP:4100, injP:0, injExt:0, valorInj:1837.46,
+  saldo:1250, saldoExp:0, prodTotal:0, prodLiq:0, media:6403, mediana:6365,
+  icms:18, pis:0.73, cofins:3.38,
+  leituraAnt:'07/02/2025', leitura:'11/03/2025', dias:32, proxima:'08/04/2025', emissao:'12/03/2025', venc:'25/03/2025',
+  nf:'247971120', subgrupo:'A4', rede:'Trifásico', modalidade:'Horária Verde', classe:'Comercial',
+  itens:[
+    ['Consumo Ponta TUSD','kWh',540,1.48213,800.35],['Consumo Ponta TE','kWh',540,0.51237,276.68],
+    ['Consumo Fora Ponta TUSD','kWh',5960,0.11845,705.96],['Consumo Fora Ponta TE','kWh',5960,0.32971,1965.07],
+    ['Energia Injetada FP TUSD','kWh',4100,0.11845,-485.65],['Energia Injetada FP TE','kWh',4100,0.32971,-1351.81],
+    ['Demanda','kW',75,32.415,2431.13],['Contrib. Ilum. Pública Municipal','',null,null,98.40]],
+  hist:[['Mar/25',6500,32],['Fev/25',6120,28],['Jan/25',6340,30],['Dez/24',7010,33],['Nov/24',6880,28],['Out/24',6450,31],['Set/24',6230,33],['Ago/24',6050,29],['Jul/24',5980,30],['Jun/24',6210,33],['Mai/24',6400,29],['Abr/24',6620,29]],
+  medicoes:[['Consumo Ponta','kWh',12480,13020,540],['Consumo Fora Ponta','kWh',88200,94160,5960],['Demanda','kW',null,68,68],['Energia Injetada Fora Ponta','kWh',51300,55400,4100]]
+};
+const US = { // fase 2 · estudo
+  credKwh:4100, kwhConc:0.54, credBrl:2214.00, desconto:15, descKwh:0.081, descEnergia:332.10,
+  bandeira:'Verde', bandDias:32, bandBrl:0, descBand:0, scee:0, garantido:0, promo:null,
+  compensacao:100, entrega:100, aPagar:1881.90, descTotal:15, descMes:332.10, desc12:3912.40, descAcum:6204.85,
+  calculado:'13/03/2025 às 10:12'
+};
+const BTR = { // fase 3 · contas a receber
+  numero:'1154571', valor:1882.40, emissao:'14/03/2025', venc:'05/04/2025', nosso:'09/0000141786-2',
+  linha:'23795.71702 90000.014176 86001.478303 2 10550000188240', pagoEm:'03/04/2025'
+};
+
+/* estados de demonstração: fase alcançada + status de cada fase */
+const STATES = {
+  'aguardando':  {phase:0, m:'Coleta agendada', tone:'info'},
+  'lida':        {phase:1, m:'Leitura concluída', tone:'info'},
+  'falha-calculo':{phase:2, m:'Falha no cálculo', tone:'danger', err:true},
+  'estudo':      {phase:2, m:'Estudo calculado', tone:'ok'},
+  'emissao':     {phase:3, m:'Faturado', btr:'Emissão pendente', tone:'alert'},
+  'aberto':      {phase:3, m:'Faturado', btr:'Aberto', tone:'info'},
+  'atrasado':    {phase:3, m:'Faturado', btr:'Atrasado', tone:'danger'},
+  'liquidado':   {phase:3, m:'Faturado', btr:'Liquidado', tone:'ok'}
+};
+const PHASES = [
+  {k:1, t:'Fatura concessionária', ic:'receipt_long'},
+  {k:2, t:'Estudo', ic:'calculate'},
+  {k:3, t:'Fatura a receber', ic:'request_quote'}
+];
+
+const S = { st:'aberto', sel:3, zoom:600, open:{doc:true,det:true,act:true}, feed:[] };
+
+/* ===== header: status atual + ações ===== */
+function statusLabel(){ const st=STATES[S.st]; return st.btr ? st.btr : st.m; }
+function phaseName(p){ return p===0?'Coleta':PHASES[p-1].t; }
+function renderHead(){
+  const st=STATES[S.st];
+  const c=document.getElementById('stChip');
+  c.className='chip st '+st.tone;
+  c.innerHTML=`<span class="dot" aria-hidden="true"></span>${esc(phaseName(st.phase))} · ${esc(statusLabel())}`;
+  renderActions();
+}
+/* ação principal = próximo passo do fluxo; o resto fica no menu, agrupado por fase */
+const PRIMARY = {
+  'aguardando':{l:'Enviar fatura', ic:'upload', go:()=>{ toast('Fatura enviada','A leitura começa em seguida.'); setState('lida',{ev:['Fatura enviada','upload','c-def',1]}); }},
+  'lida':{l:'Gerar estudo', ic:'calculate', go:()=>{ toast('Estudo calculado'); setState('estudo',{ev:['Estudo calculado','calculate','c-ok',2]}); }},
+  'falha-calculo':{l:'Gerar estudo novamente', ic:'refresh', go:()=>{ toast('Estudo calculado'); setState('estudo',{ev:['Estudo calculado','calculate','c-ok',2]}); }},
+  'estudo':{l:'Faturar', ic:'send', go:()=>{ toast('Faturado','A fatura a receber foi gerada.'); setState('emissao',{ev:['Faturado','send','c-ok',3]}); }},
+  'emissao':{l:'Emitir boleto', ic:'barcode', go:()=>{ toast('Boleto emitido','Fatura a receber em aberto.'); setState('aberto',{ev:['Boleto emitido','barcode','c-ok',3]}); }},
+  'atrasado':{l:'Prorrogar vencimento', ic:'event_upcoming', go:()=>toast('Prorrogar vencimento','Abriria o seletor de data.')}
+};
+function menuGroups(){
+  const p=STATES[S.st].phase, st=S.st;
+  return [
+    {t:'Fatura concessionária', ph:1, items:[
+      {l:'Baixar fatura da concessionária', ic:'download', on:p>=1},
+      {l:'Enviar nova fatura', ic:'upload', on:p<3},
+      {l:'Ler novamente', ic:'refresh', on:p===1}]},
+    {t:'Estudo', ph:2, items:[
+      {l:'Recalcular estudo', ic:'calculate', on:st==='estudo'||st==='falha-calculo'},
+      {l:'Cancelar estudo', ic:'block', on:st==='estudo', danger:true}]},
+    {t:'Fatura a receber', ph:3, items:[
+      {l:'Baixar fatura a receber', ic:'download', on:p===3},
+      {l:'Emitir boleto', ic:'barcode', on:st==='emissao'},
+      {l:'Alterar vencimento', ic:'event', on:st==='emissao'||st==='aberto'||st==='atrasado'},
+      {l:'Atualizar código de barras', ic:'barcode_reader', on:st==='aberto'||st==='atrasado'},
+      {l:'Recalcular…', ic:'restart_alt', on:p===3&&st!=='liquidado', recalc:true},
+      {l:'Cancelar recebimento', ic:'cancel', on:st==='emissao'||st==='aberto'||st==='atrasado', danger:true}]},
+    {t:'', items:[
+      {l:'Copiar ID', ic:'content_copy', on:true},
+      {l:'Adicionar observação', ic:'add_comment', on:true},
+      {l:'Arquivar', ic:'archive', on:true, danger:true}]}
+  ];
+}
+function renderActions(){
+  const a=document.getElementById('actions'), pr=PRIMARY[S.st];
+  const dlBtn = S.st==='liquidado'||S.st==='aberto' ? `<button class="btn outline" id="aDl"><span class="ms" aria-hidden="true">download</span>Baixar fatura</button>` : '';
+  a.innerHTML = dlBtn + `<button class="btn outline" id="aMore" aria-haspopup="menu" aria-expanded="false"><span class="ms" aria-hidden="true">more_horiz</span>Ações</button>`
+    + (pr?`<button class="btn primary" id="aPri"><span class="ms" aria-hidden="true">${pr.ic}</span>${pr.l}</button>`:'')
+    + `<div class="menu" id="menu" role="menu" hidden></div>`;
+  if(pr) document.getElementById('aPri').onclick=pr.go;
+  const d=document.getElementById('aDl'); if(d) d.onclick=()=>toast('Download iniciado','fatura-receber-1154571.pdf');
+  const m=document.getElementById('menu'), mb=document.getElementById('aMore');
+  const p=STATES[S.st].phase;
+  m.innerHTML = menuGroups().map((g,gi)=>{
+    const locked = g.ph && p<g.ph;
+    return (gi?'<div class="sep"></div>':'') + (g.t?`<div class="grp">${g.t}${locked?`<span class="lk"><span class="ms" aria-hidden="true">lock</span>fase não alcançada</span>`:''}</div>`:'')
+      + g.items.map(it=>`<button class="it${it.danger?' danger':''}" role="menuitem" ${it.on?'':'disabled'} ${it.recalc?'data-recalc':''}><span class="ms" aria-hidden="true">${it.ic}</span>${it.l}</button>`).join('');
+  }).join('');
+  mb.onclick=e=>{ e.stopPropagation(); const o=m.hidden; m.hidden=!o; mb.setAttribute('aria-expanded',String(o)); };
+  m.querySelectorAll('.it:not(:disabled)').forEach(b=>b.onclick=()=>{ m.hidden=true; mb.setAttribute('aria-expanded','false');
+    if(b.hasAttribute('data-recalc')) return openRecalc();
+    toast(b.textContent.trim(), 'Simulação no protótipo.'); });
+}
+document.addEventListener('click',e=>{ const m=document.getElementById('menu'); if(m&&!m.hidden&&!m.contains(e.target)){ m.hidden=true; document.getElementById('aMore').setAttribute('aria-expanded','false'); } });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ const m=document.getElementById('menu'); if(m) m.hidden=true; closeRecalc(); } });
+
+/* ===== recálculo (3 tipos, como no stg) ===== */
+const RC=[['sync','Ajustar injeção','Corrigir a injeção informada errada na fatura.'],['upload_file','Importar nova fatura','Quando a concessionária corrige um erro e emite outra fatura.'],['description','Recálculo simples','Recalcula com os mesmos valores, depois de ajustar desconto ou ação promocional.']];
+let rcSel=0;
+function openRecalc(){ const o=document.getElementById('rcOpts'); rcSel=0;
+  const draw=()=>{ o.innerHTML=RC.map((r,i)=>`<button class="opt${i===rcSel?' on':''}" data-i="${i}"><span class="oi"><span class="ms" aria-hidden="true">${r[0]}</span></span><span><b>${r[1]}</b><small>${r[2]}</small></span></button>`).join(''); o.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{ rcSel=+b.dataset.i; draw(); }); };
+  draw(); document.getElementById('recalc').hidden=false; o.querySelector('.opt').focus(); }
+function closeRecalc(){ document.getElementById('recalc').hidden=true; }
+document.getElementById('rcNo').onclick=closeRecalc;
+document.getElementById('recalc').onclick=e=>{ if(e.target.id==='recalc') closeRecalc(); };
+document.getElementById('rcGo').onclick=()=>{ closeRecalc(); toast(RC[rcSel][1],'Recálculo aberto. A fatura volta para o estudo.'); };
+
+/* ===== abas das prévias: fase mais avançada vem ativa; fase não alcançada fica desabilitada ===== */
+function phaseState(k){
+  const st=STATES[S.st];
+  if(k>st.phase) return 'locked';
+  if(k===2 && st.err) return 'err';
+  return k<st.phase ? 'done' : 'cur';
+}
+function phaseSub(k){
+  const st=STATES[S.st], ps=phaseState(k);
+  if(ps==='locked') return k===1?'Aguardando fatura':k===2?'Depois da leitura':'Depois do faturamento';
+  if(k===1) return 'Lida em '+UB.emissao.slice(0,5)+' · '+brl(UB.valor);
+  if(k===2) return st.err?'Falha no cálculo':'Prévia · '+brl(US.aPagar);
+  return (st.btr||'')+' · '+brl(BTR.valor);
+}
+function renderPhaseTabs(){
+  const h=document.getElementById('ptabs');
+  h.innerHTML = PHASES.map((p,i)=>{
+    const ps=phaseState(p.k), on=S.sel===p.k;
+    const n = ps==='done'?'<span class="ms" aria-hidden="true">check</span>':ps==='err'?'<span class="ms" aria-hidden="true">priority_high</span>':p.k;
+    const tip = ps==='locked' ? (p.k===2?'Disponível depois da leitura da fatura':p.k===3?'Disponível depois de faturar':'Disponível quando a fatura chegar') : '';
+    return (i?'<span class="ms chev" aria-hidden="true">chevron_right</span>':'') +
+      `<button class="ptab ${ps}${on?' on':''}" role="tab" aria-selected="${on}" ${ps==='locked'?'disabled':''} ${tip?`data-tip="${tip}"`:''} data-k="${p.k}">
+        <span class="n">${n}</span><span class="tx"><b>${p.t}</b><small>${esc(phaseSub(p.k))}</small></span></button>`;
+  }).join('');
+  h.querySelectorAll('.ptab:not(:disabled)').forEach(b=>b.onclick=()=>{ S.sel=+b.dataset.k; renderPhase(); });
+  const on=h.querySelector('.ptab.on'); if(on) h.scrollLeft=on.offsetLeft-h.offsetLeft-16; // no mobile a barra rola: a fase ativa fica à vista
+}
+
+/* ===== documento de cada fase ===== */
+function cogecom(o){ // o.preview: sem cobrança
+  const bars=[6620,6400,6210,5980,6050,6230,6450,6880,7010,6340,6120,6500].map((c,i)=>{const cr=[3900,3850,3700,3600,3650,3800,3950,4050,4200,3980,3900,4100][i];return `<i><span style="height:${c/75}%"></span><span style="height:${cr/75}%"></span></i>`;}).join('');
+  const mx=['Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez','Jan','Fev','Mar'].map(m=>`<span>${m}</span>`).join('');
+  const val = o.preview?US.aPagar:BTR.valor;
+  return `<div class="cg">${o.preview?'<div class="wm" aria-hidden="true"><span>PRÉVIA</span></div>':''}
+    <div class="cg-top"><div class="cg-logo">COGECOM<small>.com.br</small></div>
+      <div class="cg-co"><b>COOPERATIVA DE GERAÇÃO COMPARTILHADA COGECOM</b><br>CNPJ 00.000.000/0001-00<br>sac@cogecom.com.br</div></div>
+    <div class="cg-grid">
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div class="cg-box"><div class="v" style="font-size:12px">PADARIA ESTRELA DO SUL LTDA</div><div style="margin-top:8px;color:#57534e">CNPJ 12.345.678/0001-90</div></div>
+        <div class="cg-box"><div>Avenida Brasil, 1200, Loja 2 · Centro · Ibirité, MG · 32400-000</div>
+          <div class="cg-row"><div><div class="k">Unid. cons.</div><div class="v">3014567890</div></div><div><div class="k">Fornecimento</div><div class="v">Trifásico · A4</div></div>${o.preview?'':`<div><div class="k">Documento</div><div class="v">${BTR.numero}</div></div>`}<div><div class="k">Mês de ref.</div><div class="v">03/2025</div></div></div></div>
+      </div>
+      <div class="cg-pay"><div class="in"><div class="k">A PAGAR</div><div class="big">R$ <b>${num(val,2)}</b></div>
+        ${o.preview?'':`<div class="dt"><span>VENCIMENTO</span><b>${BTR.venc}</b></div><div class="dt"><span>EMISSÃO</span><span>${BTR.emissao}</span></div>`}</div>
+        <div class="promo">${US.descTotal}% de desconto total</div></div>
+      <div class="cg-box"><div class="k" style="display:flex;justify-content:space-between"><span>Gráfico de consumo e créditos recebidos</span><span>Entrega no mês: ${US.entrega}%</span></div>
+        <div class="cg-chart">${bars}</div><div class="cg-x">${mx}</div>
+        <div class="cg-leg"><span>■ Consumo kWh</span><span>■ Crédito kWh</span><b>↗ Economia em 12 meses</b></div></div>
+      <div class="cg-disc"><div><div class="k">Desconto no mês</div><div class="v">${brl(US.descMes)}</div></div><div><div class="k">Desconto nos últimos 12 meses</div><div class="v">${brl(US.desc12)}</div></div><div><div class="k">Total de desconto acumulado</div><div class="v">${brl(US.descAcum)}</div></div></div>
+      <div class="cg-box cg-kv"><div><div class="k">Crédito recebido</div><div class="v">${brl(US.credBrl)}</div></div><div><div class="k">Crédito recebido</div><div class="v">${num(US.credKwh,2)} kWh</div></div>
+        <div><div class="k">Consumo</div><div class="v">${num(UB.consumo,2)} kWh</div></div><div><div class="k">Valor do kWh na concessionária</div><div class="v">R$/kWh ${num(US.kwhConc,5)}</div></div></div>
+      <div class="cg-box"><div class="k">Seu desconto · <b style="color:#16a34a">${US.desconto}%</b></div><div class="v" style="color:#16a34a">R$/kWh ${num(US.descKwh,5)}</div><div class="k" style="margin-top:10px">Desconto em energia</div><div class="v" style="color:#16a34a">${brl(US.descEnergia)}</div></div>
+      <div class="cg-box"><div class="k">Bandeira ${US.bandeira.toLowerCase()} · ${US.bandDias} dias</div><div class="v">${brl(US.bandBrl)}</div></div>
+      <div class="cg-box"><div class="k">Desconto em bandeira</div><div class="v" style="color:#16a34a">${brl(US.descBand)}</div></div>
+    </div>
+    ${o.preview?'':(o.pending
+      ? `<div class="cg-pend">Boleto ainda não emitido: código de barras e nosso número aparecem depois da emissão.</div>`
+      : `<div class="cg-foot"><span>Evite a suspensão do benefício mantendo em dia os pagamentos. Após o vencimento, multa de 10%.</span><span style="text-align:right;white-space:nowrap">NOSSO NÚMERO<br><b>${BTR.nosso}</b></span></div>
+         <div class="cg-bar"><div class="bc" aria-hidden="true"></div><div class="ld">${BTR.linha}</div></div>`)}
+  </div>`;
+}
+function renderDoc(){
+  const d=document.getElementById('doc'), st=STATES[S.st], k=S.sel;
+  const t=document.getElementById('docT');
+  if(st.phase===0){ t.textContent='Prévias';
+    d.innerHTML=`<div class="doc-empty"><span class="ms" aria-hidden="true">hourglass_top</span><b>A fatura da concessionária ainda não chegou</b><span>Coleta prevista para 08/04/2025. As prévias aparecem aqui conforme o faturamento avança.</span></div>`; return; }
+  const W=`style="width:${S.zoom}px"`;
+  if(k===1){ t.textContent='fatura-luzdovale-a4-mar25.pdf';
+    d.innerHTML=`<div class="doc-page" ${W}><img src="assets/fatura-grupo-a.png" alt="Fatura fictícia da Luz do Vale, março de 2025"></div>`; }
+  else if(k===2){ t.textContent='Prévia da fatura COGECOM';
+    d.innerHTML = st.err && S.st==='falha-calculo'
+      ? `<div class="doc-empty err"><span class="ms" aria-hidden="true">error</span><b>Não foi possível calcular o estudo</b><span>Bandeiras tarifárias não cadastradas para 03/2025 (leitura de 07/02 a 11/03). Cadastre as bandeiras e gere o estudo novamente.</span></div>`
+      : `<div class="doc-page" ${W}>${cogecom({preview:true})}</div><span class="preview-tag"><span class="ms f" aria-hidden="true">info</span>Prévia, sem dados de cobrança</span>`; }
+  else { t.textContent='fatura-receber-'+BTR.numero+'.pdf';
+    d.innerHTML=`<div class="doc-lbl"><span class="ms" aria-hidden="true">request_quote</span>Página 1 · Fatura COGECOM</div><div class="doc-page" ${W}>${cogecom({pending:S.st==='emissao'})}</div>
+      <div class="doc-lbl"><span class="ms" aria-hidden="true">receipt_long</span>Página 2 · Fatura da concessionária</div><div class="doc-page" ${W}><img src="assets/fatura-grupo-a.png" alt="Fatura fictícia da Luz do Vale anexada"></div>`; }
+}
+
+/* ===== detalhes da fase ===== */
+function card(l,v,u,o={}){
+  const cls=o.cls?' '+o.cls:'', pre=u==='R$';
+  return `<div class="card${cls}${o.full?' full':''}"><div class="ct">${l}${o.tag||''}</div><div class="row"><div class="val">${pre?'<span class="u">R$</span>':''}<span class="v">${v}</span>${!pre&&u?`<span class="u">${u}</span>`:''}</div>${o.nocp?'':`<button class="cp" aria-label="Copiar ${esc(l)}" data-copy="${esc(String(v))}"><span class="ms" aria-hidden="true">content_copy</span></button>`}</div></div>`;
+}
+function sec(t,extra=''){ return `<div class="sec-t">${t}<span class="sp"></span>${extra}</div>`; }
+function detPhase1(){
+  const it=UB.itens.map(r=>`<tr><td>${r[0]}</td><td>${r[2]==null?'—':num(r[2])+' <span class="cu">'+r[1]+'</span>'}</td><td>${r[3]==null?'—':num(r[3],5)}</td><td class="${r[4]<0?'neg':''}">${brl(r[4]).replace('R$ -','−R$ ')}</td></tr>`).join('');
+  const hist=UB.hist.map(r=>`<tr><td>${r[0]}</td><td>${num(r[1])} <span class="cu">kWh</span></td><td>${r[2]} <span class="cu">dias</span></td></tr>`).join('');
+  const med=UB.medicoes.map(r=>`<tr><td>${r[0]}</td><td>${r[2]==null?'—':num(r[2])}</td><td>${num(r[3])}</td><td>${num(r[4])} <span class="cu">${r[1]}</span></td></tr>`).join('');
+  return sec('Energia','<span class="tag">COGECOM</span>')+`<div class="grid">
+      ${card('Consumo',num(UB.consumo),'kWh')}${card('Injetado fora ponta',num(UB.injFP),'kWh')}${card('Injetado ponta',num(UB.injP),'kWh')}${card('Injetado externo',num(UB.injExt),'kWh')}
+      ${card('Total injetado',num(UB.injFP+UB.injP),'kWh',{cls:'hl'})}${card('Valor injetado',num(UB.valorInj,2),'R$',{cls:'hl'})}${card('Saldo',num(UB.saldo),'kWh')}${card('Saldo a expirar',num(UB.saldoExp),'kWh')}
+      ${card('Produção total',num(UB.prodTotal),'kWh')}${card('Produção líquida',num(UB.prodLiq),'kWh')}${card('Consumo médio',num(UB.media),'kWh')}${card('Consumo mediano',num(UB.mediana),'kWh')}</div>`
+   + sec('Fatura')+`<div class="grid">${card('Valor da fatura',num(UB.valor,2),'R$')}${card('Vencimento',UB.venc)}${card('Emissão',UB.emissao)}${card('Nota fiscal',UB.nf)}</div>`
+   + sec('Alíquotas')+`<div class="grid">${card('ICMS',num(UB.icms,2),'%')}${card('PIS',num(UB.pis,2),'%')}${card('COFINS',num(UB.cofins,2),'%')}</div>`
+   + sec('Leitura')+`<div class="grid">${card('Leitura anterior',UB.leituraAnt)}${card('Leitura atual',UB.leitura)}${card('Dias de leitura',UB.dias,'dias')}${card('Próxima leitura',UB.proxima)}</div>`
+   + sec('Itens da fatura',`<small>${UB.itens.length} itens</small>`)+`<div class="tbl"><table><thead><tr><th>Item</th><th>Quant.</th><th>Tarifa</th><th>Valor</th></tr></thead><tbody>${it}</tbody><tfoot><tr><td>Total</td><td></td><td></td><td>${brl(UB.valor)}</td></tr></tfoot></table></div>`
+   + sec('Medições')+`<div class="tbl"><table><thead><tr><th>Medição</th><th>Leitura anterior</th><th>Leitura atual</th><th>Quantidade</th></tr></thead><tbody>${med}</tbody></table></div>`
+   + sec('Histórico de consumo','<small>12 meses</small>')+`<div class="tbl"><table><thead><tr><th>Referência</th><th>Consumo</th><th>Dias</th></tr></thead><tbody>${hist}</tbody></table></div>`
+   + sec('Identificação')+`<div class="grid">${card('Titular','Padaria Estrela do Sul Ltda')}${card('CNPJ','12.345.678/0001-90')}${card('UC','3014567890')}${card('Subgrupo',UB.subgrupo)}${card('Tipo de rede',UB.rede)}${card('Modalidade tarifária',UB.modalidade)}${card('Endereço','Av. Brasil, 1200, Loja 2 · Centro · Ibirité, MG',null,{full:true})}</div>`;
+}
+function detPhase2(){
+  if(S.st==='falha-calculo') return `<div class="note-box err"><span class="ms f" aria-hidden="true">error</span><div><b>Falha no cálculo do estudo</b><p>Bandeiras tarifárias não cadastradas para 03/2025. Intervalo de leitura: 07/02 a 11/03/2025.</p><button class="btn primary" onclick="PRIMARY['falha-calculo'].go()">Gerar estudo novamente</button></div></div>`
+    + sec('Parâmetros que serão usados')+`<div class="grid">${card('Desconto do cooperado',num(US.desconto),'%')}${card('Taxa de compensação',num(US.compensacao),'%')}${card('Crédito recebido',num(US.credKwh),'kWh')}${card('Consumo',num(UB.consumo),'kWh')}</div>`;
+  return sec('Resultado',`<small>Calculado em ${US.calculado}</small>`)+`<div class="grid">
+      ${card('A pagar',num(US.aPagar,2),'R$',{cls:'hl'})}${card('Desconto total',num(US.descTotal),'%',{cls:'hl'})}${card('Desconto no mês',num(US.descMes,2),'R$')}${card('Desconto em 12 meses',num(US.desc12,2),'R$')}${card('Desconto acumulado',num(US.descAcum,2),'R$')}${card('Entrega no mês',num(US.entrega),'%')}</div>`
+   + sec('Cálculo')+`<div class="grid">${card('Crédito recebido',num(US.credKwh),'kWh')}${card('Crédito recebido',num(US.credBrl,2),'R$')}${card('Consumo',num(UB.consumo),'kWh')}${card('Valor do kWh na concessionária',num(US.kwhConc,5),'R$/kWh')}
+      ${card('Seu desconto',num(US.desconto),'%')}${card('Desconto por kWh',num(US.descKwh,5),'R$/kWh')}${card('Desconto em energia',num(US.descEnergia,2),'R$')}${card('Taxa de compensação',num(US.compensacao),'%')}</div>`
+   + sec('Bandeiras')+`<div class="tbl"><table><thead><tr><th>Bandeira</th><th>Dias</th><th>Adicional</th><th>Valor</th><th>Desconto</th></tr></thead><tbody><tr><td>${US.bandeira}</td><td>${US.bandDias}</td><td>${num(0,5)} <span class="cu">R$/kWh</span></td><td>${brl(US.bandBrl)}</td><td>${brl(US.descBand)}</td></tr></tbody></table></div>`
+   + sec('Outros descontos')+`<div class="grid">${card('Desconto SCEE',num(US.scee,2),'R$')}${card('Desconto garantido',num(US.garantido,2),'R$')}${card('Ação promocional','Nenhuma',null,{nocp:true})}</div>`;
+}
+function detPhase3(){
+  const st=STATES[S.st], dif=BTR.valor-US.aPagar;
+  const tone={ 'Emissão pendente':'alert','Aberto':'info','Atrasado':'danger','Liquidado':'ok' }[st.btr];
+  const pago = st.btr==='Liquidado';
+  const notif = st.btr==='Emissão pendente'
+    ? `<tr><td>E-mail</td><td class="l">financeiro@padariaestrela.com.br</td><td class="l"><span class="tag">Aguardando envio</span></td><td>—</td></tr><tr><td>WhatsApp</td><td class="l">(31) 9 0000-0000</td><td class="l"><span class="tag">Aguardando envio</span></td><td>—</td></tr>`
+    : `<tr><td>E-mail</td><td class="l">financeiro@padariaestrela.com.br</td><td class="l"><span class="tag ok">Entregue</span></td><td>14/03 10:05</td></tr><tr><td>WhatsApp</td><td class="l">(31) 9 0000-0000</td><td class="l"><span class="tag ok">Lido</span></td><td>14/03 10:07</td></tr>`
+      + (st.btr==='Atrasado'?`<tr><td>WhatsApp</td><td class="l">(31) 9 0000-0000</td><td class="l"><span class="tag ok">Lido</span></td><td>07/04 09:00</td></tr>`:'');
+  return sec('Cobrança',`<span class="tag ${tone}">${st.btr}</span>`)+`<div class="grid">
+      ${card('Valor',num(BTR.valor,2),'R$',{cls:'hl'})}${card('Nº da fatura',BTR.numero)}${card('Emissão',st.btr==='Emissão pendente'?'—':BTR.emissao)}${card('Vencimento',BTR.venc,null,{cls:st.btr==='Atrasado'?'danger':''})}
+      ${pago?card('Pago em',BTR.pagoEm,null,{cls:'hl'}):''}${st.btr==='Atrasado'?card('Dias em atraso','9','dias',{cls:'danger',nocp:true}):''}</div>`
+   + `<div class="note-box warn"><span class="ms f" aria-hidden="true">compare_arrows</span><div><b>Valor diferente do estudo</b><div class="cmp" style="margin-top:4px"><span class="o">${brl(US.aPagar)}</span><span class="ms" aria-hidden="true">arrow_forward</span><span class="n">${brl(BTR.valor)}</span><span style="color:var(--mid)">${dif>0?'+':'−'} ${brl(Math.abs(dif))}</span></div><p style="margin-top:6px">Vale o valor da fatura a receber.</p></div></div>`
+   + sec('Pagamento') + (st.btr==='Emissão pendente'
+      ? `<div class="note-box"><span class="ms f" aria-hidden="true">schedule</span><div><b>Boleto ainda não emitido</b><p>Linha digitável e nosso número aparecem depois da emissão.</p></div></div>`
+      : `<div class="linha"><code>${BTR.linha}</code><button class="ib" style="width:44px;height:44px" aria-label="Copiar linha digitável" data-copy="${BTR.linha}"><span class="ms" aria-hidden="true">content_copy</span></button></div>
+         <div class="grid">${card('Nosso número',BTR.nosso)}${card('Multa após o vencimento','10','%')}</div>`)
+   + sec('Comunicações')+`<div class="tbl"><table><thead><tr><th>Canal</th><th class="l">Destino</th><th class="l">Status</th><th>Quando</th></tr></thead><tbody>${notif}</tbody></table></div>`;
+}
+function renderDet(){
+  const c=document.getElementById('content'), st=STATES[S.st];
+  document.getElementById('detT').textContent = st.phase===0?'Detalhes':'Detalhes · '+PHASES[S.sel-1].t;
+  if(st.phase===0){ c.innerHTML=sec('Cooperado')+`<div class="grid">${card('Titular','Padaria Estrela do Sul Ltda')}${card('UC','3014567890')}${card('Concessionária','Luz do Vale')}${card('Previsão da coleta','08/04/2025')}</div>`; return; }
+  c.innerHTML = S.sel===1?detPhase1():S.sel===2?detPhase2():detPhase3();
+}
+
+/* ===== atividade (todas as fases, mais recente no topo) ===== */
+function baseFeed(){
+  const p=STATES[S.st].phase, st=S.st, ev=[];
+  ev.push(['Coleta agendada','event','c-mid',1,'10/03 08:00']);
+  if(p>=1){ ev.push(['Fatura coletada','download','c-def',1,'12/03 06:14'],['Leitura concluída','task_alt','c-ok',1,'12/03 06:20']); }
+  if(st==='falha-calculo') ev.push(['Falha no cálculo','error','c-danger',2,'13/03 10:12']);
+  if(p>=2 && st!=='falha-calculo') ev.push(['Estudo calculado','calculate','c-ok',2,'13/03 10:12']);
+  if(p>=3){ ev.push(['Faturado','send','c-ok',3,'14/03 09:58']); }
+  if(['aberto','atrasado','liquidado'].includes(st)) ev.push(['Boleto emitido','barcode','c-ok',3,'14/03 10:01'],['E-mail entregue','mail','c-info',3,'14/03 10:05'],['WhatsApp lido','chat','c-info',3,'14/03 10:07']);
+  if(st==='atrasado') ev.push(['Venceu sem pagamento','warning','c-danger',3,'06/04 00:00'],['Lembrete por WhatsApp','chat','c-info',3,'07/04 09:00']);
+  if(st==='liquidado') ev.push(['Pagamento confirmado','paid','c-ok',3,'03/04 15:40']);
+  return ev.reverse();
+}
+const SYS='<svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M8 0.1C8.2 1.1 8.5 2.2 8.7 2.9c.4 1.2.9 1.4 1.4 1.3.6-.1 1-.9 1.4-4L13.6 2.3c-1.6 2.4-2.6 4.3-1.4 4.4.6 0 1.7-.5 3.8-1.8v3c-2.9.6-4.2 1.2-4.2 1.9 0 .5 1 1 4.1 1.6l-2.1 2.1c-2.5-1.6-3.9-2.2-4.2-1.8-.3.4.1 1.6 1.7 4.2H8c-.6-2.8-1.1-4.3-1.7-4.3-.6 0-1 1.4-1.6 4.2L2.4 13.5C4.4 10.4 4.7 9.4 4.3 9.3 3.9 8.9 2.5 9.6.2 11.1V7.9c3-.6 4.3-1.2 4.3-1.7 0-.6-1.5-1.1-4.2-1.6L2.6 2.3c2.5 1.6 3.9 2.3 4.2 1.8C7.1 3.7 6.4 2.4 5 .1z" fill="#fafaf9"/></svg>';
+function renderActs(){
+  const all=[...S.feed,...baseFeed()];
+  document.getElementById('acts').innerHTML = all.map((e,i)=>(i?'<div class="link"></div>':'')+
+    `<div class="ev${e.isNew?' new':''}"><span class="i ${e[2]}"><span class="ms f" aria-hidden="true">${e[1]}</span></span>
+      <span class="ph2">${PHASES[e[3]-1].t.replace('Fatura concessionária','Concessionária').replace('Fatura a receber','A receber')}</span>
+      ${e.user?`<span class="who" data-name="Eduardo Moreira">EM</span>`:`<span class="who sys" data-name="Sistema">${SYS}</span>`}
+      <div class="n">${e[0]}</div><div class="d">${e[4]}</div></div>`).join('');
+}
+
+/* ===== painéis e tab bar (mesma regra do Leitor) ===== */
+const PN={doc:'pDoc',det:'pDet',act:'pAct'};
+const isMob=()=>matchMedia('(max-width:767px)').matches;
+function applyPanels(){
+  if(isMob()){ const k=Object.keys(S.open).find(k=>S.open[k])||'det'; for(const x in PN) S.open[x]=x===k; }
+  for(const k in PN) document.getElementById(PN[k]).classList.toggle('min',!S.open[k]);
+  document.querySelectorAll('.tb[data-toggle]').forEach(b=>{ const on=S.open[b.dataset.toggle]; b.classList.toggle('on',on); b.setAttribute('aria-pressed',String(on)); });
+  const cols=document.getElementById('cols');
+  cols.classList.toggle('no-doc',!S.open.doc); cols.classList.toggle('no-det',!S.open.det);
+  document.getElementById('colsEmpty').hidden = Object.values(S.open).some(Boolean);
+}
+document.querySelectorAll('[data-toggle]').forEach(b=>b.addEventListener('click',()=>{ const k=b.dataset.toggle;
+  if(isMob()){ for(const x in PN) S.open[x]=x===k; } else S.open[k]=!S.open[k];
+  applyPanels(); }));
+document.getElementById('colsReset').onclick=()=>{ S.open={doc:true,det:true,act:true}; applyPanels(); };
+addEventListener('resize',()=>{ if(isMob()) applyPanels(); });
+document.getElementById('zIn').onclick=()=>{ S.zoom=Math.min(1100,S.zoom+100); renderDoc(); };
+document.getElementById('zOut').onclick=()=>{ S.zoom=Math.max(400,S.zoom-100); renderDoc(); };
+document.getElementById('dl').onclick=()=>toast('Download iniciado', document.getElementById('docT').textContent);
+document.addEventListener('click',e=>{ const b=e.target.closest('[data-copy]'); if(!b) return; try{ navigator.clipboard.writeText(b.dataset.copy); }catch(_){} toast('Copiado'); });
+
+/* ===== estado ===== */
+function renderPhase(){ renderPhaseTabs(); renderDoc(); renderDet(); }
+function setState(k,o={}){
+  S.st=k; const ph=STATES[k].phase; S.sel=Math.max(1,ph); // ao mudar de estado, a fase mais avançada volta a ser a aba ativa
+  if(o.ev){ const e=[...o.ev,'agora']; e.isNew=true; e.user=true; S.feed=[e]; } else S.feed=[];
+  document.getElementById('demo').value=k;
+  const u=new URL(location); u.searchParams.set('estado',k); history.replaceState(null,'',u);
+  renderHead(); renderPhase(); renderActs();
+}
+document.getElementById('demo').onchange=e=>setState(e.target.value);
+
+/* tooltip da sidebar */
+const tip=document.getElementById('sbTip');
+document.querySelectorAll('.sb-item[data-tip]').forEach(a=>{ a.addEventListener('mouseenter',()=>{ tip.textContent=a.dataset.tip; const r=a.getBoundingClientRect(); tip.style.top=(r.top+r.height/2-14)+'px'; tip.style.opacity=1; }); a.addEventListener('mouseleave',()=>tip.style.opacity=0); });
+
+const q=new URLSearchParams(location.search).get('estado');
+setState(STATES[q]?q:'aberto');
+applyPanels();
+</script>
+</body>
+</html>
