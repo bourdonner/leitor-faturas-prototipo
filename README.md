@@ -26,3 +26,11 @@ Todos os dados são fictícios (fatura Grupo A, A4 horária verde).
 - Detalhes acompanham a fase escolhida; Atividade junta os eventos das três fases
 - Estados de demonstração em `?estado=`: aguardando, lida, falha-calculo, estudo, emissao, aberto, atrasado, liquidado
 - Dados fictícios (mesma fatura do Leitor: Padaria Estrela do Sul, Luz do Vale, mar/2025)
+
+## Cancelamento de cooperado · abertura (registro da CAN)
+
+- Tela navegável (cancelamento-abertura.html), fiel ao Figma "Cancelamento de Cooperado", página ↳ Abertura do Cancelamento: 6 passos (Informações do Titular, Abrangência, Tipo, Detalhes, Faturas, Revisar e registrar) e a confirmação
+- Stepper à esquerda (passo feito volta ao clicar), formulário no meio, Resumo do pedido e "O que acontece após o registro" à direita
+- Regras do PRD: titularidade = 4 tipos e todas as UCs; uma UC = 6 tipos; a última UC ativa vira Cancelamento Total (saída de cooperado); 5 tipos exigem as 3 últimas faturas (bloqueia), os outros só avisam e pedem ciência; clicar no mês que falta inclui a fatura
+- Casos para testar: Ricardo Menezes Prado (3 UCs, falta set/26 no Galpão), Ricardo Alves Pinto (1 UC, faturas completas), Ricardo Souza Lima (1 UC já em cancelamento: escolher a Praia converte para Total)
+- Dados fictícios

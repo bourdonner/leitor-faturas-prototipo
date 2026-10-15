@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Novo cancelamento</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300..600,0..1,0&family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@20..48,400,0..1,0&display=block" rel="stylesheet">
+<style>
+  /* Abertura do cancelamento (registro da CAN). Fonte: Figma "Cancelamento de Cooperado", página ↳ Abertura do Cancelamento (112:2).
+     Tokens da Style Guide Enershare, modo Light. */
+  :root{
+    --ink:#1c1917; --ink2:#0c0a09; --ink3:#44403c; --mid:#78716c; --s400:#a8a29e; --border:#d6d3d1; --s200:#e7e5e4; --s100:#f5f5f4; --s50:#fafaf9; --white:#fff;
+    --view:rgba(245,245,244,.4); --brand:#71902f; --sel:#f7fee7; --success:#65a30d; --alert:#f97316; --pend:#fff7ed; --danger:#f43f5e; --dangerbg:#fef2f2;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{font-family:Inter,system-ui,sans-serif;color:var(--ink);background:var(--white);font-size:14px;line-height:24px;-webkit-font-smoothing:antialiased}
+  button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;padding:0}
+  .msr,.mss{font-weight:400;font-style:normal;line-height:1;display:inline-block;white-space:nowrap;-webkit-font-smoothing:antialiased;user-select:none;font-size:18px}
+  .msr{font-family:"Material Symbols Rounded";font-variation-settings:"FILL" 0,"wght" 400,"GRAD" 0,"opsz" 20}
+  .mss{font-family:"Material Symbols Sharp";font-variation-settings:"FILL" 0,"wght" 400,"GRAD" 0,"opsz" 20;font-size:16px}
+  .fill{font-variation-settings:"FILL" 1,"wght" 400,"GRAD" 0,"opsz" 20}
+  /* sidebar e topo: iguais às outras telas do protótipo */
+  .sidebar{position:fixed;left:16px;top:16px;bottom:24px;width:48px;display:flex;flex-direction:column;z-index:20}
+  .sidebar a{text-decoration:none}
+  .sidebar .sb-head,.sidebar .sb-foot{padding:8px}
+  .sidebar .sb-brand{width:32px;height:32px;border-radius:8px;background:var(--s50);display:grid;place-items:center}
+  .sidebar .sb-content{flex:1}
+  .sidebar .sb-sec{padding:8px;display:flex;flex-direction:column}
+  .sidebar .sb-item{width:32px;height:36px;border-radius:4px;display:grid;place-items:center;color:var(--ink)}
+  .sidebar .sb-item:hover,.sidebar .sb-item.on{background:var(--s100)}
+  .sidebar .sb-av{width:32px;height:32px;border-radius:8px;background:linear-gradient(140deg,#c7d9a4,#71902f);display:grid;place-items:center;color:#fff;font:600 12px Inter}
+  .page{margin-left:80px;padding:16px 24px 24px 0;display:flex;flex-direction:column;gap:12px;min-height:100vh}
+  .topbar{height:52px;padding:12px;display:flex;align-items:center}
+  .crumb{display:flex;align-items:center;gap:8px}
+  .crumb .rp{display:flex;align-items:center;gap:8px;padding-right:8px}
+  .ibtn{width:28px;height:28px;border-radius:6px;display:grid;place-items:center;color:var(--ink2)}
+  .vsep{width:1px;height:16px;background:var(--border)}
+  .crumb a,.crumb span.cur{font:500 14px/21px Poppins,sans-serif;text-decoration:none}
+  .crumb a{color:var(--mid)} .crumb .cur{color:var(--brand)}
+  .crumb .chev{color:var(--ink);font-size:16px}
+  .card{flex:1;background:var(--white);border-radius:24px;box-shadow:0 0 40px rgba(0,0,0,.04);padding:32px 56px 56px;display:flex;flex-direction:column;gap:32px}
+  .head{display:flex;gap:24px;align-items:center}
+  .head .tc{flex:1}
+  .head h1{margin:0;font:500 32px/40px Poppins,sans-serif;color:var(--ink)}
+  .head p{margin:4px 0 0;color:var(--ink3)}
+  /* botões (Button da lib) */
+  .btn{height:40px;padding:8px 12px;border-radius:6px;display:inline-flex;align-items:center;gap:6px;font:500 14px/24px Inter;white-space:nowrap}
+  .btn.primary{background:var(--ink);color:#fff}
+  .btn.primary:hover{background:#292524}
+  .btn.primary:disabled{background:var(--ink);opacity:.5;cursor:not-allowed}
+  .btn.secondary{background:var(--s50);color:var(--ink)}
+  .btn.secondary:hover{background:var(--s100)}
+  .btn.outline{background:#fff;border:1px solid var(--s200)}
+  .btn.outline:hover{background:var(--s50)}
+  .btn.link{height:auto;padding:0;font-size:13px;text-decoration:underline;text-underline-offset:3px}
+  .btn:focus-visible,.opt:focus-visible,.mes:focus-visible,.step:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+  /* corpo em 3 colunas */
+  .corpo{display:grid;grid-template-columns:300px minmax(0,1fr) 360px;gap:24px;align-items:start;flex:1}
+  .box{background:var(--view);border:1px solid var(--s100);border-radius:12px}
+  /* stepper */
+  .steps{padding:16px;display:flex;flex-direction:column;gap:4px}
+  .step{display:flex;gap:12px;align-items:center;padding:10px 12px;border-radius:10px;text-align:left;width:100%}
+  .step .mk{width:28px;height:28px;border-radius:50%;flex:none;display:grid;place-items:center;font:700 12px Inter}
+  .step .tx{display:flex;flex-direction:column;min-width:0}
+  .step b{font:700 14px/24px Inter}
+  .step small{font-size:12px;line-height:17px;color:var(--mid);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .step.done .mk{background:var(--ink);color:#fff}
+  .step.done:hover{background:var(--s100)}
+  .step.now{background:var(--brand);cursor:default}
+  .step.now .mk{background:#fff;color:var(--brand);border:2px solid var(--brand)}
+  .step.now b{color:#fff}
+  .step.todo{opacity:.23;cursor:default}
+  .step.todo .mk{background:var(--view);border:1px solid var(--border);color:var(--mid)}
+  .step.todo b{color:var(--mid)}
+  /* formulário */
+  .form{padding:32px;display:flex;flex-direction:column;gap:24px;min-height:calc(100vh - 290px);align-self:stretch}
+  .form h2{margin:0;font:600 20px/32px Poppins,sans-serif}
+  .form .ajuda{margin:4px 0 0;color:var(--ink3)}
+  .campos{flex:1;display:flex;flex-direction:column;gap:16px}
+  .acoes{display:flex;align-items:center;gap:12px}
+  .acoes .sp{flex:1}
+  .rot{font:700 14px/24px Inter;margin:0}
+  .cap{font-size:12px;line-height:17px;color:var(--mid);margin:0}
+  /* campos */
+  .fld{display:flex;flex-direction:column;gap:6px;min-width:0}
+  .fld label{font:500 14px/20px Inter}
+  .fld .help{font-size:12px;line-height:17px;color:var(--mid)}
+  .inp{height:40px;border-radius:6px;border:1px solid var(--s200);background:var(--s50);padding:0 12px;font:400 14px Inter;color:var(--ink);width:100%;outline:none}
+  .inp:focus{border:2px solid var(--ink);padding:0 11px;background:#fff}
+  select.inp{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%231c1917' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:36px}
+  select.inp:invalid{color:var(--mid)}
+  textarea.inp{height:96px;padding:10px 12px;resize:vertical;line-height:22px}
+  textarea.inp:focus{padding:9px 11px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .search{display:flex;align-items:center;gap:8px}
+  .search .inp{padding-left:38px}
+  .search{position:relative}
+  .search .msr{position:absolute;left:12px;color:var(--mid)}
+  /* cartão de opção (Abertura/Opção) */
+  .lista{display:flex;flex-direction:column;gap:8px}
+  .linha2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .opt{display:flex;gap:12px;align-items:flex-start;padding:16px;border-radius:12px;background:var(--view);border:1px solid var(--border);text-align:left;width:100%}
+  .opt:hover{border-color:var(--s400)}
+  .opt[aria-checked="true"]{background:var(--sel);border:1.5px solid var(--brand);padding:15.5px}
+  .opt[aria-disabled="true"]{opacity:.5;cursor:not-allowed}
+  .opt[aria-disabled="true"]:hover{border-color:var(--border)}
+  .radio{width:16px;height:16px;border-radius:50%;border:1px solid var(--ink);flex:none;margin-top:4px;display:grid;place-items:center;background:#fff}
+  .opt[aria-checked="true"] .radio::after{content:"";width:8px;height:8px;border-radius:50%;background:var(--ink)}
+  .opt .ct{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+  .opt .tp{display:flex;align-items:center;gap:8px}
+  .opt .tp b{flex:1;font:700 14px/24px Inter}
+  .opt .ds{font-size:12px;line-height:17px;color:var(--mid)}
+  /* badge */
+  .bdg{display:inline-flex;align-items:center;gap:4px;height:22px;padding:2px 10px;border-radius:9999px;font:600 12px/18px Inter;white-space:nowrap}
+  .bdg.outline{border:1px solid var(--s200);background:#fff}
+  .bdg.sec{background:var(--s100)}
+  .bdg.dest{background:var(--danger);color:#fff}
+  .bdg .msr{font-size:13px}
+  /* UC simples */
+  .ucr{display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:10px;border:1px solid var(--border);background:#fff}
+  .ucr .msr{color:var(--mid);font-size:20px}
+  .ucr .n{flex:1;display:flex;flex-direction:column;min-width:0}
+  .ucr .n b{font:700 14px/24px Inter}
+  /* aviso (Abertura/Aviso) */
+  .aviso{display:flex;gap:12px;padding:12px 14px;border-radius:10px}
+  .aviso .q{width:24px;height:24px;border-radius:6px;display:grid;place-items:center;flex:none;color:#fff}
+  .aviso .q .msr{font-size:16px}
+  .aviso b{display:block;font:700 14px/24px Inter}
+  .aviso.atencao{background:var(--pend)} .aviso.atencao .q{background:var(--alert)}
+  .aviso.bloqueio,.aviso.saida{background:var(--dangerbg)} .aviso.bloqueio .q,.aviso.saida .q{background:var(--danger)}
+  .aviso.ok{background:var(--sel)} .aviso.ok .q{background:var(--success)}
+  .ciencia{display:flex;align-items:center;gap:8px;font:500 14px Inter;cursor:pointer;width:max-content}
+  .ciencia input{width:16px;height:16px;accent-color:var(--success);margin:0}
+  /* faturas da UC */
+  .fat{display:flex;align-items:center;gap:16px;padding:14px 16px;border-radius:12px;background:var(--view);border:1px solid var(--border)}
+  .fat .ic{width:36px;height:36px;border-radius:50%;background:#fff;border:1px solid var(--border);display:grid;place-items:center;color:var(--mid);flex:none}
+  .fat .n{flex:1;display:flex;flex-direction:column}
+  .fat .n b{font:700 14px/24px Inter}
+  .meses{display:flex;gap:8px}
+  .mes{display:inline-flex;align-items:center;gap:6px;padding:6px 12px 6px 10px;border-radius:8px;font:700 14px/20px Inter;background:#fff;border:1px solid var(--border);cursor:default}
+  .mes .msr{font-size:16px;color:var(--success)}
+  .mes.falta{background:var(--dangerbg);border:1px dashed var(--danger);color:var(--danger);cursor:pointer}
+  .mes.falta .msr{color:var(--danger)}
+  .mes.falta:hover{background:#fee2e2}
+  .mes.load{opacity:.6;cursor:progress}
+  /* revisão */
+  .bloco{padding:16px 20px;border-radius:12px;border:1px solid var(--border);background:#fff;display:flex;flex-direction:column;gap:10px}
+  .bloco .tp{display:flex;align-items:center}
+  .bloco .tp b{flex:1}
+  .dados{display:flex;flex-wrap:wrap;gap:12px 20px}
+  .dados div{width:200px;display:flex;flex-direction:column}
+  .dados div.w{width:100%}
+  .dados span{font-size:12px;line-height:17px;color:var(--mid)}
+  /* registrado */
+  .selo[hidden]{display:none}
+  .selo{width:48px;height:48px;border-radius:50%;background:var(--success);color:#fff;display:grid;place-items:center;margin-bottom:12px}
+  .selo .msr{font-size:28px}
+  .feito{display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:10px;border:1px solid var(--border);background:#fff;transition:opacity .3s}
+  .feito .msr{color:var(--mid);font-size:20px}
+  .feito b{flex:1;font:700 14px/24px Inter}
+  .feito .v{color:var(--mid)}
+  .feito .ok{color:var(--success)}
+  .feito.wait{opacity:.35}
+  .feito.wait .ok{visibility:hidden}
+  /* resumo (2 cartões) */
+  .lado{display:flex;flex-direction:column;gap:24px}
+  .resumo{padding:20px;display:flex;flex-direction:column;gap:16px}
+  .resumo h3{margin:0;font:700 14px/24px Inter}
+  .lr{display:flex;align-items:center;gap:12px;padding:8px 12px;border-radius:8px;background:var(--view);border:1px solid var(--s100);transition:opacity .25s}
+  .lr .c{width:30px;height:30px;border-radius:50%;background:var(--ink3);display:grid;place-items:center;flex:none}
+  .lr .c .msr{color:var(--s50)}
+  .lr .t{display:flex;flex-direction:column;min-width:0}
+  .lr .t span{font-size:12px;line-height:17px;color:var(--mid)}
+  .lr .t b{font-weight:400;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .lr.vazio{opacity:.2}
+  .apos{display:flex;flex-direction:column;gap:10px}
+  .apos .sub{font-size:12px;line-height:17px;color:var(--mid);margin:-8px 0 0}
+  .ar{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .ar>.msr{color:var(--mid)}
+  .ar.vazio{color:var(--mid);opacity:.5}
+  /* toast */
+  .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:10px 16px;border-radius:8px;font-size:14px;opacity:0;transition:.25s;z-index:50;pointer-events:none;max-width:90vw}
+  .toast.on{opacity:1;transform:translateX(-50%)}
+  .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+  @media (max-width:1280px){ .corpo{grid-template-columns:260px minmax(0,1fr)} .lado{grid-column:1/-1;flex-direction:row;flex-wrap:wrap} .lado>*{flex:1 1 320px} }
+  @media (max-width:860px){
+    .sidebar{display:none} .page{margin:0;padding:0} .card{border-radius:0;box-shadow:none;padding:20px 16px;gap:20px}
+    .head{flex-wrap:wrap} .head h1{font-size:24px;line-height:32px}
+    .corpo{grid-template-columns:minmax(0,1fr)} .steps{flex-direction:row;overflow-x:auto;padding:8px}
+    .step{width:auto;flex:none} .step small{display:none} .step.todo .tx,.step.done .tx{display:none}
+    .form{padding:20px;min-height:0} .grid2,.linha2{grid-template-columns:1fr}
+    .fat{flex-wrap:wrap} .meses{width:100%}
+  }
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<nav class="sidebar" aria-label="Menu principal">
+  <div class="sb-head"><a class="sb-brand" href="index.html" aria-label="Enershare"><span class="mss fill" style="color:#71902f">emergency</span></a></div>
+  <div class="sb-content"><div class="sb-sec">
+    <a class="sb-item on" href="cancelamento-abertura.html" aria-current="page" aria-label="Consumidores"><span class="mss fill">badge</span></a>
+    <a class="sb-item" href="faturamento.html" aria-label="Financeiro"><span class="mss fill">account_balance</span></a>
+    <a class="sb-item" href="index.html" aria-label="Leitor de Faturas"><span class="mss fill">electric_meter</span></a>
+    <a class="sb-item" href="#" aria-label="Usinas"><span class="mss fill">wind_power</span></a>
+    <a class="sb-item" href="#" aria-label="Pré-cadastro"><span class="mss fill">fact_check</span></a>
+  </div></div>
+  <div class="sb-foot"><div class="sb-av" aria-label="Você">EM</div></div>
+</nav>
+<div class="page">
+  <div class="topbar"><nav class="crumb" aria-label="Você está em"><span class="rp"><button class="ibtn" aria-label="Recolher menu"><span class="msr">vertical_split</span></button><span class="vsep"></span></span><a href="#" onclick="return false">Cancelamentos</a><span class="msr chev" aria-hidden="true">chevron_right</span><span class="cur">Novo cancelamento</span></nav></div>
+  <section class="card">
+    <div class="head">
+      <div class="tc"><h1>Novo cancelamento</h1><p>Registre o pedido do cooperado em 6 passos. O protocolo sai quando você registrar.</p></div>
+      <button class="btn secondary" id="sair">Sair sem registrar<span class="msr">close</span></button>
+    </div>
+    <div class="corpo">
+      <nav class="box steps" id="steps" aria-label="Passos"></nav>
+      <form class="box form" id="form" novalidate>
+        <div><div class="selo" id="selo" hidden><span class="msr">check</span></div><h2 id="q" tabindex="-1"></h2><p class="ajuda" id="aj"></p></div>
+        <div class="campos" id="campos"></div>
+        <div class="acoes" id="acoes"></div>
+      </form>
+      <aside class="lado" aria-live="polite">
+        <div class="box resumo"><h3>Resumo do pedido</h3><div class="lista" id="resumo"></div></div>
+        <div class="box resumo"><div class="apos" id="apos"></div></div>
+      </aside>
+    </div>
+  </section>
+</div>
+<div class="toast" id="toast" role="status"></div>
+<script>
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const MESES=['jul/26','ago/26','set/26'];
+// dados fictícios, os mesmos das telas do Figma
+const TITS=[
+  {id:'rmp',nome:'Ricardo Menezes Prado',doc:'CPF 123.456.789-10',cid:'Curitiba/PR',ucs:[
+    {id:'3000451278',nm:'Casa',ic:'home',dist:'Copel',cid:'Curitiba/PR',fat:[1,1,1]},
+    {id:'3000451279',nm:'Loja',ic:'storefront',dist:'Copel',cid:'Curitiba/PR',fat:[1,1,1]},
+    {id:'3000451280',nm:'Galpão',ic:'warehouse',dist:'Copel',cid:'São José dos Pinhais/PR',fat:[1,1,0]}]},
+  {id:'rap',nome:'Ricardo Alves Pinto',doc:'CNPJ 12.345.678/0001-90',cid:'Londrina/PR',ucs:[
+    {id:'3000622104',nm:'Escritório',ic:'apartment',dist:'Copel',cid:'Londrina/PR',fat:[1,1,1]}]},
+  {id:'rsl',nome:'Ricardo Souza Lima',doc:'CPF 321.654.987-00',cid:'Maringá/PR',ucs:[
+    {id:'3000815570',nm:'Casa',ic:'home',dist:'Copel',cid:'Maringá/PR',fat:[1,1,1],pre:'CAN-2026-00451'},
+    {id:'3000815571',nm:'Praia',ic:'beach_access',dist:'Copel',cid:'Matinhos/PR',fat:[1,0,1]}]}
+];
+const TIPOS={
+  tit:[['Cancelamento Total','O cooperado pediu para sair.'],['Demissão de cooperado','A cooperativa encerra a relação.'],['Gonzaga','Base legada.'],['Backlog','Base legada.']],
+  uc:[['Cancelamento Parcial','Só esta UC sai.'],['Parcial com Realocação','A UC sai e a energia é realocada.'],['Mudança de Endereço','Nova UC em outro endereço.'],['Troca de Titularidade Padrão','Outro titular assume a UC.'],['Troca com Realocação','Outro titular, com realocação.'],['Troca com Consumo de Saldo','Outro titular; o saldo é consumido.']]
+};
+const OBRIG=new Set(['Parcial com Realocação','Mudança de Endereço','Troca de Titularidade Padrão','Troca com Realocação','Troca com Consumo de Saldo']);
+const MOTIVOS=['Alteração do Responsável Financeiro','B Optante','Cancelado em outros sistemas','Concorrência - Atendimento','Concorrência - Cobrança','Concorrência - Desconto Baixo','Concorrência - Duas Faturas','Concorrência - Erro de Faturamento','Cooperado recusou informar o motivo','Demissão - B Optante','Demissão - Falta de contato com cooperado','Demissão - Inadimplência','Demissão - Tarifa incentivada - Baixa renda','Demora no início do fornecimento','Encerrou as atividades','Falecimento','Fora da área de cobertura','Gonzaga','Insatisfação - Atendimento','Insatisfação - Cobrança','Insatisfação - Desconto Baixo','Insatisfação - Duas faturas','Insatisfação - Erro de Faturamento','Lucro Real – Isenção PIS/COFINS','Mudança de Endereço','Mudança de Endereço com outro titular','Placa Solar','Processo de venda desalinhado com a operação','Saldo elevado incompatível com o consumo da UC','Subinjeção','Troca de titularidade','UC desligada'];
+const TEMPS=['Crítico','Sensível à Negociação','Operacional','Recuperável','Estratégico'];
+const MEIOS=['Digital','WhatsApp','Telefone','Formulário','E-mail'];
+const PASSOS=['Informações do Titular','Abrangência','Tipo','Detalhes','Faturas','Revisar e registrar'];
+
+let S;
+function fresh(){ S={step:1,max:1,q:'Ricardo',tit:null,obj:'tit',uc:null,tipo:null,det:{motivo:'',data:'',temp:'',meio:'',desc:''},fat:{},ack:false,reg:false}; TITS.forEach(t=>S.fat[t.id]=t.ucs.map(u=>u.fat.slice())); }
+fresh();
+
+const T=()=>TITS.find(t=>t.id===S.tit);
+const ativas=t=>t.ucs.map((u,k)=>k).filter(k=>!t.ucs[k].pre);
+// UCs do pedido e se a escolha de uma UC virou saída de cooperado
+function pedido(){ const t=T(); if(!t) return {ks:[],conv:false,saida:false};
+  if(S.obj==='tit'){ const ks=ativas(t); return {ks,conv:false,saida:true}; }
+  if(S.uc==null) return {ks:[],conv:false,saida:false};
+  const at=ativas(t); const ultima=at.length===1&&at[0]===S.uc;
+  return {ks:[S.uc],conv:ultima,saida:ultima}; }
+const tipoAtual=()=>pedido().conv?'Cancelamento Total':S.tipo;
+const faltando=()=>{ const t=T(); return pedido().ks.flatMap(k=>S.fat[t.id][k].map((v,m)=>v?null:[k,m]).filter(Boolean)); };
+
+function toast(msg){ const el=$('toast'); el.textContent=msg; el.classList.add('on'); clearTimeout(toast.t); toast.t=setTimeout(()=>el.classList.remove('on'),2600); }
+const radio=()=>'<span class="radio" aria-hidden="true"></span>';
+function opt({label,desc,checked,disabled,tag,act,val}){ return `<button type="button" class="opt" role="radio" aria-checked="${!!checked}" ${disabled?'aria-disabled="true"':''} data-act="${act}" data-val="${esc(val)}">${radio()}<span class="ct"><span class="tp"><b>${esc(label)}</b>${tag?`<span class="bdg outline">${esc(tag)}</span>`:''}</span>${desc?`<span class="ds">${esc(desc)}</span>`:''}</span></button>`; }
+function aviso(tom,ic,tit,txt){ return `<div class="aviso ${tom}" role="${tom==='bloqueio'?'alert':'note'}"><span class="q"><span class="msr">${ic}</span></span><div><b>${esc(tit)}</b>${txt?`<span>${esc(txt)}</span>`:''}</div></div>`; }
+
+// resumo do valor escolhido em cada passo feito
+function resumoPasso(i){ const t=T(), p=pedido();
+  return [t&&t.nome, S.obj==='tit'?`Todas as ${p.ks.length} UCs`:(S.uc!=null&&t?t.ucs[S.uc].nm:''), tipoAtual(), [S.det.motivo.split(' - ')[0],S.det.meio].filter(Boolean).join(' · '), faltando().length?`Falta ${faltando().length} · ciente`:'Completas', S.reg?'CAN-2026-00124':''][i]||''; }
+
+function renderSteps(){
+  $('steps').innerHTML=PASSOS.map((n,i)=>{ const k=i+1; const st=S.reg||k<S.step?'done':k===S.step?'now':'todo'; const can=st==='done'&&!S.reg;
+    return `<button type="button" class="step ${st}" ${can?`data-go="${k}"`:'disabled'} ${st==='now'?'aria-current="step"':''}><span class="mk">${st==='done'?'<span class="msr">check</span>':k}</span><span class="tx"><b>${esc(n)}</b>${st==='done'?`<small>${esc(resumoPasso(i))}</small>`:''}</span></button>`; }).join('');
+}
+
+function renderResumo(){
+  const t=S.max>1?T():null; const p=pedido(); const tp=S.max>3?tipoAtual():null;
+  let abr=null; if(S.max>2&&t){ abr=S.obj==='tit'?`Todas as ${p.ks.length} UCs · saída de cooperado`:p.conv?`${t.ucs[S.uc].nm} · última UC ativa`:`1 de ${ativas(t).length} UCs · ${t.ucs[S.uc].nm}`; }
+  let ucs=null; if(t){ const a=ativas(t).length, e=t.ucs.length-a; ucs=e?`${t.ucs.length} · ${e} já em cancelamento`:`${a} ${a>1?'ativas':'ativa'}`; }
+  const rows=[['person',t?t.doc:'Documento',t?t.nome:null],['home_work','Unidades Consumidoras',ucs],['select_all','Abrangência',abr],['category','Tipo',tp&&(p.conv?tp+' · automático':tp)]];
+  $('resumo').innerHTML=rows.map(([ic,r,v])=>`<div class="lr ${v?'':'vazio'}"><span class="c"><span class="msr">${ic}</span></span><span class="t"><span>${esc(r)}</span><b>${esc(v||(r==='Documento'?'Nome do Titular':'Não Definido'))}</b></span></div>`).join('');
+  const feito=S.reg;
+  const head=`<h3>${feito?'O que o sistema fez':'O que acontece após o registro'}</h3><p class="sub">${feito?`Em 15/10/2026 · 10:42, ${p.ks.length>1?`nas ${p.ks.length} UCs`:'na UC'}.`:'Veja o que o sistema fará automaticamente'}</p>`;
+  if(S.max<2){ $('apos').innerHTML=head+`<div class="ar vazio"><span class="msr">hourglass_top</span>Aguardando Preenchimento</div>`; return; }
+  $('apos').innerHTML=head+[
+    ['hourglass_top','Status alterado para:','<span class="bdg dest">Em Cancelamento</span>'],
+    ['power_off','Unidade fica:','<span class="bdg dest">Fora de Fornecimento</span>'],
+    ['receipt_long','Faturamento fica:','<span class="bdg dest">Bloqueado</span>'],
+    ['credit_card_off','Cobrança travada por:','<span class="bdg sec">90 Dias</span>'],
+    ['mark_chat_read','Protocolo por','<span class="bdg sec"><span class="msr fill">chat</span>WhatsApp</span> e <span class="bdg sec"><span class="msr fill">mail</span>E-mail</span>']
+  ].map(([ic,t,b])=>`<div class="ar"><span class="msr">${ic}</span>${t} ${b}</div>`).join('');
+}
+
+const Q={1:['Quem é o titular?','Busque por nome, CPF/CNPJ ou número da UC.'],2:['Quais UCs saem?','Escolha se o pedido vale para todas as UCs do titular ou para uma só.'],3:['Qual o tipo de cancelamento?',''],4:['O que o cooperado pediu?','Esses dados vão para o protocolo e para a mensagem ao cooperado.'],5:['As 3 últimas faturas estão no Enershare?','Conferimos jul, ago e set de 2026 em cada UC do pedido.'],6:['Confira e registre','Ao registrar, o protocolo é gerado e o Enershare faz o que está ao lado.'],7:['Cancelamento registrado','Protocolo CAN-2026-00124 · 15/10/2026 · 10:42']};
+
+function podeSeguir(){ const p=pedido();
+  if(S.step===1) return !!S.tit;
+  if(S.step===2) return S.obj==='tit'||S.uc!=null;
+  if(S.step===3) return !!tipoAtual();
+  if(S.step===4) return Object.values(S.det).every(v=>String(v).trim());
+  if(S.step===5){ const f=faltando().length; if(!f) return true; return OBRIG.has(tipoAtual())?false:S.ack; }
+  return true; }
+
+function renderCampos(){
+  const t=T(), p=pedido(); let h='';
+  if(S.step===1){
+    const q=S.q.trim().toLowerCase().replace(/\D/g,'')||S.q.trim().toLowerCase();
+    const res=TITS.filter(x=>!S.q.trim()||x.nome.toLowerCase().includes(S.q.trim().toLowerCase())||x.doc.replace(/\D/g,'').includes(q)||x.ucs.some(u=>u.id.includes(q)));
+    h=`<div class="fld"><label for="busca">Titular</label><div class="search"><span class="msr" aria-hidden="true">search</span><input class="inp" id="busca" value="${esc(S.q)}" placeholder="Nome, CPF/CNPJ ou UC" autocomplete="off"></div></div>
+      <p class="cap">${res.length} ${res.length===1?'titular encontrado':'titulares encontrados'}</p>
+      <div class="lista" role="radiogroup" aria-label="Titulares">${res.map(x=>{ const a=ativas(x).length, e=x.ucs.length-a; return opt({label:x.nome,desc:`${x.doc} · ${a} ${a>1?'UCs ativas':'UC ativa'} · ${x.cid}`,checked:S.tit===x.id,tag:e?`${e} UC em cancelamento`:null,act:'tit',val:x.id}); }).join('')}</div>`;
+  }
+  if(S.step===2){
+    const n=ativas(t).length;
+    h=`<div class="linha2" role="radiogroup" aria-label="Abrangência">${opt({label:'Todas as UCs',desc:`Um pedido só, com um formulário para ${n>1?`as ${n}`:'a UC ativa'}.`,checked:S.obj==='tit',act:'obj',val:'tit'})}${opt({label:'Uma UC',desc:'Só uma UC sai. As outras seguem normais.',checked:S.obj==='uc',act:'obj',val:'uc'})}</div>`;
+    if(S.obj==='tit'){
+      h+=aviso('saida','person_off','Saída de cooperado','Com todas as UCs fora, o titular deixa a cooperativa.');
+      h+=`<p class="rot">UCs no pedido</p><div class="lista">${t.ucs.map(u=>`<div class="ucr"><span class="msr">${u.ic}</span><span class="n"><b>${esc(u.nm)}</b><span class="cap">UC ${u.id} · ${u.dist} · ${u.cid}</span></span>${u.pre?`<span class="bdg outline">Em cancelamento · ${u.pre}</span>`:'<span class="bdg sec">Entra no pedido</span>'}</div>`).join('')}</div>`;
+    } else {
+      h+=`<p class="rot">Qual UC sai?</p><div class="lista" role="radiogroup" aria-label="UC">${t.ucs.map((u,k)=>opt({label:u.nm,desc:`UC ${u.id} · ${u.dist} · ${u.cid}`,checked:S.uc===k,disabled:!!u.pre,tag:u.pre?`Em cancelamento · ${u.pre}`:null,act:'uc',val:k})).join('')}</div>`;
+      if(p.conv){ const pre=t.ucs.filter(u=>u.pre).map(u=>u.nm).join(', '); h+=aviso('saida','person_off','É a última UC ativa do titular',`${pre?`${pre} já está em cancelamento. `:''}Sem UC ativa, o pedido vira Cancelamento Total: é a saída do cooperado.`); }
+      else h+=`<p class="cap">Para tirar outra UC depois, abra um novo pedido.</p>`;
+    }
+  }
+  if(S.step===3){
+    if(p.conv){ h=`<div class="linha2">${opt({label:'Cancelamento Total',desc:'Definido sozinho: é a última UC ativa.',checked:true,act:'none',val:''})}</div>`+aviso('ok','check','Faturas: só conferência','Neste tipo, se faltar alguma das 3 últimas faturas, o Enershare avisa mas deixa seguir.'); }
+    else { const lst=S.obj==='tit'?TIPOS.tit:TIPOS.uc; h=`<div class="linha2" role="radiogroup" aria-label="Tipos">${lst.map(([n,d])=>opt({label:n,desc:d,checked:S.tipo===n,tag:OBRIG.has(n)?'Exige 3 faturas':null,act:'tipo',val:n})).join('')}</div>`;
+      if(S.obj==='tit') h+=aviso('ok','check','Faturas: só conferência','Nestes 4 tipos, se faltar alguma das 3 últimas faturas, o Enershare avisa mas deixa seguir.'); }
+  }
+  if(S.step===4){
+    const sel=(id,lab,help,list)=>`<div class="fld"><label for="${id}">${lab}</label><select class="inp" id="${id}" required><option value="" disabled ${S.det[id]?'':'selected'}>Selecione</option>${list.map(o=>`<option ${S.det[id]===o?'selected':''}>${esc(o)}</option>`).join('')}</select><span class="help">${help}</span></div>`;
+    h=`<div class="grid2">${sel('motivo','Motivo','Escolha o que o cooperado disse.',MOTIVOS)}<div class="fld"><label for="data">Data do pedido do cooperado</label><input class="inp" type="date" id="data" value="${S.det.data}" max="2026-10-15" required><span class="help">Quando ele pediu, não quando você registra.</span></div></div>
+      <div class="grid2">${sel('temp','Temperatura','Como o cooperado está com a COGECOM.',TEMPS)}${sel('meio','Meio de contato','Por onde ele pediu.',MEIOS)}</div>
+      <div class="fld"><label for="desc">Descrição</label><textarea class="inp" id="desc" placeholder="O que o cooperado contou">${esc(S.det.desc)}</textarea><span class="help">Vai junto na mensagem ao cooperado.</span></div>`;
+  }
+  if(S.step===5){
+    const miss=faltando(); const ob=OBRIG.has(tipoAtual());
+    h=`<div class="lista">${p.ks.map(k=>{ const u=t.ucs[k]; return `<div class="fat"><span class="ic"><span class="msr">${u.ic}</span></span><span class="n"><b>${esc(u.nm)}</b><span class="cap">UC ${u.id} · ${u.dist}</span></span><span class="meses">${MESES.map((m,i)=>S.fat[t.id][k][i]?`<span class="mes"><span class="msr">check_circle</span>${m}</span>`:`<button type="button" class="mes falta" data-act="mes" data-val="${k}-${i}" aria-label="Incluir fatura de ${m} da UC ${u.nm}"><span class="msr">add</span>${m}</button>`).join('')}</span></div>`; }).join('')}</div>`;
+    if(miss.length){ const qual=miss.map(([k,m])=>`${MESES[m]} ${miss.length>1||p.ks.length>1?`da UC ${t.ucs[k].nm}`:''}`.trim()); h+=`<p class="cap">Clique no mês que falta para incluir a fatura.</p>`;
+      if(ob) h+=aviso('bloqueio','block',`Inclua a fatura de ${qual.join(', ')} para continuar`,`Em ${tipoAtual()} as 3 últimas faturas são obrigatórias.`);
+      else h+=aviso('atencao','warning',`Falta a fatura de ${qual.join(', ')}`,'Recomendamos incluir antes de seguir. Neste tipo dá para continuar, mas a Análise de Saldo pode travar.')+`<label class="ciencia"><input type="checkbox" id="ack" ${S.ack?'checked':''}>Estou ciente e quero seguir</label>`; }
+    else h+=aviso('ok','check','As 3 últimas faturas estão no Enershare','Pode seguir.');
+  }
+  if(S.step===6){
+    const tt=tipoAtual(); const dt=S.det.data?S.det.data.split('-').reverse().join('/'):'';
+    const bl=(tit,go,rows)=>`<div class="bloco"><div class="tp"><b>${tit}</b><button type="button" class="btn link" data-go="${go}">Editar</button></div><div class="dados">${rows.map(([k,v,w])=>`<div class="${w?'w':''}"><span>${k}</span>${esc(v)}</div>`).join('')}</div></div>`;
+    const miss=faltando();
+    h=bl('Pedido',1,[['Titular',t.nome],['Abrangência',S.obj==='tit'||p.conv?'Saída de cooperado':'Uma UC'],['UCs',p.ks.map(k=>t.ucs[k].nm).join(', ')],['Tipo',tt]])
+     +bl('Detalhes',4,[['Motivo',S.det.motivo],['Data do pedido',dt],['Temperatura',S.det.temp],['Meio de contato',S.det.meio],['Descrição',S.det.desc,1]])
+     +bl('Faturas',5,[['Situação',miss.length?`Falta ${miss.length} fatura${miss.length>1?'s':''}`:'Todas no Enershare'],...(miss.length?[['Ciência','Confirmada por você']]:[])]);
+  }
+  if(S.step===7){
+    const n=p.ks.length;
+    h=`<p class="rot">Feito pelo Enershare</p><div class="lista" id="feitos">${[['hourglass_top',`Status ${n>1?`das ${n} UCs`:'da UC'}`,'Em Cancelamento'],['power_off','Fora de Fornecimento','Ligado'],['receipt_long','Faturamento','Travado'],['credit_card_off','Cobrança','Travada até 13/01/2027'],['mark_chat_read','WhatsApp e e-mail','Enviados ao cooperado'],['alt_route','Próxima etapa','Direcionamentos']].map(([ic,a,v])=>`<div class="feito wait"><span class="msr">${ic}</span><b>${a}</b><span class="v">${v}</span><span class="msr ok fill">check_circle</span></div>`).join('')}</div>`;
+  }
+  $('campos').innerHTML=h;
+  const b=$('busca'); if(b){ b.oninput=e=>{ S.q=e.target.value; const pos=e.target.selectionStart; renderCampos(); renderAcoes(); const nb=$('busca'); nb.focus(); nb.setSelectionRange(pos,pos); }; }
+  ['motivo','temp','meio','data','desc'].forEach(id=>{ const el=$(id); if(el) el['on'+(el.tagName==='TEXTAREA'||el.type==='date'?'input':'change')]=e=>{ S.det[id]=e.target.value; renderAcoes(); }; });
+  const ack=$('ack'); if(ack) ack.onchange=e=>{ S.ack=e.target.checked; renderAcoes(); };
+}
+
+function renderAcoes(){
+  let h='';
+  if(S.step===7) h=`<button type="button" class="btn outline" data-act="novo">Novo cancelamento</button><span class="sp"></span><button type="button" class="btn primary" data-act="ver">Ver cancelamento</button>`;
+  else h=`${S.step>1?'<button type="button" class="btn outline" data-act="voltar">Voltar</button>':''}<span class="sp"></span><button type="submit" class="btn primary" ${podeSeguir()?'':'disabled'}>${S.step===6?'Registrar cancelamento':'Continuar'}</button>`;
+  $('acoes').innerHTML=h;
+}
+
+function render(focus){
+  const [q,a]=Q[S.step]; $('q').textContent=q;
+  const aj=S.step===3?(pedido().conv?'A UC escolhida é a última ativa do titular.':S.obj==='tit'?'Com todas as UCs no pedido, são 4 tipos.':'Com uma UC no pedido, são 6 tipos. Os marcados exigem as 3 últimas faturas.'):a;
+  $('aj').textContent=aj;
+  $('sair').hidden=S.step===7; $('selo').hidden=S.step!==7;
+  renderSteps(); renderCampos(); renderAcoes(); renderResumo();
+  if(focus) $('q').focus({preventScroll:false});
+}
+function ir(k){ S.step=k; S.max=Math.max(S.max,k); render(true); }
+
+document.addEventListener('click',e=>{
+  const go=e.target.closest('[data-go]'); if(go){ ir(+go.dataset.go); return; }
+  const el=e.target.closest('[data-act]'); if(!el) return;
+  if(el.getAttribute('aria-disabled')==='true') return;
+  const {act,val}=el.dataset;
+  if(act==='tit'){ if(S.tit!==val){ S.tit=val; S.uc=null; S.tipo=null; S.ack=false; S.obj='tit'; S.max=1; } }
+  if(act==='obj'){ if(S.obj!==val){ S.obj=val; S.uc=null; S.tipo=null; S.ack=false; S.max=Math.min(S.max,2); } }
+  if(act==='uc'){ S.uc=+val; S.tipo=null; S.ack=false; S.max=Math.min(S.max,2); }
+  if(act==='tipo'){ S.tipo=val; S.ack=false; S.max=Math.min(S.max,3); if(val==='Demissão de cooperado'&&!S.det.motivo) S.det.motivo='Demissão - Falta de contato com cooperado'; }
+  if(act==='mes'){ const [k,m]=val.split('-').map(Number); el.classList.add('load'); el.innerHTML='<span class="msr">progress_activity</span>'+MESES[m]; setTimeout(()=>{ S.fat[S.tit][k][m]=1; toast(`Fatura de ${MESES[m]} incluída na UC ${T().ucs[k].nm}`); render(); },700); return; }
+  if(act==='voltar'){ ir(S.step-1); return; }
+  if(act==='novo'){ fresh(); render(true); return; }
+  if(act==='ver'){ toast('O Detalhe do cancelamento ainda não está neste protótipo.'); return; }
+  render();
+});
+$('form').addEventListener('submit',e=>{ e.preventDefault(); if(!podeSeguir()) return;
+  if(S.step===6){ S.reg=true; ir(7); const it=[...document.querySelectorAll('#feitos .feito')]; const rm=matchMedia('(prefers-reduced-motion: reduce)').matches; it.forEach((x,i)=>setTimeout(()=>x.classList.remove('wait'),rm?0:350+i*450)); return; }
+  ir(S.step+1); });
+$('sair').onclick=()=>{ fresh(); render(true); toast('Pedido descartado. Nada foi registrado.'); };
+render();
+</script>
+</body>
+</html>
