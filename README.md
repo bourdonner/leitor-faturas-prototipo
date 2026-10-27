@@ -27,10 +27,19 @@ Todos os dados são fictícios (fatura Grupo A, A4 horária verde).
 - Estados de demonstração em `?estado=`: aguardando, lida, falha-calculo, estudo, emissao, aberto, atrasado, liquidado
 - Dados fictícios (mesma fatura do Leitor: Padaria Estrela do Sul, Luz do Vale, mar/2025)
 
-## Cancelamento de cooperado · abertura (registro da CAN)
+## Cancelamento de cooperado
 
-- Tela navegável (cancelamento-abertura.html), fiel ao Figma "Cancelamento de Cooperado", página ↳ Abertura do Cancelamento: 6 passos (Informações do Titular, Abrangência, Tipo, Detalhes, Faturas, Revisar e registrar) e a confirmação
-- Stepper à esquerda (passo feito volta ao clicar), formulário no meio, Resumo do pedido e "O que acontece após o registro" à direita
-- Regras do PRD: titularidade = 4 tipos e todas as UCs; uma UC = 6 tipos; a última UC ativa vira Cancelamento Total (saída de cooperado); 5 tipos exigem as 3 últimas faturas (bloqueia), os outros só avisam e pedem ciência; clicar no mês que falta inclui a fatura
-- Casos para testar: Ricardo Menezes Prado (3 UCs, falta set/26 no Galpão), Ricardo Alves Pinto (1 UC, faturas completas), Ricardo Souza Lima (1 UC já em cancelamento: escolher a Praia converte para Total)
-- Dados fictícios
+Protótipos do projeto Cancelamento Cooperado (Linear P-COG-1). Dados fictícios.
+
+### Abertura do cancelamento (cancelamento-abertura.html) · atualizado em 27/10/2026
+
+- Tela navegável fiel ao Figma "Cancelamento de Cooperado", página ↳ Abertura do Cancelamento: Informações da Matrícula → Abrangência → Tipo e motivo → Faturas → Revisar e registrar → Registrado
+- Cancelamento Total (Solicitação do Cooperado ou Demissão) ou inativação de uma ou várias UCs, com tipo por UC, seleção em lote, busca e filtros
+- Status Cancelamento Pendente (rascunho salvo a cada passo); faturas bloqueiam só em Mudança de Endereço, Troca de Titularidade e Parcial com Realocação; consumo de saldo por UC; Reclame Aqui
+- Modo debug (tecla D ou botão "Debug"): caminho no PRD, campos, regras aplicadas, automações e posição no diagrama do fluxo
+- Matrículas de exemplo: Ricardo Menezes Prado (3 UCs), Eletro Ricardo (1 UC), Supermercado Bom Preço (52 UCs), Armazém Ricardo e Ana Beatriz Costa (Cancelamento Pendente)
+
+### Simulador de regras (cancelamento-simulador.html) · versão de 21/10/2026
+
+- Você faz o papel do CS, registra a CAN e vê as automações e o caminho de cada UC: Análise de Saldo (SLA de 17 h úteis), Negociação, Realocação/Compensação, fatura do saldo final, Financeiro e Anulação
+- Ainda sem as mudanças posteriores a 21/10 (consumo de saldo como critério por UC, regra nova das faturas, Reclame Aqui)
