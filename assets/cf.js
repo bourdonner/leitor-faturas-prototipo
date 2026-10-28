@@ -76,17 +76,17 @@ const H={};
 H.badge=(txt,map)=>`<span class="bdg ${map[txt]||'b-grey'}">${esc(txt)}</span>`;
 H.steps=r=>{ const i=etapa(r), st=fase(r)[1];
   return `<span class="steps" aria-hidden="true">${[0,1,2].map(k=>`<i class="${k<i||DONE.includes(st)?'d':k===i&&st!=='Coleta agendada'?(FAIL.includes(st)?'e':'c'):''}"></i>`).join('')}</span>`; };
-H.lei=r=>{ const pre=r.lei.st==='Coleta agendada'; return `<div class="two">${H.badge(r.lei.st,LEI)}<span class="s" style="margin-top:4px">${pre?'Prevista '+r.lei.dt:r.lei.st==='Processado'?'Processado em '+r.lei.dt.slice(0,5):'Coletada em '+r.lei.dt.slice(0,5)}</span></div>`; };
+H.lei=r=>H.badge(r.lei.st,LEI);
 H.tit=r=>{ const t=TIT[r.t]; return `<div class="ent"><span class="ic ${t.pj?'':'pf'}"><span class="msr fill">${t.pj?'bolt':'person'}</span></span><div class="t"><div>${esc(t.n.toUpperCase())}</div><div class="s">${esc(t.cart)}</div></div>${t.grp?`<button class="grp" data-a="grupo" data-v="${esc(t.grp)}" title="${esc(t.grp)}" aria-label="Abrir ${esc(t.grp)}"><span class="msr fill">groups</span></button>`:''}</div>`; };
 H.ust=u=>{ const s=UST[u.st]; return `<span class="ust ${s[0]}" title="${u.st}" aria-label="${u.st}"><span class="msr fill">${s[1]}</span></span>`; };
 H.uc=r=>{ const u=UCS[r.uc]; const sub=[u.ap||u.leg,u.conc].filter(Boolean).join(' · '); return `${H.ust(u)}<div class="two"><span>${r.uc}</span><span class="s">${esc(sub)}</span></div>`; };
-H.est=r=>r.est?`<div class="two">${H.badge(r.est.st,EST)}<span class="s" style="margin-top:4px">${r.est.val!=null?brl(r.est.val):'Recalcular'}</span></div>`:'<span style="color:var(--s400)">Aguardando leitura</span>';
-H.rec=r=>r.rec?`<div class="two">${H.badge(r.rec.st,REC)}<span class="s ${r.rec.st==='Atrasado'?'dg':''}" style="margin-top:4px">${r.rec.ven?'Vence '+r.rec.ven.slice(0,5):'—'}</span></div>`:`<span style="color:var(--s400)">${r.est?'Aguardando emissão':'Aguardando estudo'}</span>`;
+H.est=r=>r.est?H.badge(r.est.st,EST):'<span style="color:var(--s400)">Aguardando leitura</span>';
+H.rec=r=>r.rec?H.badge(r.rec.st,REC):`<span style="color:var(--s400)">${r.est?'Aguardando emissão':'Aguardando estudo'}</span>`;
 
 const COLS=[
  {k:'ck',w:'48px',h:()=>{ const v=visible(); const n=v.filter(r=>S.sel.has(r.id)).length; const st=n===0?'':n===v.length?'on':'mid'; return `<button class="cbx ${st}" data-a="selall" role="checkbox" aria-checked="${n===0?'false':n===v.length?'true':'mixed'}" aria-label="Selecionar todos">${st==='on'?'<span class="mss">check</span>':''}</button>`; },
    c:r=>`<button class="cbx ${S.sel.has(r.id)?'on':''}" data-a="sel" data-id="${r.id}" role="checkbox" aria-checked="${S.sel.has(r.id)}" aria-label="Selecionar ${r.id}">${S.sel.has(r.id)?'<span class="mss">check</span>':''}</button>`},
- {k:'ref',w:'96px',h:()=>'<button class="so">Ref.<span class="msr">import_export</span></button>',c:r=>`<div class="two"><span>${r.ref}</span><span class="s">${r.id}</span></div>`},
+ {k:'ref',w:'96px',h:()=>'<button class="so">Ref.<span class="msr">import_export</span></button>',c:r=>r.ref},
  {k:'eta',w:'212px',h:()=>'Etapa',c:r=>`${H.steps(r)}<span title="Etapa ${etapa(r)+1} de 3">${fase(r)[0]}</span>`,cel:1},
  {k:'lei',w:'176px',h:()=>'<button class="so">Leitura<span class="msr">import_export</span></button>',c:H.lei},
  {k:'tit',w:'minmax(260px,1.3fr)',h:()=>'Titular',c:H.tit},
