@@ -76,7 +76,7 @@ H.badge=(txt,map)=>`<span class="bdg ${map[txt]||'b-grey'}">${esc(txt)}</span>`;
 H.steps=r=>{ const i=etapa(r), st=fase(r)[1];
   return `<span class="steps" aria-hidden="true">${[0,1,2].map(k=>`<i class="${k<i||DONE.includes(st)?'d':k===i?(FAIL.includes(st)?'e':'c'):''}"></i>`).join('')}</span>`; };
 H.lei=r=>H.badge(r.lei.st,LEI);
-H.tit=r=>{ const t=TIT[r.t]; return `<div class="ent"><span class="ic ${t.pj?'':'pf'}"><span class="msr fill">${t.pj?'bolt':'person'}</span></span><div class="t"><div>${esc(t.n.toUpperCase())}</div><div class="s">${esc(t.cart)}</div></div>${t.grp?`<button class="grp" data-a="grupo" data-v="${esc(t.grp)}" title="${esc(t.grp)}" aria-label="Abrir ${esc(t.grp)}"><span class="msr fill">groups</span></button>`:''}</div>`; };
+H.tit=r=>{ const t=TIT[r.t]; return `<div class="ent"><span class="ic ${t.pj?'':'pf'}"><span class="msr fill">${t.pj?'bolt':'person'}</span></span><div class="t"><div>${esc(t.n.toUpperCase())}</div><div class="s">${esc(t.doc)}</div></div>${t.grp?`<button class="grp" data-a="grupo" data-v="${esc(t.grp)}" title="${esc(t.grp)}" aria-label="Abrir ${esc(t.grp)}"><span class="msr fill">groups</span></button>`:''}</div>`; };
 H.ust=u=>{ const s=UST[u.st]; return `<span class="ust ${s[0]}" title="${u.st}" aria-label="${u.st}"><span class="msr fill">${s[1]}</span></span>`; };
 H.uc=r=>{ const u=UCS[r.uc]; const sub=[u.ap||u.leg,u.conc].filter(Boolean).join(' · '); return `${H.ust(u)}<div class="two"><span>${r.uc}</span><span class="s">${esc(sub)}</span></div>`; };
 H.est=r=>H.badge(r.est.st,EST);
