@@ -66,6 +66,7 @@
 /* etapa: 3 segmentos (leitura · estudo · conta a receber), como na v1 */
 .fp .steps{display:flex;align-items:center;gap:3px;flex:none}
 .fp .steps i{width:18px;height:6px;border-radius:999px;background:var(--fsec)}
+.fp .two.eta{gap:6px}
 .fp .steps i.d{background:var(--success)} .fp .steps i.c{background:var(--ink)} .fp .steps i.e{background:var(--danger)}
 
 /* resumo: seções recolhíveis (mesmo padrão .pnl.closed do fp.css) */

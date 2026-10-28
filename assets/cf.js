@@ -86,7 +86,7 @@ const COLS=[
  {k:'ck',w:'48px',h:()=>{ const v=visible(); const n=v.filter(r=>S.sel.has(r.id)).length; const st=n===0?'':n===v.length?'on':'mid'; return `<button class="cbx ${st}" data-a="selall" role="checkbox" aria-checked="${n===0?'false':n===v.length?'true':'mixed'}" aria-label="Selecionar todos">${st==='on'?'<span class="mss">check</span>':''}</button>`; },
    c:r=>`<button class="cbx ${S.sel.has(r.id)?'on':''}" data-a="sel" data-id="${r.id}" role="checkbox" aria-checked="${S.sel.has(r.id)}" aria-label="Selecionar ${r.id}">${S.sel.has(r.id)?'<span class="mss">check</span>':''}</button>`},
  {k:'ref',w:'96px',h:()=>'<button class="so">Ref.<span class="msr">import_export</span></button>',c:r=>r.ref},
- {k:'eta',w:'212px',h:()=>'Etapa',c:r=>`${H.steps(r)}<span title="Etapa ${etapa(r)+1} de 3">${fase(r)[0]}</span>`,cel:1},
+ {k:'eta',w:'160px',h:()=>'Etapa',c:r=>`<div class="two eta">${H.steps(r)}<span title="Etapa ${etapa(r)+1} de 3">${fase(r)[0]}</span></div>`},
  {k:'lei',w:'176px',h:()=>'<button class="so">Leitura<span class="msr">import_export</span></button>',c:H.lei},
  {k:'tit',w:'minmax(260px,1.3fr)',h:()=>'Titular',c:H.tit},
  {k:'uc',w:'minmax(200px,1fr)',h:()=>'Unidade consumidora',c:H.uc,cel:1},
