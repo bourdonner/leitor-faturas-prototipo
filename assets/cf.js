@@ -10,7 +10,7 @@ const ME='Eduardo Moreira', NOW='Hoje às 11:20';
 
 /* status de cada etapa → cor do badge (mesmas cores do Tickets) */
 const LEI={'Coleta agendada':'b-grey','Em leitura':'b-dark','Processado':'b-ok','Falha na leitura':'b-danger'};
-const EST={'Calculado':'b-dark','Falha no cálculo':'b-danger'};
+const EST={'Em cálculo':'b-grey','Calculado':'b-dark','Falha no cálculo':'b-danger'};
 const REC={'Emissão pendente':'b-alert','Gerando boleto':'b-grey','Aberto':'b-dark','Atrasado':'b-danger','Liquidado':'b-ok','Sem cobrança':'b-grey'};
 const UST={'Em fornecimento':['on','check'],'Fora de fornecimento':['off','power_off'],'Em cancelamento':['can','block']};
 const CARTS=['Carteira Sul','Carteira Norte','Carteira Cooperados PR'];
@@ -55,33 +55,32 @@ const ROWS=[
   R('FT-10236','Mar/2025','raf','3005566778',{st:'Processado',dt:'27/03/2025'},{inj:260,cons:240,val:160.12},{st:'Calculado',val:188.40,eco:21.60,taxa:9.90},null,0,[],'estudo'),
   R('FT-10237','Mar/2025','mer','3017788990',{st:'Processado',dt:'27/03/2025'},{inj:1980,cons:1870,val:990.80},{st:'Falha no cálculo'},null,1,
     [{sys:1,t:'Bandeira tarifária de março não cadastrada',d:'27/03 às 18:02'}],'falha-calculo'),
-  R('FT-10238','Mar/2025','bea','3003344556',{st:'Em leitura',dt:'28/03/2025'},null,null,null,0,[],'lida'),
-  R('FT-10239','Mar/2025','esc','3020011223',{st:'Falha na leitura',dt:'28/03/2025'},null,null,null,0,[],'lida'),
+  R('FT-10238','Mar/2025','bea','3003344556',{st:'Processado',dt:'28/03/2025'},{inj:540,cons:610,val:612.33},{st:'Em cálculo'},null,0,[],'lida'),
+  R('FT-10239','Mar/2025','esc','3020011223',{st:'Processado',dt:'28/03/2025'},{inj:5200,cons:5480,val:3105.90},{st:'Em cálculo'},null,0,[],'lida'),
   R('FT-10240','Mar/2025','far','3011122334',{st:'Processado',dt:'24/03/2025'},{inj:4200,cons:3980,val:2310.70},{st:'Calculado',val:2799.90,eco:402.10,taxa:19.90},{st:'Sem cobrança',tit:null,ven:null,pag:null,banco:null},0,[],'liquidado'),
-  R('FT-10251','Abr/2025','pad','3014567890',{st:'Coleta agendada',dt:'24/04/2025'},null,null,null,0,[],'aguardando'),
-  R('FT-10252','Abr/2025','pad','3014567891',{st:'Coleta agendada',dt:'24/04/2025'},null,null,null,0,[],'aguardando'),
   R('FT-10198','Fev/2025','pad','3014567890',{st:'Processado',dt:'24/02/2025'},{inj:2980,cons:2390,val:1288.40},{st:'Calculado',val:1764.12,eco:298.50,taxa:19.90},{st:'Liquidado',tit:'000181220',ven:'05/03/2025',pag:'Boleto',banco:'Sicredi'},0,[],'liquidado')
 ];
 const S={sel:new Set(),cur:'FT-10232',railOpen:true,fltOpen:true,q:'',f:{},dw:null,fold:new Set()};
 const row=id=>ROWS.find(r=>r.id===id);
 
 /* etapa mais avançada = status do faturamento no resumo */
-const fase=r=>r.rec?['Conta a receber',r.rec.st,REC]:r.est?['Estudo',r.est.st,EST]:['Leitura',r.lei.st,LEI];
+/* aqui a leitura está sempre concluída: a etapa atual é o estudo ou a conta a receber */
+const fase=r=>r.rec?['Conta a receber',r.rec.st,REC]:['Estudo',r.est.st,EST];
 /* segmentos da etapa (como na v1): anteriores em verde, atual escura (vermelha se falhou), seguintes apagadas */
-const FAIL=['Falha na leitura','Falha no cálculo','Atrasado'], DONE=['Liquidado','Sem cobrança'];
-const etapa=r=>r.rec?2:r.est?1:0;
+const FAIL=['Falha no cálculo','Atrasado'], DONE=['Liquidado','Sem cobrança'];
+const etapa=r=>r.rec?2:1;
 
 /* ---------- peças ---------- */
 const H={};
 H.badge=(txt,map)=>`<span class="bdg ${map[txt]||'b-grey'}">${esc(txt)}</span>`;
 H.steps=r=>{ const i=etapa(r), st=fase(r)[1];
-  return `<span class="steps" aria-hidden="true">${[0,1,2].map(k=>`<i class="${k<i||DONE.includes(st)?'d':k===i&&st!=='Coleta agendada'?(FAIL.includes(st)?'e':'c'):''}"></i>`).join('')}</span>`; };
+  return `<span class="steps" aria-hidden="true">${[0,1,2].map(k=>`<i class="${k<i||DONE.includes(st)?'d':k===i?(FAIL.includes(st)?'e':'c'):''}"></i>`).join('')}</span>`; };
 H.lei=r=>H.badge(r.lei.st,LEI);
 H.tit=r=>{ const t=TIT[r.t]; return `<div class="ent"><span class="ic ${t.pj?'':'pf'}"><span class="msr fill">${t.pj?'bolt':'person'}</span></span><div class="t"><div>${esc(t.n.toUpperCase())}</div><div class="s">${esc(t.cart)}</div></div>${t.grp?`<button class="grp" data-a="grupo" data-v="${esc(t.grp)}" title="${esc(t.grp)}" aria-label="Abrir ${esc(t.grp)}"><span class="msr fill">groups</span></button>`:''}</div>`; };
 H.ust=u=>{ const s=UST[u.st]; return `<span class="ust ${s[0]}" title="${u.st}" aria-label="${u.st}"><span class="msr fill">${s[1]}</span></span>`; };
 H.uc=r=>{ const u=UCS[r.uc]; const sub=[u.ap||u.leg,u.conc].filter(Boolean).join(' · '); return `${H.ust(u)}<div class="two"><span>${r.uc}</span><span class="s">${esc(sub)}</span></div>`; };
-H.est=r=>r.est?H.badge(r.est.st,EST):'<span style="color:var(--s400)">Aguardando leitura</span>';
-H.rec=r=>r.rec?H.badge(r.rec.st,REC):`<span style="color:var(--s400)">${r.est?'Aguardando emissão':'Aguardando estudo'}</span>`;
+H.est=r=>H.badge(r.est.st,EST);
+H.rec=r=>r.rec?H.badge(r.rec.st,REC):`<span style="color:var(--s400)">${r.est.st==='Calculado'?'Aguardando emissão':'Aguardando estudo'}</span>`;
 
 const COLS=[
  {k:'ck',w:'48px',h:()=>{ const v=visible(); const n=v.filter(r=>S.sel.has(r.id)).length; const st=n===0?'':n===v.length?'on':'mid'; return `<button class="cbx ${st}" data-a="selall" role="checkbox" aria-checked="${n===0?'false':n===v.length?'true':'mixed'}" aria-label="Selecionar todos">${st==='on'?'<span class="mss">check</span>':''}</button>`; },
@@ -98,9 +97,9 @@ const COLS=[
 ];
 const FLT=[
  {k:'rev',l:'Revisão',o:['Precisa de revisão','Sem revisão'],m:(r,v)=>v.includes(r.rev?'Precisa de revisão':'Sem revisão')},
- {k:'ref',l:'Referência',o:['Abr/2025','Mar/2025','Fev/2025'],m:(r,v)=>v.includes(r.ref)},
+ {k:'ref',l:'Referência',o:['Mar/2025','Fev/2025'],m:(r,v)=>v.includes(r.ref)},
  {k:'lei',l:'Leitura',o:Object.keys(LEI),m:(r,v)=>v.includes(r.lei.st)},
- {k:'est',l:'Estudo',o:['Aguardando leitura',...Object.keys(EST)],m:(r,v)=>v.includes(r.est?r.est.st:'Aguardando leitura')},
+ {k:'est',l:'Estudo',o:Object.keys(EST),m:(r,v)=>v.includes(r.est.st)},
  {k:'rec',l:'Conta a receber',o:['Aguardando',...Object.keys(REC)],m:(r,v)=>v.includes(r.rec?r.rec.st:'Aguardando')},
  {k:'cart',l:'Carteira',o:CARTS,m:(r,v)=>v.includes(TIT[r.t].cart)},
  {k:'conc',l:'Concessionária',o:CONCS,m:(r,v)=>v.includes(UCS[r.uc].conc)},
@@ -149,9 +148,8 @@ H.fcP=r=>{ const l=r.lei; const pre=l.st==='Coleta agendada';
   return `<div class="pnl tight${shut('fc')}" style="padding:16px">${stageHead('receipt_long','Fatura da concessionária',H.badge(l.st,LEI),'','fc')}
   <div class="bd">${kv(pre?[['Previsão de leitura',l.dt]]:[[l.st==='Processado'?'Processado em':'Coletada em',l.dt],...(r.fc?[['Total injetado',kwh(r.fc.inj)],['Consumo',kwh(r.fc.cons)],['Valor da fatura',brl(r.fc.val)]]:[])])}</div></div>`; };
 H.estP=r=>{ const e=r.est;
-  if(!e) return `<div class="pnl tight off" style="padding:16px">${stageHead('calculate','Estudo','','Aguardando leitura')}</div>`;
   return `<div class="pnl tight${shut('est')}" style="padding:16px">${stageHead('calculate','Estudo',H.badge(e.st,EST),'','est')}
-  <div class="bd">${e.val!=null?kv([['Valor do estudo',brl(e.val)],['Economia total',brl(e.eco),'ok'],['Taxa de entrega',brl(e.taxa)]]):`<div class="cap" style="font-size:13px;line-height:20px">${esc((r.cm.find(c=>c.sys)||{}).t||'Não foi possível calcular')}</div><button class="b out full" data-a="toast" data-msg="Recálculo solicitado">Recalcular</button>`}</div></div>`; };
+  <div class="bd">${e.st==='Em cálculo'?'<div class="cap" style="font-size:13px;line-height:20px">Calculando o estudo a partir da fatura processada.</div>':e.val!=null?kv([['Valor do estudo',brl(e.val)],['Economia total',brl(e.eco),'ok'],['Taxa de entrega',brl(e.taxa)]]):`<div class="cap" style="font-size:13px;line-height:20px">${esc((r.cm.find(c=>c.sys)||{}).t||'Não foi possível calcular')}</div><button class="b out full" data-a="toast" data-msg="Recálculo solicitado">Recalcular</button>`}</div></div>`; };
 H.recP=r=>{ const c=r.rec;
   if(!c) return `<div class="pnl tight off" style="padding:16px">${stageHead('request_quote','Conta a receber','',r.est&&r.est.val!=null?'Aguardando emissão':'Aguardando estudo')}</div>`;
   const m=x=>x||'<span style="color:var(--s400);font-weight:400">—</span>';
