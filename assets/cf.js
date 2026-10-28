@@ -62,15 +62,20 @@ const ROWS=[
   R('FT-10252','Abr/2025','pad','3014567891',{st:'Coleta agendada',dt:'24/04/2025'},null,null,null,0,[],'aguardando'),
   R('FT-10198','Fev/2025','pad','3014567890',{st:'Processado',dt:'24/02/2025'},{inj:2980,cons:2390,val:1288.40},{st:'Calculado',val:1764.12,eco:298.50,taxa:19.90},{st:'Liquidado',tit:'000181220',ven:'05/03/2025',pag:'Boleto',banco:'Sicredi'},0,[],'liquidado')
 ];
-const S={sel:new Set(),cur:'FT-10232',railOpen:true,fltOpen:true,q:'',f:{},dw:null};
+const S={sel:new Set(),cur:'FT-10232',railOpen:true,fltOpen:true,q:'',f:{},dw:null,fold:new Set()};
 const row=id=>ROWS.find(r=>r.id===id);
 
 /* etapa mais avançada = status do faturamento no resumo */
 const fase=r=>r.rec?['Conta a receber',r.rec.st,REC]:r.est?['Estudo',r.est.st,EST]:['Leitura',r.lei.st,LEI];
+/* segmentos da etapa (como na v1): anteriores em verde, atual escura (vermelha se falhou), seguintes apagadas */
+const FAIL=['Falha na leitura','Falha no cálculo','Atrasado'], DONE=['Liquidado','Sem cobrança'];
+const etapa=r=>r.rec?2:r.est?1:0;
 
 /* ---------- peças ---------- */
 const H={};
 H.badge=(txt,map)=>`<span class="bdg ${map[txt]||'b-grey'}">${esc(txt)}</span>`;
+H.steps=r=>{ const i=etapa(r), st=fase(r)[1];
+  return `<span class="steps" aria-hidden="true">${[0,1,2].map(k=>`<i class="${k<i||DONE.includes(st)?'d':k===i&&st!=='Coleta agendada'?(FAIL.includes(st)?'e':'c'):''}"></i>`).join('')}</span>`; };
 H.lei=r=>{ const pre=r.lei.st==='Coleta agendada'; return `<div class="two">${H.badge(r.lei.st,LEI)}<span class="s" style="margin-top:4px">${pre?'Prevista '+r.lei.dt:r.lei.st==='Processado'?'Processado em '+r.lei.dt.slice(0,5):'Coletada em '+r.lei.dt.slice(0,5)}</span></div>`; };
 H.tit=r=>{ const t=TIT[r.t]; return `<div class="ent"><span class="ic ${t.pj?'':'pf'}"><span class="msr fill">${t.pj?'bolt':'person'}</span></span><div class="t"><div>${esc(t.n.toUpperCase())}</div><div class="s">${esc(t.cart)}</div></div>${t.grp?`<button class="grp" data-a="grupo" data-v="${esc(t.grp)}" title="${esc(t.grp)}" aria-label="Abrir ${esc(t.grp)}"><span class="msr fill">groups</span></button>`:''}</div>`; };
 H.ust=u=>{ const s=UST[u.st]; return `<span class="ust ${s[0]}" title="${u.st}" aria-label="${u.st}"><span class="msr fill">${s[1]}</span></span>`; };
@@ -82,6 +87,7 @@ const COLS=[
  {k:'ck',w:'48px',h:()=>{ const v=visible(); const n=v.filter(r=>S.sel.has(r.id)).length; const st=n===0?'':n===v.length?'on':'mid'; return `<button class="cbx ${st}" data-a="selall" role="checkbox" aria-checked="${n===0?'false':n===v.length?'true':'mixed'}" aria-label="Selecionar todos">${st==='on'?'<span class="mss">check</span>':''}</button>`; },
    c:r=>`<button class="cbx ${S.sel.has(r.id)?'on':''}" data-a="sel" data-id="${r.id}" role="checkbox" aria-checked="${S.sel.has(r.id)}" aria-label="Selecionar ${r.id}">${S.sel.has(r.id)?'<span class="mss">check</span>':''}</button>`},
  {k:'ref',w:'96px',h:()=>'<button class="so">Ref.<span class="msr">import_export</span></button>',c:r=>`<div class="two"><span>${r.ref}</span><span class="s">${r.id}</span></div>`},
+ {k:'eta',w:'212px',h:()=>'Etapa',c:r=>`${H.steps(r)}<span title="Etapa ${etapa(r)+1} de 3">${fase(r)[0]}</span>`,cel:1},
  {k:'lei',w:'176px',h:()=>'<button class="so">Leitura<span class="msr">import_export</span></button>',c:H.lei},
  {k:'tit',w:'minmax(260px,1.3fr)',h:()=>'Titular',c:H.tit},
  {k:'uc',w:'minmax(200px,1fr)',h:()=>'Unidade consumidora',c:H.uc,cel:1},
@@ -116,41 +122,44 @@ H.table=()=>{ const gt=COLS.map(c=>c.w).join(' '); const v=visible();
 /* ---------- resumo ---------- */
 const it=(ic,l,v,act,cl)=>`<div class="it"><span class="ci ${cl||''}"><span class="msr fill">${ic}</span></span><div class="grow"><div class="cap">${l}</div><div class="v">${v}</div></div>${act||''}</div>`;
 const lk=(msg,lbl)=>`<button class="ib" data-a="toast" data-msg="${esc(msg)}" aria-label="${esc(lbl)}"><span class="msr">open_in_new</span></button>`;
+const FOLDS=['tit','uc','fc','est','rec','cm'];
+const fold=(k,ttl)=>`<button class="ib" data-a="fold" data-k="${k}" aria-label="${S.fold.has(k)?'Expandir':'Recolher'} ${ttl}" aria-expanded="${!S.fold.has(k)}"><span class="msr chev">expand_less</span></button>`;
+const shut=k=>S.fold.has(k)?' closed':'';
 const kv=rows=>`<div class="kvl">${rows.map(x=>`<div><span>${x[0]}</span><b class="${x[2]||''}">${x[1]}</b></div>`).join('')}</div>`;
-H.rbar=()=>`<div class="rbar"><span class="msr">article_shortcut</span><span class="grow">Resumo do faturamento</span><button class="ib" data-a="railclose" aria-label="Fechar resumo"><span class="msr">right_panel_close</span></button></div>`;
+H.rbar=()=>{ const all=FOLDS.every(k=>!S.fold.has(k)); return `<div class="rbar"><span class="msr">article_shortcut</span><span class="grow">Resumo do faturamento</span><button class="ib tip" data-a="foldall" data-tip="${all?'Recolher tudo':'Expandir tudo'}" aria-label="${all?'Recolher todas as seções':'Expandir todas as seções'}"><span class="msr">${all?'unfold_less':'unfold_more'}</span></button><button class="ib" data-a="railclose" aria-label="Fechar resumo"><span class="msr">right_panel_close</span></button></div>`; };
 H.head=r=>{ const f=fase(r); return `<div class="pnl"><div class="tkhead"><span class="ttl" style="flex:none">${r.ref}</span>${H.badge(f[1],f[2])}<span style="flex:1"></span><button class="more" data-a="rowmenu" data-id="${r.id}" aria-label="Ações do faturamento" aria-haspopup="menu"><span class="msr">more_horiz</span></button></div>
-  <div class="cap" style="font-size:14px;line-height:20px">${r.id} · ${f[0]}</div>
+  <div class="cap" style="font-size:14px;line-height:20px;display:flex;align-items:center;gap:8px">${H.steps(r)}${r.id} · ${f[0]}</div>
   <a class="b pri full" href="faturamento-detalhe.html?estado=${r.e}" style="text-decoration:none">Abrir detalhamento<span class="msr">arrow_forward</span></a></div>`; };
 H.rev=r=>r.rev?`<div class="rvbar" role="status"><span class="msr fill ic">flag</span><b>Precisa de revisão</b><button class="b out sm" data-a="revoff" data-id="${r.id}">Revisado</button></div>`:'';
 H.titP=r=>{ const t=TIT[r.t];
-  return `<div class="pnl tight"><div class="ph2" style="padding:0 4px 4px"><span class="who" style="padding:0;flex:1;min-width:0"><span class="av"><span class="msr fill">${t.pj?'work':'person'}</span></span><span style="min-width:0"><span class="nm" style="display:block">${esc(t.n)}</span><span class="cap">Titular</span></span></span>${lk('Abriria o cadastro do titular','Abrir cadastro')}</div>
-  ${it('badge',t.pj?'CNPJ':'CPF',t.doc,`<button class="ib" data-a="copy" data-v="${t.doc}" aria-label="Copiar ${t.pj?'CNPJ':'CPF'}"><span class="msr">content_copy</span></button>`)}
+  return `<div class="pnl tight${shut('tit')}"><div class="ph2" style="padding:0 4px 4px"><span class="who" style="padding:0;flex:1;min-width:0"><span class="av"><span class="msr fill">${t.pj?'work':'person'}</span></span><span style="min-width:0"><span class="nm" style="display:block">${esc(t.n)}</span><span class="cap">Titular</span></span></span>${lk('Abriria o cadastro do titular','Abrir cadastro')}${fold('tit','titular')}</div>
+  <div class="bd">${it('badge',t.pj?'CNPJ':'CPF',t.doc,`<button class="ib" data-a="copy" data-v="${t.doc}" aria-label="Copiar ${t.pj?'CNPJ':'CPF'}"><span class="msr">content_copy</span></button>`)}
   ${it('folder_shared','Carteira',esc(t.cart),lk('Abriria a carteira','Abrir carteira'))}
-  ${t.grp?it('groups','Grupo',esc(t.grp),`<button class="ib" data-a="grupo" data-v="${esc(t.grp)}" aria-label="Abrir grupo"><span class="msr">open_in_new</span></button>`):''}</div>`; };
+  ${t.grp?it('groups','Grupo',esc(t.grp),`<button class="ib" data-a="grupo" data-v="${esc(t.grp)}" aria-label="Abrir grupo"><span class="msr">open_in_new</span></button>`):''}</div></div>`; };
 H.ucP=r=>{ const u=UCS[r.uc]; const s=UST[u.st];
   const tags=[u.man&&['edit_note','Faturamento manual'],u.rat&&['call_split','Rateio externo'],u.st!=='Em fornecimento'&&[s[1],u.st]].filter(Boolean);
-  return `<div class="pnl tight"><div class="ph2" style="padding:0 4px 4px"><span class="who" style="padding:0;flex:1;min-width:0"><span class="av"><span class="mss fill">electric_meter</span></span><span style="min-width:0"><span class="nm" style="display:block">${r.uc}</span><span class="cap">${esc(u.ap||'Unidade consumidora')}</span></span></span>${lk('Abriria a instalação','Abrir instalação')}</div>
+  return `<div class="pnl tight${shut('uc')}"><div class="ph2" style="padding:0 4px 4px"><span class="who" style="padding:0;flex:1;min-width:0"><span class="av"><span class="mss fill">electric_meter</span></span><span style="min-width:0"><span class="nm" style="display:block">${r.uc}</span><span class="cap">${esc(u.ap||'Unidade consumidora')}</span></span></span>${lk('Abriria a instalação','Abrir instalação')}${fold('uc','unidade consumidora')}</div>
   ${tags.length?`<div class="tags" style="padding:0 4px">${tags.map(x=>`<span class="tag al"><span class="msr fill">${x[0]}</span>${x[1]}</span>`).join('')}</div>`:''}
-  ${it(s[1],'Status',u.st,'',s[0]==='on'?'ok':'')}
+  <div class="bd">${it(s[1],'Status',u.st,'',s[0]==='on'?'ok':'')}
   ${it('electrical_services','Concessionária',u.conc)}
   ${u.leg?it('tag','Código legado',u.leg,`<button class="ib" data-a="copy" data-v="${u.leg}" aria-label="Copiar código legado"><span class="msr">content_copy</span></button>`):''}
-  <button class="b out full" data-a="ucdw" data-id="${r.id}"><span class="msr">tune</span>Detalhes e configurações</button></div>`; };
-const stageHead=(ic,ttl,badge,cap)=>`<div class="stg"><span class="ki k-d" style="width:24px;height:24px"><span class="msr fill">${ic}</span></span><div class="grow"><div class="ttl" style="font-size:15px">${ttl}</div>${cap?`<div class="cap">${cap}</div>`:''}</div>${badge||''}</div>`;
+  <button class="b out full" data-a="ucdw" data-id="${r.id}"><span class="msr">tune</span>Detalhes e configurações</button></div></div>`; };
+const stageHead=(ic,ttl,badge,cap,k)=>`<div class="stg"><span class="ki k-d" style="width:24px;height:24px"><span class="msr fill">${ic}</span></span><div class="grow"><div class="ttl" style="font-size:15px">${ttl}</div>${cap?`<div class="cap">${cap}</div>`:''}</div>${badge||''}${k?fold(k,ttl.toLowerCase()):''}</div>`;
 H.fcP=r=>{ const l=r.lei; const pre=l.st==='Coleta agendada';
-  return `<div class="pnl tight" style="padding:16px">${stageHead('receipt_long','Fatura da concessionária',H.badge(l.st,LEI))}
-  ${kv(pre?[['Previsão de leitura',l.dt]]:[[l.st==='Processado'?'Processado em':'Coletada em',l.dt],...(r.fc?[['Total injetado',kwh(r.fc.inj)],['Consumo',kwh(r.fc.cons)],['Valor da fatura',brl(r.fc.val)]]:[])])}</div>`; };
+  return `<div class="pnl tight${shut('fc')}" style="padding:16px">${stageHead('receipt_long','Fatura da concessionária',H.badge(l.st,LEI),'','fc')}
+  <div class="bd">${kv(pre?[['Previsão de leitura',l.dt]]:[[l.st==='Processado'?'Processado em':'Coletada em',l.dt],...(r.fc?[['Total injetado',kwh(r.fc.inj)],['Consumo',kwh(r.fc.cons)],['Valor da fatura',brl(r.fc.val)]]:[])])}</div></div>`; };
 H.estP=r=>{ const e=r.est;
   if(!e) return `<div class="pnl tight off" style="padding:16px">${stageHead('calculate','Estudo','','Aguardando leitura')}</div>`;
-  return `<div class="pnl tight" style="padding:16px">${stageHead('calculate','Estudo',H.badge(e.st,EST))}
-  ${e.val!=null?kv([['Valor do estudo',brl(e.val)],['Economia total',brl(e.eco),'ok'],['Taxa de entrega',brl(e.taxa)]]):`<div class="cap" style="font-size:13px;line-height:20px">${esc((r.cm.find(c=>c.sys)||{}).t||'Não foi possível calcular')}</div><button class="b out full" data-a="toast" data-msg="Recálculo solicitado">Recalcular</button>`}</div>`; };
+  return `<div class="pnl tight${shut('est')}" style="padding:16px">${stageHead('calculate','Estudo',H.badge(e.st,EST),'','est')}
+  <div class="bd">${e.val!=null?kv([['Valor do estudo',brl(e.val)],['Economia total',brl(e.eco),'ok'],['Taxa de entrega',brl(e.taxa)]]):`<div class="cap" style="font-size:13px;line-height:20px">${esc((r.cm.find(c=>c.sys)||{}).t||'Não foi possível calcular')}</div><button class="b out full" data-a="toast" data-msg="Recálculo solicitado">Recalcular</button>`}</div></div>`; };
 H.recP=r=>{ const c=r.rec;
   if(!c) return `<div class="pnl tight off" style="padding:16px">${stageHead('request_quote','Conta a receber','',r.est&&r.est.val!=null?'Aguardando emissão':'Aguardando estudo')}</div>`;
   const m=x=>x||'<span style="color:var(--s400);font-weight:400">—</span>';
-  return `<div class="pnl tight" style="padding:16px">${stageHead('request_quote','Conta a receber',H.badge(c.st,REC))}
-  ${c.st==='Sem cobrança'?'<div class="cap" style="font-size:13px;line-height:20px">Este faturamento não gera cobrança.</div>':kv([['Nº do título',m(c.tit)],['Vencimento',m(c.ven),c.st==='Atrasado'?'dg':''],['Tipo de pagamento',m(c.pag)],['Banco',m(c.banco)]])}</div>`; };
+  return `<div class="pnl tight${shut('rec')}" style="padding:16px">${stageHead('request_quote','Conta a receber',H.badge(c.st,REC),'','rec')}
+  <div class="bd">${c.st==='Sem cobrança'?'<div class="cap" style="font-size:13px;line-height:20px">Este faturamento não gera cobrança.</div>':kv([['Nº do título',m(c.tit)],['Vencimento',m(c.ven),c.st==='Atrasado'?'dg':''],['Tipo de pagamento',m(c.pag)],['Banco',m(c.banco)]])}</div></div>`; };
 H.cm=r=>{ const ev=c=>{ const who=c.who?`<span class="who2" data-name="${esc(c.who)}">${ini(c.who)}</span>`:'<span class="who2 sys" data-name="Sistema"><span class="msr fill">bolt</span></span>';
     return `<div class="ev ${c.isNew?'new':''}"><span class="i ${c.sys?(c.t.includes('revis')?'c-alert':'c-def'):'c-edit'}"><span class="msr fill">${c.sys?(c.t.includes('revis')?'flag':'bolt'):'chat'}</span></span>${who}<div class="n">${esc(c.t)}</div><div class="d">${c.d}</div></div>`; };
-  return `<div class="act-p"><div class="act-h"><span class="grow">Comentários</span><span class="cap">${r.cm.length||''}</span></div><div class="act-l evs">${r.cm.map((c,i)=>(i?'<div class="lnk"></div>':'')+ev(c)).join('')}</div>
+  return `<div class="act-p${shut('cm')}"><div class="act-h"><span class="grow">Comentários</span><span class="cap">${r.cm.length||''}</span>${fold('cm','comentários')}</div><div class="act-l evs">${r.cm.map((c,i)=>(i?'<div class="lnk"></div>':'')+ev(c)).join('')}</div>
   <form class="cmp" data-id="${r.id}"><label class="sr" for="cmT" style="position:absolute;left:-9999px">Comentário</label><textarea class="ta" id="cmT" placeholder="Escreva um comentário"></textarea><div class="row"><button class="b pri sm" type="submit">Comentar</button></div></form></div>`; };
 H.rail=r=>H.rbar()+H.head(r)+H.rev(r)+H.titP(r)+H.ucP(r)+H.fcP(r)+H.estP(r)+H.recP(r)+H.cm(r);
 
@@ -216,6 +225,8 @@ function onClick(e){
     case 'fopt': { const f=a.dataset.k, v=a.dataset.v; const cur=S.f[f]||[]; S.f[f]=cur.includes(v)?cur.filter(x=>x!==v):[...cur,v]; const on=S.f[f].includes(v); a.setAttribute('aria-checked',on); const c=a.querySelector('.cbx'); c.classList.toggle('on',on); c.innerHTML=on?'<span class="mss">check</span>':''; refresh(); const nb=document.querySelector(`.flt[data-k="${f}"]`); if(nb){ popAnchor=nb; nb.classList.add('open'); } break; }
     case 'fclr': e.stopPropagation(); S.f[a.dataset.k]=[]; closePop(); refresh(); break;
     case 'fclrall': S.f={}; refresh(); break;
+    case 'fold': { const f=a.dataset.k; S.fold.has(f)?S.fold.delete(f):S.fold.add(f); refresh(); const b=document.querySelector(`#rail [data-a="fold"][data-k="${f}"]`); if(b) b.focus(); break; }
+    case 'foldall': { const all=FOLDS.every(f=>!S.fold.has(f)); S.fold=new Set(all?FOLDS:[]); refresh(); const b=document.querySelector('#rail [data-a="foldall"]'); if(b) b.focus(); break; }
     case 'railclose': S.railOpen=false; refresh(); break;
     case 'copy': { const v=a.dataset.v; try{ navigator.clipboard.writeText(v).then(()=>toast('Copiado',v),()=>toast(v)); }catch(err){ toast(v); } break; }
     case 'toast': toast(a.dataset.msg); break;

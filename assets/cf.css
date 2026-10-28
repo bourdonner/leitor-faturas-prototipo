@@ -62,3 +62,15 @@
 @media (prefers-reduced-motion:reduce){.fp .dw,.fp .dw-ov{transition:none}}
 .fp .two>.bdg{align-self:flex-start}
 .fp .kvl b.al{color:var(--alert)}
+
+/* etapa: 3 segmentos (leitura · estudo · conta a receber), como na v1 */
+.fp .steps{display:flex;align-items:center;gap:3px;flex:none}
+.fp .steps i{width:18px;height:6px;border-radius:999px;background:var(--fsec)}
+.fp .steps i.d{background:var(--success)} .fp .steps i.c{background:var(--ink)} .fp .steps i.e{background:var(--danger)}
+
+/* resumo: seções recolhíveis (mesmo padrão .pnl.closed do fp.css) */
+.fp .stg .ib{margin-right:-4px}
+.fp .act-p .chev{transition:transform .2s}
+.fp .act-p.closed .chev{transform:rotate(180deg)}
+.fp .act-p.closed .cmp{display:none}
+.fp .act-p.closed .act-h{padding-bottom:16px}
