@@ -41,7 +41,9 @@ const UCS={
   '3020011223':{st:'Em fornecimento',leg:'FS-220114',ap:null,conc:'Força Sul',rede:'Trifásico',sub:'A4',mod:'Geração Distribuída',ger:'Sem produção',comp:'Geração compartilhada',auto:false,saldo:50,man:false,rat:false},
   '3011122334':{st:'Em fornecimento',leg:null,ap:'Filial Água Verde',conc:'Força Sul',rede:'Trifásico',sub:'B3',mod:'Geração Distribuída',ger:'Sem produção',comp:'Geração compartilhada',auto:false,saldo:50,man:false,rat:true}
 };
-/* faturamentos: [id, ref, titular, uc, leitura{st,dt}, concessionária{inj,cons,val}, estudo{st,val,eco,taxa}, receber{st,tit,ven,pag,banco}, revisão, comentários, estado do detalhe] */
+/* cidade da UC */
+const CID={'3014567890':'Curitiba - PR','3014567891':'São José dos Pinhais - PR','3000451278':'Ponta Grossa - PR','3009876543':'Londrina - PR','3012233445':'Curitiba - PR','3005566778':'Maringá - PR','3017788990':'Cascavel - PR','3003344556':'Guarapuava - PR','3020011223':'Joinville - SC','3011122334':'Curitiba - PR'};
+/* faturamentos:[id, ref, titular, uc, leitura{st,dt}, concessionária{inj,cons,val}, estudo{st,val,eco,taxa}, receber{st,tit,ven,pag,banco}, revisão, comentários, estado do detalhe] */
 const R=(id,ref,t,uc,lei,fc,est,rec,rev,cm,e)=>({id,ref,t,uc,lei,fc,est,rec,rev:!!rev,cm:cm||[],e});
 const ROWS=[
   R('FT-10231','Mar/2025','pad','3014567890',{st:'Processado',dt:'26/03/2025'},{inj:3120,cons:2480,val:1340.22},{st:'Calculado',val:1882.40,eco:312.80,taxa:19.90},{st:'Aberto',tit:'000184512',ven:'05/04/2025',pag:'Boleto',banco:'Sicredi'},0,
@@ -78,7 +80,7 @@ H.steps=r=>{ const i=etapa(r), st=fase(r)[1];
 H.lei=r=>H.badge(r.lei.st,LEI);
 H.tit=r=>{ const t=TIT[r.t]; return `<div class="ent"><span class="ic ${t.pj?'':'pf'}"><span class="msr fill">${t.pj?'bolt':'person'}</span></span><div class="t"><div>${esc(t.n.toUpperCase())}</div><div class="s">${esc(t.doc)}</div></div>${t.grp?`<button class="grp" data-a="grupo" data-v="${esc(t.grp)}" title="${esc(t.grp)}" aria-label="Abrir ${esc(t.grp)}"><span class="msr fill">groups</span></button>`:''}</div>`; };
 H.ust=u=>{ const s=UST[u.st]; return `<span class="ust ${s[0]}" title="${u.st}" aria-label="${u.st}"><span class="msr fill">${s[1]}</span></span>`; };
-H.uc=r=>{ const u=UCS[r.uc]; const sub=[u.ap||u.leg,u.conc].filter(Boolean).join(' · '); return `${H.ust(u)}<div class="two"><span>${r.uc}</span><span class="s">${esc(sub)}</span></div>`; };
+H.uc=r=>`${H.ust(UCS[r.uc])}<div class="two"><span>${r.uc}</span><span class="s">${esc(CID[r.uc])}</span></div>`;
 H.est=r=>H.badge(r.est.st,EST);
 H.rec=r=>r.rec?H.badge(r.rec.st,REC):`<span style="color:var(--s400)">${r.est.st==='Calculado'?'Aguardando emissão':'Aguardando estudo'}</span>`;
 
@@ -107,7 +109,7 @@ const FLT=[
 ];
 function visible(){ const q=S.q.trim().toLowerCase();
   return ROWS.filter(r=>{ const t=TIT[r.t], u=UCS[r.uc];
-    if(q&&![r.id,r.ref,t.n,t.doc,r.uc,u.leg,u.ap,u.conc].join(' ').toLowerCase().includes(q)) return false;
+    if(q&&![r.id,r.ref,t.n,t.doc,r.uc,u.leg,u.ap,u.conc,CID[r.uc]].join(' ').toLowerCase().includes(q)) return false;
     for(const f of FLT){ const v=S.f[f.k]; if(v&&v.length&&!f.m(r,v)) return false; } return true; }); }
 
 H.filters=()=>FLT.map(f=>{ const v=S.f[f.k]||[]; const has=v.length>0;
