@@ -1,0 +1,64 @@
+/* Contas a Faturar v2 — listagem + resumo no padrão do Faturamento Pendente (fp.css). Só o que o fp.css não tem. */
+
+/* tabela: célula de duas linhas */
+.fp .two{display:flex;flex-direction:column;min-width:0;line-height:18px}
+.fp .two>*{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fp .two .s{font-size:12px;line-height:16px;color:var(--mid)}
+.fp .two .s.al{color:var(--alert)} .fp .two .s.dg{color:var(--danger)}
+.fp .tr.row{min-height:60px}
+.fp .tr.row>div.cel{display:flex;align-items:center;gap:8px}
+
+/* UC: ícone de status no lugar do texto */
+.fp .ust{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;flex:none;color:#fff}
+.fp .ust .msr{font-size:12px}
+.fp .ust.on{background:var(--success)} .fp .ust.off{background:var(--alert)} .fp .ust.can{background:var(--danger)}
+.fp.dk .ust.on,.fp.dk .ust.off{color:#0c0a09}
+
+/* titular: grupo como ícone com link */
+.fp .ent .grp{margin-left:auto;width:24px;height:24px;border-radius:6px;display:grid;place-items:center;color:var(--ink3);flex:none}
+.fp .ent .grp:hover{background:var(--fsec)}
+.fp .ent .grp .msr{font-size:16px}
+
+/* revisão do operador */
+.fp .rvf{width:24px;height:24px;border-radius:6px;display:grid;place-items:center;color:var(--alert)}
+.fp .rvf .msr{font-size:18px}
+.fp .rvbar{display:flex;align-items:center;gap:12px;padding:12px 12px 12px 16px;border-radius:12px;background:var(--fg);box-shadow:inset 0 0 0 1px var(--alert)}
+.fp .rvbar .msr.ic{color:var(--alert);font-size:20px}
+.fp .rvbar b{flex:1;font-weight:600;line-height:20px}
+
+/* resumo: faixa de destaques (o que impacta faturar) */
+.fp .tags{display:flex;flex-wrap:wrap;gap:6px}
+.fp .tag{display:inline-flex;align-items:center;gap:4px;height:24px;padding:0 8px;border-radius:6px;background:var(--fg);font:500 12px/16px Inter;color:var(--ink)}
+.fp .tag .msr{font-size:14px}
+.fp .tag.al{color:var(--alert);box-shadow:inset 0 0 0 1px var(--alert)}
+
+/* resumo: linhas chave-valor compactas */
+.fp .kvl{background:var(--fg);border-radius:8px;padding:4px 12px}
+.fp .kvl>div{display:flex;align-items:baseline;gap:12px;padding:6px 0;border-bottom:1px solid var(--fsec);font-size:13px;line-height:20px}
+.fp .kvl>div:last-child{border-bottom:0}
+.fp .kvl span{color:var(--mid);flex:1;min-width:0}
+.fp .kvl b{font-weight:500;text-align:right;font-variant-numeric:tabular-nums}
+.fp .kvl b.ok{color:var(--success)} .fp .kvl b.dg{color:var(--danger)} .fp .kvl b.mut{color:var(--s400);font-weight:400}
+.fp .stg{display:flex;align-items:center;gap:8px}
+.fp .stg .grow{flex:1;min-width:0}
+.fp .pnl.off{opacity:.55}
+
+/* comentários */
+.fp .cmp{display:flex;flex-direction:column;gap:8px;padding:0 16px 16px}
+.fp .cmp .ta{height:72px;background:var(--fg)}
+.fp .cmp .row{display:flex;justify-content:flex-end}
+.fp .act-p .act-l:empty::after{content:"Nenhum comentário";display:block;text-align:center;color:var(--mid);font-size:13px;padding:8px 0}
+
+/* drawer da UC */
+.fp .dw-ov{position:fixed;inset:0;background:rgba(68,64,60,.5);z-index:90;opacity:0;pointer-events:none;transition:opacity .2s}
+.fp .dw-ov.on{opacity:1;pointer-events:auto}
+.fp .dw{position:fixed;top:0;right:0;bottom:0;width:480px;max-width:100vw;background:var(--fg);z-index:91;display:flex;flex-direction:column;box-shadow:-10px 0 30px rgba(0,0,0,.12);transform:translateX(100%);transition:transform .28s cubic-bezier(.22,1,.36,1)}
+.fp .dw.on{transform:none}
+.fp .dw .dwh{display:flex;align-items:center;gap:12px;padding:24px 24px 16px}
+.fp .dw .dwh .grow{flex:1;min-width:0}
+.fp .dw h2{margin:0;font:600 24px/32px Poppins,sans-serif;color:var(--brand)}
+.fp .dw .dwb{flex:1;overflow:auto;padding:8px 24px 24px;display:flex;flex-direction:column;gap:16px}
+.fp .dw .dwf{padding:16px 24px 24px;display:flex;gap:8px;justify-content:flex-end;border-top:1px solid var(--fsec)}
+@media (prefers-reduced-motion:reduce){.fp .dw,.fp .dw-ov{transition:none}}
+.fp .two>.bdg{align-self:flex-start}
+.fp .kvl b.al{color:var(--alert)}

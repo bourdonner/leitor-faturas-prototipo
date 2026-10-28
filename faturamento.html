@@ -6,186 +6,143 @@
 <title>Contas a Faturar</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600&family=Geist:wght@500&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,300..600,0..1,0&family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@20..48,400,0..1,0&display=block" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0..1,0&family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@20..48,400,0..1,0&display=block" rel="stylesheet">
+<link rel="stylesheet" href="assets/fp.css">
+<link rel="stylesheet" href="assets/cf.css">
 <style>
-  :root{
-    --ink:#1c1917; --ink2:#0c0a09; --ink3:#44403c; --mid:#78716c; --s400:#a8a29e; --border:#d6d3d1; --s200:#e7e5e4; --s100:#f5f5f4; --s50:#fafaf9; --white:#fff;
-    --brand:#71902f; --success:#65a30d; --alert:#f97316; --danger:#f43f5e; --info:#2563eb;
-  }
-  *{box-sizing:border-box}
   html,body{margin:0}
-  body{font-family:Inter,system-ui,sans-serif;color:var(--ink);background:var(--white);font-size:14px;line-height:24px;-webkit-font-smoothing:antialiased}
-  button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;padding:0}
-  .msr,.mss{font-weight:400;font-style:normal;line-height:1;display:inline-block;white-space:nowrap;-webkit-font-smoothing:antialiased;user-select:none;font-size:16px}
-  .msr{font-family:"Material Symbols Rounded";font-variation-settings:"FILL" 0,"wght" 400,"GRAD" 0,"opsz" 20}
-  .mss{font-family:"Material Symbols Sharp";font-variation-settings:"FILL" 0,"wght" 400,"GRAD" 0,"opsz" 20}
-  .fill{font-variation-settings:"FILL" 1,"wght" 400,"GRAD" 0,"opsz" 20}
+  body{background:#fafaf9}
+  body.dk{background:#292524}
+  .fp.shell{min-height:100vh;background:var(--sec)}
+  /* sidebar Enershare (48 px) */
   .sidebar{position:fixed;left:16px;top:16px;bottom:24px;width:48px;display:flex;flex-direction:column;z-index:20}
   .sidebar a{text-decoration:none}
   .sidebar .sb-head,.sidebar .sb-foot{padding:8px}
-  .sidebar .sb-brand{width:32px;height:32px;border-radius:8px;background:var(--s50);display:grid;place-items:center}
+  .sidebar .sb-brand{width:32px;height:32px;border-radius:8px;background:var(--fg);display:grid;place-items:center}
   .sidebar .sb-content{flex:1}
   .sidebar .sb-sec{padding:8px;display:flex;flex-direction:column}
   .sidebar .sb-item{width:32px;height:36px;border-radius:4px;display:grid;place-items:center;color:var(--ink)}
-  .sidebar .sb-item:hover,.sidebar .sb-item.on{background:var(--s100)}
-  .sidebar .sb-item.t .mss{color:var(--ink3)}
+  .sidebar .sb-item:hover,.sidebar .sb-item.on{background:var(--fsec)}
+  .fp.dk .sidebar .sb-item:hover,.fp.dk .sidebar .sb-item.on{background:var(--fg)}
   .sidebar .sb-av{width:32px;height:32px;border-radius:8px;background:linear-gradient(140deg,#c7d9a4,#71902f);display:grid;place-items:center;color:#fff;font:600 12px Inter}
   .page{margin-left:80px;padding:16px 24px 24px 0;display:flex;flex-direction:column;gap:12px;min-height:100vh}
-  .topbar{height:52px;padding:12px;display:flex;align-items:center}
-  .crumb{display:flex;align-items:center;gap:8px}
-  .crumb .rp{display:flex;align-items:center;gap:8px;padding-right:8px}
-  .ibtn{width:28px;height:28px;border-radius:6px;display:grid;place-items:center;color:var(--ink2)}
-  .vsep{width:1px;height:16px;background:var(--border)}
-  .crumb a,.crumb span.cur{font:500 14px/21px Poppins,sans-serif;text-decoration:none}
-  .crumb a{color:var(--mid)} .crumb .cur{color:var(--brand)}
-  .card{flex:1;background:var(--white);border-radius:24px;box-shadow:0 0 40px rgba(0,0,0,.04);padding:32px 56px 56px;display:flex;flex-direction:column;gap:24px}
+  .topbar{height:40px;padding:0 12px;display:flex;align-items:center;gap:8px}
+  .crumb{display:flex;align-items:center;gap:8px;font:500 14px/21px Poppins,sans-serif}
+  .crumb a{color:var(--mid);text-decoration:none} .crumb a:hover{color:var(--ink)}
+  .crumb .cur{color:var(--brand)}
+  .crumb .vsep{width:1px;height:16px;background:var(--border)}
+  .card{flex:1;background:var(--fg);border-radius:24px;box-shadow:0 0 40px rgba(0,0,0,.04);padding:32px 56px 56px;display:flex;flex-direction:column;gap:24px;min-width:0}
   .head{display:flex;gap:24px;align-items:flex-start}
-  .head .tc{flex:1}
-  .head h1{margin:4px 0 0;font:600 24px/32px Poppins,sans-serif;color:var(--brand)}
-  .head p{margin:4px 0 0;font:500 14px/24px Geist,Inter,sans-serif;color:var(--mid)}
-  .hbtns{display:flex;gap:8px}
-  .sqbtn{width:40px;height:40px;border-radius:8px;background:var(--s50);display:grid;place-items:center;color:var(--ink2)}
-  .sqbtn:hover{background:var(--s100)}
-  .field{height:52px;border-radius:8px;background:rgba(245,245,244,.4);border:1px solid var(--s100);padding:4px 4px 4px 16px;display:flex;align-items:center;gap:8px}
-  .field input{flex:1;border:0;background:transparent;font:400 14px/24px Inter;color:var(--ink);outline:none;min-width:0}
-  .field input::placeholder{color:var(--mid)}
-  .field:focus-within{border-color:var(--border)}
-  /* filtros (componente Filter da lib) */
-  .filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:-8px}
-  .flt{position:relative}
-  .flt>button{height:32px;padding:0 8px 0 12px;border:1px dashed var(--border);border-radius:6px;display:inline-flex;align-items:center;gap:6px;font:500 13px Inter;color:var(--ink)}
-  .flt>button:hover{background:var(--s50)}
-  .flt>button .v{display:inline-flex;gap:4px}
-  .flt>button .v span{height:20px;padding:0 6px;border-radius:4px;background:var(--s100);font-size:12px;line-height:20px}
-  .flt>button .sepv{width:1px;height:16px;background:var(--border)}
-  .pop{position:absolute;left:0;top:calc(100% + 6px);min-width:220px;background:#fff;border:1px solid var(--s100);border-radius:8px;box-shadow:0 10px 15px -3px rgba(0,0,0,.10),0 4px 6px -4px rgba(0,0,0,.10);padding:4px;z-index:30}
-  .pop[hidden]{display:none}
-  .pop label{display:flex;align-items:center;gap:8px;height:34px;padding:0 8px;border-radius:6px;cursor:pointer;justify-content:space-between}
-  .pop label:hover{background:var(--s100)}
-  .pop input{accent-color:var(--ink)}
-  .clear{font:500 13px Inter;color:var(--mid);text-decoration:underline}
-  .clear[hidden]{display:none}
-  /* tabela */
-  .table{border:1px solid var(--border);border-radius:8px;overflow:auto}
-  .tr{display:grid;grid-template-columns:48px 110px minmax(220px,1.4fr) 200px 250px 170px 130px 120px 56px;min-width:1150px}
-  .th{height:48px;border-bottom:1px solid var(--border)}
-  .th>div{display:flex;align-items:center;padding:0 16px;font:500 14px/21px Poppins,sans-serif;color:var(--mid);white-space:nowrap}
-  .th>div.r,.row .td.r{justify-content:flex-end}
-  .row{height:60px;cursor:pointer}
-  .row .td{display:flex;align-items:center;padding:0 16px;border-bottom:1px solid var(--border);white-space:nowrap;overflow:hidden;min-width:0;gap:8px;font-variant-numeric:tabular-nums}
-  .row:last-child .td{border-bottom:0}
-  .row:hover .td{background:var(--s50)}
-  .row:focus-visible{outline:2px solid var(--brand);outline-offset:-2px}
-  .cb{width:16px;height:16px;border:1px solid var(--ink);border-radius:4px;flex:none}
-  .two{display:flex;flex-direction:column;line-height:1.35;min-width:0}
-  .two b{font-weight:500;overflow:hidden;text-overflow:ellipsis}
-  .two small{color:var(--mid);font-size:12px;overflow:hidden;text-overflow:ellipsis}
-  /* fase: 3 passos + nome da fase */
-  .steps{display:flex;align-items:center;gap:3px;flex:none}
-  .steps i{width:18px;height:6px;border-radius:999px;background:var(--s200)}
-  .steps i.d{background:var(--success)} .steps i.c{background:var(--ink)} .steps i.e{background:var(--danger)}
-  .badge{display:inline-flex;align-items:center;height:22px;padding:2px 10px;border-radius:9999px;font:600 12px/18px Poppins,sans-serif;color:var(--s50);white-space:nowrap}
-  .b-alert{background:var(--alert)} .b-danger{background:var(--danger)} .b-dark{background:var(--ink)} .b-ok{background:var(--success)} .b-info{background:var(--info)} .b-soft{background:var(--s100);color:var(--ink)}
-  .neg{color:var(--danger)}
-  .more{width:32px;height:32px;border-radius:6px;display:grid;place-items:center;color:var(--ink2)}
-  .more:hover{background:var(--s100)}
-  .pag{display:flex;align-items:center;gap:24px;color:var(--mid)}
-  .pag .sp{flex:1}
-  .empty{padding:48px;text-align:center;color:var(--mid)}
-  .note{position:fixed;right:16px;top:12px;font-size:11px;color:var(--mid);background:var(--white);border:1px solid var(--s200);padding:4px 10px;border-radius:999px;z-index:40}
-  .note a{color:var(--ink);font-weight:600}
-  @media (max-width:767px){
-    .sidebar,.topbar{display:none}
-    .page{margin:0;padding:0}
-    .card{border-radius:0;box-shadow:none;padding:20px 16px}
-    .note{top:auto;bottom:12px}
+  .head .tc{flex:1;min-width:0}
+  .head h1{margin:0;font:600 24px/32px Poppins,sans-serif;color:var(--brand)}
+  .head p{margin:4px 0 0;color:var(--mid)}
+  .head .acts{display:flex;gap:8px}
+  .tip{position:relative}
+  .tip[data-tip]:hover::after,.tip[data-tip]:focus-visible::after{content:attr(data-tip);position:absolute;top:calc(100% + 6px);right:0;background:var(--ink);color:var(--fg);font:500 12px/16px Inter;padding:6px 8px;border-radius:6px;white-space:nowrap;z-index:30;pointer-events:none}
+  .work{display:flex;gap:24px;align-items:flex-start;min-width:0}
+  .work .lst{flex:1;min-width:0;display:flex;flex-direction:column;gap:16px}
+  .tblw{overflow-x:auto}
+  .rail{position:sticky;top:16px}
+  .rail[hidden]{display:none}
+  .empty{padding:48px 16px;text-align:center;color:var(--mid)}
+  .spin{animation:fpspin .9s linear infinite;display:inline-block}
+  @keyframes fpspin{to{transform:rotate(360deg)}}
+  /* pílula do protótipo (igual ao Leitor) */
+  .proto{position:fixed;right:16px;top:14px;z-index:30;display:flex;align-items:center;gap:6px;font:500 11px/16px Inter;color:var(--mid);background:var(--fg);border:1px solid var(--fsec);border-radius:999px;padding:3px 3px 3px 10px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+  .proto button{height:26px;padding:0 10px;border-radius:999px;font:500 11px Inter;color:var(--ink)}
+  .proto button.on{background:var(--ink);color:var(--fg)}
+  .proto .dl{display:flex;align-items:center;gap:2px;padding-left:4px;margin-left:2px;border-left:1px solid var(--border)}
+  .proto .dlk{width:26px;height:26px;border-radius:999px;display:grid;place-items:center;color:var(--ink);text-decoration:none}
+  .proto .dlk:hover{background:var(--fsec)}
+  .proto .dlk svg{width:14px;height:14px}
+  .proto .dlk svg[viewBox="0 0 38 57"]{width:10px;height:15px}
+  @media (max-width:900px){
+    .sidebar{display:none}
+    .page{margin-left:0;padding:8px 0 96px}
+    .card{border-radius:0;padding:24px 16px}
+    .work{flex-direction:column}
+    .rail{position:static;width:100%}
+    .proto{top:auto;bottom:12px;right:12px;left:12px;justify-content:center;flex-wrap:wrap}
+    .tools{gap:8px}
   }
 </style>
+<script src="assets/toast.js"></script>
 </head>
 <body>
+<div class="fp shell" id="app" data-fp-root>
+
 <nav class="sidebar" aria-label="Menu principal">
-  <div class="sb-head"><a class="sb-brand" href="faturamento.html" aria-label="Enershare"><span class="mss fill" style="color:#71902f">emergency</span></a></div>
-  <div class="sb-content"><div class="sb-sec">
-    <a class="sb-item on" href="faturamento.html" aria-current="page" aria-label="Consumidores"><span class="mss fill">badge</span></a>
-    <a class="sb-item" href="#" aria-label="Financeiro"><span class="mss fill">account_balance</span></a>
-    <a class="sb-item" href="index.html" aria-label="Leitor de Faturas"><span class="mss fill">electric_meter</span></a>
-    <a class="sb-item" href="#" aria-label="Usinas"><span class="mss fill">wind_power</span></a>
-    <a class="sb-item t" href="#" aria-label="Pré-cadastro"><span class="mss fill">fact_check</span></a>
-  </div></div>
+  <div class="sb-head"><a class="sb-brand" href="index.html" aria-label="Enershare"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M7.98755 0.0722733C8.21864 1.12089 8.45227 2.15362 8.71118 2.93555C8.84282 3.33304 8.98251 3.67018 9.13403 3.91309C9.28312 4.15207 9.45604 4.3197 9.66138 4.3379C9.79849 4.35053 9.93839 4.29404 10.0784 4.15919C10.2173 4.02523 10.3619 3.80915 10.5129 3.49024C10.8077 2.86795 11.1355 1.83339 11.4983 0.188484L13.6077 2.29786C13.0275 3.20033 12.4647 4.09355 12.0959 4.82813C11.9084 5.20176 11.769 5.5387 11.7043 5.81739C11.6408 6.0915 11.6442 6.33196 11.7747 6.49024C11.8626 6.59711 12.0018 6.6565 12.1965 6.66016C12.39 6.66372 12.6455 6.61265 12.9788 6.49317C13.6291 6.26001 14.5955 5.75727 16.0198 4.84571V7.88184C14.9762 8.10809 13.95 8.34044 13.1731 8.59864C12.7781 8.72994 12.4429 8.86933 12.2014 9.02052C11.9639 9.16925 11.7972 9.34187 11.7786 9.54591L11.7756 9.58009L11.7815 9.58497C11.7805 9.71008 11.8344 9.83758 11.9563 9.96485C12.0895 10.1039 12.3043 10.2484 12.6223 10.3994C13.243 10.6941 14.2759 11.022 15.9182 11.3848L13.8176 13.4893C12.9204 12.9093 12.0304 12.3478 11.2981 11.9805C10.9255 11.7936 10.5895 11.6551 10.3118 11.5908C10.0386 11.5276 9.79876 11.5307 9.64185 11.6611C9.5352 11.7491 9.47647 11.8883 9.4729 12.083C9.46942 12.2766 9.52015 12.5323 9.63989 12.8662C9.87412 13.5193 10.3795 14.4913 11.2971 15.9258H7.99634C7.76523 14.8544 7.53205 13.8 7.27563 13.0107C7.14529 12.6095 7.00759 12.2719 6.85864 12.0342C6.7128 11.8014 6.54092 11.6401 6.33521 11.6445C6.12824 11.649 5.95036 11.8192 5.7981 12.0606C5.64255 12.3071 5.49751 12.6525 5.36353 13.0566C5.10702 13.8305 4.88579 14.8357 4.70337 15.8154L2.40942 13.5215C3.00475 12.599 3.58617 11.6862 3.96313 10.9453C4.15462 10.5689 4.29596 10.2324 4.35864 9.95899C4.41228 9.72483 4.41312 9.51474 4.31274 9.3711L4.26294 9.31348C4.11288 9.1699 3.8672 9.16356 3.58911 9.22559C3.30512 9.28894 2.95975 9.43029 2.58032 9.62012C1.85394 9.98358 0.989455 10.5341 0.170166 11.0947V7.89259C1.24377 7.65663 2.29999 7.423 3.09009 7.16602C3.49168 7.0354 3.82985 6.89749 4.06763 6.74805C4.3007 6.60157 4.46129 6.42789 4.4563 6.22071C4.45158 6.01393 4.28194 5.83634 4.04126 5.68458C3.79523 5.52946 3.45036 5.38558 3.04712 5.25196C2.27515 4.99615 1.2727 4.77478 0.295166 4.58985L2.57544 2.31153C3.49287 2.90182 4.39835 3.47606 5.13306 3.84864C5.50652 4.03801 5.84104 4.17745 6.11255 4.23927C6.37836 4.29975 6.61174 4.29182 6.75317 4.14454C6.8961 3.9969 6.9027 3.75389 6.84106 3.47852C6.778 3.19692 6.63814 2.85313 6.44946 2.47559C6.08821 1.75274 5.53959 0.891472 4.98169 0.0722733H7.98755Z" fill="#71902F" stroke="#71902F" stroke-width=".145"/></svg></a></div>
+  <div class="sb-content">
+    <div class="sb-sec">
+      <a class="sb-item on" href="faturamento.html" title="Consumidores" aria-current="page"><span class="mss fill">badge</span></a>
+      <a class="sb-item" href="#" title="Contratos"><span class="mss fill">menu_book</span></a>
+      <a class="sb-item" href="faturamento-pendente.html" title="Tickets"><span class="mss fill">confirmation_number</span></a>
+      <a class="sb-item" href="index.html" title="Leitor de Faturas"><span class="mss fill">electric_meter</span></a>
+      <a class="sb-item" href="#" title="Usinas"><span class="mss fill">wind_power</span></a>
+      <a class="sb-item" href="#" title="Pré-cadastro"><span class="mss fill">fact_check</span></a>
+    </div>
+    <div class="sb-sec"><a class="sb-item" href="#" title="Equipe"><span class="mss fill">diversity_3</span></a></div>
+  </div>
   <div class="sb-foot"><div class="sb-av" aria-label="Você">EM</div></div>
 </nav>
+
 <div class="page">
-  <div class="topbar"><nav class="crumb" aria-label="Você está em"><span class="rp"><button class="ibtn" aria-label="Recolher menu"><span class="msr">vertical_split</span></button><span class="vsep"></span></span><span class="cur">Contas a Faturar</span></nav></div>
-  <section class="card">
+  <div class="topbar">
+    <nav class="crumb" aria-label="Você está em"><span class="msr" aria-hidden="true">vertical_split</span><span class="vsep"></span><a href="#">Consumidores</a><span class="msr" aria-hidden="true">chevron_right</span><span class="cur" aria-current="page">Contas a Faturar</span></nav>
+  </div>
+
+  <main class="card">
     <div class="head">
-      <div class="tc"><h1>Contas a Faturar</h1><p>Faturas da concessionária, estudo e fatura a receber de cada cooperado</p></div>
-      <div class="hbtns">
-        <button class="sqbtn" aria-label="Exportar"><span class="msr">download</span></button>
-        <button class="sqbtn" aria-label="Atualizar"><span class="msr">refresh</span></button>
-        <button class="sqbtn" aria-label="Indicadores"><span class="msr">monitoring</span></button>
+      <div class="tc"><h1>Contas a Faturar</h1><p>Leitura, estudo e conta a receber de cada faturamento</p></div>
+      <div class="acts">
+        <button class="sq tip" data-tip="Indicadores" aria-label="Indicadores" data-a="toast" data-msg="Abriria o dashboard de faturamento"><span class="msr">bar_chart</span></button>
+        <button class="sq tip" data-tip="Atualizar" aria-label="Atualizar" data-a="toast" data-msg="Lista atualizada"><span class="msr">refresh</span></button>
+        <button class="sq tip" data-tip="Exportar" aria-label="Exportar" data-a="toast" data-msg="Exportaria a lista filtrada (CSV)"><span class="msr">download</span></button>
       </div>
     </div>
-    <label class="field"><span class="msr" style="color:var(--mid)" aria-hidden="true">search</span><input id="q" placeholder="Buscar por titular, UC ou nº da fatura" aria-label="Buscar"></label>
-    <div class="filters" id="filters"></div>
-    <div class="table" role="table" aria-label="Contas a faturar">
-      <div class="tr th" role="row"><div role="columnheader"><span class="cb" aria-hidden="true"></span></div><div role="columnheader">Referência</div><div role="columnheader">Titular</div><div role="columnheader">UC</div><div role="columnheader">Fase</div><div role="columnheader">Status</div><div role="columnheader" class="r">Valor</div><div role="columnheader">Vencimento</div><div role="columnheader"></div></div>
-      <div id="rows"></div>
-    </div>
-    <div class="pag"><span id="tot"></span><span class="sp"></span><span>Página 1 de 1</span></div>
-  </section>
-</div>
-<div class="note">Protótipo · clique numa linha para abrir o detalhe · <a href="faturamento-detalhe.html">abrir detalhe</a></div>
 
-<script>
-const brl=n=>n==null?'—':'R$ '+n.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
-const PH=['Coleta','Fatura concessionária','Estudo','Fatura a receber'];
-const BADGE={'Coleta agendada':'b-soft','Leitura concluída':'b-info','Falha no cálculo':'b-danger','Estudo calculado':'b-dark','Emissão pendente':'b-alert','Aberto':'b-info','Atrasado':'b-danger','Liquidado':'b-ok','Sem cobrança':'b-soft'};
-// estado = qual demonstração o detalhe abre; valor = valor da fase mais avançada
-const ROWS=[
-  {ref:'Mar/2025',tit:'Padaria Estrela do Sul Ltda',doc:'12.345.678/0001-90',uc:'3014567890',dis:'Luz do Vale',ph:3,st:'Aberto',v:1882.40,ven:'05/04/2025',e:'aberto'},
-  {ref:'Mar/2025',tit:'Mariana Alves Costa',doc:'***.456.789-**',uc:'3000451278',dis:'Luz do Vale',ph:3,st:'Emissão pendente',v:212.18,ven:'07/04/2025',e:'emissao'},
-  {ref:'Mar/2025',tit:'Oficina Bom Motor ME',doc:'23.456.789/0001-01',uc:'3009876543',dis:'Luz do Vale',ph:3,st:'Atrasado',v:946.70,ven:'28/03/2025',e:'atrasado'},
-  {ref:'Mar/2025',tit:'Clínica Sorriso Vivo',doc:'34.567.890/0001-12',uc:'3012233445',dis:'Força Sul',ph:3,st:'Liquidado',v:1320.55,ven:'02/04/2025',e:'liquidado'},
-  {ref:'Mar/2025',tit:'Rafael Souza Lima',doc:'***.321.654-**',uc:'3005566778',dis:'Força Sul',ph:2,st:'Estudo calculado',v:188.40,ven:null,e:'estudo'},
-  {ref:'Mar/2025',tit:'Mercado Boa Praça',doc:'45.678.901/0001-23',uc:'3017788990',dis:'Luz do Vale',ph:2,st:'Falha no cálculo',v:null,ven:null,e:'falha-calculo',err:true},
-  {ref:'Mar/2025',tit:'Beatriz Nunes',doc:'***.789.123-**',uc:'3003344556',dis:'Luz do Vale',ph:1,st:'Leitura concluída',v:612.33,ven:null,e:'lida'},
-  {ref:'Mar/2025',tit:'Escola Pequeno Saber',doc:'56.789.012/0001-34',uc:'3020011223',dis:'Força Sul',ph:1,st:'Leitura concluída',v:3105.90,ven:null,e:'lida'},
-  {ref:'Abr/2025',tit:'Padaria Estrela do Sul Ltda',doc:'12.345.678/0001-90',uc:'3014567890',dis:'Luz do Vale',ph:0,st:'Coleta agendada',v:null,ven:null,e:'aguardando'},
-  {ref:'Fev/2025',tit:'Padaria Estrela do Sul Ltda',doc:'12.345.678/0001-90',uc:'3014567890',dis:'Luz do Vale',ph:3,st:'Liquidado',v:1764.12,ven:'05/03/2025',e:'liquidado'}
-];
-const F={fase:new Set(),status:new Set(),dis:new Set()};
-const FDEF=[{k:'fase',l:'Fase',opts:PH,get:r=>PH[r.ph]},{k:'status',l:'Status',opts:[...new Set(ROWS.map(r=>r.st))],get:r=>r.st},{k:'dis',l:'Concessionária',opts:['Luz do Vale','Força Sul'],get:r=>r.dis}];
-function steps(r){ return '<span class="steps" aria-hidden="true">'+[1,2,3].map(k=>`<i class="${k<r.ph?'d':k===r.ph?(r.err?'e':'c'):''}"></i>`).join('')+'</span>'; }
-function render(){
-  const q=document.getElementById('q').value.trim().toLowerCase();
-  const list=ROWS.filter(r=>(!q||[r.tit,r.uc,r.doc].join(' ').toLowerCase().includes(q)) && FDEF.every(f=>!F[f.k].size||F[f.k].has(f.get(r))));
-  document.getElementById('rows').innerHTML = list.length ? list.map(r=>`<div class="tr row" role="row" tabindex="0" data-e="${r.e}">
-    <div class="td" role="cell"><span class="cb" aria-hidden="true"></span></div>
-    <div class="td" role="cell">${r.ref}</div>
-    <div class="td" role="cell"><span class="two"><b>${r.tit}</b><small>${r.doc}</small></span></div>
-    <div class="td" role="cell"><span class="two"><b>${r.uc}</b><small>${r.dis}</small></span></div>
-    <div class="td" role="cell">${steps(r)}<span>${PH[r.ph]}</span></div>
-    <div class="td" role="cell"><span class="badge ${BADGE[r.st]}">${r.st}</span></div>
-    <div class="td r" role="cell">${brl(r.v)}</div>
-    <div class="td${r.st==='Atrasado'?' neg':''}" role="cell">${r.ven||'—'}</div>
-    <div class="td" role="cell"><button class="more" aria-label="Abrir detalhe"><span class="msr" aria-hidden="true">chevron_right</span></button></div></div>`).join('')
-    : '<div class="empty">Nenhuma fatura encontrada.</div>';
-  document.getElementById('tot').textContent=`Total de ${list.length} registros`;
-  document.querySelectorAll('.row').forEach(el=>{ const go=()=>location.href='faturamento-detalhe.html?estado='+el.dataset.e; el.onclick=go; el.onkeydown=e=>{ if(e.key==='Enter') go(); }; });
-}
-function renderFilters(){
-  const any=FDEF.some(f=>F[f.k].size);
-  document.getElementById('filters').innerHTML = FDEF.map(f=>`<div class="flt"><button aria-haspopup="true" data-k="${f.k}"><span class="msr" aria-hidden="true">add_circle</span>${f.l}${F[f.k].size?`<span class="sepv"></span><span class="v">${[...F[f.k]].map(v=>`<span>${v}</span>`).join('')}</span>`:''}<span class="msr" aria-hidden="true">expand_more</span></button>
-    <div class="pop" hidden>${f.opts.map(o=>`<label>${o}<input type="checkbox" value="${o}" ${F[f.k].has(o)?'checked':''}></label>`).join('')}</div></div>`).join('')
-    + `<button class="clear" id="clr" ${any?'':'hidden'}>Limpar todos</button>`;
-  document.querySelectorAll('.flt>button').forEach(b=>b.onclick=e=>{ e.stopPropagation(); const p=b.nextElementSibling, o=p.hidden; document.querySelectorAll('.pop').forEach(x=>x.hidden=true); p.hidden=!o; });
-  document.querySelectorAll('.pop input').forEach(i=>i.onchange=()=>{ const k=i.closest('.flt').querySelector('button').dataset.k; i.checked?F[k].add(i.value):F[k].delete(i.value); const open=k; renderFilters(); render(); document.querySelector(`.flt>button[data-k="${open}"]`).nextElementSibling.hidden=false; });
-  const c=document.getElementById('clr'); if(c) c.onclick=()=>{ FDEF.forEach(f=>F[f.k].clear()); renderFilters(); render(); };
-}
-document.addEventListener('click',e=>{ if(!e.target.closest('.flt')) document.querySelectorAll('.pop').forEach(x=>x.hidden=true); });
-document.getElementById('q').oninput=render;
-renderFilters(); render();
-</script>
+        <div class="work">
+      <div class="lst">
+        <div class="tools">
+          <label class="field"><span class="msr" aria-hidden="true">search</span><input id="q" placeholder="Buscar por titular, CPF/CNPJ, UC, código legado ou concessionária" aria-label="Buscar" autocomplete="off"><button class="ib" type="button" id="bFlt" aria-label="Mostrar ou esconder filtros" aria-pressed="true"><span class="msr fill">filter_alt</span></button></label>
+          <button class="sq52 on tip" id="bRail" data-tip="Resumo do faturamento" aria-label="Resumo do faturamento" aria-pressed="true"><span class="msr">right_panel_close</span></button>
+        </div>
+        <div class="frow" id="frow"></div>
+        <div id="vList"><div class="tblw"><div class="tbl" id="tbl" role="table" aria-label="Contas a faturar"></div></div>
+        <div class="tfoot"><span id="count"></span><span>Selecione linhas para ações em lote</span></div></div>
+      </div>
+      <aside class="rail" id="rail" aria-label="Resumo do faturamento"></aside>
+    </div>
+  </main>
+</div>
+
+<!-- barra de ações em lote -->
+<div class="bulk" id="bulk" role="toolbar" aria-label="Ações em lote">
+  <span class="n" id="bulkN"></span><span class="vs"></span>
+  <button class="b gh" data-bulk="revon"><span class="msr">flag</span>Pedir revisão</button>
+  <button class="b gh" data-bulk="revoff"><span class="msr">done_all</span>Marcar como revisado</button>
+  <button class="b gh" data-bulk="recalc"><span class="msr">calculate</span>Recalcular</button>
+  <button class="b gh" data-bulk="exp"><span class="msr">download</span>Exportar</button>
+  <button class="ib" data-bulk="limpar" aria-label="Limpar seleção"><span class="msr">close</span></button>
+</div>
+
+<div class="pop" id="pop" hidden role="menu"></div>
+<div class="dw-ov" id="dwOv"></div>
+<aside class="dw" id="dw" role="dialog" aria-modal="true" aria-labelledby="dwT"></aside>
+
+<div class="proto" aria-label="Opções do protótipo">Tema
+  <button data-th="light" class="on">Claro</button><button data-th="dark">Escuro</button>
+  <span class="dl">
+    <a class="dlk" href="https://github.com/bourdonner/leitor-faturas-prototipo" target="_blank" rel="noopener" aria-label="Código no GitHub" title="Código no GitHub"><svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg></a>
+    <a class="dlk" href="faturamento-v1.html" target="_blank" rel="noopener" aria-label="Versão anterior" title="Versão anterior"><span class="msr" aria-hidden="true">widgets</span></a>
+    <a class="dlk" href="https://www.figma.com/design/EwAXXXwHEhfBp9L7N02InG/Faturamento?node-id=1315-128274" target="_blank" rel="noopener" aria-label="Telas no Figma" title="Telas no Figma"><svg viewBox="0 0 38 57" aria-hidden="true"><path fill="#1abcfe" d="M19 28.5a9.5 9.5 0 1119 0 9.5 9.5 0 01-19 0z"/><path fill="#0acf83" d="M0 47.5A9.5 9.5 0 019.5 38H19v9.5a9.5 9.5 0 11-19 0z"/><path fill="#ff7262" d="M19 0v19h9.5a9.5 9.5 0 100-19H19z"/><path fill="#f24e1e" d="M0 9.5A9.5 9.5 0 009.5 19H19V0H9.5A9.5 9.5 0 000 9.5z"/><path fill="#a259ff" d="M0 28.5A9.5 9.5 0 009.5 38H19V19H9.5A9.5 9.5 0 000 28.5z"/></svg></a>
+  </span>
+</div>
+</div>
+
+<script src="assets/cf.js"></script>
+<script>CF.mountScreen();</script>
 </body>
 </html>

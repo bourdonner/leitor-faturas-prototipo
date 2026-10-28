@@ -20,7 +20,10 @@ Todos os dados são fictícios (fatura Grupo A, A4 horária verde).
 
 ## Contas a Faturar · detalhe do faturamento
 
-- Listagem simples (faturamento.html): uma linha por fatura, com fase (3 passos), status, valor e vencimento; filtros Fase, Status e Concessionária; sem modais nas células
+- Listagem (faturamento.html, v2 de 28/10/2026): padrão do Faturamento Pendente — colunas Leitura (prevista/processado), Titular (carteira + grupo), UC (status em ícone, código legado/apelido, concessionária), Estudo, Conta a receber e Revisão; filtros com o Filter da lib; seleção em lote
+- Resumo lateral: titular, UC (destaque de faturamento manual e rateio externo), fatura da concessionária, estudo, conta a receber (título, vencimento, tipo de pagamento, banco) e comentários; "Precisa de revisão" é um marcador, não um status
+- Detalhes e configurações da UC num drawer à direita
+- Versão anterior da listagem: faturamento-v1.html
 - Detalhe (faturamento-detalhe.html): header com cooperado, UC, concessionária, carteira, status atual e ações (principal = próximo passo; menu agrupado por fase, com fase não alcançada bloqueada)
 - Prévias no mesmo painel, uma aba por fase: Fatura concessionária → Estudo (prévia sem cobrança) → Fatura a receber (fatura COGECOM com boleto + fatura da concessionária). A aba da fase mais avançada abre ativa; fase não alcançada fica desabilitada
 - Detalhes acompanham a fase escolhida; Atividade junta os eventos das três fases
