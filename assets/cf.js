@@ -242,7 +242,9 @@ function refresh(){ const v=new Set(visible().map(r=>r.id)); [...S.sel].forEach(
   const ta2=document.getElementById('cmT'); if(ta2&&draft&&ta2.closest('form').dataset.id===S.cur) ta2.value=draft;
   updateBulk(); syncRail(); }
 function updateBulk(){ const b=document.getElementById('bulk'); const n=S.sel.size; b.classList.toggle('on',n>0); document.getElementById('bulkN').textContent=n2(n,'selecionado','selecionados'); }
-function syncRail(){ const r=document.getElementById('rail'); r.hidden=!S.railOpen; const b=document.getElementById('bRail'); b.classList.toggle('on',S.railOpen); b.setAttribute('aria-pressed',S.railOpen); }
+function syncRail(){ const r=document.getElementById('rail'); r.hidden=!S.railOpen; const b=document.getElementById('bRail'); b.classList.toggle('on',S.railOpen); b.setAttribute('aria-pressed',S.railOpen);
+  /* minimizar só aparece com o resumo aberto; fechado, o botão vira abrir */
+  b.querySelector('.msr').textContent=S.railOpen?'right_panel_close':'right_panel_open'; b.dataset.tip=S.railOpen?'Minimizar resumo':'Abrir resumo'; b.setAttribute('aria-label',b.dataset.tip); }
 
 let popEl=null, popAnchor=null;
 function openPop(anchor,html,opts={}){ closePop(); popEl=document.getElementById('pop'); popEl.innerHTML=html; popEl.hidden=false; popAnchor=anchor; anchor.classList.add('open'); anchor.setAttribute('aria-expanded','true');
