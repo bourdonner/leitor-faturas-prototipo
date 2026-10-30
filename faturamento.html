@@ -57,6 +57,21 @@
   .proto .dlk:hover{background:var(--fsec)}
   .proto .dlk svg{width:14px;height:14px}
   .proto .dlk svg[viewBox="0 0 38 57"]{width:10px;height:15px}
+  /* desktop: a página não rola; a tabela e o resumo rolam cada um no seu espaço */
+  @media (min-width:901px){
+    body{overflow:hidden}
+    .page{height:100vh;box-sizing:border-box;min-height:0}
+    .card{min-height:0}
+    .work{flex:1;min-height:0;align-items:stretch}
+    .work .lst{min-height:0}
+    #vList{flex:1;min-height:0;display:flex;flex-direction:column}
+    .tblw{flex:1;min-height:0;display:flex;flex-direction:column;overflow:visible}
+    .fp .tbl{flex:0 1 auto;min-height:0;overflow:auto;overscroll-behavior:contain}
+    .fp .tbl .tr.th{position:sticky;top:0;z-index:2;background:var(--fg)}
+    .rail{position:static;min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin}
+    .rail>*{flex:none}
+    .fp .rail .rbar{position:sticky;top:0;z-index:2;box-shadow:0 8px 0 var(--fg)}
+  }
   @media (max-width:900px){
     .sidebar{display:none}
     .page{margin-left:0;padding:8px 0 96px}
