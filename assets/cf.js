@@ -24,7 +24,7 @@ const TIT={
   cli:{n:'Clínica Sorriso Vivo',pj:1,doc:'34.567.890/0001-12',cart:'Carteira Sul',grp:'Grupo Sorriso'},
   raf:{n:'Rafael Souza Lima',pj:0,doc:'234.321.654-10',cart:'Carteira Cooperados PR',grp:null},
   mer:{n:'Mercado Boa Praça',pj:1,doc:'45.678.901/0001-23',cart:'Carteira Norte',grp:'Grupo Boa Praça'},
-  bea:{n:'Beatriz Nunes',pj:0,doc:'345.789.123-21',cart:'Carteira Cooperados PR',grp:null},
+  bea:{n:'Beatriz Nunes',pj:0,doc:'345.789.123-21',cart:'Carteira Cooperados PR',grp:null,reg:1},
   esc:{n:'Escola Pequeno Saber',pj:1,doc:'56.789.012/0001-34',cart:'Carteira Sul',grp:null},
   far:{n:'Farmácias Farmix Ltda',pj:1,doc:'67.890.123/0001-45',cart:'Carteira Norte',grp:'Grupo Farmix'}
 };
@@ -62,6 +62,12 @@ const ROWS=[
   R('FT-10240','Mar/2025','far','3011122334',{st:'Processado',dt:'24/03/2025'},{inj:4200,cons:3980,val:2310.70},{st:'Calculado',val:2799.90,eco:402.10,taxa:19.90},{st:'Sem cobrança',tit:null,ven:null,pag:null,banco:null},0,[],'liquidado'),
   R('FT-10198','Fev/2025','pad','3014567890',{st:'Processado',dt:'24/02/2025'},{inj:2980,cons:2390,val:1288.40},{st:'Calculado',val:1764.12,eco:298.50,taxa:19.90},{st:'Liquidado',tit:'000181220',ven:'05/03/2025',pag:'Boleto',banco:'Sicredi'},0,[],'liquidado')
 ];
+/* resumo: saldo de créditos (meses) e data de pagamento */
+const SAL={'FT-10231':12,'FT-10232':9,'FT-10233':4,'FT-10234':0,'FT-10235':7,'FT-10236':3,'FT-10237':6,'FT-10238':2,'FT-10239':10,'FT-10240':8,'FT-10198':11};
+const PAGO={'FT-10235':'01/04/2025','FT-10198':'03/03/2025'};
+const HOJE=new Date(2025,3,2);
+const dias=d=>{ const [a,b,c]=d.split('/').map(Number); return Math.round((HOJE-new Date(c,b-1,a))/864e5); };
+const pct=n=>n.toLocaleString('pt-BR',{maximumFractionDigits:1})+'%';
 const S={sel:new Set(),cur:'FT-10232',railOpen:true,fltOpen:true,q:'',f:{},dw:null,fold:new Set()};
 const row=id=>ROWS.find(r=>r.id===id);
 
@@ -75,25 +81,25 @@ const etapa=r=>r.rec?2:1;
 /* ---------- peças ---------- */
 const H={};
 H.badge=(txt,map)=>`<span class="bdg ${map[txt]||'b-grey'}">${esc(txt)}</span>`;
+/* pontos da etapa (Figma "Etapa / Pontos"): anteriores em verde, atual escura (vermelha se falhou), seguintes apagadas */
 H.steps=r=>{ const i=etapa(r), st=fase(r)[1];
   return `<span class="steps" aria-hidden="true">${[0,1,2].map(k=>`<i class="${k<i||DONE.includes(st)?'d':k===i?(FAIL.includes(st)?'e':'c'):''}"></i>`).join('')}</span>`; };
 H.lei=r=>H.badge(r.lei.st,LEI);
 H.tit=r=>{ const t=TIT[r.t]; return `<div class="ent"><span class="ic ${t.pj?'':'pf'}"><span class="msr fill">${t.pj?'bolt':'person'}</span></span><div class="t"><div>${esc(t.n.toUpperCase())}</div><div class="s">${esc(t.doc)}</div></div>${t.grp?`<button class="grp" data-a="grupo" data-v="${esc(t.grp)}" title="${esc(t.grp)}" aria-label="Abrir ${esc(t.grp)}"><span class="msr fill">groups</span></button>`:''}</div>`; };
 H.ust=u=>{ const s=UST[u.st]; return `<span class="ust ${s[0]}" title="${u.st}" aria-label="${u.st}"><span class="msr fill">${s[1]}</span></span>`; };
-H.uc=r=>`${H.ust(UCS[r.uc])}<div class="two"><span>${r.uc}</span><span class="s">${esc(CID[r.uc])}</span></div>`;
+H.uc=r=>`<div class="ent">${H.ust(UCS[r.uc])}<div class="t"><div>${r.uc}</div><div class="s">${esc(CID[r.uc])}</div></div></div>`;
 H.est=r=>H.badge(r.est.st,EST);
 H.rec=r=>r.rec?H.badge(r.rec.st,REC):`<span style="color:var(--s400)">${r.est.st==='Calculado'?'Aguardando emissão':'Aguardando estudo'}</span>`;
 
 const COLS=[
  {k:'ck',w:'48px',h:()=>{ const v=visible(); const n=v.filter(r=>S.sel.has(r.id)).length; const st=n===0?'':n===v.length?'on':'mid'; return `<button class="cbx ${st}" data-a="selall" role="checkbox" aria-checked="${n===0?'false':n===v.length?'true':'mixed'}" aria-label="Selecionar todos">${st==='on'?'<span class="mss">check</span>':''}</button>`; },
    c:r=>`<button class="cbx ${S.sel.has(r.id)?'on':''}" data-a="sel" data-id="${r.id}" role="checkbox" aria-checked="${S.sel.has(r.id)}" aria-label="Selecionar ${r.id}">${S.sel.has(r.id)?'<span class="mss">check</span>':''}</button>`},
- {k:'ref',w:'96px',h:()=>'<button class="so">Ref.<span class="msr">import_export</span></button>',c:r=>r.ref},
+ {k:'ref',w:'110px',h:()=>'<button class="so">Ref.<span class="msr">import_export</span></button>',c:r=>r.ref},
+ {k:'tit',w:'minmax(240px,1fr)',h:()=>'Titular',c:H.tit,cel:1},
+ {k:'uc',w:'minmax(220px,1fr)',h:()=>'Unidade consumidora',c:H.uc,cel:1},
+ {k:'est',w:'150px',h:()=>'Estudo',c:H.est},
  {k:'eta',w:'160px',h:()=>'Etapa',c:r=>`<div class="two eta">${H.steps(r)}<span title="Etapa ${etapa(r)+1} de 3">${fase(r)[0]}</span></div>`},
- {k:'lei',w:'176px',h:()=>'<button class="so">Leitura<span class="msr">import_export</span></button>',c:H.lei},
- {k:'tit',w:'minmax(260px,1.3fr)',h:()=>'Titular',c:H.tit},
- {k:'uc',w:'minmax(200px,1fr)',h:()=>'Unidade consumidora',c:H.uc,cel:1},
- {k:'est',w:'164px',h:()=>'Estudo',c:H.est},
- {k:'rec',w:'164px',h:()=>'Conta a receber',c:H.rec},
+ {k:'rec',w:'160px',h:()=>'Status',c:H.rec},
  {k:'rev',w:'48px',h:()=>'<span class="msr" title="Precisa de revisão" aria-label="Precisa de revisão">flag</span>',c:r=>r.rev?'<span class="rvf" title="Precisa de revisão" aria-label="Precisa de revisão"><span class="msr fill">flag</span></span>':''},
  {k:'act',w:'56px',h:()=>'',c:r=>`<button class="more" data-a="rowmenu" data-id="${r.id}" aria-label="Ações de ${r.id}" aria-haspopup="menu"><span class="msr">more_horiz</span></button>`}
 ];
@@ -120,48 +126,68 @@ H.table=()=>{ const gt=COLS.map(c=>c.w).join(' '); const v=visible();
   const rows=v.map(r=>`<div class="tr row ${S.sel.has(r.id)?'is-sel':''} ${S.railOpen&&S.cur===r.id?'cur':''}" role="row" tabindex="0" data-a="row" data-id="${r.id}" style="grid-template-columns:${gt}">${COLS.map(c=>`<div role="cell" class="${c.cel?'cel':''}">${c.c(r)}</div>`).join('')}</div>`).join('');
   return head+(rows||'<div class="empty">Nenhum faturamento com esses filtros.</div>'); };
 
-/* ---------- resumo ---------- */
-const it=(ic,l,v,act,cl)=>`<div class="it"><span class="ci ${cl||''}"><span class="msr fill">${ic}</span></span><div class="grow"><div class="cap">${l}</div><div class="v">${v}</div></div>${act||''}</div>`;
+/* ---------- resumo (Figma: Resumo / Faturamento, Titular, Unidade consumidora, Fatura da concessionária, Estudo, Conta a receber) ---------- */
+/* item: ícone de status 30px + rótulo/valor; o.cpt = compacto (sem ícone), o.dst = destaque laranja, o.tone = 'pos' (verde) ou 'na' (indisponível) */
+const IT=o=>`<div class="rs-it${o.cpt?' cpt':''}${o.dst?' dst':''}">${o.cpt?'':`<span class="ci ${o.cls||''}"><span class="msr fill${o.spin?' spin':''}">${o.ic}</span></span>`}<div class="grow"><div class="lb">${o.l}</div><div class="v ${o.tone||''}">${o.tone==='na'?'Indisponível':`<span>${o.v}</span>`}${o.x&&o.tone!=='na'?`<i></i><span class="x">${o.x}</span>`:''}</div></div>${o.tone==='na'?'':o.act||''}</div>`;
+const two=(a,b)=>`<div class="rs-two">${a}${b}</div>`;
+const cp=(v,lbl)=>`<button class="ib" data-a="copy" data-v="${esc(v)}" aria-label="Copiar ${lbl}"><span class="msr">content_copy</span></button>`;
 const lk=(msg,lbl)=>`<button class="ib" data-a="toast" data-msg="${esc(msg)}" aria-label="${esc(lbl)}"><span class="msr">open_in_new</span></button>`;
 const FOLDS=['tit','uc','fc','est','rec','cm'];
 const fold=(k,ttl)=>`<button class="ib" data-a="fold" data-k="${k}" aria-label="${S.fold.has(k)?'Expandir':'Recolher'} ${ttl}" aria-expanded="${!S.fold.has(k)}"><span class="msr chev">expand_less</span></button>`;
 const shut=k=>S.fold.has(k)?' closed':'';
 const kv=rows=>`<div class="kvl">${rows.map(x=>`<div><span>${x[0]}</span><b class="${x[2]||''}">${x[1]}</b></div>`).join('')}</div>`;
+/* card: cabeçalho (ícone 20px, título, detalhe, link, recolher) + itens; recolhido mantém só os destaques */
+const card=(k,h,body,keep)=>`<section class="rs-card${shut(k)}" aria-label="${esc(h.t)}"><div class="rs-hd${h.big?'':' sm'}"><span class="eb${h.off?' off':''}"><span class="msr fill">${h.ic}</span></span><div class="t"><b>${esc(h.t)}</b>${h.d?`<span class="cap">${esc(h.d)}</span>`:''}</div>${h.open||''}${fold(k,h.t.toLowerCase())}</div>${S.fold.has(k)?(keep?`<div class="rs-bd">${keep}</div>`:''):`<div class="rs-bd">${body}</div>`}</section>`;
 H.rbar=()=>{ const all=FOLDS.every(k=>!S.fold.has(k)); return `<div class="rbar"><span class="msr">article_shortcut</span><span class="grow">Resumo do faturamento</span><button class="ib tip" data-a="foldall" data-tip="${all?'Recolher tudo':'Expandir tudo'}" aria-label="${all?'Recolher todas as seções':'Expandir todas as seções'}"><span class="msr">${all?'unfold_less':'unfold_more'}</span></button><button class="ib" data-a="railclose" aria-label="Fechar resumo"><span class="msr">right_panel_close</span></button></div>`; };
-H.head=r=>{ const f=fase(r); return `<div class="pnl"><div class="tkhead"><span class="ttl" style="flex:none">${r.ref}</span>${H.badge(f[1],f[2])}<span style="flex:1"></span><button class="more" data-a="rowmenu" data-id="${r.id}" aria-label="Ações do faturamento" aria-haspopup="menu"><span class="msr">more_horiz</span></button></div>
-  <div class="cap" style="font-size:14px;line-height:20px;display:flex;align-items:center;gap:8px">${H.steps(r)}${r.id} · ${f[0]}</div>
-  <a class="b pri full" href="faturamento-detalhe.html?estado=${r.e}" style="text-decoration:none">Abrir detalhamento<span class="msr">arrow_forward</span></a></div>`; };
-H.rev=r=>r.rev?`<div class="rvbar" role="status"><span class="msr fill ic">flag</span><b>Precisa de revisão</b><button class="b out sm" data-a="revoff" data-id="${r.id}">Revisado</button></div>`:'';
+/* topo: faixa "Revisão necessária" (se pedida) + fatura de ref. com as ações */
+H.head=r=>`<section class="rs-card rs-fat">${r.rev?'<div class="rs-rev" role="status"><span class="grow">Revisão necessária</span><span class="msr fill">flag</span></div>':''}
+  <div class="rs-tk"><div class="row"><b>Fatura de ${r.ref}</b><button class="more" data-a="rowmenu" data-id="${r.id}" aria-label="Ações do faturamento" aria-haspopup="menu"><span class="msr">more_horiz</span></button></div>
+  ${r.rev?`<button class="b sec full" data-a="revoff" data-id="${r.id}">Marcar como revisado</button>`:''}<a class="b pri full" href="faturamento-detalhe.html?estado=${r.e}" style="text-decoration:none">Abrir detalhamento</a></div></section>`;
 H.titP=r=>{ const t=TIT[r.t];
-  return `<div class="pnl tight${shut('tit')}"><div class="ph2" style="padding:0 4px 4px"><span class="who" style="padding:0;flex:1;min-width:0"><span class="av"><span class="msr fill">${t.pj?'work':'person'}</span></span><span style="min-width:0"><span class="nm" style="display:block">${esc(t.n)}</span><span class="cap">Titular</span></span></span>${lk('Abriria o cadastro do titular','Abrir cadastro')}${fold('tit','titular')}</div>
-  <div class="bd">${it('badge',t.pj?'CNPJ':'CPF',t.doc,`<button class="ib" data-a="copy" data-v="${t.doc}" aria-label="Copiar ${t.pj?'CNPJ':'CPF'}"><span class="msr">content_copy</span></button>`)}
-  ${it('folder_shared','Carteira',esc(t.cart),lk('Abriria a carteira','Abrir carteira'))}
-  ${t.grp?it('groups','Grupo',esc(t.grp),`<button class="ib" data-a="grupo" data-v="${esc(t.grp)}" aria-label="Abrir grupo"><span class="msr">open_in_new</span></button>`):''}</div></div>`; };
-H.ucP=r=>{ const u=UCS[r.uc]; const s=UST[u.st];
-  const tags=[u.man&&['edit_note','Faturamento manual'],u.rat&&['call_split','Rateio externo'],u.st!=='Em fornecimento'&&[s[1],u.st]].filter(Boolean);
-  return `<div class="pnl tight${shut('uc')}"><div class="ph2" style="padding:0 4px 4px"><span class="who" style="padding:0;flex:1;min-width:0"><span class="av"><span class="mss fill">electric_meter</span></span><span style="min-width:0"><span class="nm" style="display:block">${r.uc}</span><span class="cap">${esc(u.ap||'Unidade consumidora')}</span></span></span>${lk('Abriria a instalação','Abrir instalação')}${fold('uc','unidade consumidora')}</div>
-  ${tags.length?`<div class="tags" style="padding:0 4px">${tags.map(x=>`<span class="tag al"><span class="msr fill">${x[0]}</span>${x[1]}</span>`).join('')}</div>`:''}
-  <div class="bd">${it(s[1],'Status',u.st,'',s[0]==='on'?'ok':'')}
-  ${it('electrical_services','Concessionária',u.conc)}
-  ${u.leg?it('tag','Código legado',u.leg,`<button class="ib" data-a="copy" data-v="${u.leg}" aria-label="Copiar código legado"><span class="msr">content_copy</span></button>`):''}
-  <button class="b out full" data-a="ucdw" data-id="${r.id}"><span class="msr">tune</span>Detalhes e configurações</button></div></div>`; };
-const stageHead=(ic,ttl,badge,cap,k)=>`<div class="stg"><span class="ki k-d" style="width:24px;height:24px"><span class="msr fill">${ic}</span></span><div class="grow"><div class="ttl" style="font-size:15px">${ttl}</div>${cap?`<div class="cap">${cap}</div>`:''}</div>${badge||''}${k?fold(k,ttl.toLowerCase()):''}</div>`;
-H.fcP=r=>{ const l=r.lei; const pre=l.st==='Coleta agendada';
-  return `<div class="pnl tight${shut('fc')}" style="padding:16px">${stageHead('receipt_long','Fatura da concessionária',H.badge(l.st,LEI),'','fc')}
-  <div class="bd">${kv(pre?[['Previsão de leitura',l.dt]]:[[l.st==='Processado'?'Processado em':'Coletada em',l.dt],...(r.fc?[['Total injetado',kwh(r.fc.inj)],['Consumo',kwh(r.fc.cons)],['Valor da fatura',brl(r.fc.val)]]:[])])}</div></div>`; };
-H.estP=r=>{ const e=r.est;
-  return `<div class="pnl tight${shut('est')}" style="padding:16px">${stageHead('calculate','Estudo',H.badge(e.st,EST),'','est')}
-  <div class="bd">${e.st==='Em cálculo'?'<div class="cap" style="font-size:13px;line-height:20px">Calculando o estudo a partir da fatura processada.</div>':e.val!=null?kv([['Valor do estudo',brl(e.val)],['Economia total',brl(e.eco),'ok'],['Taxa de entrega',brl(e.taxa)]]):`<div class="cap" style="font-size:13px;line-height:20px">${esc((r.cm.find(c=>c.sys)||{}).t||'Não foi possível calcular')}</div><button class="b out full" data-a="toast" data-msg="Recálculo solicitado">Recalcular</button>`}</div></div>`; };
+  return card('tit',{ic:t.pj?'work':'person',t:t.n,d:'Titular',big:1,open:lk('Abriria o cadastro do titular','Abrir cadastro do titular')},
+    (t.reg?IT({ic:'how_to_reg',cls:'al',l:'Status',v:'Em processo de registro'}):IT({ic:'check',cls:'ok',l:'Status',v:'Ativo'}))
+    +IT({ic:'badge',l:t.pj?'CNPJ':'CPF',v:t.doc,act:cp(t.doc,t.pj?'CNPJ':'CPF')})
+    +IT({ic:'groups',l:'Grupo',v:t.grp?esc(t.grp):'Titular não vinculado a um grupo',act:t.grp?`<button class="ib" data-a="grupo" data-v="${esc(t.grp)}" aria-label="Abrir ${esc(t.grp)}"><span class="msr">open_in_new</span></button>`:''})
+    +IT({ic:'wallet',l:'Carteira',v:t.cart?esc(t.cart):'Titular não vinculado a uma carteira',act:t.cart?lk('Abriria a '+t.cart,'Abrir carteira'):''})); };
+const UCI={on:['check','ok'],off:['power_off','al'],can:['block','dg']};
+H.ucP=r=>{ const u=UCS[r.uc]; const s=UCI[UST[u.st][0]];
+  const dst=(u.rat?IT({dst:1,ic:'call_split',cls:'al',l:'Rateio externo',v:'Ativo'}):'')+(u.man?IT({dst:1,ic:'edit_note',cls:'al',l:'Faturamento manual',v:'Ativo'}):'');
+  return card('uc',{ic:'electric_meter',t:r.uc,d:'Unidade consumidora'+(u.ap?' · '+u.ap:''),big:1,open:`<button class="ib" data-a="ucdw" data-id="${r.id}" aria-label="Detalhes e configurações da UC"><span class="msr">open_in_new</span></button>`},
+    IT({ic:s[0],cls:s[1],l:'Status',v:u.st})
+    +IT({ic:'electrical_services',l:'Distribuidora',v:esc(u.conc),act:lk('Abriria a distribuidora '+u.conc,'Abrir distribuidora')})
+    +IT({ic:'offline_bolt',l:'Saldo máximo',v:u.saldo+' meses',act:`<button class="ib" data-a="ucdw" data-id="${r.id}" aria-label="Ver configurações de saldo"><span class="msr">open_in_new</span></button>`})
+    +IT({ic:'energy_savings_leaf',l:'Modalidade',v:esc(u.mod)})+dst, dst); };
+H.fcP=r=>{ const u=UCS[r.uc], f=r.fc, na=r.lei.st!=='Processado'?'na':'';
+  return card('fc',{ic:'receipt_long',t:'Fatura da concessionária',off:!!na},
+    (u.ger==='Produção solar'?IT({ic:'solar_power',cls:'al',l:'Produção solar',v:kwh(Math.round(f.inj*1.08)),tone:na}):'')
+    +IT({ic:'bolt',l:'Consumo',v:kwh(f.cons),tone:na})
+    +two(IT({ic:'incomplete_circle',l:'Injeção',v:kwh(f.inj),tone:na}),IT({ic:'trending_up',l:'Taxa de injeção',v:pct(Math.round(f.inj/f.cons*100)),tone:na}))
+    +IT({ic:'payments',l:'Valor da fatura',v:brl(f.val),tone:na,act:cp(brl(f.val),'valor da fatura')})
+    +IT({ic:'offline_bolt',l:'Saldo',v:n2(SAL[r.id],'mês','meses'),tone:na,act:lk('Abriria o extrato de saldo','Abrir saldo')})); };
+H.estP=r=>{ const e=r.est, ok=e.val!=null, na=ok?'':'na', pos=ok?'pos':'na';
+  const proj=ok?e.val+e.eco:0, amb=ok?e.val*.012:0, ver=ok?e.val*.03:0;
+  const st=e.st==='Em cálculo'?IT({ic:'progress_activity',cls:'bl',spin:1,l:'Status',v:'Calculando o estudo'})
+    :e.st==='Falha no cálculo'?IT({ic:'block',cls:'dg',l:'Falha no cálculo',v:esc((r.cm.find(c=>c.sys)||{}).t||'Não foi possível calcular')}):'';
+  return card('est',{ic:'calculate',t:'Estudo',off:e.st==='Em cálculo'},
+    st+two(IT({cpt:1,l:'Valor projetado',v:brl(proj),tone:na}),IT({cpt:1,l:'Valor total',v:brl(e.val),tone:na}))
+    +IT({ic:'flag',cls:'al',l:'Bandeira tarifária amarela',v:brl(amb),x:'12 dias',tone:na})
+    +IT({ic:'flag',cls:'dg',l:'Bandeira tarifária vermelha',v:brl(ver),x:'18 dias',tone:na})
+    +IT({ic:'savings',cls:'ok',l:'Economia total',v:brl(e.eco),x:ok?pct(e.eco/proj*100):'',tone:pos})
+    +two(IT({cpt:1,l:'Desc. energia injetada',v:brl(ok?e.eco-e.taxa:0),tone:pos}),IT({cpt:1,l:'Desconto titular',v:TIT[r.t].pj?'10%':'15%',tone:pos}))
+    +(e.st==='Falha no cálculo'?'<button class="b sec full" data-a="toast" data-msg="Recálculo solicitado">Recalcular</button>':'')); };
 H.recP=r=>{ const c=r.rec;
-  if(!c) return `<div class="pnl tight off" style="padding:16px">${stageHead('request_quote','Conta a receber','',r.est&&r.est.val!=null?'Aguardando emissão':'Aguardando estudo')}</div>`;
-  const m=x=>x||'<span style="color:var(--s400);font-weight:400">—</span>';
-  return `<div class="pnl tight${shut('rec')}" style="padding:16px">${stageHead('request_quote','Conta a receber',H.badge(c.st,REC),'','rec')}
-  <div class="bd">${c.st==='Sem cobrança'?'<div class="cap" style="font-size:13px;line-height:20px">Este faturamento não gera cobrança.</div>':kv([['Nº do título',m(c.tit)],['Vencimento',m(c.ven),c.st==='Atrasado'?'dg':''],['Tipo de pagamento',m(c.pag)],['Banco',m(c.banco)]])}</div></div>`; };
+  if(!c){ const w=r.est.val!=null?'Aguardando emissão':'Aguardando estudo';
+    return card('rec',{ic:'request_quote',t:'Conta a receber',off:1},IT({ic:'hourglass_empty',cls:'gr',l:'Status',v:w})+IT({ic:'event',l:'Vencimento',tone:'na'})); }
+  const ST={'Emissão pendente':{ic:'pending_actions',cls:'al',v:'Emissão pendente'},'Gerando boleto':{ic:'progress_activity',cls:'bl',spin:1,v:'O boleto está sendo gerado'},
+    'Aberto':{ic:'attach_money',v:'Aguardando pagamento'},'Atrasado':{ic:'attach_money',cls:'dg',v:'Fatura atrasada',x:c.ven?'vencida há '+n2(dias(c.ven),'dia','dias'):''},
+    'Liquidado':{ic:'check',cls:'ok',v:'Fatura paga',x:PAGO[r.id]},'Sem cobrança':{ic:'do_not_disturb_on',v:'Faturamento sem cobrança'}}[c.st];
+  return card('rec',{ic:'request_quote',t:'Conta a receber'},IT({...ST,l:'Status'})
+    +(c.st==='Sem cobrança'?'':IT({ic:'event',cls:c.st==='Atrasado'?'dg':'',l:'Vencimento',v:c.ven||'—'}))); };
 H.cm=r=>{ const ev=c=>{ const who=c.who?`<span class="who2" data-name="${esc(c.who)}">${ini(c.who)}</span>`:'<span class="who2 sys" data-name="Sistema"><span class="msr fill">bolt</span></span>';
     return `<div class="ev ${c.isNew?'new':''}"><span class="i ${c.sys?(c.t.includes('revis')?'c-alert':'c-def'):'c-edit'}"><span class="msr fill">${c.sys?(c.t.includes('revis')?'flag':'bolt'):'chat'}</span></span>${who}<div class="n">${esc(c.t)}</div><div class="d">${c.d}</div></div>`; };
   return `<div class="act-p${shut('cm')}"><div class="act-h"><span class="grow">Comentários</span><span class="cap">${r.cm.length||''}</span>${fold('cm','comentários')}</div><div class="act-l evs">${r.cm.map((c,i)=>(i?'<div class="lnk"></div>':'')+ev(c)).join('')}</div>
   <form class="cmp" data-id="${r.id}"><label class="sr" for="cmT" style="position:absolute;left:-9999px">Comentário</label><textarea class="ta" id="cmT" placeholder="Escreva um comentário"></textarea><div class="row"><button class="b pri sm" type="submit">Comentar</button></div></form></div>`; };
-H.rail=r=>H.rbar()+H.head(r)+H.rev(r)+H.titP(r)+H.ucP(r)+H.fcP(r)+H.estP(r)+H.recP(r)+H.cm(r);
+H.rail=r=>H.rbar()+H.head(r)+H.titP(r)+H.ucP(r)+H.fcP(r)+H.estP(r)+H.recP(r)+H.cm(r);
 
 /* ---------- drawer da UC ---------- */
 H.drawer=r=>{ const u=UCS[r.uc]; const yn=b=>b?'Sim':'Não';

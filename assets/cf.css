@@ -75,3 +75,55 @@
 .fp .act-p.closed .chev{transform:rotate(180deg)}
 .fp .act-p.closed .cmp{display:none}
 .fp .act-p.closed .act-h{padding-bottom:16px}
+
+/* ===== Figma 30/10: tabela (Estudo → Etapa → Status) e resumo em cards ===== */
+/* etapa: 3 pontos de 8px (Figma "Etapa / Pontos") + nome em 12px */
+.fp .steps{gap:6px}
+.fp .steps i{width:8px;height:8px;border-radius:50%;background:var(--border)}
+.fp .steps i.d{background:var(--brand)} .fp .steps i.c{background:var(--ink3)} .fp .steps i.e{background:var(--danger)}
+.fp .two.eta>span:last-child{font-size:12px;line-height:16px;color:var(--mid)}
+/* titular e UC na caixa de entidade */
+.fp .tr.row>div.cel{padding:0 8px}
+.fp .tr.row>div.cel .ent{flex:1;min-height:49px;padding:4px 8px}
+
+/* resumo: cards */
+.fp .rs-card{background:var(--hov2);border-radius:12px;overflow:hidden}
+.fp .rs-hd{display:flex;align-items:center;gap:12px;padding:24px}
+.fp .rs-hd .eb{width:20px;height:20px;border-radius:50%;background:var(--ink);color:var(--fg);display:grid;place-items:center;flex:none}
+.fp .rs-hd .eb.off{background:var(--border)}
+.fp .rs-hd .eb .msr{font-size:12px}
+.fp .rs-hd .t{flex:1;min-width:0;display:flex;flex-direction:column}
+.fp .rs-hd .t b{font:700 16px/24px Inter,sans-serif;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fp .rs-hd.sm .t b{font-size:14px}
+.fp .rs-hd .cap{letter-spacing:.4px}
+.fp .rs-hd .ib .msr{font-size:16px}
+.fp .rs-card.closed .chev{transform:rotate(180deg)}
+.fp .rs-bd{display:flex;flex-direction:column;gap:8px;padding:0 24px 24px}
+.fp .rs-two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.fp .rs-it{display:flex;align-items:center;gap:12px;padding:8px 12px;border-radius:8px;background:var(--sec);min-width:0}
+.fp .rs-it.cpt{padding:12px 16px}
+.fp .rs-it.dst{box-shadow:inset 0 0 0 1px var(--alert)}
+.fp .rs-it .ci{width:30px;height:30px;border-radius:50%;background:var(--ink3);color:var(--fg);display:grid;place-items:center;flex:none}
+.fp .rs-it .ci .msr{font-size:18px}
+.fp .rs-it .ci.ok{background:var(--success)} .fp .rs-it .ci.al{background:var(--alert)} .fp .rs-it .ci.dg{background:var(--danger)} .fp .rs-it .ci.bl{background:#3b82f6} .fp .rs-it .ci.gr{background:var(--mid)}
+.fp .rs-it .grow{flex:1;min-width:0}
+.fp .rs-it .lb{font-size:12px;line-height:17px;letter-spacing:.4px;color:var(--mid);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fp .rs-it .v{display:flex;align-items:center;gap:8px;font-size:14px;line-height:24px;color:var(--ink);min-width:0;white-space:nowrap}
+.fp .rs-it .v>span{overflow:hidden;text-overflow:ellipsis}
+.fp .rs-it .v i{width:4.5px;height:4.5px;border-radius:50%;background:var(--mid);flex:none}
+.fp .rs-it .v .x{color:var(--mid);flex:1}
+.fp .rs-it .v.pos{color:#4d7c0f} .fp.dk .rs-it .v.pos{color:var(--success)}
+.fp .rs-it .v.na{color:var(--s400)}
+.fp .rs-it.dst .v{color:var(--alert)}
+.fp .rs-it .ib{width:24px;height:24px;flex:none}
+.fp .rs-it .ib .msr{font-size:16px}
+/* topo: revisão + fatura */
+.fp .rs-rev{height:40px;display:flex;align-items:center;gap:12px;padding:0 24px;background:var(--alert);color:#fafaf9;font:700 16px/24px Inter,sans-serif}
+.fp .rs-rev .grow{flex:1}
+.fp .rs-rev .msr{font-size:16px}
+.fp.dk .rs-rev{color:#0c0a09}
+.fp .rs-tk{display:flex;flex-direction:column;gap:8px;padding:16px 24px 24px}
+.fp .rs-tk .row{display:flex;align-items:center;gap:8px}
+.fp .rs-tk .row b{flex:1;font:700 16px/24px Inter,sans-serif}
+.fp .b.sec{background:var(--sec);color:var(--ink);font-weight:400} .fp .b.sec:hover{background:var(--fg)}
+.fp .rs-card .b.pri{font-weight:400}
