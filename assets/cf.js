@@ -26,7 +26,11 @@ const TIT={
   mer:{n:'Mercado Boa Praça',pj:1,doc:'45.678.901/0001-23',cart:'Carteira Norte',grp:'Grupo Boa Praça'},
   bea:{n:'Beatriz Nunes',pj:0,doc:'345.789.123-21',cart:'Carteira Cooperados PR',grp:null,reg:1},
   esc:{n:'Escola Pequeno Saber',pj:1,doc:'56.789.012/0001-34',cart:'Carteira Sul',grp:null},
-  far:{n:'Farmácias Farmix Ltda',pj:1,doc:'67.890.123/0001-45',cart:'Carteira Norte',grp:'Grupo Farmix'}
+  far:{n:'Farmácias Farmix Ltda',pj:1,doc:'67.890.123/0001-45',cart:'Carteira Norte',grp:'Grupo Farmix'},
+  ana:{n:'Ana Paula Ferreira',pj:0,doc:'456.123.789-32',cart:null,grp:null,reg:1},
+  ind:{n:'Indústria Metalúrgica Ponta Ltda',pj:1,doc:'78.901.234/0001-56',cart:'Carteira Sul',grp:'Grupo Ponta'},
+  res:{n:'Restaurante Sabor da Serra',pj:1,doc:'89.012.345/0001-67',cart:'Carteira Norte',grp:null},
+  joa:{n:'João Pedro Martins',pj:0,doc:'567.234.891-43',cart:'Carteira Cooperados PR',grp:null}
 };
 /* UCs: detalhes (padrão de rede, subgrupo) e configurações (o que pesa no faturamento) */
 const UCS={
@@ -39,10 +43,14 @@ const UCS={
   '3017788990':{st:'Em fornecimento',leg:'LV-007733',ap:null,conc:'Luz do Vale',rede:'Trifásico',sub:'B3',mod:'Geração Distribuída',ger:'Sem produção',comp:'Geração compartilhada',auto:false,saldo:50,man:false,rat:false},
   '3003344556':{st:'Em cancelamento',leg:null,ap:null,conc:'Luz do Vale',rede:'Monofásico',sub:'B1',mod:'Geração Distribuída',ger:'Sem produção',comp:'Geração compartilhada',auto:false,saldo:12,man:false,rat:false},
   '3020011223':{st:'Em fornecimento',leg:'FS-220114',ap:null,conc:'Força Sul',rede:'Trifásico',sub:'A4',mod:'Geração Distribuída',ger:'Sem produção',comp:'Geração compartilhada',auto:false,saldo:50,man:false,rat:false},
-  '3011122334':{st:'Em fornecimento',leg:null,ap:'Filial Água Verde',conc:'Força Sul',rede:'Trifásico',sub:'B3',mod:'Geração Distribuída',ger:'Sem produção',comp:'Geração compartilhada',auto:false,saldo:50,man:false,rat:true}
+  '3011122334':{st:'Em fornecimento',leg:null,ap:'Filial Água Verde',conc:'Força Sul',rede:'Trifásico',sub:'B3',mod:'Geração Distribuída',ger:'Sem produção',comp:'Geração compartilhada',auto:false,saldo:50,man:false,rat:true},
+  '3021456789':{st:'Em fornecimento',leg:null,ap:'Casa',conc:'Luz do Vale',rede:'Monofásico',sub:'B1',mod:'Geração Distribuída',ger:'Produção solar',comp:'Autoconsumo local',auto:true,saldo:60,man:false,rat:false},
+  '3022567890':{st:'Em fornecimento',leg:'FS-330871',ap:'Galpão 2',conc:'Força Sul',rede:'Trifásico',sub:'A4',mod:'Geração Distribuída',ger:'Sem produção',comp:'Geração compartilhada',auto:false,saldo:60,man:true,rat:true},
+  '3023678901':{st:'Fora de fornecimento',leg:null,ap:null,conc:'Luz do Vale',rede:'Trifásico',sub:'B3',mod:'Geração Distribuída',ger:'Sem produção',comp:'Geração compartilhada',auto:false,saldo:50,man:false,rat:false},
+  '3024789012':{st:'Em cancelamento',leg:'LV-009912',ap:null,conc:'Luz do Vale',rede:'Bifásico',sub:'B1',mod:'Geração Distribuída',ger:'Sem produção',comp:'Geração compartilhada',auto:false,saldo:12,man:false,rat:true}
 };
 /* cidade da UC */
-const CID={'3014567890':'Curitiba - PR','3014567891':'São José dos Pinhais - PR','3000451278':'Ponta Grossa - PR','3009876543':'Londrina - PR','3012233445':'Curitiba - PR','3005566778':'Maringá - PR','3017788990':'Cascavel - PR','3003344556':'Guarapuava - PR','3020011223':'Joinville - SC','3011122334':'Curitiba - PR'};
+const CID={'3014567890':'Curitiba - PR','3014567891':'São José dos Pinhais - PR','3000451278':'Ponta Grossa - PR','3009876543':'Londrina - PR','3012233445':'Curitiba - PR','3005566778':'Maringá - PR','3017788990':'Cascavel - PR','3003344556':'Guarapuava - PR','3020011223':'Joinville - SC','3011122334':'Curitiba - PR','3021456789':'Colombo - PR','3022567890':'Ponta Grossa - PR','3023678901':'Campo Largo - PR','3024789012':'Foz do Iguaçu - PR'};
 /* faturamentos:[id, ref, titular, uc, leitura{st,dt}, concessionária{inj,cons,val}, estudo{st,val,eco,taxa}, receber{st,tit,ven,pag,banco}, revisão, comentários, estado do detalhe] */
 const R=(id,ref,t,uc,lei,fc,est,rec,rev,cm,e)=>({id,ref,t,uc,lei,fc,est,rec,rev:!!rev,cm:cm||[],e});
 const ROWS=[
@@ -60,11 +68,27 @@ const ROWS=[
   R('FT-10238','Mar/2025','bea','3003344556',{st:'Processado',dt:'28/03/2025'},{inj:540,cons:610,val:612.33},{st:'Em cálculo'},null,0,[],'lida'),
   R('FT-10239','Mar/2025','esc','3020011223',{st:'Processado',dt:'28/03/2025'},{inj:5200,cons:5480,val:3105.90},{st:'Em cálculo'},null,0,[],'lida'),
   R('FT-10240','Mar/2025','far','3011122334',{st:'Processado',dt:'24/03/2025'},{inj:4200,cons:3980,val:2310.70},{st:'Calculado',val:2799.90,eco:402.10,taxa:19.90},{st:'Sem cobrança',tit:null,ven:null,pag:null,banco:null},0,[],'liquidado'),
-  R('FT-10198','Fev/2025','pad','3014567890',{st:'Processado',dt:'24/02/2025'},{inj:2980,cons:2390,val:1288.40},{st:'Calculado',val:1764.12,eco:298.50,taxa:19.90},{st:'Liquidado',tit:'000181220',ven:'05/03/2025',pag:'Boleto',banco:'Sicredi'},0,[],'liquidado')
+  R('FT-10198','Fev/2025','pad','3014567890',{st:'Processado',dt:'24/02/2025'},{inj:2980,cons:2390,val:1288.40},{st:'Calculado',val:1764.12,eco:298.50,taxa:19.90},{st:'Liquidado',tit:'000181220',ven:'05/03/2025',pag:'Boleto',banco:'Sicredi'},0,[],'liquidado'),
+  R('FT-10241','Mar/2025','ana','3021456789',{st:'Processado',dt:'26/03/2025'},{inj:620,cons:410,val:238.90},{st:'Calculado',val:298.10,eco:61.40,taxa:9.90},{st:'Aberto',tit:'000184530',ven:'08/04/2025',pag:'Pix',banco:'Banco do Brasil'},0,[],'aberto'),
+  R('FT-10242','Mar/2025','ind','3022567890',{st:'Processado',dt:'25/03/2025'},{inj:15800,cons:16450,val:9820.40},{st:'Calculado',val:12904.70,eco:2210.80,taxa:19.90},{st:'Emissão pendente',tit:null,ven:'10/04/2025',pag:'Boleto',banco:'Itaú'},1,
+    [{who:'Ana Ribeiro',t:'Rateio externo e faturamento manual: conferir a demanda contratada antes de emitir.',d:'28/03 às 16:40'},{sys:1,t:'Marcado para revisão',d:'28/03 às 16:41',who:'Ana Ribeiro'}],'emissao'),
+  R('FT-10243','Mar/2025','res','3023678901',{st:'Processado',dt:'21/03/2025'},{inj:1720,cons:1880,val:1044.20},{st:'Falha no cálculo'},null,1,
+    [{sys:1,t:'UC fora de fornecimento: consumo do mês não informado',d:'21/03 às 09:15'}],'falha-calculo'),
+  R('FT-10244','Mar/2025','joa','3024789012',{st:'Processado',dt:'27/03/2025'},{inj:380,cons:350,val:201.75},{st:'Calculado',val:236.40,eco:28.30,taxa:9.90},{st:'Sem cobrança',tit:null,ven:null,pag:null,banco:null},0,
+    [{who:'Juliana Rocha',t:'UC em cancelamento: último mês sem cobrança.',d:'28/03 às 11:02'}],'liquidado'),
+  R('FT-10199','Fev/2025','ofi','3009876543',{st:'Processado',dt:'21/02/2025'},{inj:1380,cons:1410,val:790.12},{st:'Calculado',val:921.30,eco:110.80,taxa:19.90},{st:'Atrasado',tit:'000181544',ven:'05/03/2025',pag:'Boleto',banco:'Sicredi'},1,
+    [{sys:1,t:'Marcado para revisão',d:'10/03 às 08:30',who:'Juliana Rocha'}],'atrasado'),
+  R('FT-10200','Fev/2025','mar','3000451278',{st:'Processado',dt:'24/02/2025'},{inj:290,cons:270,val:176.40},{st:'Calculado',val:204.90,eco:22.70,taxa:9.90},{st:'Liquidado',tit:'000181302',ven:'07/03/2025',pag:'Pix',banco:'Banco do Brasil'},0,[],'liquidado'),
+  R('FT-10201','Fev/2025','ind','3022567890',{st:'Processado',dt:'24/02/2025'},{inj:15200,cons:15900,val:9480.10},{st:'Calculado',val:12450.00,eco:2130.60,taxa:19.90},{st:'Liquidado',tit:'000181388',ven:'10/03/2025',pag:'Boleto',banco:'Itaú'},0,[],'liquidado'),
+  R('FT-10202','Fev/2025','cli','3012233445',{st:'Processado',dt:'22/02/2025'},{inj:2050,cons:1990,val:1088.70},{st:'Calculado',val:1301.20,eco:198.40,taxa:19.90},{st:'Aberto',tit:'000181410',ven:'02/04/2025',pag:'Débito automático',banco:'Itaú'},0,[],'aberto'),
+  R('FT-10203','Fev/2025','bea','3003344556',{st:'Processado',dt:'27/02/2025'},{inj:520,cons:600,val:598.10},{st:'Calculado',val:640.30,eco:12.40,taxa:9.90},{st:'Sem cobrança',tit:null,ven:null,pag:null,banco:null},0,[],'liquidado'),
+  R('FT-10160','Jan/2025','pad','3014567891',{st:'Processado',dt:'27/01/2025'},{inj:8100,cons:7700,val:5020.30},{st:'Calculado',val:6705.20,eco:1140.10,taxa:19.90},{st:'Liquidado',tit:'000179870',ven:'05/02/2025',pag:'Boleto',banco:'Sicredi'},0,[],'liquidado'),
+  R('FT-10161','Jan/2025','res','3023678901',{st:'Processado',dt:'22/01/2025'},{inj:1690,cons:1810,val:1012.80},{st:'Calculado',val:1190.40,eco:160.20,taxa:19.90},{st:'Atrasado',tit:'000179911',ven:'05/02/2025',pag:'Boleto',banco:'Sicredi'},1,
+    [{who:'Carlos Mendes',t:'Cliente pediu segunda via; UC saiu de fornecimento em março.',d:'20/02 às 15:12'}],'atrasado')
 ];
 /* resumo: saldo de créditos (meses) e data de pagamento */
-const SAL={'FT-10231':12,'FT-10232':9,'FT-10233':4,'FT-10234':0,'FT-10235':7,'FT-10236':3,'FT-10237':6,'FT-10238':2,'FT-10239':10,'FT-10240':8,'FT-10198':11};
-const PAGO={'FT-10235':'01/04/2025','FT-10198':'03/03/2025'};
+const SAL={'FT-10231':12,'FT-10232':9,'FT-10233':4,'FT-10234':0,'FT-10235':7,'FT-10236':3,'FT-10237':6,'FT-10238':2,'FT-10239':10,'FT-10240':8,'FT-10198':11,'FT-10241':5,'FT-10242':14,'FT-10243':0,'FT-10244':1,'FT-10199':0,'FT-10200':4,'FT-10201':13,'FT-10202':6,'FT-10203':2,'FT-10160':12,'FT-10161':0};
+const PAGO={'FT-10235':'01/04/2025','FT-10198':'03/03/2025','FT-10200':'06/03/2025','FT-10201':'10/03/2025','FT-10160':'04/02/2025'};
 const HOJE=new Date(2025,3,2);
 const dias=d=>{ const [a,b,c]=d.split('/').map(Number); return Math.round((HOJE-new Date(c,b-1,a))/864e5); };
 const pct=n=>n.toLocaleString('pt-BR',{maximumFractionDigits:1})+'%';
@@ -105,7 +129,7 @@ const COLS=[
 ];
 const FLT=[
  {k:'rev',l:'Revisão',o:['Precisa de revisão','Sem revisão'],m:(r,v)=>v.includes(r.rev?'Precisa de revisão':'Sem revisão')},
- {k:'ref',l:'Referência',o:['Mar/2025','Fev/2025'],m:(r,v)=>v.includes(r.ref)},
+ {k:'ref',l:'Referência',o:['Mar/2025','Fev/2025','Jan/2025'],m:(r,v)=>v.includes(r.ref)},
  {k:'lei',l:'Leitura',o:Object.keys(LEI),m:(r,v)=>v.includes(r.lei.st)},
  {k:'est',l:'Estudo',o:Object.keys(EST),m:(r,v)=>v.includes(r.est.st)},
  {k:'rec',l:'Conta a receber',o:['Aguardando',...Object.keys(REC)],m:(r,v)=>v.includes(r.rec?r.rec.st:'Aguardando')},
@@ -272,6 +296,7 @@ function mountScreen(){
   mount(document.getElementById('rail'),()=>H.rail(row(S.cur)||ROWS[0]));
   mount(document.getElementById('count'),()=>{ const v=visible().length; return n2(v,'faturamento','faturamentos')+(v!==ROWS.length?` de ${ROWS.length}`:''); });
   document.addEventListener('click',onClick);
+  document.addEventListener('dblclick',e=>{ const r=e.target.closest('.tr.row'); if(!r||e.target.closest('button,a,input')) return; location.href='faturamento-detalhe.html?estado='+row(r.dataset.id).e; });
   document.getElementById('bulk').addEventListener('click',onBulk);
   document.getElementById('dwOv').addEventListener('click',closeDw);
   document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ if(popEl&&!popEl.hidden){ const a=popAnchor; closePop(); a&&a.focus(); return; } if(S.dw) closeDw(); }

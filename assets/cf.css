@@ -87,7 +87,7 @@
 .fp .tr.row>div.cel .ent{flex:1;min-height:49px;padding:4px 8px}
 
 /* resumo: cards */
-.fp .rs-card{background:var(--hov2);border-radius:12px;overflow:hidden}
+.fp .rs-card{background:var(--hov2);border-radius:12px;overflow:clip}
 .fp .rs-hd{display:flex;align-items:center;gap:12px;padding:24px}
 .fp .rs-hd .eb{width:20px;height:20px;border-radius:50%;background:var(--ink);color:var(--fg);display:grid;place-items:center;flex:none}
 .fp .rs-hd .eb.off{background:var(--border)}
@@ -133,3 +133,11 @@
 .fp .act-p .act-l{padding:0 24px 16px}
 .fp .cmp{padding:0 24px 24px}
 .fp .act-p.closed .act-h{padding-bottom:24px}
+
+/* resumo: o cabeçalho de cada seção gruda no topo (abaixo da barra) até a seção acabar;
+   cantos de 12px mascarados e um degradê embaixo para o conteúdo sumir suave */
+.fp .rs-hd,.fp .act-p .act-h{position:sticky;top:60px;z-index:1;background:var(--fg)}
+.fp .rs-hd::before,.fp .act-p .act-h::before{content:"";position:absolute;inset:0;background:var(--hov2);border-radius:12px 12px 0 0;z-index:-1}
+.fp .rs-hd::after,.fp .act-p .act-h::after{content:"";position:absolute;left:0;right:0;top:100%;height:20px;background:linear-gradient(var(--hov2),transparent);pointer-events:none}
+.fp .act-p{overflow:clip}
+.fp .rs-hd .cap{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
