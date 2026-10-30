@@ -138,7 +138,7 @@ const shut=k=>S.fold.has(k)?' closed':'';
 const kv=rows=>`<div class="kvl">${rows.map(x=>`<div><span>${x[0]}</span><b class="${x[2]||''}">${x[1]}</b></div>`).join('')}</div>`;
 /* card: cabeçalho (ícone 20px, título, detalhe, link, recolher) + itens; recolhido mantém só os destaques */
 const card=(k,h,body,keep)=>`<section class="rs-card${shut(k)}" aria-label="${esc(h.t)}"><div class="rs-hd${h.big?'':' sm'}"><span class="eb${h.off?' off':''}"><span class="msr fill">${h.ic}</span></span><div class="t"><b>${esc(h.t)}</b>${h.d?`<span class="cap">${esc(h.d)}</span>`:''}</div>${h.open||''}${fold(k,h.t.toLowerCase())}</div>${S.fold.has(k)?(keep?`<div class="rs-bd">${keep}</div>`:''):`<div class="rs-bd">${body}</div>`}</section>`;
-H.rbar=()=>{ const all=FOLDS.every(k=>!S.fold.has(k)); return `<div class="rbar"><span class="msr">article_shortcut</span><span class="grow">Resumo do faturamento</span><button class="ib tip" data-a="foldall" data-tip="${all?'Recolher tudo':'Expandir tudo'}" aria-label="${all?'Recolher todas as seções':'Expandir todas as seções'}"><span class="msr">${all?'unfold_less':'unfold_more'}</span></button><button class="ib" data-a="railclose" aria-label="Fechar resumo"><span class="msr">right_panel_close</span></button></div>`; };
+H.rbar=()=>{ const all=FOLDS.every(k=>!S.fold.has(k)); return `<div class="rbar"><span class="msr">article_shortcut</span><span class="grow">Resumo do faturamento</span><button class="ib tip" data-a="foldall" data-tip="${all?'Recolher tudo':'Expandir tudo'}" aria-label="${all?'Recolher todas as seções':'Expandir todas as seções'}"><span class="msr">${all?'unfold_less':'unfold_more'}</span></button></div>`; };
 /* topo: faixa "Revisão necessária" (se pedida) + fatura de ref. com as ações */
 H.head=r=>`<section class="rs-card rs-fat">${r.rev?'<div class="rs-rev" role="status"><span class="grow">Revisão necessária</span><span class="msr fill">flag</span></div>':''}
   <div class="rs-tk"><div class="row"><b>Fatura de ${r.ref}</b><button class="more" data-a="rowmenu" data-id="${r.id}" aria-label="Ações do faturamento" aria-haspopup="menu"><span class="msr">more_horiz</span></button></div>
@@ -253,7 +253,6 @@ function onClick(e){
     case 'fclrall': S.f={}; refresh(); break;
     case 'fold': { const f=a.dataset.k; S.fold.has(f)?S.fold.delete(f):S.fold.add(f); refresh(); const b=document.querySelector(`#rail [data-a="fold"][data-k="${f}"]`); if(b) b.focus(); break; }
     case 'foldall': { const all=FOLDS.every(f=>!S.fold.has(f)); S.fold=new Set(all?FOLDS:[]); refresh(); const b=document.querySelector('#rail [data-a="foldall"]'); if(b) b.focus(); break; }
-    case 'railclose': S.railOpen=false; refresh(); break;
     case 'copy': { const v=a.dataset.v; try{ navigator.clipboard.writeText(v).then(()=>toast('Copiado',v),()=>toast(v)); }catch(err){ toast(v); } break; }
     case 'toast': toast(a.dataset.msg); break;
   }

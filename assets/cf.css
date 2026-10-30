@@ -127,3 +127,9 @@
 .fp .rs-tk .row b{flex:1;font:700 16px/24px Inter,sans-serif}
 .fp .b.sec{background:var(--sec);color:var(--ink);font-weight:400} .fp .b.sec:hover{background:var(--fg)}
 .fp .rs-card .b.pri{font-weight:400}
+/* comentários com o mesmo respiro dos cards do resumo (24px) */
+.fp .act-p{border-radius:12px}
+.fp .act-p .act-h{padding:24px 24px 16px;gap:12px;font-size:14px;line-height:24px}
+.fp .act-p .act-l{padding:0 24px 16px}
+.fp .cmp{padding:0 24px 24px}
+.fp .act-p.closed .act-h{padding-bottom:24px}
