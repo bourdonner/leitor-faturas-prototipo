@@ -75,6 +75,42 @@
     .rail>.rbar{flex:none}
     .rail-sc{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;border-radius:12px}
   }
+  /* ===== mobile (<768) no padrão da listagem do Leitor (index.html) ===== */
+  .mmenu{display:none}
+  @media (max-width:767px){
+    .sidebar,.topbar{display:none!important}
+    .page{margin:0!important;padding:0 0 96px!important;gap:0!important}
+    .card{border-radius:0!important;box-shadow:none!important;padding:0!important;gap:0!important}
+    .head{position:sticky;top:0;z-index:15;background:var(--fg);align-items:center;gap:8px;padding:16px 8px;border-bottom:1px solid var(--fsec)}
+    .mmenu{display:grid;place-items:center;width:56px;height:56px;border-radius:8px;flex:none;color:var(--ink)}
+    .mmenu .msr{font-size:24px}
+    .head h1{margin:0;font:600 16px/24px Poppins,sans-serif}
+    .head p{margin:0;font:500 10px/13px Geist,Inter,sans-serif;text-transform:uppercase;letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .head .acts{gap:0}
+    .head .sq{width:56px;height:56px;background:transparent}
+    .head .sq.m-off{display:none}
+    .head .tip[data-tip]:hover::after{display:none}
+    .work{padding:24px;gap:24px}
+    .work .lst{gap:16px}
+    .tools{gap:8px}
+    #bRail,.rail{display:none!important}
+    .fp .frow{flex-wrap:nowrap;overflow-x:auto;margin-right:-24px;padding-right:24px;scrollbar-width:none}
+    .fp .frow::-webkit-scrollbar{display:none}
+    .fp .frow>*{flex:none}
+    /* nada passa da largura da tela: só a tabela e os filtros rolam de lado */
+    .work,.work .lst,#vList,.tblw{min-width:0;max-width:100%}
+    .fp .tools .field{flex:1;min-width:0}
+    .fp .tools .field input{min-width:0;width:100%;text-overflow:ellipsis}
+    .fp .tools>button{flex:none}
+    .tblw{overflow-x:auto;-webkit-overflow-scrolling:touch}
+    /* Titular logo depois da seleção, como no Leitor; colunas com largura fixa e rolagem lateral */
+    .fp .tbl .tr{grid-template-columns:48px 200px 170px 160px 200px 110px 150px 48px 56px!important;width:max-content;min-width:100%}
+    .tr>.c-ck{order:0} .tr>.c-tit{order:1} .tr>.c-rec{order:2} .tr>.c-eta{order:3} .tr>.c-uc{order:4} .tr>.c-ref{order:5} .tr>.c-est{order:6} .tr>.c-rev{order:7} .tr>.c-act{order:8}
+    .tfoot{flex-wrap:wrap;gap:8px}
+    .tfoot span:last-child{display:none}
+    .fp .bulk{left:12px;right:12px;width:auto;transform:none;bottom:calc(12px + env(safe-area-inset-bottom))}
+    .fp .bulk.on{transform:none}
+  }
   @media (max-width:900px){
     .sidebar{display:none}
     .page{margin-left:0;padding:8px 0 96px}
@@ -113,10 +149,11 @@
 
   <main class="card">
     <div class="head">
+      <button class="mmenu" id="mmenu" data-a="toast" data-msg="Menu fora do escopo do protótipo." aria-label="Abrir menu"><span class="msr">menu</span></button>
       <div class="tc"><h1>Contas a Faturar</h1><p>Leitura, estudo e conta a receber de cada faturamento</p></div>
       <div class="acts">
-        <button class="sq tip" data-tip="Indicadores" aria-label="Indicadores" data-a="toast" data-msg="Abriria o dashboard de faturamento"><span class="msr">bar_chart</span></button>
-        <button class="sq tip" data-tip="Atualizar" aria-label="Atualizar" data-a="toast" data-msg="Lista atualizada"><span class="msr">refresh</span></button>
+        <button class="sq tip m-off" data-tip="Indicadores" aria-label="Indicadores" data-a="toast" data-msg="Abriria o dashboard de faturamento"><span class="msr">bar_chart</span></button>
+        <button class="sq tip m-off" data-tip="Atualizar" aria-label="Atualizar" data-a="toast" data-msg="Lista atualizada"><span class="msr">refresh</span></button>
         <button class="sq tip" data-tip="Exportar" aria-label="Exportar" data-a="expmenu" aria-haspopup="menu"><span class="msr">download</span></button>
         <button class="sq tip" data-tip="Incluir" aria-label="Incluir" data-a="incmenu" aria-haspopup="menu"><span class="msr">add</span></button>
       </div>

@@ -213,8 +213,8 @@ H.filters=()=>FLT.filter(f=>!f.x||S.xf.has(f.k)).map(f=>{ const v=S.f[f.k]||[]; 
   +(FLT.some(f=>f.x&&!S.xf.has(f.k))?'<button class="flt more-f" data-a="morefl" aria-haspopup="menu"><span class="msr">add</span><span class="lb">Mais filtros</span></button>':'')
   +(Object.values(S.f).some(v=>v&&v.length)?'<button class="fclear" data-a="fclrall">Limpar filtros</button>':'');
 H.table=()=>{ const gt=COLS.map(c=>c.w).join(' '); const v=visible();
-  const head=`<div class="tr th" role="row" style="grid-template-columns:${gt}">${COLS.map(c=>`<div role="columnheader">${c.h()}</div>`).join('')}</div>`;
-  const rows=v.map(r=>`<div class="tr row ${S.sel.has(r.id)?'is-sel':''} ${S.railOpen&&S.cur===r.id?'cur':''}" role="row" tabindex="0" data-a="row" data-id="${r.id}" style="grid-template-columns:${gt}">${COLS.map(c=>`<div role="cell" class="${c.cel?'cel':''}">${c.c(r)}</div>`).join('')}</div>`).join('');
+  const head=`<div class="tr th" role="row" style="grid-template-columns:${gt}">${COLS.map(c=>`<div role="columnheader" class="c-${c.k}">${c.h()}</div>`).join('')}</div>`;
+  const rows=v.map(r=>`<div class="tr row ${S.sel.has(r.id)?'is-sel':''} ${S.railOpen&&S.cur===r.id?'cur':''}" role="row" tabindex="0" data-a="row" data-id="${r.id}" style="grid-template-columns:${gt}">${COLS.map(c=>`<div role="cell" class="c-${c.k}${c.cel?' cel':''}">${c.c(r)}</div>`).join('')}</div>`).join('');
   return head+(rows||'<div class="empty">Nenhum faturamento com esses filtros.</div>'); };
 
 /* ---------- resumo ---------- */
@@ -417,7 +417,7 @@ function onClick(e){
   if(!a) return; const k=a.dataset.a, id=a.dataset.id, r=id?row(id):null;
   switch(k){
     /* duplo clique abre o detalhamento: o 1º clique redesenha a tabela, então o dblclick nativo não chega na linha; compara id e tempo */
-    case 'row': { const t=Date.now(); if(lastRow.id===id&&t-lastRow.t<450){ lastRow={id:null,t:0}; location.href='faturamento-detalhe.html?estado='+row(id).e; break; } lastRow={id,t}; S.cur=id; S.railOpen=true; refresh(); break; }
+    case 'row': { if(matchMedia('(max-width:767px)').matches){ location.href='faturamento-detalhe.html?estado='+row(id).e; break; } const t=Date.now(); if(lastRow.id===id&&t-lastRow.t<450){ lastRow={id:null,t:0}; location.href='faturamento-detalhe.html?estado='+row(id).e; break; } lastRow={id,t}; S.cur=id; S.railOpen=true; refresh(); break; }
     case 'sel': e.stopPropagation(); S.sel.has(id)?S.sel.delete(id):S.sel.add(id); refresh(); break;
     case 'selall': { const v=visible(); const al=v.every(x=>S.sel.has(x.id)); v.forEach(x=>al?S.sel.delete(x.id):S.sel.add(x.id)); refresh(); break; }
     case 'rowmenu': e.stopPropagation(); if(popAnchor===a){ closePop(); break; } openPop(a,H.menu(r),{alignRight:true,w:270}); break;
