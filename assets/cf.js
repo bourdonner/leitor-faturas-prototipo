@@ -394,12 +394,14 @@ function fltPop(a,f){ const v=S.f[f.k]||[];
 function applyTxt(k){ const i=document.getElementById('fIn'); if(!i) return; let val=i.value.trim(); if(i.type==='date'&&val) val=val.split('-').reverse().join('/'); S.f[k]=val?[val]:[]; closePop(); refresh(); }
 const copyTxt=(v,msg)=>{ try{ navigator.clipboard.writeText(v).then(()=>toast(msg||'Copiado',v),()=>toast(v)); }catch(err){ toast(v); } };
 
+let lastRow={id:null,t:0};
 function onClick(e){
   const a=e.target.closest('[data-a]');
   if(popEl&&!popEl.hidden&&!e.target.closest('#pop')&&!(popAnchor&&popAnchor.contains(e.target))) closePop();
   if(!a) return; const k=a.dataset.a, id=a.dataset.id, r=id?row(id):null;
   switch(k){
-    case 'row': S.cur=id; S.railOpen=true; refresh(); break;
+    /* duplo clique abre o detalhamento: o 1º clique redesenha a tabela, então o dblclick nativo não chega na linha; compara id e tempo */
+    case 'row': { const t=Date.now(); if(lastRow.id===id&&t-lastRow.t<450){ lastRow={id:null,t:0}; location.href='faturamento-detalhe.html?estado='+row(id).e; break; } lastRow={id,t}; S.cur=id; S.railOpen=true; refresh(); break; }
     case 'sel': e.stopPropagation(); S.sel.has(id)?S.sel.delete(id):S.sel.add(id); refresh(); break;
     case 'selall': { const v=visible(); const al=v.every(x=>S.sel.has(x.id)); v.forEach(x=>al?S.sel.delete(x.id):S.sel.add(x.id)); refresh(); break; }
     case 'rowmenu': e.stopPropagation(); if(popAnchor===a){ closePop(); break; } openPop(a,H.menu(r),{alignRight:true,w:270}); break;
@@ -471,7 +473,6 @@ function mountScreen(){
   mount(document.getElementById('count'),()=>{ const v=visible().length; return n2(v,'faturamento','faturamentos')+(v!==ROWS.length?` de ${ROWS.length}`:''); });
   document.addEventListener('click',onClick);
   document.addEventListener('scroll',e=>{ if(e.target.id==='railSc') markStuck(); },true);
-  document.addEventListener('dblclick',e=>{ const r=e.target.closest('.tr.row'); if(!r||e.target.closest('button,a,input')) return; location.href='faturamento-detalhe.html?estado='+row(r.dataset.id).e; });
   document.getElementById('bulk').addEventListener('click',onBulk);
   const bt=document.createElement('div'); bt.className='btip'; bt.setAttribute('role','tooltip'); bt.hidden=true; document.getElementById('app').appendChild(bt);
   const showT=b=>{ bt.innerHTML='<b>'+b.dataset.tl+'</b><span>'+b.dataset.tw+'</span>'; bt.hidden=false; const r=b.getBoundingClientRect();
