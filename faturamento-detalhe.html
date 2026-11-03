@@ -132,6 +132,95 @@
   .grade tbody tr:last-child td{border-bottom:0}
   .grade tfoot td{font-weight:600;background:var(--s50);border-top:1px solid var(--s200);border-bottom:0}
   .grade tfoot .stk{background:var(--s50)}
+  /* ===== mobile (<768) no padrão do Leitor de Faturas: header com badges, uma tela por vez, tab bar só com ícones ===== */
+  .m-head,.tb-side{display:none}
+  .m-ov{position:fixed;inset:0;z-index:45;background:rgba(245,245,244,.4);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);display:flex;justify-content:center;align-items:flex-start;padding:72px 24px 24px;animation:mOvIn .2s ease}
+  .m-ov[hidden]{display:none}
+  .m-sheet{width:100%;max-width:360px;max-height:100%;display:flex;flex-direction:column;background:#fff;border:1px solid var(--s100);border-radius:12px;padding:4px;box-shadow:0 10px 15px -3px rgba(0,0,0,.08),0 4px 6px -4px rgba(0,0,0,.08);animation:mSheetIn .25s cubic-bezier(.2,.9,.3,1.1)}
+  .m-nav{display:flex;align-items:center;gap:8px;padding:4px;background:rgba(245,245,244,.4);border:1px solid var(--s100);border-radius:8px;flex:none}
+  .m-nav b{flex:1;min-width:0;font-size:14px;line-height:1.7;color:#0c0a09;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .m-nb{width:36px;height:36px;display:grid;place-items:center;border-radius:6px;color:var(--ink);flex:none}
+  .m-nb .ms{font-size:20px}
+  .m-nb[hidden]{display:block;visibility:hidden}
+  .m-body{overflow-y:auto;overflow-x:hidden;min-height:0}
+  .m-sec{display:flex;flex-direction:column;align-items:flex-start;gap:12px;padding:24px;border-top:1px solid var(--s100)}
+  .m-row{display:flex;align-items:center;gap:12px}
+  .m-hb{display:inline-flex;align-items:center;gap:12px;padding:12px 16px 12px 12px;border-radius:999px;background:rgba(245,245,244,.4);font:600 14px/1.24 Poppins,sans-serif;color:var(--ink);max-width:100%;min-width:0}
+  .m-row{max-width:100%;min-width:0} .m-row .m-hb{flex:0 1 auto} .m-go{flex:none}
+  .m-hb .ms{font-size:20px}
+  .m-hb.brand .ms{color:var(--brand)} .m-hb .dot{width:8px;height:8px;border-radius:999px;background:var(--mid);margin:0 6px}
+  .m-hb.danger .dot{background:var(--danger)} .m-hb.alert .dot{background:var(--alert)} .m-hb.ok .dot{background:var(--success)} .m-hb.info .dot{background:var(--info)}
+  .m-go{width:40px;height:40px;border-radius:8px;background:var(--ink);color:#fafaf9;display:grid;place-items:center}
+  .m-go .ms{font-size:16px}
+  .m-acts{display:flex;gap:8px;padding:0 24px 24px;flex-wrap:wrap}
+  .m-ab{width:56px;height:56px;border-radius:11px;background:var(--s50);display:grid;place-items:center;color:var(--ink)}
+  .m-ab .ms{font-size:22px}
+  .m-ab:active,.m-go:active{transform:scale(.96)}
+  .m-pri{padding:0 24px 24px} .m-pri .btn{width:100%;justify-content:center}
+  .m-list{display:flex;flex-direction:column;padding:12px;border-top:1px solid var(--s100)}
+  .m-list .grp{display:flex;align-items:center;gap:6px;padding:12px 12px 4px;font:600 12px Inter;color:var(--mid)}
+  .m-list .grp .lk{display:inline-flex;align-items:center;gap:2px;font-weight:400;color:var(--s400)} .m-list .grp .lk .ms{font-size:14px}
+  .m-list .it{display:flex;align-items:center;gap:12px;height:48px;padding:0 12px;border-radius:8px;text-align:left;color:var(--ink)}
+  .m-list .it .ms{font-size:20px;color:var(--mid)}
+  .m-list .it:disabled{color:var(--s400)} .m-list .it:disabled .ms{color:var(--s400)}
+  .m-list .it.danger{color:#dc2626} .m-list .it.danger .ms{color:#dc2626}
+  .m-list .sep{height:1px;background:var(--s100);margin:6px 0}
+  @keyframes mOvIn{from{opacity:0}to{opacity:1}}
+  @keyframes mSheetIn{from{opacity:0;transform:translateY(-8px) scale(.98)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){.m-ov,.m-sheet{animation:none}}
+  @media (max-width:767px){
+    .sidebar,.topbar,.head,.note{display:none!important}
+    .page,.app,.main{margin:0!important;padding:0!important}
+    .sheet{border-radius:0!important;padding:0!important;box-shadow:none!important;background:#fff}
+    .m-head{display:flex;align-items:center;gap:8px;padding:16px 24px 16px 8px;background:#fff;border-bottom:1px solid var(--s200);position:sticky;top:0;z-index:20;transition:margin-top .28s ease}
+    .m-menu{width:56px;height:56px;border-radius:11px;display:grid;place-items:center;flex:none;color:var(--ink)}
+    .m-menu .ms{font-size:22px}
+    .m-tt{flex:1;min-width:0;display:flex;flex-direction:column;color:#44403c}
+    .m-tt b{font-size:16px;line-height:1.5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .m-tt span{font-size:10px;line-height:1.32;text-transform:uppercase;letter-spacing:.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .m-badges{display:flex;align-items:center;flex:none}
+    .m-bd{width:34px;height:34px;border-radius:999px;display:grid;place-items:center;color:#fff;margin-right:-12px;position:relative}
+    .m-bd .ms{font-size:18px}
+    .m-bd.uc{background:#44403c} .m-bd.ink{background:var(--ink)} .m-bd.brand{background:var(--brand)}
+    .m-pill{display:flex;align-items:center;gap:6px;height:34px;padding:0 12px 0 16px;border-radius:999px;background:var(--s100);font:600 12px/1.5 Poppins,sans-serif;color:var(--ink);position:relative;z-index:2;box-shadow:-2px 0 0 #fff;white-space:nowrap}
+    .m-pill{max-width:128px} .m-pill .tx{overflow:hidden;text-overflow:ellipsis}
+    .m-pill .dot{width:8px;height:8px;border-radius:999px;background:var(--mid);flex:none}
+    .m-pill.danger .dot{background:var(--danger)} .m-pill.alert .dot{background:var(--alert)} .m-pill.ok .dot{background:var(--success)} .m-pill.info .dot{background:var(--info)}
+    .chrome-hide .m-head{margin-top:calc(var(--mh,89px) * -1)}
+    /* uma tela por vez: Prévia ou Detalhes */
+    .cols{display:block;margin:0!important}
+    .panel{background:#fff!important;border-radius:0!important;min-height:0!important}
+    .panel.mhide{display:none!important}
+    .panel+.panel{margin-top:0!important}
+    .det-h{display:none!important}
+    .p-doc .bar{padding:12px 24px 16px;gap:4px}
+    .p-doc .bar .ph{display:none}
+    .p-doc .bar .t{flex:1;min-width:0;font-weight:700;color:#0c0a09;background:rgba(245,245,244,.4);border:1px solid var(--s100);border-radius:8px;padding:0 12px;height:46px;line-height:44px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    #zIn,#zOut{display:none}
+    #dl{width:46px;height:46px;flex:none;border-radius:8px;background:rgba(245,245,244,.4);border:1px solid var(--s100)}
+    .doc-scroll{padding:0 24px 120px}
+    .content{padding:12px 24px 120px!important;gap:20px}
+    .sec-t{font-size:20px;line-height:1.2;letter-spacing:.15px;margin-top:4px}
+    .grid{grid-template-columns:minmax(0,1fr)!important}
+    .card{background:rgba(245,245,244,.4);border:1px solid var(--s100);border-radius:12px;padding:16px}
+    .grade,.tbl{border-color:var(--s100)}
+    .grade th,.grade td{padding:0 10px}
+    .grade .stk{position:static;min-width:0;width:50%;max-width:50%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+    .itabs{align-self:stretch;background:rgba(245,245,244,.4);border:1px solid var(--s100);border-radius:8px;padding:4px}
+    .itab{height:36px;padding:0 10px;font-weight:700;flex:none}
+    .itab.on{background:#fff;color:#0c0a09;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+    /* tab bar: etapas só com ícone + botão à parte que troca Prévia/Detalhes (como Pendências no Leitor) */
+    .tbdock{left:50%!important;right:auto!important;transform:translateX(-50%)!important;flex-direction:row!important;align-items:stretch!important;gap:8px!important;bottom:calc(12px + env(safe-area-inset-bottom))!important;transition:transform .28s ease}
+    .chrome-hide .tbdock{transform:translate(-50%, calc(100% + 40px))!important}
+    #phbar{padding:6px;gap:4px}
+    #phbar .tb{width:76px;flex:none;padding:15px 4px}
+    #phbar .tb span.l{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+    #phbar .tb .st{right:16px;top:8px}
+    .tb-side{display:flex;align-items:center;justify-content:center;width:68px;flex:none;border-radius:999px;background:#fff;color:var(--ink);box-shadow:0 10px 15px rgba(0,0,0,.10),0 4px 6px rgba(0,0,0,.10)}
+    .tb-side .ms{font-size:26px}
+    .tb[data-tip]:hover::after{display:none}
+  }
+  @media (max-width:767px) and (prefers-reduced-motion:reduce){ .m-head,.tbdock{transition:none} }
   /* ===== colunas ===== */
   .cols{flex:1;min-height:0;display:flex;gap:24px;margin-top:16px;position:relative}
   .panel{background:var(--s100);border-radius:var(--r);display:flex;flex-direction:column;min-width:0;min-height:0;transition:flex-basis .35s ease,opacity .25s ease,margin .35s ease,transform .35s ease;transform-origin:50% 100%}
@@ -363,6 +452,16 @@
     <div class="topbar"><nav class="crumb" aria-label="Você está em"><span class="rp"><button class="ibtn" aria-label="Recolher menu"><span class="msr">vertical_split</span></button><span class="vsep"></span></span><a href="faturamento.html">Contas a Faturar</a><span class="mss" style="color:#0c0a09" aria-hidden="true">chevron_right</span><span class="cur">Padaria Estrela do Sul Ltda · Mar/2025</span></nav></div>
 
     <section class="sheet">
+      <header class="m-head" aria-label="Faturamento">
+        <button class="m-menu" id="mMenu" aria-label="Menu"><span class="ms" aria-hidden="true">menu</span></button>
+        <div class="m-tt"><b>Padaria Estrela do Sul Ltda</b><span>Faturamento · Mar/2025</span></div>
+        <div class="m-badges">
+          <button class="m-bd uc" data-info aria-label="Unidade consumidora 3014567890"><span class="ms f" aria-hidden="true">electrical_services</span></button>
+          <button class="m-bd ink" data-info aria-label="Distribuidora: Luz do Vale"><span class="ms f" aria-hidden="true">electric_meter</span></button>
+          <button class="m-bd brand" data-info aria-label="Referência: março de 2025"><span class="ms f" aria-hidden="true">calendar_today</span></button>
+          <button class="m-pill" id="mSt" data-info></button>
+        </div>
+      </header>
       <div class="head">
         <div class="tc">
           <h1>Padaria Estrela do Sul Ltda</h1>
@@ -404,6 +503,7 @@
 
 <div class="tbdock">
 <nav class="tabbar" id="phbar" aria-label="Etapas" role="tablist"></nav>
+<button class="tb-side" id="mScr" aria-label="Ver prévia"><span class="ms f" aria-hidden="true">picture_as_pdf</span></button>
 </div>
 
 <div class="ov" id="recalc" hidden>
@@ -414,6 +514,16 @@
   </div>
 </div>
 
+<div class="m-ov" id="mOv" hidden>
+  <div class="m-sheet" role="dialog" aria-modal="true" aria-labelledby="mSheetT">
+    <div class="m-nav">
+      <button class="m-nb" id="mBack" aria-label="Voltar"><span class="ms f" aria-hidden="true">chevron_left</span></button>
+      <b id="mSheetT">Padaria Estrela do Sul Ltda</b>
+      <button class="m-nb" id="mClose" aria-label="Fechar"><span class="ms" aria-hidden="true">close</span></button>
+    </div>
+    <div class="m-body" id="mBody"></div>
+  </div>
+</div>
 <div class="note"><label for="demo">Estado</label><select id="demo">
   <option value="aguardando">0 · Aguardando fatura</option>
   <option value="lida">1 · Leitura concluída</option>
@@ -483,6 +593,8 @@ function statusLabel(){ const st=STATES[S.st]; return st.btr ? st.btr : st.m; }
 function phaseName(p){ return p===0?'Coleta':PHASES[p-1].t; }
 function renderHead(){
   const st=STATES[S.st];
+  const mp=document.getElementById('mSt'); if(mp){ mp.className='m-pill '+st.tone; mp.innerHTML='<span class="dot" aria-hidden="true"></span><span class="tx">'+esc(statusLabel())+'</span>'; mp.setAttribute('aria-label','Status: '+phaseName(st.phase)+' · '+statusLabel()); }
+  if(S.mView) mShow(S.mView);
   const c=document.getElementById('stChip');
   c.className='chip st '+st.tone;
   c.innerHTML=`<span class="dot" aria-hidden="true"></span>${esc(phaseName(st.phase))} · ${esc(statusLabel())}`;
@@ -813,9 +925,67 @@ document.getElementById('demo').onchange=e=>setState(e.target.value);
 const tip=document.getElementById('sbTip');
 document.querySelectorAll('.sb-item[data-tip]').forEach(a=>{ a.addEventListener('mouseenter',()=>{ tip.textContent=a.dataset.tip; const r=a.getBoundingClientRect(); tip.style.top=(r.top+r.height/2-14)+'px'; tip.style.opacity=1; }); a.addEventListener('mouseleave',()=>tip.style.opacity=0); });
 
+
+/* ===== mobile (padrão do Leitor): painel do header, uma tela por vez, chrome some ao rolar ===== */
+S.mScreen='det'; S.mView=null; let mTrigger=null;
+function mInfoHTML(){
+  const st=STATES[S.st], pr=PRIMARY[S.st], dl=S.st==='liquidado'||S.st==='aberto';
+  return '<div class="m-sec"><span class="m-hb '+st.tone+'"><span class="dot" aria-hidden="true"></span>'+esc(phaseName(st.phase))+' · '+esc(statusLabel())+'</span>'
+    +'<span class="m-hb brand"><span class="ms f" aria-hidden="true">calendar_today</span>Março de 2025</span>'
+    +'<div class="m-row"><span class="m-hb"><span class="ms f" aria-hidden="true">electric_meter</span>Luz do Vale</span><button class="m-go" data-mgo="Distribuidora" aria-label="Abrir distribuidora"><span class="ms" aria-hidden="true">open_in_new</span></button></div>'
+    +'<div class="m-row"><span class="m-hb"><span class="ms f" aria-hidden="true">electrical_services</span>UC 3014567890</span><button class="m-go" data-mgo="Unidade consumidora" aria-label="Abrir unidade consumidora"><span class="ms" aria-hidden="true">open_in_new</span></button></div>'
+    +'<div class="m-row"><span class="m-hb"><span class="ms f" aria-hidden="true">folder_shared</span>Carteira Comercial MG</span><button class="m-go" data-mgo="Carteira" aria-label="Abrir carteira"><span class="ms" aria-hidden="true">open_in_new</span></button></div></div>'
+    +'<div class="m-acts"><button class="m-ab" id="mActs" aria-label="Ações"><span class="ms" aria-hidden="true">more_horiz</span></button>'
+    +(dl?'<button class="m-ab" id="mDl" aria-label="Baixar fatura"><span class="ms" aria-hidden="true">download</span></button>':'')+'</div>'
+    +(pr?'<div class="m-pri"><button class="btn primary" id="mPri"><span class="ms" aria-hidden="true">'+pr.ic+'</span>'+pr.l+'</button></div>':'');
+}
+function mActsHTML(){
+  const p=STATES[S.st].phase;
+  return '<div class="m-list">'+menuGroups().map((g,gi)=>{ const locked=g.ph&&p<g.ph;
+    return (gi?'<div class="sep"></div>':'')+(g.t?'<div class="grp">'+g.t+(locked?'<span class="lk"><span class="ms" aria-hidden="true">lock</span>etapa não alcançada</span>':'')+'</div>':'')
+      +g.items.map((it,ii)=>'<button class="it'+(it.danger?' danger':'')+'" '+(it.on?'':'disabled')+' data-mit="'+gi+'.'+ii+'"><span class="ms" aria-hidden="true">'+it.ic+'</span>'+it.l+'</button>').join(''); }).join('')+'</div>';
+}
+function mShow(view){
+  S.mView=view; const b=document.getElementById('mBody');
+  document.getElementById('mSheetT').textContent = view==='acts'?'Ações':'Padaria Estrela do Sul Ltda';
+  document.getElementById('mBack').hidden = view!=='acts';
+  b.innerHTML = view==='acts'?mActsHTML():mInfoHTML(); b.scrollTop=0;
+  if(view==='info'){
+    document.getElementById('mActs').onclick=()=>mShow('acts');
+    const d=document.getElementById('mDl'); if(d) d.onclick=()=>{ mClose(); toast('Download iniciado','fatura-receber-1154571.pdf'); };
+    const pr=document.getElementById('mPri'); if(pr) pr.onclick=()=>{ mClose(); PRIMARY[S.st].go(); };
+    b.querySelectorAll('[data-mgo]').forEach(x=>x.onclick=()=>toast(x.dataset.mgo+' fora do escopo do protótipo.'));
+  } else {
+    const gs=menuGroups();
+    b.querySelectorAll('[data-mit]').forEach(x=>x.onclick=()=>{ const [gi,ii]=x.dataset.mit.split('.').map(Number), it=gs[gi].items[ii]; mClose();
+      if(it.recalc) return openRecalc(); toast(it.l,'Simulação no protótipo.'); });
+  }
+}
+function mOpen(view,trigger){ mTrigger=trigger||null; document.getElementById('mOv').hidden=false; mShow(view); document.getElementById('mClose').focus(); }
+function mClose(){ document.getElementById('mOv').hidden=true; S.mView=null; if(mTrigger) mTrigger.focus(); }
+document.querySelectorAll('.m-head [data-info]').forEach(b=>b.onclick=()=>mOpen('info',b));
+document.getElementById('mBack').onclick=()=>mShow('info');
+document.getElementById('mClose').onclick=mClose;
+document.getElementById('mOv').addEventListener('click',e=>{ if(e.target.id==='mOv') mClose(); });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&!document.getElementById('mOv').hidden){ if(S.mView==='acts') mShow('info'); else mClose(); } });
+document.getElementById('mMenu').onclick=()=>toast('Menu fora do escopo do protótipo.');
+/* uma tela por vez: o botão ao lado das etapas troca Prévia e Detalhes */
+function applyScreen(){ const mob=isMob();
+  document.getElementById('pDoc').classList.toggle('mhide',mob&&S.mScreen!=='doc');
+  document.getElementById('pDet').classList.toggle('mhide',mob&&S.mScreen!=='det');
+  const b=document.getElementById('mScr'), toDoc=S.mScreen==='det';
+  b.querySelector('.ms').textContent=toDoc?'picture_as_pdf':'description'; b.setAttribute('aria-label',toDoc?'Ver prévia':'Ver detalhes'); }
+document.getElementById('mScr').onclick=()=>{ S.mScreen=S.mScreen==='det'?'doc':'det'; applyScreen(); setChrome(true); scrollTo(0,0); };
+/* rolar para baixo esconde header e tab bar; para cima traz de volta */
+const setChrome=show=>document.documentElement.classList.toggle('chrome-hide',!show);
+const measureHead=()=>{ const m=document.querySelector('.m-head'); if(m&&m.offsetHeight) document.documentElement.style.setProperty('--mh',m.offsetHeight+'px'); };
+const lastTop=new WeakMap();
+document.addEventListener('scroll',e=>{ if(!isMob()) return; const el=e.target===document?document.scrollingElement:e.target; if(!(el instanceof Element)||el.closest('.m-ov')) return;
+  const t=el.scrollTop, p=lastTop.get(el); lastTop.set(el,t); if(p===undefined) return; const d=t-p; if(Math.abs(d)<4) return; if(t<8) return setChrome(true); setChrome(d<0); },true);
+addEventListener('resize',()=>{ measureHead(); applyScreen(); if(!isMob()){ setChrome(true); if(!document.getElementById('mOv').hidden) mClose(); } });
 const q=new URLSearchParams(location.search).get('estado');
 setState(STATES[q]?q:'aberto');
-applyPanels();
+applyPanels(); applyScreen(); measureHead();
 </script>
 </body>
 </html>
