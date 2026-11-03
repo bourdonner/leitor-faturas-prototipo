@@ -321,6 +321,7 @@
     .menu{width:min(300px,calc(100vw - 32px))}
     .cols{display:block;margin-top:16px}
     .panel{min-width:0!important;width:100%;min-height:70vh}
+    .panel+.panel{margin-top:16px!important}
     .panel.min{display:none}
     .panel:not(.min){margin:0}
     .p-doc,.p-det,.p-act{flex:none}
@@ -331,7 +332,7 @@
     .tbdock{left:16px;right:16px;transform:none;flex-direction:column;align-items:stretch;gap:8px}
     .tabbar{justify-content:space-between}
     .tb{width:auto;flex:1;padding:8px 4px}
-    .note{left:16px;right:auto;top:auto;bottom:196px}
+    .note{left:16px;right:auto;top:auto;bottom:108px}
     .cg{padding:16px}
     .cg-grid{grid-template-columns:1fr}
     .ib.sq[data-toggle]{display:none}
@@ -378,12 +379,6 @@
 
 
       <div class="cols" id="cols">
-        <div class="cols-empty" id="colsEmpty" hidden>
-          <span class="ms" aria-hidden="true">view_column</span>
-          <b>Nenhum painel aberto</b>
-          <span>Abra um painel pela barra abaixo.</span>
-          <button class="btn primary" id="colsReset">Voltar ao padrão</button>
-        </div>
 
         <!-- Prévias: as três fases no mesmo lugar -->
         <div class="panel p-doc" id="pDoc">
@@ -392,24 +387,16 @@
             <button class="ib" id="zOut" aria-label="Diminuir zoom"><span class="ms" aria-hidden="true">zoom_out</span></button>
             <button class="ib" id="zIn" aria-label="Aumentar zoom"><span class="ms" aria-hidden="true">zoom_in</span></button>
             <button class="ib" id="dl" aria-label="Baixar"><span class="ms" aria-hidden="true">download</span></button>
-            <button class="ib sq" data-toggle="doc" aria-label="Minimizar prévias"><span class="ms" aria-hidden="true">hide</span></button>
           </div>
           <div class="doc-scroll" id="doc"></div>
         </div>
 
         <!-- Detalhes da fase escolhida -->
         <div class="panel p-det" id="pDet">
-          <div class="det-h"><span class="ph"><span class="ms" aria-hidden="true">description</span></span><span class="t" id="detT">Detalhes</span>
-            <button class="ib sq" data-toggle="det" aria-label="Minimizar detalhes"><span class="ms" aria-hidden="true">hide</span></button></div>
+          <div class="det-h"><span class="ph"><span class="ms" aria-hidden="true">description</span></span><span class="t" id="detT">Detalhes</span></div>
           <div class="det-scroll"><div class="content" id="content"></div></div>
         </div>
 
-        <!-- Atividade -->
-        <div class="panel p-act" id="pAct">
-          <div class="bar"><span class="ph"><span class="ms" aria-hidden="true">history</span></span><span class="t">Atividade</span>
-            <button class="ib sq" data-toggle="act" aria-label="Minimizar atividade"><span class="ms" aria-hidden="true">hide</span></button></div>
-          <div class="act-list" id="acts"></div>
-        </div>
       </div>
     </section>
   </div>
@@ -417,11 +404,6 @@
 
 <div class="tbdock">
 <nav class="tabbar" id="phbar" aria-label="Etapas" role="tablist"></nav>
-<nav class="tabbar" id="tabbar" aria-label="Painéis">
-  <button class="tb" data-toggle="doc"><span class="ms f" style="font-size:26px" aria-hidden="true">picture_as_pdf</span><span class="l">Prévias</span></button>
-  <button class="tb" data-toggle="det"><span class="ms f" style="font-size:26px" aria-hidden="true">description</span><span class="l">Detalhes</span></button>
-  <button class="tb" data-toggle="act"><span class="ms f" style="font-size:26px" aria-hidden="true">history</span><span class="l">Atividade</span></button>
-</nav>
 </div>
 
 <div class="ov" id="recalc" hidden>
@@ -494,7 +476,7 @@ const PHASES = [
   {k:3, t:'Conta a receber', ic:'request_quote'}
 ];
 
-const S = { st:'aberto', sel:3, zoom:600, open:{doc:true,det:true,act:true}, feed:[] };
+const S = { st:'aberto', sel:3, zoom:600, open:{doc:true,det:true}, feed:[] };
 
 /* ===== header: status atual + ações ===== */
 function statusLabel(){ const st=STATES[S.st]; return st.btr ? st.btr : st.m; }
@@ -592,7 +574,6 @@ function phaseMeta(k){
 function selectPhase(k,kb){
   S.sel=k;
   // se prévias e detalhes estão fechados, a troca de etapa não apareceria: abre os dois (no mobile, as prévias)
-  if(!S.open.doc&&!S.open.det){ if(isMob()){ for(const x in PN) S.open[x]=x==='doc'; } else { S.open.doc=S.open.det=true; } applyPanels(); }
   renderPhase();
   if(kb){ const b=document.querySelector('#phbar .tb[data-phb="'+k+'"]'); if(b) b.focus(); }
 }
@@ -796,30 +777,19 @@ function baseFeed(){
 }
 const SYS='<svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M8 0.1C8.2 1.1 8.5 2.2 8.7 2.9c.4 1.2.9 1.4 1.4 1.3.6-.1 1-.9 1.4-4L13.6 2.3c-1.6 2.4-2.6 4.3-1.4 4.4.6 0 1.7-.5 3.8-1.8v3c-2.9.6-4.2 1.2-4.2 1.9 0 .5 1 1 4.1 1.6l-2.1 2.1c-2.5-1.6-3.9-2.2-4.2-1.8-.3.4.1 1.6 1.7 4.2H8c-.6-2.8-1.1-4.3-1.7-4.3-.6 0-1 1.4-1.6 4.2L2.4 13.5C4.4 10.4 4.7 9.4 4.3 9.3 3.9 8.9 2.5 9.6.2 11.1V7.9c3-.6 4.3-1.2 4.3-1.7 0-.6-1.5-1.1-4.2-1.6L2.6 2.3c2.5 1.6 3.9 2.3 4.2 1.8C7.1 3.7 6.4 2.4 5 .1z" fill="#fafaf9"/></svg>';
 function renderActs(){
+  const el=document.getElementById('acts'); if(!el) return; // painel Atividade saiu da tela
   const all=[...S.feed,...baseFeed()];
-  document.getElementById('acts').innerHTML = all.map((e,i)=>(i?'<div class="link"></div>':'')+
+  el.innerHTML = all.map((e,i)=>(i?'<div class="link"></div>':'')+
     `<div class="ev${e.isNew?' new':''}"><span class="i ${e[2]}"><span class="ms f" aria-hidden="true">${e[1]}</span></span>
       <span class="ph2">${PHASES[e[3]-1].t.replace('Fatura da concessionária','Concessionária').replace('Conta a receber','A receber')}</span>
       ${e.user?`<span class="who" data-name="Eduardo Moreira">EM</span>`:`<span class="who sys" data-name="Sistema">${SYS}</span>`}
       <div class="n">${e[0]}</div><div class="d">${e[4]}</div></div>`).join('');
 }
 
-/* ===== painéis e tab bar (mesma regra do Leitor) ===== */
-const PN={doc:'pDoc',det:'pDet',act:'pAct'};
+/* ===== painéis: Prévias e Detalhes ficam sempre abertos (no celular, empilhados) ===== */
+const PN={doc:'pDoc',det:'pDet'};
 const isMob=()=>matchMedia('(max-width:767px)').matches;
-function applyPanels(){
-  if(isMob()){ const k=Object.keys(S.open).find(k=>S.open[k])||'det'; for(const x in PN) S.open[x]=x===k; }
-  for(const k in PN) document.getElementById(PN[k]).classList.toggle('min',!S.open[k]);
-  document.querySelectorAll('.tb[data-toggle]').forEach(b=>{ const on=S.open[b.dataset.toggle]; b.classList.toggle('on',on); b.setAttribute('aria-pressed',String(on)); });
-  const cols=document.getElementById('cols');
-  cols.classList.toggle('no-doc',!S.open.doc); cols.classList.toggle('no-det',!S.open.det);
-  document.getElementById('colsEmpty').hidden = Object.values(S.open).some(Boolean);
-}
-document.querySelectorAll('[data-toggle]').forEach(b=>b.addEventListener('click',()=>{ const k=b.dataset.toggle;
-  if(isMob()){ for(const x in PN) S.open[x]=x===k; } else S.open[k]=!S.open[k];
-  applyPanels(); }));
-document.getElementById('colsReset').onclick=()=>{ S.open={doc:true,det:true,act:true}; applyPanels(); };
-addEventListener('resize',()=>{ if(isMob()) applyPanels(); });
+function applyPanels(){ S.open={doc:true,det:true}; for(const k in PN) document.getElementById(PN[k]).classList.remove('min'); }
 document.getElementById('zIn').onclick=()=>{ S.zoom=Math.min(1100,S.zoom+100); renderDoc(); };
 document.getElementById('zOut').onclick=()=>{ S.zoom=Math.max(400,S.zoom-100); renderDoc(); };
 document.getElementById('dl').onclick=()=>toast('Download iniciado', document.getElementById('docT').textContent);
