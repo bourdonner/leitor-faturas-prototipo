@@ -356,8 +356,11 @@
   .ialert.err .ic{background:#f43f5e}
   .ialert .ic .ms{font-size:16px}
   .ialert b{font-weight:700;margin-right:6px}
-  .ev .fromto{display:flex;align-items:center;gap:8px;margin-top:6px;font-size:13px;font-variant-numeric:tabular-nums}
+  /* ActivityCard Edit: De → Para só no hover/foco; novo valor em negrito sobre row:selected */
+  .ev .fromto{display:none;align-items:center;gap:8px;margin-top:6px;font-size:13px;font-variant-numeric:tabular-nums}
+  .ev:hover .fromto,.ev:focus-within .fromto,.ev:focus .fromto{display:flex}
   .ev .fromto s{color:var(--mid)}
+  .ev .fromto b{padding:0 6px;border-radius:6px;background:#f7fee7}
   .ev .fromto .ms{font-size:14px;color:var(--mid)}
   .cmp{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-variant-numeric:tabular-nums}
   .cmp .o{color:var(--mid);text-decoration:line-through;padding:2px 8px;border-radius:6px;background:var(--s100)}
@@ -1075,7 +1078,7 @@ function renderActs(){
   const el=document.getElementById('acts'); if(!el) return; // painel Atividade saiu da tela
   const all=[...S.feed,...baseFeed()];
   el.innerHTML = all.map((e,i)=>(i?'<div class="link"></div>':'')+
-    `<div class="ev${e.isNew?' new':''}"><span class="i ${e[2]}"><span class="ms f" aria-hidden="true">${e[1]}</span></span>
+    `<div class="ev${e.isNew?' new':''}"${e[5]?' tabindex="0"':''}><span class="i ${e[2]}"><span class="ms f" aria-hidden="true">${e[1]}</span></span>
       <span class="ph2">${PHASES[e[3]-1].t.replace('Fatura da concessionária','Concessionária').replace('Conta a receber','A receber')}</span>
       ${e.user?`<span class="who" data-name="Eduardo Moreira">EM</span>`:`<span class="who sys" data-name="Sistema">${SYS}</span>`}
       <div class="n">${e[0]}</div>${e[5]?`<div class="fromto"><s>${e[5].o}</s><span class="ms" aria-label="para">arrow_forward</span><b>${e[5].n}</b></div>`:''}<div class="d">${e[4]}</div></div>`).join('');
