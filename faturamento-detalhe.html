@@ -126,9 +126,9 @@
   .grade thead .stk{background:var(--s50);z-index:3}
   .grade tbody tr:hover td{background:var(--s50)}
   .grade th.tl,.grade td.tl{text-align:left}
-  .grade td.neg{color:#3f6212}
+  .grade td.neg{color:inherit}
   .grade .cu{color:var(--mid);font-size:12px}
-  .grade td.neg .cu{color:inherit;opacity:.7}
+
   .grade tbody tr:last-child td{border-bottom:0}
   .grade tfoot td{font-weight:600;background:var(--s50);border-top:1px solid var(--s200);border-bottom:0}
   .grade tfoot .stk{background:var(--s50)}
@@ -242,7 +242,7 @@
   .tbl .cu{color:var(--mid);font-size:12px}
   /* aviso e comparação */
   .note-box{display:flex;gap:10px;align-items:flex-start;background:#fff;border-radius:12px;padding:14px;border:1px solid var(--s200)}
-  .note-box .ms{font-size:20px;color:var(--info)}
+  .note-box .ms{font-size:20px;color:var(--mid)}
   .note-box.err{border-color:#fecaca;background:#fef2f2} .note-box.err .ms{color:var(--danger)}
   .note-box.warn{border-color:#fed7aa;background:#fff7ed} .note-box.warn .ms{color:var(--alert)}
   .note-box b{display:block;margin-bottom:2px}
@@ -250,7 +250,7 @@
   .note-box .btn{margin-top:10px;height:32px;padding:0 12px}
   .cmp{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-variant-numeric:tabular-nums}
   .cmp .o{color:var(--mid);text-decoration:line-through;padding:2px 8px;border-radius:6px;background:var(--s100)}
-  .cmp .n{font-weight:600;padding:2px 8px;border-radius:6px;background:#f7fee7}
+  .cmp .n{font-weight:600;padding:2px 8px;border-radius:6px;background:var(--s100)}
   .linha{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--s200);border-radius:8px;padding:0 0 0 12px;height:44px}
   .linha code{flex:1;min-width:0;font:500 13px/1 "Courier New",monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   /* ===== atividade ===== */
@@ -707,7 +707,7 @@ const LF={
     +sec('Alíquotas')+'<div class="grid">'+card('ICMS (alíquota)','18,00','%')+card('ICMS (valor)','781,49','R$')+card('PIS/PASEP (alíquota)','0,73','%')+card('PIS/PASEP (valor)','31,69','R$')+card('COFINS (alíquota)','3,38','%')+card('COFINS (valor)','146,75','R$')+'</div>'
     +sec('Datas')+'<div class="grid">'+card('Leitura anterior','07/02/2025')+card('Leitura atual','11/03/2025')+card('Dias de leitura','32','dias')+card('Próxima leitura','08/04/2025')+card('Emissão','12/03/2025')+'</div>'
     /* o que a COGECOM calcula a partir da leitura (não existe no Leitor) fica no fim, marcado */
-    +sec('Energia','<span class="tag">COGECOM</span>')+'<div class="grid">'+card('Total injetado',num(UB.injFP+UB.injP),'kWh',{cls:'hl'})+card('Injetado externo',num(UB.injExt),'kWh')+card('Valor injetado',num(UB.valorInj,2),'R$',{cls:'hl'})+card('Produção total',num(UB.prodTotal),'kWh')+card('Produção líquida',num(UB.prodLiq),'kWh')+'</div>',
+    +sec('Energia','<span class="tag">COGECOM</span>')+'<div class="grid">'+card('Total injetado',num(UB.injFP+UB.injP),'kWh')+card('Injetado externo',num(UB.injExt),'kWh')+card('Valor injetado',num(UB.valorInj,2),'R$')+card('Produção total',num(UB.prodTotal),'kWh')+card('Produção líquida',num(UB.prodLiq),'kWh')+'</div>',
   Itens:()=>sec('Itens da nota fiscal')+lfItens()
     +sec('Totais')+'<div class="grid">'+card('Total da fatura','4.440,13','R$',{full:true})+card('PIS/COFINS (valor)','178,44','R$')+card('PIS/COFINS (base de cálculo)','4.341,73','R$')+card('ICMS (valor)','781,49','R$')+card('ICMS (base de cálculo)','4.341,73','R$')+'</div>',
   Leituras:()=>sec('Leituras')+lfLeit(),
@@ -731,7 +731,7 @@ function detPhase2(){
   if(S.st==='falha-calculo') return `<div class="note-box err"><span class="ms f" aria-hidden="true">error</span><div><b>Falha no cálculo do estudo</b><p>Bandeiras tarifárias não cadastradas para 03/2025. Intervalo de leitura: 07/02 a 11/03/2025.</p><button class="btn primary" onclick="PRIMARY['falha-calculo'].go()">Gerar estudo novamente</button></div></div>`
     + sec('Parâmetros que serão usados')+`<div class="grid">${card('Desconto do cooperado',num(US.desconto),'%')}${card('Taxa de compensação',num(US.compensacao),'%')}${card('Crédito recebido',num(US.credKwh),'kWh')}${card('Consumo',num(UB.consumo),'kWh')}</div>`;
   return sec('Resultado',`<small>Calculado em ${US.calculado}</small>`)+`<div class="grid">
-      ${card('A pagar',num(US.aPagar,2),'R$',{cls:'hl'})}${card('Desconto total',num(US.descTotal),'%',{cls:'hl'})}${card('Desconto no mês',num(US.descMes,2),'R$')}${card('Desconto em 12 meses',num(US.desc12,2),'R$')}${card('Desconto acumulado',num(US.descAcum,2),'R$')}${card('Entrega no mês',num(US.entrega),'%')}</div>`
+      ${card('A pagar',num(US.aPagar,2),'R$')}${card('Desconto total',num(US.descTotal),'%')}${card('Desconto no mês',num(US.descMes,2),'R$')}${card('Desconto em 12 meses',num(US.desc12,2),'R$')}${card('Desconto acumulado',num(US.descAcum,2),'R$')}${card('Entrega no mês',num(US.entrega),'%')}</div>`
    + sec('Cálculo')+`<div class="grid">${card('Crédito recebido',num(US.credKwh),'kWh')}${card('Crédito recebido',num(US.credBrl,2),'R$')}${card('Consumo',num(UB.consumo),'kWh')}${card('Valor do kWh na concessionária',num(US.kwhConc,5),'R$/kWh')}
       ${card('Seu desconto',num(US.desconto),'%')}${card('Desconto por kWh',num(US.descKwh,5),'R$/kWh')}${card('Desconto em energia',num(US.descEnergia,2),'R$')}${card('Taxa de compensação',num(US.compensacao),'%')}</div>`
    + sec('Bandeiras')+`<div class="tbl"><table><thead><tr><th>Bandeira</th><th>Dias</th><th>Adicional</th><th>Valor</th><th>Desconto</th></tr></thead><tbody><tr><td>${US.bandeira}</td><td>${US.bandDias}</td><td>${num(0,5)} <span class="cu">R$/kWh</span></td><td>${brl(US.bandBrl)}</td><td>${brl(US.descBand)}</td></tr></tbody></table></div>`
@@ -746,9 +746,9 @@ function detPhase3(){
     : `<tr><td>E-mail</td><td class="l">financeiro@padariaestrela.com.br</td><td class="l"><span class="tag ok">Entregue</span></td><td>14/03 10:05</td></tr><tr><td>WhatsApp</td><td class="l">(31) 9 0000-0000</td><td class="l"><span class="tag ok">Lido</span></td><td>14/03 10:07</td></tr>`
       + (st.btr==='Atrasado'?`<tr><td>WhatsApp</td><td class="l">(31) 9 0000-0000</td><td class="l"><span class="tag ok">Lido</span></td><td>07/04 09:00</td></tr>`:'');
   return sec('Cobrança',`<span class="tag ${tone}">${st.btr}</span>`)+`<div class="grid">
-      ${card('Valor',num(BTR.valor,2),'R$',{cls:'hl'})}${card('Nº da fatura',BTR.numero)}${card('Emissão',st.btr==='Emissão pendente'?'—':BTR.emissao)}${card('Vencimento',BTR.venc,null,{cls:st.btr==='Atrasado'?'danger':''})}
-      ${pago?card('Pago em',BTR.pagoEm,null,{cls:'hl'}):''}${st.btr==='Atrasado'?card('Dias em atraso','9','dias',{cls:'danger',nocp:true}):''}</div>`
-   + `<div class="note-box warn"><span class="ms f" aria-hidden="true">compare_arrows</span><div><b>Valor diferente do estudo</b><div class="cmp" style="margin-top:4px"><span class="o">${brl(US.aPagar)}</span><span class="ms" aria-hidden="true">arrow_forward</span><span class="n">${brl(BTR.valor)}</span><span style="color:var(--mid)">${dif>0?'+':'−'} ${brl(Math.abs(dif))}</span></div><p style="margin-top:6px">Vale o valor da fatura a receber.</p></div></div>`
+      ${card('Valor',num(BTR.valor,2),'R$')}${card('Nº da fatura',BTR.numero)}${card('Emissão',st.btr==='Emissão pendente'?'—':BTR.emissao)}${card('Vencimento',BTR.venc,null,{cls:st.btr==='Atrasado'?'danger':''})}
+      ${pago?card('Pago em',BTR.pagoEm,null):''}${st.btr==='Atrasado'?card('Dias em atraso','9','dias',{cls:'danger',nocp:true}):''}</div>`
+   + `<div class="note-box"><span class="ms f" aria-hidden="true">compare_arrows</span><div><b>Valor diferente do estudo</b><div class="cmp" style="margin-top:4px"><span class="o">${brl(US.aPagar)}</span><span class="ms" aria-hidden="true">arrow_forward</span><span class="n">${brl(BTR.valor)}</span><span style="color:var(--mid)">${dif>0?'+':'−'} ${brl(Math.abs(dif))}</span></div><p style="margin-top:6px">Vale o valor da fatura a receber.</p></div></div>`
    + sec('Pagamento') + (st.btr==='Emissão pendente'
       ? `<div class="note-box"><span class="ms f" aria-hidden="true">schedule</span><div><b>Boleto ainda não emitido</b><p>Linha digitável e nosso número aparecem depois da emissão.</p></div></div>`
       : `<div class="linha"><code>${BTR.linha}</code><button class="ib" style="width:44px;height:44px" aria-label="Copiar linha digitável" data-copy="${BTR.linha}"><span class="ms" aria-hidden="true">content_copy</span></button></div>

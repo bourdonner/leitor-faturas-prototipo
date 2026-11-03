@@ -262,7 +262,7 @@ H.fcP=r=>{ const u=UCS[r.uc], f=r.fc||{inj:0,cons:0,val:0}, x=FCX(r)||{}, na=!r.
     +IT({ic:'sync_alt',l:'Compensação',v:kwh(x.comp||0),tone:na})
     +IT({ic:'payments',l:'Valor da fatura',v:brl(f.val),tone:na,act:cp(brl(f.val),'valor da fatura')})
     +two(IT({ic:'offline_bolt',l:'Saldo',v:n2(SAL[r.id]||0,'mês','meses'),tone:na,act:lk('Abriria o extrato de saldo','Abrir saldo')}),IT({ic:'hourglass_bottom',cls:x.exp?'al':'',l:'Saldo a expirar',v:kwh(x.exp||0),tone:na}))); };
-H.estP=r=>{ const e=r.est, ok=e.val!=null, na=ok?'':'na', pos=ok?'pos':'na', x=FCX(r)||{};
+H.estP=r=>{ const e=r.est, ok=e.val!=null, na=ok?'':'na', pos=ok?'':'na', x=FCX(r)||{};
   const proj=ok?e.val+e.eco:0, amb=ok?e.val*.012:0, ver=ok?e.val*.03:0;
   const st=e.st==='Em cálculo'?IT({ic:'progress_activity',cls:'bl',spin:1,l:'Status',v:'Calculando o estudo'})
     :e.st==='Falha no cálculo'?IT({ic:'block',cls:'dg',l:'Falha no cálculo',v:esc((r.cm.find(c=>c.sys)||{}).t||'Não foi possível calcular')})
@@ -272,7 +272,7 @@ H.estP=r=>{ const e=r.est, ok=e.val!=null, na=ok?'':'na', pos=ok?'pos':'na', x=F
     +IT({ic:'sync_alt',l:'Taxa de compensação',v:ok&&r.fc?pct(Math.round(x.comp/r.fc.cons*1000)/10):'—',tone:na})
     +IT({ic:'flag',cls:'al',l:'Bandeira tarifária amarela',v:brl(amb),x:'12 dias',tone:na})
     +IT({ic:'flag',cls:'dg',l:'Bandeira tarifária vermelha',v:brl(ver),x:'18 dias',tone:na})
-    +IT({ic:'savings',cls:'ok',l:'Desconto total',v:brl(e.eco),x:ok?pct(e.eco/proj*100):'',tone:pos})
+    +IT({ic:'savings',l:'Desconto total',v:brl(e.eco),x:ok?pct(e.eco/proj*100):'',tone:pos})
     +two(IT({cpt:1,l:'Desc. energia injetada',v:brl(ok?e.eco-e.taxa:0),tone:pos}),IT({cpt:1,l:'Desconto titular',v:TIT[r.t].pj?'10%':'15%',tone:pos}))
     +(e.st==='Falha no cálculo'?'<button class="b sec full" data-a="genstudy" data-id="'+r.id+'">Gerar estudo</button>':'')); };
 H.recP=r=>{ const c=r.rec;
