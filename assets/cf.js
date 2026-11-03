@@ -486,7 +486,7 @@ function mountScreen(){
   mount(document.getElementById('frow'),H.filters);
   mount(document.getElementById('tbl'),H.table);
   mount(document.getElementById('rail'),()=>H.rail(row(S.cur)||ROWS[0]));
-  mount(document.getElementById('count'),()=>{ const v=visible().length; return n2(v,'faturamento','faturamentos')+(v!==ROWS.length?` de ${ROWS.length}`:''); });
+  mount(document.getElementById('count'),()=>{ const v=visible().length; return '<span class="d-only">'+n2(v,'faturamento','faturamentos')+(v!==ROWS.length?` de ${ROWS.length}`:'')+'</span><span class="m-only">'+S.sel.size+' de '+v+' linhas selecionadas</span>'; });
   document.addEventListener('click',onClick);
   document.addEventListener('scroll',e=>{ if(e.target.id==='railSc') markStuck(); },true);
   document.getElementById('bulk').addEventListener('click',onBulk);

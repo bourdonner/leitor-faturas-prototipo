@@ -77,6 +77,8 @@
   }
   /* ===== mobile (<768) no padrão da listagem do Leitor (index.html) ===== */
   .mmenu{display:none}
+  .mpag,.m-only{display:none}
+  @media (max-width:767px){ .m-only{display:inline} }
   @media (max-width:767px){
     .sidebar,.topbar{display:none!important}
     .page{margin:0!important;padding:0 0 96px!important;gap:0!important}
@@ -106,8 +108,20 @@
     /* Titular logo depois da seleção, como no Leitor; colunas com largura fixa e rolagem lateral */
     .fp .tbl .tr{grid-template-columns:48px 200px 170px 160px 200px 110px 150px 48px 56px!important;width:max-content;min-width:100%}
     .tr>.c-ck{order:0} .tr>.c-tit{order:1} .tr>.c-rec{order:2} .tr>.c-eta{order:3} .tr>.c-uc{order:4} .tr>.c-ref{order:5} .tr>.c-est{order:6} .tr>.c-rev{order:7} .tr>.c-act{order:8}
-    .tfoot{flex-wrap:wrap;gap:8px}
-    .tfoot span:last-child{display:none}
+    /* listagem no padrão mobile do Cadastro (Titulares): um "+" no header, busca com funil, tabela só com texto, paginação embaixo */
+    .head .acts{margin-right:16px}
+    .head .sq{width:36px!important;height:36px!important;border-radius:999px;background:var(--fsec)!important}
+    .head .sq .msr{font-size:20px}
+    #bSort{display:none!important}
+    .fp .tr.row{min-height:56px}
+    .fp .tr.row>div.cel .ent{background:transparent;padding:0;min-height:0}
+    .fp .ent .ic,.fp .ent .grp,.fp .ust,.fp .ent .t .s{display:none}
+    .fp .ent .t div{font-size:14px}
+    .fp .tfoot{padding-top:16px;gap:12px}
+    .fp .tfoot .d-only{display:none}
+    .fp .tfoot #count{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .mpag{display:flex;gap:8px;flex:none}
+    .mpag .b{height:32px;padding:0 12px;font-size:13px;background:var(--fg);border:1px solid var(--fsec);color:var(--mid);opacity:1}
     .fp .bulk{left:12px;right:12px;width:auto;transform:none;bottom:calc(12px + env(safe-area-inset-bottom))}
     .fp .bulk.on{transform:none}
   }
@@ -154,7 +168,7 @@
       <div class="acts">
         <button class="sq tip m-off" data-tip="Indicadores" aria-label="Indicadores" data-a="toast" data-msg="Abriria o dashboard de faturamento"><span class="msr">bar_chart</span></button>
         <button class="sq tip m-off" data-tip="Atualizar" aria-label="Atualizar" data-a="toast" data-msg="Lista atualizada"><span class="msr">refresh</span></button>
-        <button class="sq tip" data-tip="Exportar" aria-label="Exportar" data-a="expmenu" aria-haspopup="menu"><span class="msr">download</span></button>
+        <button class="sq tip m-off" data-tip="Exportar" aria-label="Exportar" data-a="expmenu" aria-haspopup="menu"><span class="msr">download</span></button>
         <button class="sq tip" data-tip="Incluir" aria-label="Incluir" data-a="incmenu" aria-haspopup="menu"><span class="msr">add</span></button>
       </div>
     </div>
@@ -168,7 +182,7 @@
         </div>
         <div class="frow" id="frow"></div>
         <div id="vList"><div class="tblw"><div class="tbl" id="tbl" role="table" aria-label="Contas a faturar"></div></div>
-        <div class="tfoot"><span id="count"></span><span>Selecione linhas para ações em lote</span></div></div>
+        <div class="tfoot"><span id="count"></span><span class="d-only">Selecione linhas para ações em lote</span><span class="mpag" aria-label="Paginação"><button class="b out sm" disabled>Anterior</button><button class="b out sm" disabled>Próximo</button></span></div></div>
       </div>
       <aside class="rail" id="rail" aria-label="Resumo do faturamento"></aside>
     </div>
