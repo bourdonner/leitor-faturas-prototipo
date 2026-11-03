@@ -216,6 +216,7 @@
     #phbar .tb{width:76px;flex:none;padding:15px 4px}
     #phbar .tb span.l{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
     #phbar .tb .st{right:16px;top:8px}
+    #tabbar,.p-act,.p-com,.ib.sq[data-toggle],.cols-empty{display:none!important}
     .tb-side{display:flex;align-items:center;justify-content:center;width:68px;flex:none;border-radius:999px;background:#fff;color:var(--ink);box-shadow:0 10px 15px rgba(0,0,0,.10),0 4px 6px rgba(0,0,0,.10)}
     .tb-side .ms{font-size:26px}
     .tb[data-tip]:hover::after{display:none}
@@ -227,7 +228,17 @@
   .p-doc{flex:0 1 700px;min-width:420px}
   .p-det{flex:1 1 0;min-width:520px;container-type:inline-size}
   .cols.no-doc .p-det,.cols.no-det .p-doc{flex:1 1 0}
-  .p-act{flex:0 0 284px}
+  .p-act,.p-com{flex:0 0 284px}
+  .p-com .bar .cnt{font-size:12px;color:var(--mid)}
+  .com-list{padding-bottom:8px}
+  .com-form{display:flex;flex-direction:column;gap:8px;padding:8px 16px 120px;flex:none}
+  .com-form textarea{width:100%;border:1px solid var(--s200);border-radius:8px;background:#fff;padding:10px 12px;font:400 14px/20px Inter;color:var(--ink);resize:vertical;outline:none}
+  .com-form textarea:focus{border-color:var(--ink3)}
+  .com-form .row{display:flex;justify-content:flex-end}
+  .com-empty{color:var(--mid);font-size:13px;text-align:center;padding:24px 8px}
+  .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  .tb .tcnt{position:absolute;top:4px;right:34px;min-width:16px;height:16px;padding:0 4px;border-radius:999px;background:var(--ink);color:#fff;font:600 10px/16px Inter;text-align:center}
+  .tb .tcnt:empty{display:none}
   .panel.min{flex:0 0 0!important;min-width:0!important;opacity:0;margin-left:-24px;overflow:hidden;pointer-events:none;transform:translateY(24px) scale(.96)}
   .p-doc.min{margin-left:0;margin-right:-24px}
   .bar{display:flex;align-items:center;gap:8px;padding:16px;flex:none}
@@ -489,14 +500,38 @@
             <button class="ib" id="zOut" aria-label="Diminuir zoom"><span class="ms" aria-hidden="true">zoom_out</span></button>
             <button class="ib" id="zIn" aria-label="Aumentar zoom"><span class="ms" aria-hidden="true">zoom_in</span></button>
             <button class="ib" id="dl" aria-label="Baixar"><span class="ms" aria-hidden="true">download</span></button>
+            <button class="ib sq" data-toggle="doc" aria-label="Minimizar prévias"><span class="ms" aria-hidden="true">hide</span></button>
           </div>
           <div class="doc-scroll" id="doc"></div>
         </div>
 
         <!-- Detalhes da fase escolhida -->
         <div class="panel p-det" id="pDet">
-          <div class="det-h"><span class="ph"><span class="ms" aria-hidden="true">description</span></span><span class="t" id="detT">Detalhes</span></div>
+          <div class="det-h"><span class="ph"><span class="ms" aria-hidden="true">description</span></span><span class="t" id="detT">Detalhes</span>
+            <button class="ib sq" data-toggle="det" aria-label="Minimizar detalhes"><span class="ms" aria-hidden="true">hide</span></button></div>
           <div class="det-scroll"><div class="content" id="content"></div></div>
+        </div>
+
+        <!-- Atividade: histórico de todas as etapas -->
+        <div class="panel p-act" id="pAct">
+          <div class="bar"><span class="ph"><span class="ms" aria-hidden="true">history</span></span><span class="t">Atividade</span>
+            <button class="ib sq" data-toggle="act" aria-label="Minimizar atividade"><span class="ms" aria-hidden="true">hide</span></button></div>
+          <div class="act-list" id="acts"></div>
+        </div>
+
+        <!-- Comentários da equipe sobre este faturamento -->
+        <div class="panel p-com" id="pCom">
+          <div class="bar"><span class="ph"><span class="ms" aria-hidden="true">chat</span></span><span class="t">Comentários</span><span class="cnt" id="comCnt"></span>
+            <button class="ib sq" data-toggle="com" aria-label="Minimizar comentários"><span class="ms" aria-hidden="true">hide</span></button></div>
+          <div class="act-list com-list" id="coms"></div>
+          <form class="com-form" id="comForm"><label for="comT" class="sr-only">Comentário</label><textarea id="comT" placeholder="Escreva um comentário" rows="3"></textarea><div class="row"><button class="btn primary" type="submit">Comentar</button></div></form>
+        </div>
+
+        <div class="cols-empty" id="colsEmpty" hidden>
+          <span class="ms" aria-hidden="true">view_column</span>
+          <b>Nenhum painel aberto</b>
+          <span>Abra um painel pela barra abaixo.</span>
+          <button class="btn primary" id="colsReset">Voltar ao padrão</button>
         </div>
 
       </div>
@@ -507,6 +542,12 @@
 <div class="tbdock">
 <nav class="tabbar" id="phbar" aria-label="Etapas" role="tablist"></nav>
 <button class="tb-side" id="mScr" aria-label="Ver prévia"><span class="ms f" aria-hidden="true">picture_as_pdf</span></button>
+<nav class="tabbar" id="tabbar" aria-label="Painéis">
+  <button class="tb" data-toggle="doc"><span class="ms f" style="font-size:26px" aria-hidden="true">picture_as_pdf</span><span class="l">Prévias</span></button>
+  <button class="tb" data-toggle="det"><span class="ms f" style="font-size:26px" aria-hidden="true">description</span><span class="l">Detalhes</span></button>
+  <button class="tb" data-toggle="act"><span class="ms f" style="font-size:26px" aria-hidden="true">history</span><span class="l">Atividade</span></button>
+  <button class="tb" data-toggle="com"><span class="ms f" style="font-size:26px" aria-hidden="true">chat</span><span class="l">Comentários</span><b class="tcnt" id="tbComCnt"></b></button>
+</nav>
 </div>
 
 <div class="ov" id="recalc" hidden>
@@ -589,7 +630,7 @@ const PHASES = [
   {k:3, t:'Conta a receber', ic:'request_quote'}
 ];
 
-const S = { st:'aberto', sel:3, zoom:600, open:{doc:true,det:true}, feed:[] };
+const S = { st:'aberto', sel:3, zoom:600, open:{doc:true,det:true,act:true,com:false}, feed:[] };
 
 /* ===== header: status atual + ações ===== */
 function statusLabel(){ const st=STATES[S.st]; return st.btr ? st.btr : st.m; }
@@ -902,9 +943,24 @@ function renderActs(){
 }
 
 /* ===== painéis: Prévias e Detalhes ficam sempre abertos (no celular, empilhados) ===== */
-const PN={doc:'pDoc',det:'pDet'};
+const PN={doc:'pDoc',det:'pDet',act:'pAct',com:'pCom'};
 const isMob=()=>matchMedia('(max-width:767px)').matches;
-function applyPanels(){ S.open={doc:true,det:true}; for(const k in PN) document.getElementById(PN[k]).classList.remove('min'); }
+/* desktop: cada painel abre e minimiza pela barra de painéis ou pelo botão do cabeçalho (como no Leitor) */
+function applyPanels(){
+  for(const k in PN) document.getElementById(PN[k]).classList.toggle('min',!S.open[k]);
+  document.querySelectorAll('.tb[data-toggle]').forEach(b=>{ const on=!!S.open[b.dataset.toggle]; b.classList.toggle('on',on); b.setAttribute('aria-pressed',String(on)); });
+  const cols=document.getElementById('cols'); cols.classList.toggle('no-doc',!S.open.doc); cols.classList.toggle('no-det',!S.open.det);
+  document.getElementById('colsEmpty').hidden=Object.values(S.open).some(Boolean);
+}
+document.querySelectorAll('[data-toggle]').forEach(b=>b.addEventListener('click',()=>{ const k=b.dataset.toggle; S.open[k]=!S.open[k]; applyPanels(); }));
+document.getElementById('colsReset').onclick=()=>{ S.open={doc:true,det:true,act:true,com:false}; applyPanels(); };
+/* comentários */
+S.coms=[{who:'Ana Ribeiro',t:'Cooperado pediu o boleto por e-mail também.',d:'14/03 às 10:20'},{who:'Carlos Mendes',t:'Conferi a diferença de R$ 0,50 com o estudo: é arredondamento da bandeira.',d:'14/03 às 11:05'}];
+const ini=n=>n.split(' ').map(x=>x[0]).slice(0,2).join('').toUpperCase();
+function comsHTML(){ return S.coms.length?S.coms.map((c,i)=>(i?'<div class="link"></div>':'')+'<div class="ev'+(c.isNew?' new':'')+'"><span class="i c-mid"><span class="ms f" aria-hidden="true">chat</span></span><span class="who" data-name="'+esc(c.who)+'">'+ini(c.who)+'</span><div class="n">'+esc(c.t)+'</div><div class="d">'+esc(c.who)+' · '+c.d+'</div></div>').join(''):'<div class="com-empty">Nenhum comentário ainda.</div>'; }
+function renderComs(){ document.getElementById('coms').innerHTML=comsHTML(); const n=S.coms.length||''; document.getElementById('comCnt').textContent=n; document.getElementById('tbComCnt').textContent=n; }
+function addCom(t){ S.coms.push({who:'Eduardo Moreira',t,d:'agora',isNew:true}); renderComs(); if(S.mView==='com') mShow('com'); toast('Comentário adicionado'); }
+document.getElementById('comForm').addEventListener('submit',e=>{ e.preventDefault(); const ta=document.getElementById('comT'); const t=ta.value.trim(); if(!t){ ta.focus(); return; } ta.value=''; addCom(t); });
 document.getElementById('zIn').onclick=()=>{ S.zoom=Math.min(1100,S.zoom+100); renderDoc(); };
 document.getElementById('zOut').onclick=()=>{ S.zoom=Math.max(400,S.zoom-100); renderDoc(); };
 document.getElementById('dl').onclick=()=>toast('Download iniciado', document.getElementById('docT').textContent);
@@ -938,7 +994,7 @@ function mInfoHTML(){
     +'<div class="m-row"><span class="m-hb"><span class="ms f" aria-hidden="true">electric_meter</span>Luz do Vale</span><button class="m-go" data-mgo="Distribuidora" aria-label="Abrir distribuidora"><span class="ms" aria-hidden="true">open_in_new</span></button></div>'
     +'<div class="m-row"><span class="m-hb"><span class="ms f" aria-hidden="true">electrical_services</span>UC 3014567890</span><button class="m-go" data-mgo="Unidade consumidora" aria-label="Abrir unidade consumidora"><span class="ms" aria-hidden="true">open_in_new</span></button></div>'
     +'<div class="m-row"><span class="m-hb"><span class="ms f" aria-hidden="true">folder_shared</span>Carteira Comercial MG</span><button class="m-go" data-mgo="Carteira" aria-label="Abrir carteira"><span class="ms" aria-hidden="true">open_in_new</span></button></div></div>'
-    +'<div class="m-acts"><button class="m-ab" id="mActs" aria-label="Ações"><span class="ms" aria-hidden="true">more_horiz</span></button>'
+    +'<div class="m-acts"><button class="m-ab" id="mActs" aria-label="Ações"><span class="ms" aria-hidden="true">more_horiz</span></button><button class="m-ab" id="mHist" aria-label="Atividade"><span class="ms" aria-hidden="true">history</span></button><button class="m-ab" id="mCom" aria-label="Comentários"><span class="ms" aria-hidden="true">chat</span></button>'
     +(dl?'<button class="m-ab" id="mDl" aria-label="Baixar fatura"><span class="ms" aria-hidden="true">download</span></button>':'')+'</div>'
     +(pr?'<div class="m-pri"><button class="btn primary" id="mPri"><span class="ms" aria-hidden="true">'+pr.ic+'</span>'+pr.l+'</button></div>':'');
 }
@@ -950,11 +1006,14 @@ function mActsHTML(){
 }
 function mShow(view){
   S.mView=view; const b=document.getElementById('mBody');
-  document.getElementById('mSheetT').textContent = view==='acts'?'Ações':'Padaria Estrela do Sul Ltda';
-  document.getElementById('mBack').hidden = view!=='acts';
-  b.innerHTML = view==='acts'?mActsHTML():mInfoHTML(); b.scrollTop=0;
+  document.getElementById('mSheetT').textContent = {acts:'Ações',hist:'Atividade',com:'Comentários'}[view]||'Padaria Estrela do Sul Ltda';
+  document.getElementById('mBack').hidden = view==='info';
+  b.innerHTML = view==='acts'?mActsHTML():view==='hist'?'<div class="m-list">'+document.getElementById('acts').innerHTML+'</div>':view==='com'?'<div class="m-list">'+comsHTML()+'</div><form class="com-form" id="mComForm" style="padding:8px 12px 12px"><textarea id="mComT" placeholder="Escreva um comentário" rows="3" aria-label="Comentário"></textarea><div class="row"><button class="btn primary" type="submit">Comentar</button></div></form>':mInfoHTML(); b.scrollTop=0;
+  if(view==='com'){ document.getElementById('mComForm').onsubmit=e=>{ e.preventDefault(); const t=document.getElementById('mComT').value.trim(); if(t) addCom(t); }; }
   if(view==='info'){
     document.getElementById('mActs').onclick=()=>mShow('acts');
+    document.getElementById('mHist').onclick=()=>mShow('hist');
+    document.getElementById('mCom').onclick=()=>mShow('com');
     const d=document.getElementById('mDl'); if(d) d.onclick=()=>{ mClose(); toast('Download iniciado','fatura-receber-1154571.pdf'); };
     const pr=document.getElementById('mPri'); if(pr) pr.onclick=()=>{ mClose(); PRIMARY[S.st].go(); };
     b.querySelectorAll('[data-mgo]').forEach(x=>x.onclick=()=>toast(x.dataset.mgo+' fora do escopo do protótipo.'));
@@ -970,7 +1029,7 @@ document.querySelectorAll('.m-head [data-info]').forEach(b=>b.onclick=()=>mOpen(
 document.getElementById('mBack').onclick=()=>mShow('info');
 document.getElementById('mClose').onclick=mClose;
 document.getElementById('mOv').addEventListener('click',e=>{ if(e.target.id==='mOv') mClose(); });
-document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&!document.getElementById('mOv').hidden){ if(S.mView==='acts') mShow('info'); else mClose(); } });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&!document.getElementById('mOv').hidden){ if(S.mView&&S.mView!=='info') mShow('info'); else mClose(); } });
 document.getElementById('mMenu').onclick=()=>toast('Menu fora do escopo do protótipo.');
 /* uma tela por vez: o botão ao lado das etapas troca Prévia e Detalhes */
 function applyScreen(){ const mob=isMob();
@@ -988,7 +1047,7 @@ document.addEventListener('scroll',e=>{ if(!isMob()) return; const el=e.target==
 addEventListener('resize',()=>{ measureHead(); applyScreen(); if(!isMob()){ setChrome(true); if(!document.getElementById('mOv').hidden) mClose(); } });
 const q=new URLSearchParams(location.search).get('estado');
 setState(STATES[q]?q:'aberto');
-applyPanels(); applyScreen(); measureHead();
+applyPanels(); applyScreen(); measureHead(); renderComs();
 </script>
 </body>
 </html>
