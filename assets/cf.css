@@ -144,7 +144,7 @@
 .fp .rs-hd .cap{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
 /* triagem stg (03/11): ações em lote por status, filtros extras, observação ao arquivar */
-.fp .bulk{flex-wrap:wrap;justify-content:center;max-width:calc(100vw - 48px)}
+.fp .bulk{flex-wrap:wrap;justify-content:center;width:max-content;max-width:calc(100vw - 48px)}
 .fp .bulk .bulk-a{display:contents}
 .fp .bulk .b.dis{opacity:.4;cursor:not-allowed}
 .fp .bulk .b.dg:not(.dis){color:var(--danger)}
@@ -171,3 +171,8 @@
 .fp .flt.has .lb{color:var(--ink2)}
 .fp .flt .chip{background:var(--fsec);color:var(--ink2)}
 .fp .flt .exc{font:500 13px/20px Inter;color:var(--mid)}
+
+/* lote: indisponível só com ícone + tooltip */
+.fp .bulk .b.ico{width:32px;padding:0;justify-content:center}
+.fp .btip{position:fixed;z-index:95;max-width:280px;display:flex;flex-direction:column;gap:2px;padding:8px 10px;border-radius:8px;background:var(--ink);color:var(--fg);font:400 12px/16px Inter;box-shadow:var(--pop);pointer-events:none}
+.fp .btip b{font-weight:600}

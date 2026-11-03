@@ -346,7 +346,10 @@ const BULK=[
  {k:'unarchive',l:'Desarquivar',ic:'unarchive',ok:rs=>all(rs,r=>r.ms==='archived'),why:rs=>{ const n=rs.filter(r=>r.ms!=='archived').length; return `${nao(n,'pode','podem')} ser desarquivado${n>1?'s':''}`; }},
  {k:'exp',l:'Exportar',ic:'download',ok:()=>true}
 ];
-H.bulk=()=>{ const rs=[...S.sel].map(row); return BULK.map(b=>{ const ok=b.ok(rs); return `<button class="b gh${ok?'':' dis'}${b.dg?' dg':''}" data-bulk="${b.k}" aria-disabled="${!ok}" ${ok?'':`title="${esc(b.why(rs))}"`}><span class="msr">${b.ic}</span>${b.l}</button>`; }).join(''); };
+/* lote: ação disponível com rótulo; indisponível vira só ícone, com tooltip (nome + motivo) no hover e no foco */
+H.bulk=()=>{ const rs=[...S.sel].map(row); return BULK.map(b=>{ const ok=b.ok(rs);
+  return ok?`<button class="b gh${b.dg?' dg':''}" data-bulk="${b.k}"><span class="msr">${b.ic}</span>${b.l}</button>`
+    :`<button class="b gh dis ico" data-bulk="${b.k}" aria-disabled="true" aria-label="${esc(b.l)}: ${esc(b.why(rs))}" data-tl="${esc(b.l)}" data-tw="${esc(b.why(rs))}"><span class="msr">${b.ic}</span></button>`; }).join(''); };
 
 const snap=()=>JSON.stringify(ROWS.map(r=>[r.rev,r.cm,r.ms,r.prev||null]));
 const restore=s=>{ JSON.parse(s).forEach((x,i)=>{ ROWS[i].rev=x[0]; ROWS[i].cm=x[1]; ROWS[i].ms=x[2]; ROWS[i].prev=x[3]; }); refresh(); };
@@ -470,6 +473,16 @@ function mountScreen(){
   document.addEventListener('scroll',e=>{ if(e.target.id==='railSc') markStuck(); },true);
   document.addEventListener('dblclick',e=>{ const r=e.target.closest('.tr.row'); if(!r||e.target.closest('button,a,input')) return; location.href='faturamento-detalhe.html?estado='+row(r.dataset.id).e; });
   document.getElementById('bulk').addEventListener('click',onBulk);
+  const bt=document.createElement('div'); bt.className='btip'; bt.setAttribute('role','tooltip'); bt.hidden=true; document.getElementById('app').appendChild(bt);
+  const showT=b=>{ bt.innerHTML='<b>'+b.dataset.tl+'</b><span>'+b.dataset.tw+'</span>'; bt.hidden=false; const r=b.getBoundingClientRect();
+    const x=Math.max(8,Math.min(r.left+r.width/2-bt.offsetWidth/2,innerWidth-bt.offsetWidth-8)); bt.style.left=x+'px'; bt.style.top=(r.top-bt.offsetHeight-8)+'px'; };
+  const hideT=()=>{ bt.hidden=true; };
+  const bulkEl=document.getElementById('bulk');
+  bulkEl.addEventListener('mouseover',e=>{ const b=e.target.closest('.ico[data-tl]'); b?showT(b):hideT(); });
+  bulkEl.addEventListener('mouseleave',hideT);
+  bulkEl.addEventListener('focusin',e=>{ const b=e.target.closest('.ico[data-tl]'); b?showT(b):hideT(); });
+  bulkEl.addEventListener('focusout',hideT);
+  bulkEl.addEventListener('click',hideT);
   document.getElementById('dwOv').addEventListener('click',closeDw);
   document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ if(popEl&&!popEl.hidden){ const a=popAnchor; closePop(); a&&a.focus(); return; } if(S.dw) closeDw(); }
     if(e.key==='Enter'&&e.target.id==='fIn'){ e.preventDefault(); applyTxt(e.target.dataset.k); return; }

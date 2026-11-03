@@ -270,12 +270,19 @@
   .link{width:1px;height:16px;background:var(--border);margin:0 auto}
   .c-def{background:var(--ink)} .c-alert{background:var(--alert)} .c-ok{background:var(--success)} .c-danger{background:var(--danger)} .c-info{background:var(--info)} .c-mid{background:var(--mid)}
   /* ===== tab bar ===== */
-  .tabbar{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);z-index:30;display:flex;gap:8px;padding:8px;background:#fff;border-radius:999px;box-shadow:0 10px 15px rgba(0,0,0,.10),0 4px 6px rgba(0,0,0,.10)}
+  .tbdock{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);z-index:30;display:flex;gap:12px;align-items:flex-end}
+  .tabbar{display:flex;gap:8px;padding:8px;background:#fff;border-radius:999px;box-shadow:0 10px 15px rgba(0,0,0,.10),0 4px 6px rgba(0,0,0,.10)}
   .tb{width:124px;padding:8px 16px;border-radius:999px;display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--s400);position:relative;isolation:isolate}
   .tb span.l{font-size:13px;font-weight:500;color:var(--mid)}
   .tb::before{content:'';position:absolute;inset:0;border-radius:999px;background:var(--s100);transform:scale(.55);opacity:0;transition:transform .35s cubic-bezier(.3,1.5,.5,1),opacity .2s;z-index:-1}
   .tb.on{color:var(--ink)} .tb.on span.l{color:var(--ink);font-weight:600}
   .tb.on::before{transform:scale(1);opacity:1}
+  /* barra de etapas: mesmo estilo; etapa não alcançada fica apagada, com cadeado e tooltip */
+  .tb:disabled{cursor:not-allowed;color:var(--border)} .tb:disabled span.l{color:var(--s400)}
+  .tb .st{position:absolute;top:6px;right:34px;width:16px;height:16px;border-radius:999px;display:grid;place-items:center;color:#fff;border:2px solid #fff;box-sizing:content-box}
+  .tb .st .ms{font-size:11px}
+  .tb .st.done{background:var(--success)} .tb .st.err{background:var(--danger)} .tb .st.lock{background:var(--s400)}
+  .tb[data-tip]:hover::after,.tb[data-tip]:focus-visible::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 10px);left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;font:500 12px/16px Inter;padding:6px 8px;border-radius:6px;white-space:nowrap;pointer-events:none}
   .cols-empty{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center;color:var(--mid);background:var(--s50);border-radius:var(--r)}
   .cols-empty[hidden]{display:none}
   .cols-empty .ms{font-size:40px;color:var(--s400)}
@@ -321,9 +328,10 @@
     .content{padding:8px 16px 120px}
     .ftabs{gap:20px;margin-top:12px;position:sticky;top:0;background:#fff;z-index:5}
     .ftab .sub{display:none}
-    .tabbar{left:16px;right:16px;transform:none;justify-content:space-between}
+    .tbdock{left:16px;right:16px;transform:none;flex-direction:column;align-items:stretch;gap:8px}
+    .tabbar{justify-content:space-between}
     .tb{width:auto;flex:1;padding:8px 4px}
-    .note{left:16px;right:auto;top:auto;bottom:108px}
+    .note{left:16px;right:auto;top:auto;bottom:196px}
     .cg{padding:16px}
     .cg-grid{grid-template-columns:1fr}
     .ib.sq[data-toggle]{display:none}
@@ -408,11 +416,14 @@
   </div>
 </div>
 
+<div class="tbdock">
+<nav class="tabbar" id="phbar" aria-label="Etapas" role="tablist"></nav>
 <nav class="tabbar" id="tabbar" aria-label="Painéis">
   <button class="tb" data-toggle="doc"><span class="ms f" style="font-size:26px" aria-hidden="true">picture_as_pdf</span><span class="l">Prévias</span></button>
   <button class="tb" data-toggle="det"><span class="ms f" style="font-size:26px" aria-hidden="true">description</span><span class="l">Detalhes</span></button>
   <button class="tb" data-toggle="act"><span class="ms f" style="font-size:26px" aria-hidden="true">history</span><span class="l">Atividade</span></button>
 </nav>
+</div>
 
 <div class="ov" id="recalc" hidden>
   <div class="dlg" role="dialog" aria-modal="true" aria-labelledby="rcT">
@@ -586,7 +597,17 @@ function selectPhase(k,kb){
   renderPhase();
   if(kb){ const b=document.querySelector('#phs .ftab[data-k="'+k+'"]'); if(b) b.focus(); }
 }
+const PHB={1:['receipt_long','Concessionária'],2:['calculate','Estudo'],3:['request_quote','A receber']};
+function renderPhaseBar(){
+  const b=document.getElementById('phbar'), st=STATES[S.st]; if(!b) return;
+  b.innerHTML=PHASES.map(p=>{ const ps=phaseState(p.k), on=st.phase>0&&S.sel===p.k, m=phaseMeta(p.k);
+    const tip=ps==='locked'?(p.k===2?'Disponível depois da leitura da fatura':p.k===3?'Disponível depois de faturar':'Disponível quando a fatura chegar'):'';
+    const mk=ps==='done'?'<span class="st done" aria-hidden="true"><span class="ms">check</span></span>':ps==='err'?'<span class="st err" aria-hidden="true"><span class="ms">priority_high</span></span>':ps==='locked'?'<span class="st lock" aria-hidden="true"><span class="ms">lock</span></span>':'';
+    return '<button class="tb'+(on?' on':'')+'" role="tab" aria-selected="'+on+'" data-phb="'+p.k+'"'+(ps==='locked'?' disabled':'')+(tip?' data-tip="'+tip+'"':'')+' aria-label="'+p.t+', '+m.b+'"><span class="ms f" style="font-size:26px" aria-hidden="true">'+PHB[p.k][0]+'</span>'+mk+'<span class="l">'+PHB[p.k][1]+'</span></button>'; }).join('');
+  b.querySelectorAll('.tb:not(:disabled)').forEach(x=>x.onclick=()=>selectPhase(+x.dataset.phb));
+}
 function renderPhaseTabs(){
+  renderPhaseBar();
   const h=document.getElementById('phs'), st=STATES[S.st];
   h.innerHTML = PHASES.map((p,i)=>{
     const ps=phaseState(p.k), on=st.phase>0&&S.sel===p.k, m=phaseMeta(p.k);
