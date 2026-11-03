@@ -376,7 +376,6 @@
         <div class="actions" id="actions"></div>
       </div>
 
-      <div class="ftabs" id="phs" role="tablist" aria-label="Fases do faturamento"></div>
 
       <div class="cols" id="cols">
         <div class="cols-empty" id="colsEmpty" hidden>
@@ -595,7 +594,7 @@ function selectPhase(k,kb){
   // se prévias e detalhes estão fechados, a troca de etapa não apareceria: abre os dois (no mobile, as prévias)
   if(!S.open.doc&&!S.open.det){ if(isMob()){ for(const x in PN) S.open[x]=x==='doc'; } else { S.open.doc=S.open.det=true; } applyPanels(); }
   renderPhase();
-  if(kb){ const b=document.querySelector('#phs .ftab[data-k="'+k+'"]'); if(b) b.focus(); }
+  if(kb){ const b=document.querySelector('#phbar .tb[data-phb="'+k+'"]'); if(b) b.focus(); }
 }
 const PHB={1:['receipt_long','Concessionária'],2:['calculate','Estudo'],3:['request_quote','A receber']};
 function renderPhaseBar(){
@@ -605,10 +604,16 @@ function renderPhaseBar(){
     const mk=ps==='done'?'<span class="st done" aria-hidden="true"><span class="ms">check</span></span>':ps==='err'?'<span class="st err" aria-hidden="true"><span class="ms">priority_high</span></span>':ps==='locked'?'<span class="st lock" aria-hidden="true"><span class="ms">lock</span></span>':'';
     return '<button class="tb'+(on?' on':'')+'" role="tab" aria-selected="'+on+'" data-phb="'+p.k+'"'+(ps==='locked'?' disabled':'')+(tip?' data-tip="'+tip+'"':'')+' aria-label="'+p.t+', '+m.b+'"><span class="ms f" style="font-size:26px" aria-hidden="true">'+PHB[p.k][0]+'</span>'+mk+'<span class="l">'+PHB[p.k][1]+'</span></button>'; }).join('');
   b.querySelectorAll('.tb:not(:disabled)').forEach(x=>x.onclick=()=>selectPhase(+x.dataset.phb));
+  // teclado: só a etapa ativa entra no Tab; setas, Home e End andam entre as disponíveis
+  b.querySelectorAll('.tb').forEach(x=>x.tabIndex=x.classList.contains('on')?0:-1);
+  if(!b.querySelector('.tb[tabindex="0"]')){ const f=b.querySelector('.tb:not(:disabled)'); if(f) f.tabIndex=0; }
+  b.onkeydown=e=>{ const en=[...b.querySelectorAll('.tb:not(:disabled)')]; const i=en.indexOf(document.activeElement); if(i<0) return;
+    const j=e.key==='ArrowRight'?Math.min(i+1,en.length-1):e.key==='ArrowLeft'?Math.max(i-1,0):e.key==='Home'?0:e.key==='End'?en.length-1:-1;
+    if(j<0) return; e.preventDefault(); selectPhase(+en[j].dataset.phb,true); };
 }
 function renderPhaseTabs(){
   renderPhaseBar();
-  const h=document.getElementById('phs'), st=STATES[S.st];
+  const h=document.getElementById('phs'), st=STATES[S.st]; if(!h) return;
   h.innerHTML = PHASES.map((p,i)=>{
     const ps=phaseState(p.k), on=st.phase>0&&S.sel===p.k, m=phaseMeta(p.k);
     const n = ps==='done'?'<span class="ms">check</span>':ps==='err'?'<span class="ms">priority_high</span>':p.k;
