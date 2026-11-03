@@ -272,7 +272,7 @@ H.estP=r=>{ const e=r.est, ok=e.val!=null, na=ok?'':'na', pos=ok?'':'na', x=FCX(
     +IT({ic:'sync_alt',l:'Taxa de compensação',v:ok&&r.fc?pct(Math.round(x.comp/r.fc.cons*1000)/10):'—',tone:na})
     +IT({ic:'flag',cls:'al',l:'Bandeira tarifária amarela',v:brl(amb),x:'12 dias',tone:na})
     +IT({ic:'flag',cls:'dg',l:'Bandeira tarifária vermelha',v:brl(ver),x:'18 dias',tone:na})
-    +IT({ic:'savings',l:'Desconto total',v:brl(e.eco),x:ok?pct(e.eco/proj*100):'',tone:pos})
+    +IT({ic:'savings',cls:'ok',l:'Desconto total',v:brl(e.eco),x:ok?pct(e.eco/proj*100):'',tone:pos})
     +two(IT({cpt:1,l:'Desc. energia injetada',v:brl(ok?e.eco-e.taxa:0),tone:pos}),IT({cpt:1,l:'Desconto titular',v:TIT[r.t].pj?'10%':'15%',tone:pos}))
     +(e.st==='Falha no cálculo'?'<button class="b sec full" data-a="genstudy" data-id="'+r.id+'">Gerar estudo</button>':'')); };
 H.recP=r=>{ const c=r.rec;

@@ -331,7 +331,7 @@
   .tbl .cu{color:var(--mid);font-size:12px}
   /* aviso e comparação */
   .note-box{display:flex;gap:10px;align-items:flex-start;background:#fff;border-radius:12px;padding:14px;border:1px solid var(--s200)}
-  .note-box .ms{font-size:20px;color:var(--mid)}
+  .note-box .ms{font-size:20px;color:var(--info)}
   .note-box.err{border-color:#fecaca;background:#fef2f2} .note-box.err .ms{color:var(--danger)}
   .note-box.warn{border-color:#fed7aa;background:#fff7ed} .note-box.warn .ms{color:var(--alert)}
   .note-box b{display:block;margin-bottom:2px}
@@ -339,7 +339,7 @@
   .note-box .btn{margin-top:10px;height:32px;padding:0 12px}
   .cmp{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-variant-numeric:tabular-nums}
   .cmp .o{color:var(--mid);text-decoration:line-through;padding:2px 8px;border-radius:6px;background:var(--s100)}
-  .cmp .n{font-weight:600;padding:2px 8px;border-radius:6px;background:var(--s100)}
+  .cmp .n{font-weight:600;padding:2px 8px;border-radius:6px;background:#f7fee7}
   .linha{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--s200);border-radius:8px;padding:0 0 0 12px;height:44px}
   .linha code{flex:1;min-width:0;font:500 13px/1 "Courier New",monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   /* ===== atividade ===== */
@@ -860,7 +860,7 @@ function detPhase3(){
   return sec('Cobrança',`<span class="tag ${tone}">${st.btr}</span>`)+`<div class="grid">
       ${card('Valor',num(BTR.valor,2),'R$')}${card('Nº da fatura',BTR.numero)}${card('Emissão',st.btr==='Emissão pendente'?'—':BTR.emissao)}${card('Vencimento',BTR.venc,null,{cls:st.btr==='Atrasado'?'danger':''})}
       ${pago?card('Pago em',BTR.pagoEm,null):''}${st.btr==='Atrasado'?card('Dias em atraso','9','dias',{cls:'danger',nocp:true}):''}</div>`
-   + `<div class="note-box"><span class="ms f" aria-hidden="true">compare_arrows</span><div><b>Valor diferente do estudo</b><div class="cmp" style="margin-top:4px"><span class="o">${brl(US.aPagar)}</span><span class="ms" aria-hidden="true">arrow_forward</span><span class="n">${brl(BTR.valor)}</span><span style="color:var(--mid)">${dif>0?'+':'−'} ${brl(Math.abs(dif))}</span></div><p style="margin-top:6px">Vale o valor da fatura a receber.</p></div></div>`
+   + `<div class="note-box warn"><span class="ms f" aria-hidden="true">compare_arrows</span><div><b>Valor diferente do estudo</b><div class="cmp" style="margin-top:4px"><span class="o">${brl(US.aPagar)}</span><span class="ms" aria-hidden="true">arrow_forward</span><span class="n">${brl(BTR.valor)}</span><span style="color:var(--mid)">${dif>0?'+':'−'} ${brl(Math.abs(dif))}</span></div><p style="margin-top:6px">Vale o valor da fatura a receber.</p></div></div>`
    + sec('Pagamento') + (st.btr==='Emissão pendente'
       ? `<div class="note-box"><span class="ms f" aria-hidden="true">schedule</span><div><b>Boleto ainda não emitido</b><p>Linha digitável e nosso número aparecem depois da emissão.</p></div></div>`
       : `<div class="linha"><code>${BTR.linha}</code><button class="ib" style="width:44px;height:44px" aria-label="Copiar linha digitável" data-copy="${BTR.linha}"><span class="ms" aria-hidden="true">content_copy</span></button></div>
