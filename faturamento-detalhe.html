@@ -172,7 +172,7 @@
     .sidebar,.topbar,.head,.note{display:none!important}
     .page,.app,.main{margin:0!important;padding:0!important}
     .sheet{border-radius:0!important;padding:0!important;box-shadow:none!important;background:#fff}
-    .m-head{display:flex;align-items:center;gap:8px;padding:16px 24px 16px 8px;background:#fff;border-bottom:1px solid var(--s200);position:sticky;top:0;z-index:20;transition:margin-top .28s ease}
+    .m-head{display:flex;align-items:center;gap:8px;padding:16px 24px 16px 8px;background:#fff;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:20;transition:margin-top .28s ease}
     .m-menu{width:56px;height:56px;border-radius:11px;display:grid;place-items:center;flex:none;color:var(--ink)}
     .m-menu .ms{font-size:22px}
     .m-tt{flex:1;min-width:0;display:flex;flex-direction:column;color:#44403c}
@@ -327,8 +327,9 @@
   .card.hl .v{font-weight:600;color:#3f6212}
   .card.warn .val{background:#fff7ed}
   .card.danger .val{background:#fef2f2;color:#b91c1c}
-  .tag{display:inline-flex;align-items:center;gap:4px;height:20px;padding:0 8px;border-radius:999px;font:600 11px Inter;background:var(--s200);color:var(--ink3);white-space:nowrap}
-  .tag.ok{background:#ecfccb;color:#3f6212} .tag.alert{background:#ffedd5;color:#c2410c} .tag.danger{background:#fee2e2;color:#b91c1c} .tag.info{background:#dbeafe;color:#1d4ed8} .tag.dark{background:var(--ink);color:#fff}
+  /* Badge da lib: Secondary (padrão), Positive, Alert, Destructive, Neutral, Default */
+  .tag{display:inline-flex;align-items:center;gap:4px;height:22px;padding:0 12px;border-radius:999px;font:600 12px/1 Inter;background:var(--s100);color:var(--ink);white-space:nowrap}
+  .tag.ok{background:#65a30d;color:#fafaf9} .tag.alert{background:#f97316;color:#fafaf9} .tag.danger{background:#f43f5e;color:#fafaf9} .tag.neutral{background:#78716c;color:#fafaf9} .tag.info,.tag.dark{background:var(--ink);color:#fafaf9}
   /* tabelas simples (itens, histórico, bandeiras, comunicações) */
   .tbl{background:#fff;border:1px solid var(--border);border-radius:12px;overflow:auto}
   .tbl table{border-collapse:separate;border-spacing:0;width:100%;font-size:13px;font-variant-numeric:tabular-nums}
@@ -405,63 +406,65 @@
   .opt small{color:var(--mid)}
   .dlg .ft{display:flex;justify-content:flex-end;gap:8px}
   /* estado vazio da lib (Lista/Vazia): ilustração + texto, caixa cinza */
-  .doc-state{margin:auto 0;width:100%;max-width:560px;min-height:420px;background:var(--white);border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;padding:32px 24px;text-align:center}
+  .doc-state{margin:auto 0;width:100%;max-width:560px;min-height:420px;background:#fafafa;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;padding:32px 24px;text-align:center}
   .doc-state img{max-width:100%;height:auto}
   .doc-state p{margin:0;font:400 16px/19px Inter;color:#595959;max-width:320px}
   .ib:disabled{opacity:.35;pointer-events:none}
   /* comunicações */
-  .tbl.coms td{height:auto;padding-top:10px;padding-bottom:10px;vertical-align:middle}
+  .tbl.coms table{font-size:14px}
+  .tbl.coms th{font-size:14px;font-weight:500;height:45px;background:transparent;border-bottom-color:var(--border)}
+  .tbl.coms td{height:56px;padding-top:8px;padding-bottom:8px;vertical-align:middle}
   .cm-row{cursor:pointer}
   .cm-row:hover td,.cm-row:focus-visible td{background:var(--s50)}
   .cm-row:focus-visible{outline:2px solid var(--ink3);outline-offset:-2px}
-  .cm-t{font-weight:600;color:var(--ink)}
+  .cm-t{font-weight:400;color:var(--ink)}
   .cm-ch{display:flex;align-items:center;gap:6px;color:var(--ink)}
   .cm-ch .ms{font-size:16px;color:var(--mid)}
   .cm-d{display:block;font-size:12px;color:var(--mid);max-width:140px;overflow:hidden;text-overflow:ellipsis}
   .tbl.coms td:first-child{white-space:normal;min-width:84px;max-width:110px}
-  .tbl.coms th:last-child,.tbl.coms td:last-child{padding:0 6px 0 0;width:20px}
   .tbl.coms th,.tbl.coms td{padding-left:10px;padding-right:10px}
   .cm-go{font-size:18px;color:var(--s400);vertical-align:middle}
   /* visualizador (base: Relacionamento com o Cliente › Comunicações, arquivo Vendas) */
-  .cm-dlg{max-width:640px;max-height:calc(100vh - 48px);overflow:auto;gap:16px;padding:0 0 20px}
+  .cm-dlg{max-width:640px;border-radius:16px;max-height:calc(100vh - 48px);overflow:auto;gap:16px;padding:0 0 20px}
   .cm-head{display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid var(--s200);position:sticky;top:0;background:#fff;z-index:1}
-  .cm-av{width:40px;height:40px;border-radius:999px;background:#1e3a5f;color:#fff;display:grid;place-items:center;font:600 20px/1 Inter;flex:none}
+  .cm-av{width:40px;height:40px;border-radius:999px;background:var(--ink);color:#fff;display:grid;place-items:center;font:600 20px/1 Inter;flex:none}
   .cm-who{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0}
-  .cm-who b{font:600 14px Inter;color:var(--ink)}
+  .cm-who b{font:700 14px Inter;color:var(--ink)}
   .cm-who span{display:flex;align-items:center;gap:4px;font-size:12px;color:var(--mid)}
   .cm-who .ms{font-size:14px}
   .cm-date{font-size:12px;color:var(--mid)}
   .cm-meta{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:0 20px}
-  .cm-meta>div{background:var(--s50);border:1px solid var(--s200);border-radius:8px;padding:8px 12px;display:flex;flex-direction:column;gap:4px;min-width:0}
+  .cm-meta>div{background:rgba(245,245,244,.4);border:1px solid var(--border);border-radius:6px;padding:8px 12px;display:flex;flex-direction:column;gap:4px;min-width:0}
   .cm-meta span{font-size:12px;color:var(--mid)}
-  .cm-meta b{font:600 13px Inter;color:var(--ink)}
-  .cm-body{margin:0 20px;background:var(--s100);border-radius:12px;padding:16px}
-  .cm-mail{background:#fff;border-radius:8px;border:1px solid var(--s200)}
-  .cm-mh{padding:12px 16px;border-bottom:1px solid var(--s200);display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--ink)}
+  .cm-meta b{font:700 14px Inter;color:var(--ink)}
+  .cm-body{margin:0 20px;background:var(--s100);border-radius:16px;padding:16px}
+  .cm-mail{background:#fff;border-radius:16px;border:1px solid var(--border)}
+  .cm-mh{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--ink)}
   .cm-mh span{display:inline-block;width:64px;color:var(--mid)}
-  .cm-mb{padding:16px;font-size:14px;line-height:20px;color:var(--ink3)}
+  .cm-mb{padding:16px;font-size:14px;line-height:1.7;color:var(--ink)}
   .cm-mb p{margin:0 0 10px}
   .cm-mb code{font-size:12px;word-break:break-all}
-  .cm-att{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 10px;border:1px solid var(--s200);border-radius:8px;background:#fff;font-size:12px;color:var(--ink)}
-  .cm-att .ms{font-size:18px;color:var(--danger)}
+  .cm-att{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 10px;border:1px solid var(--border);border-radius:6px;background:#fff;font-size:12px;color:var(--ink)}
+  .cm-att .ms{font-size:16px;color:var(--ink)}
   .cm-att.off{color:var(--mid);border-style:dashed}
   .cm-att.off .ms{color:var(--mid)}
   .cm-chat{display:flex;justify-content:flex-end}
-  .cm-bub{max-width:80%;background:#fff;border-radius:12px;padding:12px 14px 8px;font-size:14px;line-height:20px;color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.04)}
+  .cm-bub{max-width:80%;background:#fff;border-radius:16px;padding:12px 14px;font-size:14px;line-height:1.7;color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.04)}
   .cm-tm{display:flex;justify-content:flex-end;align-items:center;gap:4px;margin-top:6px;font-size:11px;color:var(--mid)}
   .cm-tm .ms{font-size:14px}
-  .cm-tm .ms.read{color:var(--info)}
+  .cm-tm .ms.read{color:var(--mid)}
   .cm-track{list-style:none;margin:0;padding:0 20px;display:flex;gap:8px}
-  .cm-track li{flex:1;display:flex;flex-direction:column;gap:2px;position:relative;padding-top:14px;font-size:12px;color:var(--mid)}
+  .cm-track li{flex:1;display:flex;flex-direction:column;gap:2px;position:relative;padding-top:12px;font-size:12px;color:var(--mid)}
   .cm-track i{position:absolute;top:0;left:0;right:0;height:4px;border-radius:999px;background:var(--s200)}
   .cm-track li.on i{background:var(--ink)}
-  .cm-track b{font:600 12px Inter;color:var(--ink)}
+  .cm-track b{font:700 14px Inter;color:var(--ink)}
+  .cm-dlg .btn{height:40px;border-radius:6px}
   .cm-dlg .ft{padding:0 20px}
   @media (max-width:767px){
     #cmView{padding:0;place-items:end stretch}
     .cm-dlg{max-width:none;border-radius:16px 16px 0 0;max-height:92vh}
-    .cm-meta{grid-template-columns:1fr 1fr}
-    .cm-track{flex-direction:column}
+    .cm-meta{grid-template-columns:1fr}
+    .cm-head .cm-date{display:none}
     .cm-dlg .ft{flex-direction:column-reverse}
     .cm-dlg .ft .btn{width:100%;justify-content:center}
   }
@@ -974,17 +977,17 @@ function detPhase3(){
       ? `<div class="note-box"><span class="ms f" aria-hidden="true">schedule</span><div><b>Boleto ainda não emitido</b><p>Linha digitável e nosso número aparecem depois da emissão.</p></div></div>`
       : `<div class="linha"><code>${BTR.linha}</code><button class="ib" style="width:44px;height:44px" aria-label="Copiar linha digitável" data-copy="${BTR.linha}"><span class="ms" aria-hidden="true">content_copy</span></button></div>
          <div class="grid">${card('Nosso número',BTR.nosso)}${card('Multa após o vencimento','10','%')}</div>`)
-   + sec('Comunicações')+`<div class="tbl coms"><table><thead><tr><th>Tipo</th><th class="l">Canal e destino</th><th class="l">Enviado em</th><th class="l">Status</th><th aria-hidden="true"></th></tr></thead><tbody>${notif}</tbody></table></div>`;
+   + sec('Comunicações')+`<div class="tbl coms"><table><thead><tr><th>Tipo</th><th class="l">Canal e destino</th><th class="l">Enviado em</th><th class="l">Status</th></tr></thead><tbody>${notif}</tbody></table></div>`;
 }
 /* comunicações da conta a receber (mais recente no topo) */
 const CM_E='financeiro@padariaestrela.com.br', CM_W='(31) 9 0000-0000';
 function comsData(){
   const b=STATES[S.st].btr, c=[], E=CM_E, W=CM_W;
-  const two=(tipo,st,qe,qw,tone)=>[{tipo,canal:'E-mail',dest:E,q:qe,st,tone},{tipo,canal:'WhatsApp',dest:W,q:qw,st:st==='Entregue'?'Lido':st,tone}];
+  const two=(tipo,st,qe,qw,tone='neutral')=>[{tipo,canal:'E-mail',dest:E,q:qe,st,tone},{tipo,canal:'WhatsApp',dest:W,q:qw,st:st==='Entregue'?'Lido':st,tone}];
   if(b==='Emissão pendente') return two('Cobrança','Aguardando emissão',null,null);
   if(S.st==='sem-pdf') return two('Cobrança','Aguardando PDF',null,null);
   c.push(...two('Cobrança','Entregue','14/03/2025 10:05','14/03/2025 10:07','ok'));
-  c.push({tipo:'Preventiva',canal:'WhatsApp',dest:W,q:'02/04/2025 09:00',st:b==='Aberto'?'Agendada':'Lido',tone:b==='Aberto'?'':'ok'});
+  c.push({tipo:'Preventiva',canal:'WhatsApp',dest:W,q:'02/04/2025 09:00',st:b==='Aberto'?'Agendada':'Lido',tone:b==='Aberto'?'neutral':'ok'});
   if(b==='Atrasado') c.push(...two('Aviso de atraso','Entregue','07/04/2025 09:00','07/04/2025 09:00','ok'));
   if(b==='Liquidado') c.push({tipo:'Confirmação de pagamento',canal:'E-mail',dest:E,q:'03/04/2025 15:42',st:'Entregue',tone:'ok'});
   return c.reverse();
@@ -993,9 +996,8 @@ function comsRows(){
   return comsData().map((m,i)=>`<tr class="cm-row" tabindex="0" data-cm="${i}" aria-label="Ver comunicação: ${m.tipo} por ${m.canal}">
     <td><b class="cm-t">${m.tipo}</b></td>
     <td class="l"><span class="cm-ch"><span class="ms" aria-hidden="true">${m.canal==='E-mail'?'mail':'chat'}</span>${m.canal}</span><span class="cm-d">${esc(m.dest)}</span></td>
-    <td class="l">${m.q?(m.st==='Agendada'?'<span class="cm-d">Agendada para</span>':'')+m.q.slice(0,5)+' '+m.q.slice(11):'—'}</td>
-    <td class="l"><span class="tag ${m.tone||''}">${m.st}</span></td>
-    <td><span class="ms cm-go" aria-hidden="true">chevron_right</span></td></tr>`).join('');
+    <td class="l">${m.q?m.q.slice(0,5)+' '+m.q.slice(11):'—'}</td>
+    <td class="l"><span class="tag ${m.tone||''}">${m.st}</span></td></tr>`).join('');
 }
 /* texto de cada tipo (e-mail e WhatsApp) */
 function comsMsg(m){
