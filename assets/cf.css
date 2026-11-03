@@ -194,3 +194,11 @@
 /* funil da busca: ponto quando há filtro ativo e a linha está escondida */
 .fp #bFlt{position:relative}
 .fp #bFlt.dot::after{content:"";position:absolute;top:6px;right:6px;width:8px;height:8px;border-radius:999px;background:var(--brand);box-shadow:0 0 0 2px var(--sec)}
+
+/* etapa: processando = fade in/out; erro do sistema = onda na cor do alerta (3%) saindo da bolinha */
+.fp .steps i{position:relative}
+.fp .steps i.proc{animation:stepFade 1.4s ease-in-out infinite}
+.fp .steps i.wave::after{content:"";position:absolute;inset:0;border-radius:50%;background:color-mix(in srgb,var(--danger) 3%,transparent);box-shadow:0 0 0 0 color-mix(in srgb,var(--danger) 3%,transparent);animation:stepWave 1.8s ease-out infinite;pointer-events:none}
+@keyframes stepFade{0%,100%{opacity:1}50%{opacity:.25}}
+@keyframes stepWave{0%{transform:scale(1);opacity:1}100%{transform:scale(3.4);opacity:0}}
+@media (prefers-reduced-motion:reduce){.fp .steps i.proc,.fp .steps i.wave::after{animation:none}}
