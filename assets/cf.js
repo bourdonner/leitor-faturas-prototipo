@@ -157,7 +157,8 @@ H.steps=r=>{ const i=etapa(r);
   return `<span class="steps" aria-hidden="true">${[0,1,2].map(k=>{ const cur=k===i&&!done; const cls=i<0?'':k<i||done?'d':k===i?(fail?'e':'c'):''; return `<i class="${cls}${cur&&proc?' proc':''}${cur&&err?' wave':''}"></i>`; }).join('')}</span>`; };
 H.tit=r=>{ const t=TIT[r.t]; return `<div class="ent"><span class="ic ${t.pj?'':'pf'}"><span class="msr fill">${t.pj?'bolt':'person'}</span></span><div class="t"><div>${esc(t.n.toUpperCase())}</div><div class="s">${esc(t.doc)}</div></div>${t.grp?`<button class="grp" data-a="grupo" data-v="${esc(t.grp)}" title="${esc(t.grp)}" aria-label="Abrir ${esc(t.grp)}"><span class="msr fill">groups</span></button>`:''}</div>`; };
 H.ust=u=>{ const s=UST[u.st]; return `<span class="ust ${s[0]}" title="${u.st}" aria-label="${u.st}"><span class="msr fill">${s[1]}</span></span>`; };
-H.uc=r=>`<div class="ent">${H.ust(UCS[r.uc])}<div class="t"><div>${r.uc}</div><div class="s">${esc(CID[r.uc])}</div></div></div>`;
+/* UC: número + concessionária (no lugar de cidade e estado) */
+H.uc=r=>`<div class="ent">${H.ust(UCS[r.uc])}<div class="t"><div>${r.uc}</div><div class="s">${esc(UCS[r.uc].conc)}</div></div></div>`;
 H.est=r=>H.badge(r.est.st,EST);
 const sortBtn=(k,l)=>{ const on=S.sort.k===k; return `<button class="so${on?' on':''}" data-a="sortby" data-k="${k}" aria-label="Ordenar por ${l}">${l}<span class="msr">${on?(S.sort.dir==='asc'?'arrow_upward':'arrow_downward'):'import_export'}</span></button>`; };
 
