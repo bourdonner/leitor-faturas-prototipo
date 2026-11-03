@@ -349,6 +349,16 @@
   .note-box b{display:block;margin-bottom:2px}
   .note-box p{margin:0;color:var(--ink3);line-height:1.5}
   .note-box .btn{margin-top:10px;height:32px;padding:0 12px}
+  /* Inline Alert da lib (padrão de informação divergente): ícone em bloco colorido, título Bold 14, texto Regular 14 */
+  .ialert{display:flex;gap:12px;align-items:flex-start;padding:12px;border-radius:12px;background:#fff7ed;font-size:14px;line-height:1.7;color:var(--ink)}
+  .ialert.err{background:#fef2f2}
+  .ialert .ic{width:24px;height:24px;border-radius:6px;background:var(--alert);color:#fff;display:grid;place-items:center;flex:none;margin-top:0}
+  .ialert.err .ic{background:#f43f5e}
+  .ialert .ic .ms{font-size:16px}
+  .ialert b{font-weight:700;margin-right:6px}
+  .ev .fromto{display:flex;align-items:center;gap:8px;margin-top:6px;font-size:13px;font-variant-numeric:tabular-nums}
+  .ev .fromto s{color:var(--mid)}
+  .ev .fromto .ms{font-size:14px;color:var(--mid)}
   .cmp{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-variant-numeric:tabular-nums}
   .cmp .o{color:var(--mid);text-decoration:line-through;padding:2px 8px;border-radius:6px;background:var(--s100)}
   .cmp .n{font-weight:600;padding:2px 8px;border-radius:6px;background:#f7fee7}
@@ -893,6 +903,8 @@ function card(l,v,u,o={}){
   const cls=o.cls?' '+o.cls:'', pre=u==='R$';
   return `<div class="card${cls}${o.full?' full':''}"><div class="ct">${l}${o.tag||''}</div><div class="row"><div class="val">${pre?'<span class="u">R$</span>':''}<span class="v">${v}</span>${!pre&&u?`<span class="u">${u}</span>`:''}</div>${o.nocp?'':`<button class="cp" aria-label="Copiar ${esc(l)}" data-copy="${esc(String(v))}"><span class="ms" aria-hidden="true">content_copy</span></button>`}</div></div>`;
 }
+/* informação divergente: Inline Alert logo abaixo do título da seção do dado. Tom warn = segue com uma regra de qual vale; err = bloqueia */
+function ialert(title,text,tone='warn'){ return `<div class="ialert${tone==='err'?' err':''}" role="note"><span class="ic"><span class="ms f" aria-hidden="true">${tone==='err'?'block':'warning'}</span></span><div><b>${title}</b>${text}</div></div>`; }
 function sec(t,extra=''){ return `<div class="sec-t">${t}<span class="sp"></span>${extra}</div>`; }
 /* fatura da concessionária: mesmas abas, seções, ordem e rótulos do Leitor de Faturas (detalhe.html), só leitura */
 const LF_CAT={CONSUMPTION:'Consumo',SYSTEM_USAGE:'Uso do sistema',INJECTION_FROM_OTHER_UNIT:'Injeção de outra unidade',INJECTION_SAME_UNIT:'Injeção da mesma unidade',INJECTION:'Injeção',FLAG:'Bandeira',DEMAND:'Demanda',CONSUMPTION_FLAG:'Bandeira de consumo',OTHER:'Outros'};
@@ -966,10 +978,9 @@ function detPhase3(){
   const tone={ 'Emissão pendente':'alert','Aberto':'info','Atrasado':'danger','Liquidado':'ok' }[st.btr];
   const pago = st.btr==='Liquidado';
   const notif = comsRows();
-  return sec('Cobrança',`<span class="tag ${tone}">${st.btr}</span>`)+`<div class="grid">
+  return sec('Cobrança',`<span class="tag ${tone}">${st.btr}</span>`)+ialert('Valor diferente do estudo',`${brl(US.aPagar)} → ${brl(BTR.valor)} (${dif>0?'+':'−'} ${brl(Math.abs(dif))}). Vale o valor da fatura a receber.`)+`<div class="grid">
       ${card('Valor',num(BTR.valor,2),'R$')}${card('Nº da fatura',BTR.numero)}${card('Emissão',st.btr==='Emissão pendente'?'—':BTR.emissao)}${card('Vencimento',BTR.venc,null,{cls:st.btr==='Atrasado'?'danger':''})}
       ${pago?card('Pago em',BTR.pagoEm,null):''}${st.btr==='Atrasado'?card('Dias em atraso','9','dias',{cls:'danger',nocp:true}):''}</div>`
-   + `<div class="note-box warn"><span class="ms f" aria-hidden="true">compare_arrows</span><div><b>Valor diferente do estudo</b><div class="cmp" style="margin-top:4px"><span class="o">${brl(US.aPagar)}</span><span class="ms" aria-hidden="true">arrow_forward</span><span class="n">${brl(BTR.valor)}</span><span style="color:var(--mid)">${dif>0?'+':'−'} ${brl(Math.abs(dif))}</span></div><p style="margin-top:6px">Vale o valor da fatura a receber.</p></div></div>`
    + sec('Pagamento') + (st.btr==='Emissão pendente'
       ? `<div class="note-box"><span class="ms f" aria-hidden="true">schedule</span><div><b>Boleto ainda não emitido</b><p>Linha digitável e nosso número aparecem depois da emissão.</p></div></div>`
       : `<div class="linha"><code>${BTR.linha}</code><button class="ib" style="width:44px;height:44px" aria-label="Copiar linha digitável" data-copy="${BTR.linha}"><span class="ms" aria-hidden="true">content_copy</span></button></div>
@@ -1053,8 +1064,8 @@ function baseFeed(){
   if(st==='falha-calculo') ev.push(['Falha no cálculo','error','c-danger',2,'13/03 10:12']);
   if(p>=2 && st!=='falha-calculo') ev.push(['Estudo calculado','calculate','c-ok',2,'13/03 10:12']);
   if(p>=3){ ev.push(['Faturado','send','c-ok',3,'14/03 09:58']); }
-  if(st==='sem-pdf') ev.push(['Boleto emitido','barcode','c-ok',3,'14/03 10:01']);
-  if(['aberto','atrasado','liquidado'].includes(st)) ev.push(['Boleto emitido','barcode','c-ok',3,'14/03 10:01'],['E-mail entregue','mail','c-info',3,'14/03 10:05'],['WhatsApp lido','chat','c-info',3,'14/03 10:07']);
+  if(st==='sem-pdf') ev.push(['Boleto emitido','barcode','c-ok',3,'14/03 10:01'],['Valor diferente do estudo','compare_arrows','c-alert',3,'14/03 10:01',{o:brl(US.aPagar),n:brl(BTR.valor)}]);
+  if(['aberto','atrasado','liquidado'].includes(st)) ev.push(['Boleto emitido','barcode','c-ok',3,'14/03 10:01'],['Valor diferente do estudo','compare_arrows','c-alert',3,'14/03 10:01',{o:brl(US.aPagar),n:brl(BTR.valor)}],['E-mail entregue','mail','c-info',3,'14/03 10:05'],['WhatsApp lido','chat','c-info',3,'14/03 10:07']);
   if(st==='atrasado') ev.push(['Venceu sem pagamento','warning','c-danger',3,'06/04 00:00'],['Lembrete por WhatsApp','chat','c-info',3,'07/04 09:00']);
   if(st==='liquidado') ev.push(['Pagamento confirmado','paid','c-ok',3,'03/04 15:40']);
   return ev.reverse();
@@ -1067,7 +1078,7 @@ function renderActs(){
     `<div class="ev${e.isNew?' new':''}"><span class="i ${e[2]}"><span class="ms f" aria-hidden="true">${e[1]}</span></span>
       <span class="ph2">${PHASES[e[3]-1].t.replace('Fatura da concessionária','Concessionária').replace('Conta a receber','A receber')}</span>
       ${e.user?`<span class="who" data-name="Eduardo Moreira">EM</span>`:`<span class="who sys" data-name="Sistema">${SYS}</span>`}
-      <div class="n">${e[0]}</div><div class="d">${e[4]}</div></div>`).join('');
+      <div class="n">${e[0]}</div>${e[5]?`<div class="fromto"><s>${e[5].o}</s><span class="ms" aria-label="para">arrow_forward</span><b>${e[5].n}</b></div>`:''}<div class="d">${e[4]}</div></div>`).join('');
 }
 
 /* ===== painéis: Prévias e Detalhes ficam sempre abertos (no celular, empilhados) ===== */
