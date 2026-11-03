@@ -176,3 +176,17 @@
 .fp .bulk .b.ico{width:32px;padding:0;justify-content:center}
 .fp .btip{position:fixed;z-index:95;max-width:280px;display:flex;flex-direction:column;gap:2px;padding:8px 10px;border-radius:8px;background:var(--ink);color:var(--fg);font:400 12px/16px Inter;box-shadow:var(--pop);pointer-events:none}
 .fp .btip b{font-weight:600}
+
+/* resumo: cada card abre e fecha animado (altura via grid 0fr↔1fr + opacidade); destaques continuam fora da parte recolhível */
+.fp .rs-cl{display:grid;grid-template-rows:1fr;opacity:1;transition:grid-template-rows .28s cubic-bezier(.2,.7,.2,1),opacity .2s ease}
+.fp .rs-cl>.rs-in{min-height:0;overflow:hidden;display:flex;flex-direction:column;gap:8px}
+.fp .rs-card.closed .rs-cl,.fp .act-p.closed .rs-cl{grid-template-rows:0fr;opacity:0}
+.fp .rs-bd{transition:padding .28s cubic-bezier(.2,.7,.2,1),gap .28s}
+.fp .rs-card.closed .rs-bd:not(.keep){padding-bottom:0}
+.fp .rs-card.closed .rs-bd.keep{gap:0}
+.fp .act-p .rs-cl>.rs-in{gap:0}
+.fp .act-p.closed .act-l,.fp .act-p.closed .cmp{display:revert}
+.fp .act-p.closed .cmp{display:flex}
+.fp .act-p .act-h{transition:padding .28s cubic-bezier(.2,.7,.2,1)}
+.fp .chev{transition:transform .28s cubic-bezier(.2,.7,.2,1)}
+@media (prefers-reduced-motion:reduce){.fp .rs-cl,.fp .rs-bd,.fp .act-p .act-h,.fp .chev{transition:none}}

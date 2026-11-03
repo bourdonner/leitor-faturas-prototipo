@@ -226,7 +226,9 @@ const FOLDS=['tit','uc','fc','est','rec','cm'];
 const fold=(k,ttl)=>`<button class="ib" data-a="fold" data-k="${k}" aria-label="${S.fold.has(k)?'Expandir':'Recolher'} ${ttl}" aria-expanded="${!S.fold.has(k)}"><span class="msr chev">expand_less</span></button>`;
 const shut=k=>S.fold.has(k)?' closed':'';
 const kv=rows=>`<div class="kvl">${rows.map(x=>`<div><span>${x[0]}</span><b class="${x[2]||''}">${x[1]}</b></div>`).join('')}</div>`;
-const card=(k,h,body,keep)=>`<section class="rs-card${shut(k)}" aria-label="${esc(h.t)}"><div class="rs-hd${h.big?'':' sm'}"><span class="eb${h.off?' off':''}"><span class="msr fill">${h.ic}</span></span><div class="t"><b>${esc(h.t)}</b>${h.d?`<span class="cap">${esc(h.d)}</span>`:''}</div>${h.open||''}${fold(k,h.t.toLowerCase())}</div>${S.fold.has(k)?(keep?`<div class="rs-bd">${keep}</div>`:''):`<div class="rs-bd">${body}</div>`}</section>`;
+const cl=(k,inner)=>`<div class="rs-cl"${S.fold.has(k)?' inert':''}><div class="rs-in">${inner}</div></div>`;
+const card=(k,h,body,keep)=>{ const main=keep&&body.endsWith(keep)?body.slice(0,-keep.length):body;
+  return `<section class="rs-card${shut(k)}" data-fold="${k}" aria-label="${esc(h.t)}"><div class="rs-hd${h.big?'':' sm'}"><span class="eb${h.off?' off':''}"><span class="msr fill">${h.ic}</span></span><div class="t"><b>${esc(h.t)}</b>${h.d?`<span class="cap">${esc(h.d)}</span>`:''}</div>${h.open||''}${fold(k,h.t.toLowerCase())}</div><div class="rs-bd${keep?' keep':''}">${main?cl(k,main):''}${keep||''}</div></section>`; };
 H.rbar=()=>{ const all=FOLDS.every(k=>!S.fold.has(k)); return `<div class="rbar"><span class="msr">article_shortcut</span><span class="grow">Resumo do faturamento</span><button class="ib tip" data-a="foldall" data-tip="${all?'Recolher tudo':'Expandir tudo'}" aria-label="${all?'Recolher todas as seções':'Expandir todas as seções'}"><span class="msr">${all?'unfold_less':'unfold_more'}</span></button></div>`; };
 /* topo: faixa "Revisão manual" (se pedida) + fatura de ref. com status e ações */
 H.head=r=>`<section class="rs-card rs-fat">${r.rev?'<div class="rs-rev" role="status"><span class="grow">Revisão manual</span><span class="msr fill">flag</span></div>':''}
@@ -288,8 +290,8 @@ H.recP=r=>{ const c=r.rec;
     +(c.st==='Sem cobrança'?'':IT({ic:'event',cls:c.st==='Atrasado'?'dg':'',l:'Vencimento',v:c.ven||'—'}))); };
 H.cm=r=>{ const ev=c=>{ const who=c.who?`<span class="who2" data-name="${esc(c.who)}">${ini(c.who)}</span>`:'<span class="who2 sys" data-name="Sistema"><span class="msr fill">bolt</span></span>';
     return `<div class="ev ${c.isNew?'new':''}"><span class="i ${c.sys?(c.t.includes('revis')?'c-alert':'c-def'):'c-edit'}"><span class="msr fill">${c.sys?(c.t.includes('revis')?'flag':'bolt'):'chat'}</span></span>${who}<div class="n">${esc(c.t)}</div><div class="d">${c.d}</div></div>`; };
-  return `<div class="act-p${shut('cm')}"><div class="act-h"><span class="grow">Comentários</span><span class="cap">${r.cm.length||''}</span>${fold('cm','comentários')}</div><div class="act-l evs">${r.cm.map((c,i)=>(i?'<div class="lnk"></div>':'')+ev(c)).join('')}</div>
-  <form class="cmp" data-id="${r.id}"><label class="sr" for="cmT" style="position:absolute;left:-9999px">Comentário</label><textarea class="ta" id="cmT" placeholder="Escreva um comentário"></textarea><div class="row"><button class="b pri sm" type="submit">Comentar</button></div></form></div>`; };
+  return `<div class="act-p${shut('cm')}" data-fold="cm"><div class="act-h"><span class="grow">Comentários</span><span class="cap">${r.cm.length||''}</span>${fold('cm','comentários')}</div>${cl('cm',`<div class="act-l evs">${r.cm.map((c,i)=>(i?'<div class="lnk"></div>':'')+ev(c)).join('')}</div>
+  <form class="cmp" data-id="${r.id}"><label class="sr" for="cmT" style="position:absolute;left:-9999px">Comentário</label><textarea class="ta" id="cmT" placeholder="Escreva um comentário"></textarea><div class="row"><button class="b pri sm" type="submit">Comentar</button></div></form>`)}</div>`; };
 /* a barra fica fora da rolagem; só os cards rolam, num espaço com cantos de 12px */
 H.rail=r=>H.rbar()+`<div class="rail-sc" id="railSc">${H.head(r)+H.titP(r)+H.ucP(r)+H.fcP(r)+H.estP(r)+H.recP(r)+H.cm(r)}</div>`;
 /* degradê do cabeçalho grudado só aparece quando ele está de fato grudado */
@@ -395,6 +397,15 @@ function applyTxt(k){ const i=document.getElementById('fIn'); if(!i) return; let
 const copyTxt=(v,msg)=>{ try{ navigator.clipboard.writeText(v).then(()=>toast(msg||'Copiado',v),()=>toast(v)); }catch(err){ toast(v); } };
 
 let lastRow={id:null,t:0};
+/* aplica o estado de recolhido direto no DOM, para a transição acontecer; atualiza chevrons e o "recolher tudo" */
+function applyFold(keys){
+  keys.forEach(k=>{ const s=document.querySelector('#rail [data-fold="'+k+'"]'); if(!s) return; const shut=S.fold.has(k);
+    s.classList.toggle('closed',shut); const c=s.querySelector('.rs-cl'); if(c) c.inert=shut;
+    const b=s.querySelector('[data-a="fold"]'); if(b){ b.setAttribute('aria-expanded',String(!shut)); b.setAttribute('aria-label',(shut?'Expandir ':'Recolher ')+(b.getAttribute('aria-label')||'').replace(/^(Expandir|Recolher) /,'')); } });
+  const al=FOLDS.every(f=>!S.fold.has(f)), fb=document.querySelector('#rail [data-a="foldall"]');
+  if(fb){ fb.dataset.tip=al?'Recolher tudo':'Expandir tudo'; fb.setAttribute('aria-label',al?'Recolher todas as seções':'Expandir todas as seções'); fb.querySelector('.msr').textContent=al?'unfold_less':'unfold_more'; }
+  setTimeout(markStuck,320);
+}
 function onClick(e){
   const a=e.target.closest('[data-a]');
   if(popEl&&!popEl.hidden&&!e.target.closest('#pop')&&!(popAnchor&&popAnchor.contains(e.target))) closePop();
@@ -443,8 +454,8 @@ function onClick(e){
     case 'fopt': { const f=a.dataset.k, v=a.dataset.v; const cur=S.f[f]||[]; S.f[f]=cur.includes(v)?cur.filter(x=>x!==v):[...cur,v]; const on=S.f[f].includes(v); a.setAttribute('aria-checked',on); const c=a.querySelector('.cbx'); c.classList.toggle('on',on); c.innerHTML=on?'<span class="mss">check</span>':''; refresh(); const nb=document.querySelector(`.flt[data-k="${f}"]`); if(nb){ popAnchor=nb; nb.classList.add('open'); } break; }
     case 'fclr': { e.stopPropagation(); const fk=a.dataset.k; S.f[fk]=[]; S.xf.delete(fk); closePop(); refresh(); break; }
     case 'fclrall': S.f={}; S.xf.clear(); refresh(); break;
-    case 'fold': { const f=a.dataset.k; S.fold.has(f)?S.fold.delete(f):S.fold.add(f); refresh(); const b=document.querySelector(`#rail [data-a="fold"][data-k="${f}"]`); if(b) b.focus(); break; }
-    case 'foldall': { const al=FOLDS.every(f=>!S.fold.has(f)); S.fold=new Set(al?FOLDS:[]); refresh(); const b=document.querySelector('#rail [data-a="foldall"]'); if(b) b.focus(); break; }
+    case 'fold': { const f=a.dataset.k; S.fold.has(f)?S.fold.delete(f):S.fold.add(f); applyFold([f]); break; }
+    case 'foldall': { const al=FOLDS.every(f=>!S.fold.has(f)); S.fold=new Set(al?FOLDS:[]); applyFold(FOLDS); break; }
     case 'copy': copyTxt(a.dataset.v); break;
     case 'toast': closePop(); toast(a.dataset.msg); break;
   }
