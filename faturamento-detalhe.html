@@ -433,10 +433,7 @@
   .cm-who span{display:flex;align-items:center;gap:4px;font-size:12px;color:var(--mid)}
   .cm-who .ms{font-size:14px}
   .cm-date{font-size:12px;color:var(--mid)}
-  .cm-meta{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:0 20px}
-  .cm-meta>div{background:rgba(245,245,244,.4);border:1px solid var(--border);border-radius:6px;padding:8px 12px;display:flex;flex-direction:column;gap:4px;min-width:0}
-  .cm-meta span{font-size:12px;color:var(--mid)}
-  .cm-meta b{font:700 14px Inter;color:var(--ink)}
+  .cm-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;padding:0 20px}
   .cm-body{margin:0 20px;background:var(--s100);border-radius:16px;padding:16px}
   .cm-mail{background:#fff;border-radius:16px;border:1px solid var(--border)}
   .cm-mh{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--ink)}
@@ -453,17 +450,17 @@
   .cm-tm{display:flex;justify-content:flex-end;align-items:center;gap:4px;margin-top:6px;font-size:11px;color:var(--mid)}
   .cm-tm .ms{font-size:14px}
   .cm-tm .ms.read{color:var(--mid)}
-  .cm-track{list-style:none;margin:0;padding:0 20px;display:flex;gap:8px}
-  .cm-track li{flex:1;display:flex;flex-direction:column;gap:2px;position:relative;padding-top:12px;font-size:12px;color:var(--mid)}
-  .cm-track i{position:absolute;top:0;left:0;right:0;height:4px;border-radius:999px;background:var(--s200)}
-  .cm-track li.on i{background:var(--ink)}
-  .cm-track b{font:700 14px Inter;color:var(--ink)}
   .cm-dlg .btn{height:40px;border-radius:6px}
   .cm-dlg .ft{padding:0 20px}
   @media (max-width:767px){
     #cmView{padding:0;place-items:end stretch}
     .cm-dlg{max-width:none;border-radius:16px 16px 0 0;max-height:92vh}
-    .cm-meta{grid-template-columns:1fr}
+    .cm-grid{gap:8px}
+    .cm-grid .m-full{grid-column:1 / -1}
+    .cm-grid .card{padding:12px 8px 8px 12px}
+    .cm-grid .card .val{padding:0 8px}
+    .cm-grid .card .cp{width:32px}
+    .cm-bub{max-width:none}
     .cm-head .cm-date{display:none}
     .cm-dlg .ft{flex-direction:column-reverse}
     .cm-dlg .ft .btn{width:100%;justify-content:center}
@@ -1009,11 +1006,15 @@ function comsMsg(m){
     'Confirmação de pagamento':{a:'Recebemos seu pagamento', p:['Olá, Padaria Estrela do Sul.','Confirmamos o pagamento de R$ '+v+' em '+BTR.pagoEm+'. Obrigado!'], w:'Pagamento de *R$ '+v+'* confirmado. Obrigado!', pdf:null}
   }[m.tipo];
 }
-function comsTrack(m){
-  if(!m.q) return [['Na fila',m.st==='Aguardando PDF'?'Sai quando o PDF do boleto ficar pronto':'Sai quando o boleto for emitido',false]];
-  if(m.st==='Agendada') return [['Agendada',m.q,true],['Enviada','',false],['Entregue','',false]];
-  const t=m.q.split(' ')[0], hh=m.q.split(' ')[1], plus=n=>{ const [a,b]=hh.split(':').map(Number), x=a*60+b+n; return t+' '+String(Math.floor(x/60)).padStart(2,'0')+':'+String(x%60).padStart(2,'0'); };
-  return [['Enviada',m.q,true],['Entregue',plus(0),true]].concat(m.st==='Lido'?[['Lida',plus(4),true]]:[]);
+/* dados da comunicação nos Data Cards da página (mesmo card dos detalhes) */
+/* no celular a data vai sem o ano, para caber em 2 colunas */
+const cmShort=v=>{ const s=String(v); return matchMedia('(max-width:767px)').matches&&s.length===16&&s[2]==='/'&&s[5]==='/'?s.slice(0,5)+s.slice(10):s; };
+function comsCards(m){
+  const c=[['Tipo',m.tipo]];
+  if(!m.q) return c.concat([['Envio',m.st==='Aguardando PDF'?'Quando o PDF do boleto ficar pronto':'Quando o boleto for emitido']]);
+  if(m.st==='Agendada') return c.concat([['Agendada para',m.q]]);
+  const t=m.q.split(' ')[0], hh=m.q.split(' ')[1], plus=n=>{ const [x,y]=hh.split(':').map(Number), z=x*60+y+n; return t+' '+String(Math.floor(z/60)).padStart(2,'0')+':'+String(z%60).padStart(2,'0'); };
+  return c.concat([['Enviada em',m.q],['Entregue em',plus(0)]]).concat(m.st==='Lido'?[['Lida em',plus(4)]]:[]);
 }
 function openCom(i){
   const m=comsData()[i], g=comsMsg(m), mail=m.canal==='E-mail', ov=document.getElementById('cmView');
@@ -1022,13 +1023,12 @@ function openCom(i){
   const body = mail
     ? `<div class="cm-mail"><div class="cm-mh"><div><span>De</span>Cobrança COGECOM &lt;cobranca@cogecom.com.br&gt;</div><div><span>Para</span>${esc(m.dest)}</div><div><span>Assunto</span><b>${g.a}</b></div></div><div class="cm-mb">${g.p.map(x=>'<p>'+x+'</p>').join('')}${att}</div></div>`
     : `<div class="cm-chat"><div class="cm-bub">${g.w.replace(/\*([^*]+)\*/g,'<b>$1</b>')}${att?'<div style="margin-top:8px">'+att+'</div>':''}<span class="cm-tm">${time||'—'} ${m.st==='Lido'?'<span class="ms read" aria-label="Lida">done_all</span>':m.q&&m.st!=='Agendada'?'<span class="ms" aria-label="Entregue">done_all</span>':'<span class="ms" aria-label="Não enviada">schedule</span>'}</span></div></div>`;
-  const tr=comsTrack(m);
+  const cs=comsCards(m);
   ov.querySelector('.dlg').innerHTML=`
     <div class="cm-head"><span class="cm-av" aria-hidden="true">∞</span><div class="cm-who"><b id="cmT">Cobrança COGECOM</b><span><span class="ms" aria-hidden="true">${mail?'mail':'chat'}</span>Comunicação via ${m.canal}</span></div>
-      <span class="cm-date">${date}</span><button class="ib" id="cmX" aria-label="Fechar"><span class="ms" aria-hidden="true">close</span></button></div>
-    <div class="cm-meta"><div><span>Tipo</span><b>${m.tipo}</b></div><div><span>Enviado em</span><b>${m.q?(m.st==='Agendada'?'Agendada · ':'')+m.q:'—'}</b></div><div><span>Status</span><b><span class="tag ${m.tone||''}">${m.st}</span></b></div></div>
+      <span class="tag ${m.tone||''}">${m.st}</span><span class="cm-date">${date}</span><button class="ib" id="cmX" aria-label="Fechar"><span class="ms" aria-hidden="true">close</span></button></div>
+    <div class="cm-grid">${cs.map((x,j)=>card(x[0],cmShort(x[1]),null,{cls:(j===0||(j===cs.length-1&&cs.length%2===0))?"m-full":""})).join('')}</div>
     <div class="cm-body">${body}</div>
-    <ol class="cm-track">${tr.map(x=>`<li class="${x[2]?'on':''}"><i aria-hidden="true"></i><b>${x[0]}</b><span>${x[1]}</span></li>`).join('')}</ol>
     <div class="ft"><button class="btn outline" id="cmOpen"><span class="ms" aria-hidden="true">forum</span>Abrir em Comunicações</button>${m.q&&m.st!=='Agendada'?'<button class="btn primary" id="cmRe"><span class="ms" aria-hidden="true">send</span>Reenviar</button>':''}</div>`;
   ov.hidden=false; document.getElementById('cmX').focus();
   document.getElementById('cmX').onclick=closeCom;
