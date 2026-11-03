@@ -81,23 +81,57 @@
   .menu .it.danger:disabled{color:#fca5a5} .menu .it.danger:disabled .ms{color:#fca5a5}
   .menu .sep{height:1px;background:var(--s100);margin:4px -4px}
   /* ===== abas da página: uma por fase (troca prévia e detalhes juntos) ===== */
-  .ftabs{display:flex;gap:24px;margin-top:20px;border-bottom:1px solid var(--s200);flex:none;overflow-x:auto;scrollbar-width:none}
-  .ftab{display:flex;align-items:center;gap:8px;height:44px;padding:0 2px;color:var(--mid);font-weight:500;white-space:nowrap;position:relative;flex:none}
-  .ftab::after{content:'';position:absolute;left:0;right:0;bottom:-1px;height:2px;border-radius:2px;background:var(--ink);transform:scaleX(0);transition:transform .25s ease}
-  .ftab.on{color:var(--ink);font-weight:600}
+  .ftabs{display:flex;align-items:stretch;margin-top:20px;border-bottom:1px solid var(--s200);flex:none;overflow-x:auto;scrollbar-width:none}
+  .ftab{display:flex;align-items:center;gap:10px;padding:10px 12px 12px;border-radius:10px 10px 0 0;color:var(--mid);white-space:nowrap;position:relative;flex:none;text-align:left}
+  .ftab::after{content:'';position:absolute;left:12px;right:12px;bottom:-1px;height:2px;border-radius:2px;background:var(--ink);transform:scaleX(0);transition:transform .25s ease}
+  .ftab:hover:not(:disabled):not(.on){background:var(--s50)}
+  .ftab:focus-visible{outline:2px solid var(--brand);outline-offset:-2px}
+  .ftab.on{color:var(--ink)}
   .ftab.on::after{transform:scaleX(1)}
-  .ftab:hover:not(:disabled):not(.on){color:var(--ink)}
-  .ftab .n{width:20px;height:20px;border-radius:999px;display:grid;place-items:center;font:600 11px Inter;background:var(--s200);color:var(--mid);flex:none}
-  .ftab .n .ms{font-size:14px}
+  .ftab .n{width:24px;height:24px;border-radius:999px;display:grid;place-items:center;font:600 12px Inter;background:var(--s200);color:var(--mid);flex:none}
+  .ftab .n .ms{font-size:15px}
   .ftab.done .n{background:var(--success);color:#fff}
   .ftab.cur .n{background:var(--ink);color:#fff}
   .ftab.err .n{background:var(--danger);color:#fff}
-  .ftab .sub{font-weight:400;font-size:12px;color:var(--s400)}
+  .ftab .tx{display:flex;flex-direction:column;gap:3px;min-width:0}
+  .ftab .t{font:500 14px/18px Inter;color:inherit}
+  .ftab.on .t{font-weight:600}
+  .ftab .meta{display:flex;align-items:center;gap:6px;font:400 12px/16px Inter;color:var(--mid);font-variant-numeric:tabular-nums}
+  .ftab .fb{font:600 11px/16px Inter;padding:0 6px;border-radius:4px;background:var(--s200);color:var(--ink3)}
+  .ftab .fb.ok{background:#ecfccb;color:#3f6212} .ftab .fb.dark{background:var(--ink);color:#fff}
+  .ftab .fb.alert{background:#ffedd5;color:#9a3412} .ftab .fb.danger{background:#fee2e2;color:#b91c1c}
   .ftab .lk{font-size:14px;color:var(--s400)}
-  .ftab:disabled{color:var(--s400)}
+  .ftab:disabled{color:var(--s400);cursor:not-allowed}
   .ftab:disabled .n{background:transparent;border:1px dashed var(--s400);color:var(--s400)}
+  /* conector entre as etapas: verde quando a etapa anterior foi concluída */
+  .fconn{flex:0 0 32px;align-self:center;height:2px;border-radius:2px;background:var(--s200);margin-bottom:2px}
+  .fconn.d{background:var(--success)}
   .ftab[data-tip]:disabled:hover .tip{opacity:1}
   .ftab .tip{position:fixed;transform:translateY(-100%);background:var(--ink);color:#fff;font:500 12px/16px Inter;padding:6px 8px;border-radius:6px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .12s;z-index:60}
+  @media (prefers-reduced-motion:reduce){ .ftab::after{transition:none} }
+  /* abas internas e planilhas iguais às do Leitor de Faturas */
+  .itabs{display:flex;gap:4px;padding:4px;border-radius:8px;background:var(--s200);align-self:flex-start;max-width:100%;overflow-x:auto;scrollbar-width:none}
+  .itab{height:33px;padding:0 12px;border-radius:6px;color:var(--mid);display:inline-flex;align-items:center;font-weight:500;white-space:nowrap}
+  .itab.on{background:var(--white);color:#292524}
+  .itab:hover:not(.on){color:var(--ink)}
+  .itab:focus-visible{outline:2px solid var(--brand);outline-offset:-2px}
+  .card.full{grid-column:1 / -1}
+  .medt{font-weight:500;font-size:13px}
+  .grade{background:#fff;border:1px solid var(--border);border-radius:12px;overflow:auto;max-width:100%;scrollbar-width:thin;scrollbar-color:#d6d3d1 transparent}
+  .grade table{border-collapse:separate;border-spacing:0;width:100%;font-size:13px;font-variant-numeric:tabular-nums}
+  .grade th,.grade td{padding:0 12px;height:40px;text-align:right;white-space:nowrap;border-bottom:1px solid var(--s200);border-right:1px solid var(--s200)}
+  .grade th:last-child,.grade td:last-child{border-right:0}
+  .grade thead th{position:sticky;top:0;background:var(--s50);color:var(--mid);font-weight:500;font-size:12px;z-index:2}
+  .grade .stk{position:sticky;left:0;text-align:left;background:#fff;z-index:1;min-width:200px}
+  .grade thead .stk{background:var(--s50);z-index:3}
+  .grade tbody tr:hover td{background:var(--s50)}
+  .grade th.tl,.grade td.tl{text-align:left}
+  .grade td.neg{color:#3f6212}
+  .grade .cu{color:var(--mid);font-size:12px}
+  .grade td.neg .cu{color:inherit;opacity:.7}
+  .grade tbody tr:last-child td{border-bottom:0}
+  .grade tfoot td{font-weight:600;background:var(--s50);border-top:1px solid var(--s200);border-bottom:0}
+  .grade tfoot .stk{background:var(--s50)}
   /* ===== colunas ===== */
   .cols{flex:1;min-height:0;display:flex;gap:24px;margin-top:16px;position:relative}
   .panel{background:var(--s100);border-radius:var(--r);display:flex;flex-direction:column;min-width:0;min-height:0;transition:flex-basis .35s ease,opacity .25s ease,margin .35s ease,transform .35s ease;transform-origin:50% 100%}
@@ -175,10 +209,10 @@
   .sec-t{display:flex;align-items:center;gap:8px;font:600 14px Poppins,Inter,sans-serif;color:var(--brand);margin-top:8px}
   .sec-t .sp{flex:1}
   .sec-t small{font:500 12px Inter;color:var(--mid)}
-  .grid{display:grid;gap:12px;grid-template-columns:minmax(0,1fr)}
-  @container (min-width:560px){ .grid{grid-template-columns:repeat(2,minmax(0,1fr))} }
-  @container (min-width:860px){ .grid{grid-template-columns:repeat(3,minmax(0,1fr))} }
-  @container (min-width:1160px){ .grid{grid-template-columns:repeat(4,minmax(0,1fr))} }
+  .grid{display:grid;gap:16px;grid-template-columns:minmax(0,1fr)}
+  @container (min-width:624px){ .grid{grid-template-columns:repeat(2,minmax(0,1fr))} }
+  @container (min-width:920px){ .grid{grid-template-columns:repeat(3,minmax(0,1fr))} }
+  @container (min-width:1216px){ .grid{grid-template-columns:repeat(4,minmax(0,1fr))} }
   .full{grid-column:1/-1}
   .card{background:var(--s50);border-radius:8px;padding:12px;min-width:0;display:flex;flex-direction:column}
   .card .ct{display:flex;align-items:center;gap:6px;font-weight:700;min-height:22px;line-height:1.35}
@@ -445,9 +479,9 @@ const STATES = {
   'liquidado':   {phase:3, m:'Faturado', btr:'Liquidado', tone:'ok'}
 };
 const PHASES = [
-  {k:1, t:'Fatura concessionária', ic:'receipt_long'},
+  {k:1, t:'Fatura da concessionária', ic:'receipt_long'},
   {k:2, t:'Estudo', ic:'calculate'},
-  {k:3, t:'Fatura a receber', ic:'request_quote'}
+  {k:3, t:'Conta a receber', ic:'request_quote'}
 ];
 
 const S = { st:'aberto', sel:3, zoom:600, open:{doc:true,det:true,act:true}, feed:[] };
@@ -468,20 +502,20 @@ const PRIMARY = {
   'lida':{l:'Gerar estudo', ic:'calculate', go:()=>{ toast('Estudo calculado'); setState('estudo',{ev:['Estudo calculado','calculate','c-ok',2]}); }},
   'falha-calculo':{l:'Gerar estudo novamente', ic:'refresh', go:()=>{ toast('Estudo calculado'); setState('estudo',{ev:['Estudo calculado','calculate','c-ok',2]}); }},
   'estudo':{l:'Faturar', ic:'send', go:()=>{ toast('Faturado','A fatura a receber foi gerada.'); setState('emissao',{ev:['Faturado','send','c-ok',3]}); }},
-  'emissao':{l:'Emitir boleto', ic:'barcode', go:()=>{ toast('Boleto emitido','Fatura a receber em aberto.'); setState('aberto',{ev:['Boleto emitido','barcode','c-ok',3]}); }},
+  'emissao':{l:'Emitir boleto', ic:'barcode', go:()=>{ toast('Boleto emitido','Conta a receber em aberto.'); setState('aberto',{ev:['Boleto emitido','barcode','c-ok',3]}); }},
   'atrasado':{l:'Prorrogar vencimento', ic:'event_upcoming', go:()=>toast('Prorrogar vencimento','Abriria o seletor de data.')}
 };
 function menuGroups(){
   const p=STATES[S.st].phase, st=S.st;
   return [
-    {t:'Fatura concessionária', ph:1, items:[
+    {t:'Fatura da concessionária', ph:1, items:[
       {l:'Baixar fatura da concessionária', ic:'download', on:p>=1},
       {l:'Enviar nova fatura', ic:'upload', on:p<3},
       {l:'Ler novamente', ic:'refresh', on:p===1}]},
     {t:'Estudo', ph:2, items:[
       {l:'Recalcular estudo', ic:'calculate', on:st==='estudo'||st==='falha-calculo'},
       {l:'Cancelar estudo', ic:'block', on:st==='estudo', danger:true}]},
-    {t:'Fatura a receber', ph:3, items:[
+    {t:'Conta a receber', ph:3, items:[
       {l:'Baixar fatura a receber', ic:'download', on:p===3},
       {l:'Emitir boleto', ic:'barcode', on:st==='emissao'},
       {l:'Alterar vencimento', ic:'event', on:st==='emissao'||st==='aberto'||st==='atrasado'},
@@ -535,33 +569,44 @@ function phaseState(k){
   if(k===2 && st.err) return 'err';
   return k<st.phase ? 'done' : 'cur';
 }
-function phaseSub(k){
+/* status de cada etapa no padrão da listagem: badge (rótulo + tom) e o dado principal */
+const BTR_TONE={'Emissão pendente':'alert','Aberto':'dark','Atrasado':'danger','Liquidado':'ok'};
+function phaseMeta(k){
   const st=STATES[S.st], ps=phaseState(k);
-  if(ps==='locked') return k===1?'Aguardando fatura':k===2?'Depois da leitura':'Depois do faturamento';
-  if(k===1) return 'Lida em '+UB.emissao.slice(0,5)+' · '+brl(UB.valor);
-  if(k===2) return st.err?'Falha no cálculo':'Prévia · '+brl(US.aPagar);
-  return (st.btr||'')+' · '+brl(BTR.valor);
+  if(ps==='locked') return {b:'Aguardando',tone:'',v:''};
+  if(k===1) return {b:'Lida',tone:'ok',v:UB.emissao.slice(0,5)+' · '+brl(UB.valor)};
+  if(k===2) return st.err?{b:'Falha no cálculo',tone:'danger',v:''}:{b:'Calculado',tone:ps==='done'?'ok':'dark',v:brl(US.aPagar)};
+  return {b:st.btr||'Faturado',tone:BTR_TONE[st.btr]||'dark',v:brl(BTR.valor)};
 }
-/* abas da página, uma por fase: escolher uma fase troca prévias e detalhes juntos */
+/* abas da página, uma por etapa: escolher uma etapa troca prévias e detalhes juntos */
+function selectPhase(k,kb){
+  S.sel=k;
+  // se prévias e detalhes estão fechados, a troca de etapa não apareceria: abre os dois (no mobile, as prévias)
+  if(!S.open.doc&&!S.open.det){ if(isMob()){ for(const x in PN) S.open[x]=x==='doc'; } else { S.open.doc=S.open.det=true; } applyPanels(); }
+  renderPhase();
+  if(kb){ const b=document.querySelector('#phs .ftab[data-k="'+k+'"]'); if(b) b.focus(); }
+}
 function renderPhaseTabs(){
   const h=document.getElementById('phs'), st=STATES[S.st];
-  h.innerHTML = PHASES.map(p=>{
-    const ps=phaseState(p.k), on=st.phase>0&&S.sel===p.k;
-    const n = ps==='done'?'<span class="ms" aria-hidden="true">check</span>':ps==='err'?'<span class="ms" aria-hidden="true">priority_high</span>':p.k;
+  h.innerHTML = PHASES.map((p,i)=>{
+    const ps=phaseState(p.k), on=st.phase>0&&S.sel===p.k, m=phaseMeta(p.k);
+    const n = ps==='done'?'<span class="ms">check</span>':ps==='err'?'<span class="ms">priority_high</span>':p.k;
     const tip = ps==='locked' ? (p.k===2?'Disponível depois da leitura da fatura':p.k===3?'Disponível depois de faturar':'Disponível quando a fatura chegar') : '';
-    return `<button class="ftab ${ps}${on?' on':''}" role="tab" aria-selected="${on}" ${ps==='locked'?'disabled':''} ${tip?`data-tip="${tip}"`:''} data-k="${p.k}">
-        <span class="n">${n}</span>${p.t}${ps==='locked'?'<span class="ms lk" aria-hidden="true">lock</span>':`<span class="sub">${esc(phaseSub(p.k))}</span>`}${tip?`<span class="tip">${tip}</span>`:''}</button>`;
+    const conn = i?'<span class="fconn'+(phaseState(p.k-1)==='done'?' d':'')+'" aria-hidden="true"></span>':'';
+    return conn+'<button class="ftab '+ps+(on?' on':'')+'" role="tab" id="ph-'+p.k+'" aria-selected="'+on+'" tabindex="'+(on?0:-1)+'"'+(ps==='locked'?' disabled':'')+(tip?' data-tip="'+tip+'"':'')+' data-k="'+p.k+'" aria-label="Etapa '+p.k+' de 3: '+p.t+', '+m.b+(m.v?', '+m.v:'')+'">'
+      +'<span class="n" aria-hidden="true">'+n+'</span><span class="tx" aria-hidden="true"><span class="t">'+p.t+'</span><span class="meta"><span class="fb '+m.tone+'">'+esc(m.b)+'</span>'+(m.v?esc(m.v):'')+(ps==='locked'?'<span class="ms lk">lock</span>':'')+'</span></span>'
+      +(tip?'<span class="tip" aria-hidden="true">'+tip+'</span>':'')+'</button>';
   }).join('');
-  // tooltip das fases bloqueadas: posição fixa, para não ser cortado pelo overflow da barra
+  // sem etapa ativa (coleta), a primeira disponível recebe o foco do teclado
+  if(!h.querySelector('.ftab[tabindex="0"]')){ const f=h.querySelector('.ftab:not(:disabled)'); if(f) f.tabIndex=0; }
+  // tooltip das etapas bloqueadas: posição fixa, para não ser cortado pelo overflow da barra
   h.querySelectorAll('.ftab[data-tip]').forEach(b=>b.onmouseenter=()=>{ const r=b.getBoundingClientRect(), t=b.querySelector('.tip'); t.style.left=r.left+'px'; t.style.top=(r.top-6)+'px'; });
-  h.querySelectorAll('.ftab:not(:disabled)').forEach(b=>b.onclick=()=>{
-    S.sel=+b.dataset.k;
-    // se prévias e detalhes estão fechados, a troca de fase não apareceria: abre os dois (no mobile, as prévias)
-    if(!S.open.doc&&!S.open.det){ if(isMob()){ for(const x in PN) S.open[x]=x==='doc'; } else { S.open.doc=S.open.det=true; } applyPanels(); }
-    renderPhase();
-  });
+  h.querySelectorAll('.ftab:not(:disabled)').forEach(b=>b.onclick=()=>selectPhase(+b.dataset.k));
+  // setas, Home e End andam entre as etapas disponíveis (padrão de abas)
+  h.onkeydown=e=>{ const en=[...h.querySelectorAll('.ftab:not(:disabled)')]; const i=en.indexOf(document.activeElement); if(i<0) return;
+    const j=e.key==='ArrowRight'?Math.min(i+1,en.length-1):e.key==='ArrowLeft'?Math.max(i-1,0):e.key==='Home'?0:e.key==='End'?en.length-1:-1;
+    if(j<0) return; e.preventDefault(); selectPhase(+en[j].dataset.k,true); };
 }
-
 /* ===== documento de cada fase ===== */
 function cogecom(o){ // o.preview: sem cobrança
   const bars=[6620,6400,6210,5980,6050,6230,6450,6880,7010,6340,6120,6500].map((c,i)=>{const cr=[3900,3850,3700,3600,3650,3800,3950,4050,4200,3980,3900,4100][i];return `<i><span style="height:${c/75}%"></span><span style="height:${cr/75}%"></span></i>`;}).join('');
@@ -618,21 +663,62 @@ function card(l,v,u,o={}){
   return `<div class="card${cls}${o.full?' full':''}"><div class="ct">${l}${o.tag||''}</div><div class="row"><div class="val">${pre?'<span class="u">R$</span>':''}<span class="v">${v}</span>${!pre&&u?`<span class="u">${u}</span>`:''}</div>${o.nocp?'':`<button class="cp" aria-label="Copiar ${esc(l)}" data-copy="${esc(String(v))}"><span class="ms" aria-hidden="true">content_copy</span></button>`}</div></div>`;
 }
 function sec(t,extra=''){ return `<div class="sec-t">${t}<span class="sp"></span>${extra}</div>`; }
+/* fatura da concessionária: mesmas abas, seções, ordem e rótulos do Leitor de Faturas (detalhe.html), só leitura */
+const LF_CAT={CONSUMPTION:'Consumo',SYSTEM_USAGE:'Uso do sistema',INJECTION_FROM_OTHER_UNIT:'Injeção de outra unidade',INJECTION_SAME_UNIT:'Injeção da mesma unidade',INJECTION:'Injeção',FLAG:'Bandeira',DEMAND:'Demanda',CONSUMPTION_FLAG:'Bandeira de consumo',OTHER:'Outros'};
+const LF_MOD={GD_I:'GD I',GD_II:'GD II',GD_III:'GD III',NA:'Não se aplica'};
+const LF_TIPO={TE:'Tarifa de energia',TUSD:'Tarifa de uso do sistema',OTHER:'Outra'};
+const LF_POSTO={FP:'Fora ponta',PT:'Ponta',PTU:'Ponta úmido',PTS:'Ponta seco',FPU:'Fora ponta úmido',FPS:'Fora ponta seco',IT:'Intermediário',AP:'Posto único',NA:'Não se aplica'};
+/* itens: [descrição, unid., quant., preço c/ trib., tarifa s/ trib., PIS/COFINS, ICMS, valor, categoria, modalidade, tipo, posto, PIS, COFINS] */
+const LF_ITENS=[['Consumo ponta TUSD','kWh','540','1,48213','1,15443','32,89','144,06','800,35','SYSTEM_USAGE','NA','TUSD','PT','5,84','27,05'],['Consumo ponta TE','kWh','540','0,51237','0,39909','11,37','49,80','276,68','CONSUMPTION','NA','TE','PT','2,02','9,35'],['Consumo fora ponta TUSD','kWh','5.960','0,11845','0,09226','29,02','127,07','705,96','SYSTEM_USAGE','NA','TUSD','FP','5,15','23,87'],['Consumo fora ponta TE','kWh','5.960','0,32971','0,25681','80,76','353,71','1.965,07','CONSUMPTION','NA','TE','FP','14,34','66,42'],['Energia injetada fora ponta TUSD','kWh','−4.100','0,11845','0,09226','−19,96','−87,42','−485,65','INJECTION_FROM_OTHER_UNIT','GD_II','TUSD','FP','−3,55','−16,41'],['Energia injetada fora ponta TE','kWh','−4.100','0,32971','0,25681','−55,56','−243,33','−1.351,81','INJECTION_FROM_OTHER_UNIT','GD_II','TE','FP','−9,87','−45,69'],['Demanda','kW','75','32,41500','25,24804','99,92','','2.431,13','DEMAND','NA','TUSD','NA','17,75','82,17'],['Contrib. ilum. pública municipal','—','—','—','—','—','—','98,40','OTHER','NA','OTHER','NA','—','—']];
+/* leituras: [categoria, posto, descrição, leitura anterior, leitura, quantidade, constante, unidade] */
+const LF_LEIT=[['CONSUMPTION','PT','Energia ativa ponta','12.480','13.020','540','1','kWh'],['CONSUMPTION','FP','Energia ativa fora ponta','88.200','94.160','5.960','1','kWh'],['INJECTION','FP','Energia injetada fora ponta','51.300','55.400','4.100','1','kWh'],['DEMAND','FP','Demanda fora ponta','—','—','68','1','kW']];
+const LF_HIST=[['mar/25','6.500','68','32'],['fev/25','6.120','66','28'],['jan/25','6.340','70','30'],['dez/24','7.010','74','33'],['nov/24','6.880','72','28'],['out/24','6.450','69','31'],['set/24','6.230','67','33'],['ago/24','6.050','65','29'],['jul/24','5.980','64','30'],['jun/24','6.210','66','33'],['mai/24','6.400','67','29'],['abr/24','6.620','70','29']];
+const LF_TABS=['Resumo','Itens','Leituras','Consumo','Identificação'];
+const cu=u=>'<span class="cu">'+u+'</span>';
+const neg=v=>String(v).startsWith('−');
+function lfItens(){
+  const cols=[['Categoria',8,'o',LF_CAT],['Modalidade',9,'o',LF_MOD],['Tipo tarifa',10,'o',LF_TIPO],['Posto',11,'o',LF_POSTO],['Quant.',2],['Preço c/ tributos',3],['Tarifa s/ tributos',4],['PIS/COFINS',5],['PIS',12],['COFINS',13],['ICMS',6],['Valor',7]];
+  const cell=(r,c)=>{ const [,k,o,map]=c, v=r[k];
+    if(o) return '<td class="tl">'+(map[v]||'—')+'</td>';
+    if(!v||v==='—') return '<td>'+(v||'')+'</td>';
+    const unit=k===2?cu(r[1])+'':(k===3||k===4)?cu('R$/'+r[1]):null;
+    const val=unit?(k===2?v+' '+unit:v+' '+unit):cu('R$')+' '+v;
+    return '<td class="'+(neg(v)?'neg':'')+'">'+val+'</td>'; };
+  return '<div class="grade"><table><thead><tr><th class="stk">Item</th>'+cols.map(c=>'<th class="'+(c[2]?'tl':'')+'">'+c[0]+'</th>').join('')+'</tr></thead><tbody>'
+    +LF_ITENS.map(r=>'<tr><td class="stk">'+r[0]+'</td>'+cols.map(c=>cell(r,c)).join('')+'</tr>').join('')
+    +'</tbody><tfoot><tr><td class="stk">Total</td>'+cols.map((c,i)=>'<td>'+(i===cols.length-1?cu('R$')+' 4.440,13':'')+'</td>').join('')+'</tr></tfoot></table></div>';
+}
+function lfLeit(){
+  return '<div class="grade"><table><thead><tr><th class="stk">Descrição</th><th class="tl">Categoria</th><th class="tl">Posto tarifário</th><th>Leitura anterior</th><th>Leitura</th><th>Quantidade</th><th>Constante</th></tr></thead><tbody>'
+    +LF_LEIT.map(r=>'<tr><td class="stk">'+r[2]+'</td><td class="tl">'+LF_CAT[r[0]]+'</td><td class="tl">'+LF_POSTO[r[1]]+'</td>'+[3,4,5].map(k=>'<td>'+(r[k]==='—'?'—':r[k]+' '+cu(r[7]))+'</td>').join('')+'<td>'+r[6]+'</td></tr>').join('')
+    +'</tbody></table></div>';
+}
+const LF={
+  Resumo:()=>sec('Saldos GD')+'<div class="grid">'+card('Saldo fora ponta','1.250','kWh')+card('Saldo ponta','0','kWh')+card('Saldo a expirar','0','kWh')+'</div>'
+    +sec('Unidade e consumo')+'<div class="grid">'+card('Tipo de unidade','Beneficiária')+card('Geração','—')+'</div>'
+    +sec('Valores')+'<div class="grid">'+card('Total a pagar','4.440,13','R$')+card('Vencimento','25/03/2025')+'</div>'
+    +sec('Alíquotas')+'<div class="grid">'+card('ICMS (alíquota)','18,00','%')+card('ICMS (valor)','781,49','R$')+card('PIS/PASEP (alíquota)','0,73','%')+card('PIS/PASEP (valor)','31,69','R$')+card('COFINS (alíquota)','3,38','%')+card('COFINS (valor)','146,75','R$')+'</div>'
+    +sec('Datas')+'<div class="grid">'+card('Leitura anterior','07/02/2025')+card('Leitura atual','11/03/2025')+card('Dias de leitura','32','dias')+card('Próxima leitura','08/04/2025')+card('Emissão','12/03/2025')+'</div>'
+    /* o que a COGECOM calcula a partir da leitura (não existe no Leitor) fica no fim, marcado */
+    +sec('Energia','<span class="tag">COGECOM</span>')+'<div class="grid">'+card('Total injetado',num(UB.injFP+UB.injP),'kWh',{cls:'hl'})+card('Injetado externo',num(UB.injExt),'kWh')+card('Valor injetado',num(UB.valorInj,2),'R$',{cls:'hl'})+card('Produção total',num(UB.prodTotal),'kWh')+card('Produção líquida',num(UB.prodLiq),'kWh')+'</div>',
+  Itens:()=>sec('Itens da nota fiscal')+lfItens()
+    +sec('Totais')+'<div class="grid">'+card('Total da fatura','4.440,13','R$',{full:true})+card('PIS/COFINS (valor)','178,44','R$')+card('PIS/COFINS (base de cálculo)','4.341,73','R$')+card('ICMS (valor)','781,49','R$')+card('ICMS (base de cálculo)','4.341,73','R$')+'</div>',
+  Leituras:()=>sec('Leituras')+lfLeit(),
+  Consumo:()=>{ const med=t=>'<div class="medt">'+t+'</div><div class="grid">';
+    return sec('Medições')
+      +med('Consumo ponta · medidor ELO0045123')+card('Leitura anterior','12.480','kWh')+card('Data da leitura anterior','07/02/2025')+card('Leitura atual','13.020','kWh')+card('Data da leitura atual','11/03/2025')+card('Constante','1')+card('Consumo medido','540','kWh')+'</div>'
+      +med('Consumo fora ponta · medidor ELO0045123')+card('Leitura anterior','88.200','kWh')+card('Data da leitura anterior','07/02/2025')+card('Leitura atual','94.160','kWh')+card('Data da leitura atual','11/03/2025')+card('Constante','1')+card('Consumo medido','5.960','kWh')+'</div>'
+      +med('Energia injetada fora ponta')+card('Leitura anterior','51.300','kWh')+card('Data da leitura anterior','07/02/2025')+card('Leitura atual','55.400','kWh')+card('Data da leitura atual','11/03/2025')+card('Constante','1')+card('Injetado no período','4.100','kWh')+'</div>'
+      +sec('Histórico de consumo')+'<div class="grid">'+card('Média de consumo (12 meses)','6.399','kWh')+card('Mediana de consumo (12 meses)','6.370','kWh')+'</div>'
+      +'<div class="grade"><table><thead><tr><th class="stk">Mês</th><th>Consumo</th><th>Demanda</th><th>Dias</th></tr></thead><tbody>'+LF_HIST.map(r=>'<tr><td class="stk">'+r[0]+'</td>'+r.slice(1).map((c,k)=>'<td>'+c+' '+cu(['kWh','kW','dias'][k])+'</td>').join('')+'</tr>').join('')+'</tbody></table></div>'; },
+  'Identificação':()=>sec('Fatura')+'<div class="grid">'+card('Nota fiscal','247971120')+card('Série','000')+card('Referência','Mar/2025')+card('Emissão','12/03/2025')+card('Débito automático','—')+card('Chave de acesso','31250300000000000100660002479711201000000029',null,{full:true})+card('Código de barras','83610000044-2 40130138004-3 11989574712-4 30145678901-7',null,{full:true})+'</div>'
+    +sec('Unidade consumidora')+'<div class="grid">'+card('Distribuidora','Luz do Vale Distribuição S.A.')+card('Nº da instalação','3014567890')+card('Classe','Comercial')+card('Subclasse','Comercial')+card('Subgrupo tarifário','A4')+card('Modalidade tarifária','Horária Verde')+card('Tipo de rede','Trifásico')+card('Tarifa social','Não')+'</div>'
+    +sec('Titular')+'<div class="grid">'+card('Razão social','Padaria Estrela do Sul Ltda')+card('CNPJ','12.345.678/0001-90')+'</div>'
+    +sec('Endereço')+'<div class="grid">'+card('Logradouro','Avenida Brasil',null,{full:true})+card('Número','1200')+card('Complemento','Loja 2')+card('Bairro','Centro')+card('Cidade','Ibirité')+card('Estado','MG')+card('CEP','32400-000')+'</div>'
+};
 function detPhase1(){
-  const it=UB.itens.map(r=>`<tr><td>${r[0]}</td><td>${r[2]==null?'—':num(r[2])+' <span class="cu">'+r[1]+'</span>'}</td><td>${r[3]==null?'—':num(r[3],5)}</td><td class="${r[4]<0?'neg':''}">${brl(r[4]).replace('R$ -','−R$ ')}</td></tr>`).join('');
-  const hist=UB.hist.map(r=>`<tr><td>${r[0]}</td><td>${num(r[1])} <span class="cu">kWh</span></td><td>${r[2]} <span class="cu">dias</span></td></tr>`).join('');
-  const med=UB.medicoes.map(r=>`<tr><td>${r[0]}</td><td>${r[2]==null?'—':num(r[2])}</td><td>${num(r[3])}</td><td>${num(r[4])} <span class="cu">${r[1]}</span></td></tr>`).join('');
-  return sec('Energia','<span class="tag">COGECOM</span>')+`<div class="grid">
-      ${card('Consumo',num(UB.consumo),'kWh')}${card('Injetado fora ponta',num(UB.injFP),'kWh')}${card('Injetado ponta',num(UB.injP),'kWh')}${card('Injetado externo',num(UB.injExt),'kWh')}
-      ${card('Total injetado',num(UB.injFP+UB.injP),'kWh',{cls:'hl'})}${card('Valor injetado',num(UB.valorInj,2),'R$',{cls:'hl'})}${card('Saldo',num(UB.saldo),'kWh')}${card('Saldo a expirar',num(UB.saldoExp),'kWh')}
-      ${card('Produção total',num(UB.prodTotal),'kWh')}${card('Produção líquida',num(UB.prodLiq),'kWh')}${card('Consumo médio',num(UB.media),'kWh')}${card('Consumo mediano',num(UB.mediana),'kWh')}</div>`
-   + sec('Fatura')+`<div class="grid">${card('Valor da fatura',num(UB.valor,2),'R$')}${card('Vencimento',UB.venc)}${card('Emissão',UB.emissao)}${card('Nota fiscal',UB.nf)}</div>`
-   + sec('Alíquotas')+`<div class="grid">${card('ICMS',num(UB.icms,2),'%')}${card('PIS',num(UB.pis,2),'%')}${card('COFINS',num(UB.cofins,2),'%')}</div>`
-   + sec('Leitura')+`<div class="grid">${card('Leitura anterior',UB.leituraAnt)}${card('Leitura atual',UB.leitura)}${card('Dias de leitura',UB.dias,'dias')}${card('Próxima leitura',UB.proxima)}</div>`
-   + sec('Itens da fatura',`<small>${UB.itens.length} itens</small>`)+`<div class="tbl"><table><thead><tr><th>Item</th><th>Quant.</th><th>Tarifa</th><th>Valor</th></tr></thead><tbody>${it}</tbody><tfoot><tr><td>Total</td><td></td><td></td><td>${brl(UB.valor)}</td></tr></tfoot></table></div>`
-   + sec('Medições')+`<div class="tbl"><table><thead><tr><th>Medição</th><th>Leitura anterior</th><th>Leitura atual</th><th>Quantidade</th></tr></thead><tbody>${med}</tbody></table></div>`
-   + sec('Histórico de consumo','<small>12 meses</small>')+`<div class="tbl"><table><thead><tr><th>Referência</th><th>Consumo</th><th>Dias</th></tr></thead><tbody>${hist}</tbody></table></div>`
-   + sec('Identificação')+`<div class="grid">${card('Titular','Padaria Estrela do Sul Ltda')}${card('CNPJ','12.345.678/0001-90')}${card('UC','3014567890')}${card('Subgrupo',UB.subgrupo)}${card('Tipo de rede',UB.rede)}${card('Modalidade tarifária',UB.modalidade)}${card('Endereço','Av. Brasil, 1200, Loja 2 · Centro · Ibirité, MG',null,{full:true})}</div>`;
+  if(!LF_TABS.includes(S.dtab)) S.dtab='Resumo';
+  return '<div class="itabs" role="tablist" aria-label="Dados da fatura da concessionária">'+LF_TABS.map(t=>'<button class="itab'+(S.dtab===t?' on':'')+'" role="tab" aria-selected="'+(S.dtab===t)+'" tabindex="'+(S.dtab===t?0:-1)+'" data-dtab="'+t+'">'+t+'</button>').join('')+'</div>'+LF[S.dtab]();
 }
 function detPhase2(){
   if(S.st==='falha-calculo') return `<div class="note-box err"><span class="ms f" aria-hidden="true">error</span><div><b>Falha no cálculo do estudo</b><p>Bandeiras tarifárias não cadastradas para 03/2025. Intervalo de leitura: 07/02 a 11/03/2025.</p><button class="btn primary" onclick="PRIMARY['falha-calculo'].go()">Gerar estudo novamente</button></div></div>`
@@ -687,7 +773,7 @@ function renderActs(){
   const all=[...S.feed,...baseFeed()];
   document.getElementById('acts').innerHTML = all.map((e,i)=>(i?'<div class="link"></div>':'')+
     `<div class="ev${e.isNew?' new':''}"><span class="i ${e[2]}"><span class="ms f" aria-hidden="true">${e[1]}</span></span>
-      <span class="ph2">${PHASES[e[3]-1].t.replace('Fatura concessionária','Concessionária').replace('Fatura a receber','A receber')}</span>
+      <span class="ph2">${PHASES[e[3]-1].t.replace('Fatura da concessionária','Concessionária').replace('Conta a receber','A receber')}</span>
       ${e.user?`<span class="who" data-name="Eduardo Moreira">EM</span>`:`<span class="who sys" data-name="Sistema">${SYS}</span>`}
       <div class="n">${e[0]}</div><div class="d">${e[4]}</div></div>`).join('');
 }
@@ -711,6 +797,9 @@ addEventListener('resize',()=>{ if(isMob()) applyPanels(); });
 document.getElementById('zIn').onclick=()=>{ S.zoom=Math.min(1100,S.zoom+100); renderDoc(); };
 document.getElementById('zOut').onclick=()=>{ S.zoom=Math.max(400,S.zoom-100); renderDoc(); };
 document.getElementById('dl').onclick=()=>toast('Download iniciado', document.getElementById('docT').textContent);
+document.addEventListener('click',e=>{ const t=e.target.closest('[data-dtab]'); if(!t) return; S.dtab=t.dataset.dtab; renderDet(); });
+document.addEventListener('keydown',e=>{ const t=e.target.closest('[data-dtab]'); if(!t) return; const i=LF_TABS.indexOf(S.dtab);
+  const j=e.key==='ArrowRight'?Math.min(i+1,LF_TABS.length-1):e.key==='ArrowLeft'?Math.max(i-1,0):e.key==='Home'?0:e.key==='End'?LF_TABS.length-1:-1; if(j<0) return; e.preventDefault(); S.dtab=LF_TABS[j]; renderDet(); document.querySelector('[data-dtab="'+S.dtab+'"]').focus(); });
 document.addEventListener('click',e=>{ const b=e.target.closest('[data-copy]'); if(!b) return; try{ navigator.clipboard.writeText(b.dataset.copy); }catch(_){} toast('Copiado'); });
 
 /* ===== estado ===== */

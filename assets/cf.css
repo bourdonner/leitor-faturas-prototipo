@@ -136,8 +136,38 @@
 
 /* resumo: o cabeçalho de cada seção gruda no topo (abaixo da barra) até a seção acabar;
    cantos de 12px mascarados e um degradê embaixo para o conteúdo sumir suave */
-.fp .rs-hd,.fp .act-p .act-h{position:sticky;top:60px;z-index:1;background:var(--fg)}
+.fp .rs-hd,.fp .act-p .act-h{position:sticky;top:0;z-index:1;background:var(--fg)}
 .fp .rs-hd::before,.fp .act-p .act-h::before{content:"";position:absolute;inset:0;background:var(--hov2);border-radius:12px 12px 0 0;z-index:-1}
-.fp .rs-hd::after,.fp .act-p .act-h::after{content:"";position:absolute;left:0;right:0;top:100%;height:20px;background:linear-gradient(var(--hov2),transparent);pointer-events:none}
+.fp .rs-hd::after,.fp .act-p .act-h::after{content:"";position:absolute;left:0;right:0;top:100%;height:20px;background:linear-gradient(var(--hov2),transparent);pointer-events:none;opacity:0;transition:opacity .12s}
+.fp .rs-hd.stuck::after,.fp .act-p .act-h.stuck::after{opacity:1}
 .fp .act-p{overflow:clip}
 .fp .rs-hd .cap{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* triagem stg (03/11): ações em lote por status, filtros extras, observação ao arquivar */
+.fp .bulk{flex-wrap:wrap;justify-content:center;max-width:calc(100vw - 48px)}
+.fp .bulk .bulk-a{display:contents}
+.fp .bulk .b.dis{opacity:.4;cursor:not-allowed}
+.fp .bulk .b.dg:not(.dis){color:var(--danger)}
+.fp .flt.more-f{border-style:dashed;background:transparent;color:var(--mid)}
+.fp .flt.more-f .lb{color:var(--mid)}
+.fp .pop .obs{display:flex;flex-direction:column;gap:8px;padding:4px 8px 8px}
+.fp .pop .obs label{font:500 13px/20px Inter;color:var(--ink)}
+.fp .pop .obs .row{display:flex;justify-content:flex-end;gap:8px}
+.fp .pop .obs .fin{width:100%;height:36px;border:1px solid var(--border);border-radius:8px;background:var(--sec);padding:0 10px;font:400 14px/24px Inter;color:var(--ink);outline:none}
+.fp .pop .obs .fin:focus{border-color:var(--ink3)}
+.fp .b.dgb{background:var(--danger);color:#fff}
+.fp .rs-tk .row{gap:8px}
+.fp .rs-tk .row .bdg{margin-right:auto}
+
+/* resumo: abrir e esconder deslizando (a largura fecha, o conteúdo não se espreme) */
+.fp .rail{overflow:hidden;transition:width .3s cubic-bezier(.2,.7,.2,1),margin-left .3s cubic-bezier(.2,.7,.2,1),opacity .22s ease .06s,transform .3s cubic-bezier(.2,.7,.2,1),visibility 0s}
+.fp .rail>*{min-width:352px}
+.fp .rail.off{width:0;margin-left:-24px;opacity:0;transform:translateX(16px);visibility:hidden;
+  transition:width .3s cubic-bezier(.2,.7,.2,1),margin-left .3s cubic-bezier(.2,.7,.2,1),opacity .16s ease,transform .3s cubic-bezier(.2,.7,.2,1),visibility 0s .3s}
+@media (max-width:900px){.fp .rail>*{min-width:0}.fp .rail.off{display:none}}
+@media (prefers-reduced-motion:reduce){.fp .rail,.fp .rail.off{transition:none}}
+
+/* Filter da lib com valor: rótulo continua hover:primary; badges foreground:secondary; excedente "+N" em middle */
+.fp .flt.has .lb{color:var(--ink2)}
+.fp .flt .chip{background:var(--fsec);color:var(--ink2)}
+.fp .flt .exc{font:500 13px/20px Inter;color:var(--mid)}

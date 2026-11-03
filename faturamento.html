@@ -45,6 +45,9 @@
   .tblw{overflow-x:auto}
   .rail{position:sticky;top:16px}
   .rail[hidden]{display:none}
+  .rail-sc{display:flex;flex-direction:column;gap:12px}
+  .rail-sc>*{flex:none}
+  .work .lst .tools{gap:8px}
   .empty{padding:48px 16px;text-align:center;color:var(--mid)}
   .spin{animation:fpspin .9s linear infinite;display:inline-block}
   @keyframes fpspin{to{transform:rotate(360deg)}}
@@ -68,9 +71,9 @@
     .tblw{flex:1;min-height:0;display:flex;flex-direction:column;overflow:visible}
     .fp .tbl{flex:0 1 auto;min-height:0;overflow:auto;overscroll-behavior:contain}
     .fp .tbl .tr.th{position:sticky;top:0;z-index:2;background:var(--fg)}
-    .rail{position:static;min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin}
-    .rail>*{flex:none}
-    .fp .rail .rbar{position:sticky;top:0;z-index:2;box-shadow:0 8px 0 var(--fg)}
+    .fp .rail{position:static;min-height:0;gap:12px}
+    .rail>.rbar{flex:none}
+    .rail-sc{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;border-radius:12px}
   }
   @media (max-width:900px){
     .sidebar{display:none}
@@ -114,7 +117,8 @@
       <div class="acts">
         <button class="sq tip" data-tip="Indicadores" aria-label="Indicadores" data-a="toast" data-msg="Abriria o dashboard de faturamento"><span class="msr">bar_chart</span></button>
         <button class="sq tip" data-tip="Atualizar" aria-label="Atualizar" data-a="toast" data-msg="Lista atualizada"><span class="msr">refresh</span></button>
-        <button class="sq tip" data-tip="Exportar" aria-label="Exportar" data-a="toast" data-msg="Exportaria a lista filtrada (CSV)"><span class="msr">download</span></button>
+        <button class="sq tip" data-tip="Exportar" aria-label="Exportar" data-a="expmenu" aria-haspopup="menu"><span class="msr">download</span></button>
+        <button class="sq tip" data-tip="Incluir" aria-label="Incluir" data-a="incmenu" aria-haspopup="menu"><span class="msr">add</span></button>
       </div>
     </div>
 
@@ -122,6 +126,7 @@
       <div class="lst">
         <div class="tools">
           <label class="field"><span class="msr" aria-hidden="true">search</span><input id="q" placeholder="Buscar por titular, CPF/CNPJ, UC, código legado ou concessionária" aria-label="Buscar" autocomplete="off"><button class="ib" type="button" id="bFlt" aria-label="Mostrar ou esconder filtros" aria-pressed="true"><span class="msr fill">filter_alt</span></button></label>
+          <button class="sq52 tip" id="bSort" data-a="sortmenu" data-tip="Ordenar" aria-label="Ordenar" aria-haspopup="menu"><span class="msr">swap_vert</span></button>
           <button class="sq52 on tip" id="bRail" data-tip="Resumo do faturamento" aria-label="Resumo do faturamento" aria-pressed="true"><span class="msr">right_panel_close</span></button>
         </div>
         <div class="frow" id="frow"></div>
@@ -136,10 +141,7 @@
 <!-- barra de ações em lote -->
 <div class="bulk" id="bulk" role="toolbar" aria-label="Ações em lote">
   <span class="n" id="bulkN"></span><span class="vs"></span>
-  <button class="b gh" data-bulk="revon"><span class="msr">flag</span>Pedir revisão</button>
-  <button class="b gh" data-bulk="revoff"><span class="msr">done_all</span>Marcar como revisado</button>
-  <button class="b gh" data-bulk="recalc"><span class="msr">calculate</span>Recalcular</button>
-  <button class="b gh" data-bulk="exp"><span class="msr">download</span>Exportar</button>
+  <span class="bulk-a" id="bulkA"></span>
   <button class="ib" data-bulk="limpar" aria-label="Limpar seleção"><span class="msr">close</span></button>
 </div>
 
