@@ -404,6 +404,67 @@
   .opt b{display:block;font-weight:600}
   .opt small{color:var(--mid)}
   .dlg .ft{display:flex;justify-content:flex-end;gap:8px}
+  /* estado vazio da lib (Lista/Vazia): ilustração + texto, caixa cinza */
+  .doc-state{margin:auto 0;width:100%;max-width:560px;min-height:420px;background:var(--white);border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;padding:32px 24px;text-align:center}
+  .doc-state img{max-width:100%;height:auto}
+  .doc-state p{margin:0;font:400 16px/19px Inter;color:#595959;max-width:320px}
+  .ib:disabled{opacity:.35;pointer-events:none}
+  /* comunicações */
+  .tbl.coms td{height:auto;padding-top:10px;padding-bottom:10px;vertical-align:middle}
+  .cm-row{cursor:pointer}
+  .cm-row:hover td,.cm-row:focus-visible td{background:var(--s50)}
+  .cm-row:focus-visible{outline:2px solid var(--ink3);outline-offset:-2px}
+  .cm-t{font-weight:600;color:var(--ink)}
+  .cm-ch{display:flex;align-items:center;gap:6px;color:var(--ink)}
+  .cm-ch .ms{font-size:16px;color:var(--mid)}
+  .cm-d{display:block;font-size:12px;color:var(--mid);max-width:140px;overflow:hidden;text-overflow:ellipsis}
+  .tbl.coms td:first-child{white-space:normal;min-width:84px;max-width:110px}
+  .tbl.coms th:last-child,.tbl.coms td:last-child{padding:0 6px 0 0;width:20px}
+  .tbl.coms th,.tbl.coms td{padding-left:10px;padding-right:10px}
+  .cm-go{font-size:18px;color:var(--s400);vertical-align:middle}
+  /* visualizador (base: Relacionamento com o Cliente › Comunicações, arquivo Vendas) */
+  .cm-dlg{max-width:640px;max-height:calc(100vh - 48px);overflow:auto;gap:16px;padding:0 0 20px}
+  .cm-head{display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid var(--s200);position:sticky;top:0;background:#fff;z-index:1}
+  .cm-av{width:40px;height:40px;border-radius:999px;background:#1e3a5f;color:#fff;display:grid;place-items:center;font:600 20px/1 Inter;flex:none}
+  .cm-who{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0}
+  .cm-who b{font:600 14px Inter;color:var(--ink)}
+  .cm-who span{display:flex;align-items:center;gap:4px;font-size:12px;color:var(--mid)}
+  .cm-who .ms{font-size:14px}
+  .cm-date{font-size:12px;color:var(--mid)}
+  .cm-meta{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:0 20px}
+  .cm-meta>div{background:var(--s50);border:1px solid var(--s200);border-radius:8px;padding:8px 12px;display:flex;flex-direction:column;gap:4px;min-width:0}
+  .cm-meta span{font-size:12px;color:var(--mid)}
+  .cm-meta b{font:600 13px Inter;color:var(--ink)}
+  .cm-body{margin:0 20px;background:var(--s100);border-radius:12px;padding:16px}
+  .cm-mail{background:#fff;border-radius:8px;border:1px solid var(--s200)}
+  .cm-mh{padding:12px 16px;border-bottom:1px solid var(--s200);display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--ink)}
+  .cm-mh span{display:inline-block;width:64px;color:var(--mid)}
+  .cm-mb{padding:16px;font-size:14px;line-height:20px;color:var(--ink3)}
+  .cm-mb p{margin:0 0 10px}
+  .cm-mb code{font-size:12px;word-break:break-all}
+  .cm-att{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 10px;border:1px solid var(--s200);border-radius:8px;background:#fff;font-size:12px;color:var(--ink)}
+  .cm-att .ms{font-size:18px;color:var(--danger)}
+  .cm-att.off{color:var(--mid);border-style:dashed}
+  .cm-att.off .ms{color:var(--mid)}
+  .cm-chat{display:flex;justify-content:flex-end}
+  .cm-bub{max-width:80%;background:#fff;border-radius:12px;padding:12px 14px 8px;font-size:14px;line-height:20px;color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.04)}
+  .cm-tm{display:flex;justify-content:flex-end;align-items:center;gap:4px;margin-top:6px;font-size:11px;color:var(--mid)}
+  .cm-tm .ms{font-size:14px}
+  .cm-tm .ms.read{color:var(--info)}
+  .cm-track{list-style:none;margin:0;padding:0 20px;display:flex;gap:8px}
+  .cm-track li{flex:1;display:flex;flex-direction:column;gap:2px;position:relative;padding-top:14px;font-size:12px;color:var(--mid)}
+  .cm-track i{position:absolute;top:0;left:0;right:0;height:4px;border-radius:999px;background:var(--s200)}
+  .cm-track li.on i{background:var(--ink)}
+  .cm-track b{font:600 12px Inter;color:var(--ink)}
+  .cm-dlg .ft{padding:0 20px}
+  @media (max-width:767px){
+    #cmView{padding:0;place-items:end stretch}
+    .cm-dlg{max-width:none;border-radius:16px 16px 0 0;max-height:92vh}
+    .cm-meta{grid-template-columns:1fr 1fr}
+    .cm-track{flex-direction:column}
+    .cm-dlg .ft{flex-direction:column-reverse}
+    .cm-dlg .ft .btn{width:100%;justify-content:center}
+  }
   /* ===== seletor de estado (demo) ===== */
   .note{position:fixed;right:16px;top:12px;font-size:11px;color:var(--mid);background:var(--white);border:1px solid var(--s200);padding:2px 4px 2px 10px;border-radius:999px;z-index:40;display:flex;align-items:center;gap:6px}
   .note select{font:inherit;font-weight:600;color:var(--ink);border:0;background:var(--s100);border-radius:999px;padding:3px 6px}
@@ -558,6 +619,8 @@
   </div>
 </div>
 
+<div class="ov" id="cmView" hidden><div class="dlg cm-dlg" role="dialog" aria-modal="true" aria-labelledby="cmT"></div></div>
+
 <div class="m-ov" id="mOv" hidden>
   <div class="m-sheet" role="dialog" aria-modal="true" aria-labelledby="mSheetT">
     <div class="m-nav">
@@ -575,6 +638,7 @@
   <option value="estudo">2 · Estudo calculado</option>
   <option value="emissao">3 · Emissão pendente</option>
   <option value="aberto">3 · Aberto</option>
+  <option value="sem-pdf">3 · Aberto, PDF pendente</option>
   <option value="atrasado">3 · Atrasado</option>
   <option value="liquidado">3 · Liquidado</option>
 </select>
@@ -621,6 +685,7 @@ const STATES = {
   'estudo':      {phase:2, m:'Estudo calculado', tone:'ok'},
   'emissao':     {phase:3, m:'Faturado', btr:'Emissão pendente', tone:'alert'},
   'aberto':      {phase:3, m:'Faturado', btr:'Aberto', tone:'info'},
+  'sem-pdf':     {phase:3, m:'Faturado', btr:'Aberto', tone:'info', noPdf:true},
   'atrasado':    {phase:3, m:'Faturado', btr:'Atrasado', tone:'danger'},
   'liquidado':   {phase:3, m:'Faturado', btr:'Liquidado', tone:'ok'}
 };
@@ -666,10 +731,10 @@ function menuGroups(){
     {t:'Conta a receber', ph:3, items:[
       {l:'Baixar fatura a receber', ic:'download', on:p===3},
       {l:'Emitir boleto', ic:'barcode', on:st==='emissao'},
-      {l:'Alterar vencimento', ic:'event', on:st==='emissao'||st==='aberto'||st==='atrasado'},
-      {l:'Atualizar código de barras', ic:'barcode_reader', on:st==='aberto'||st==='atrasado'},
+      {l:'Alterar vencimento', ic:'event', on:st==='emissao'||st==='aberto'||st==='sem-pdf'||st==='atrasado'},
+      {l:'Atualizar código de barras', ic:'barcode_reader', on:st==='aberto'||st==='sem-pdf'||st==='atrasado'},
       {l:'Recalcular…', ic:'restart_alt', on:p===3&&st!=='liquidado', recalc:true},
-      {l:'Cancelar recebimento', ic:'cancel', on:st==='emissao'||st==='aberto'||st==='atrasado', danger:true}]},
+      {l:'Cancelar recebimento', ic:'cancel', on:st==='emissao'||st==='aberto'||st==='sem-pdf'||st==='atrasado', danger:true}]},
     {t:'', items:[
       {l:'Copiar ID', ic:'content_copy', on:true},
       {l:'Adicionar observação', ic:'add_comment', on:true},
@@ -805,6 +870,7 @@ function cogecom(o){ // o.preview: sem cobrança
 }
 function renderDoc(){
   const d=document.getElementById('doc'), st=STATES[S.st], k=S.sel;
+  const off=!!(st.noPdf&&k===3); ['dl','zIn','zOut'].forEach(i=>document.getElementById(i).disabled=off);
   const t=document.getElementById('docT');
   if(st.phase===0){ t.textContent='Prévias';
     d.innerHTML=`<div class="doc-empty"><span class="ms" aria-hidden="true">hourglass_top</span><b>A fatura da concessionária ainda não chegou</b><span>Coleta prevista para 08/04/2025. As prévias aparecem aqui conforme o faturamento avança.</span></div>`; return; }
@@ -815,6 +881,8 @@ function renderDoc(){
     d.innerHTML = st.err && S.st==='falha-calculo'
       ? `<div class="doc-empty err"><span class="ms" aria-hidden="true">error</span><b>Não foi possível calcular o estudo</b><span>Bandeiras tarifárias não cadastradas para 03/2025 (leitura de 07/02 a 11/03). Cadastre as bandeiras e gere o estudo novamente.</span></div>`
       : `<div class="doc-page" ${W}>${cogecom({preview:true})}</div><span class="preview-tag"><span class="ms f" aria-hidden="true">info</span>Prévia, sem dados de cobrança</span>`; }
+  else if(st.noPdf){ t.textContent='fatura-receber-'+BTR.numero+'.pdf';
+    d.innerHTML=`<div class="doc-state"><img src="assets/plug.svg" width="300" height="240" alt=""><p>O boleto foi emitido, mas o PDF ainda não está disponível</p></div>`; }
   else { t.textContent='fatura-receber-'+BTR.numero+'.pdf';
     d.innerHTML=`<div class="doc-lbl"><span class="ms" aria-hidden="true">request_quote</span>Página 1 · Fatura COGECOM</div><div class="doc-page" ${W}>${cogecom({pending:S.st==='emissao'})}</div>
       <div class="doc-lbl"><span class="ms" aria-hidden="true">receipt_long</span>Página 2 · Fatura da concessionária</div><div class="doc-page" ${W}><img src="assets/fatura-grupo-a.png" alt="Fatura fictícia da Luz do Vale anexada"></div>`; }
@@ -897,10 +965,7 @@ function detPhase3(){
   const st=STATES[S.st], dif=BTR.valor-US.aPagar;
   const tone={ 'Emissão pendente':'alert','Aberto':'info','Atrasado':'danger','Liquidado':'ok' }[st.btr];
   const pago = st.btr==='Liquidado';
-  const notif = st.btr==='Emissão pendente'
-    ? `<tr><td>E-mail</td><td class="l">financeiro@padariaestrela.com.br</td><td class="l"><span class="tag">Aguardando envio</span></td><td>—</td></tr><tr><td>WhatsApp</td><td class="l">(31) 9 0000-0000</td><td class="l"><span class="tag">Aguardando envio</span></td><td>—</td></tr>`
-    : `<tr><td>E-mail</td><td class="l">financeiro@padariaestrela.com.br</td><td class="l"><span class="tag ok">Entregue</span></td><td>14/03 10:05</td></tr><tr><td>WhatsApp</td><td class="l">(31) 9 0000-0000</td><td class="l"><span class="tag ok">Lido</span></td><td>14/03 10:07</td></tr>`
-      + (st.btr==='Atrasado'?`<tr><td>WhatsApp</td><td class="l">(31) 9 0000-0000</td><td class="l"><span class="tag ok">Lido</span></td><td>07/04 09:00</td></tr>`:'');
+  const notif = comsRows();
   return sec('Cobrança',`<span class="tag ${tone}">${st.btr}</span>`)+`<div class="grid">
       ${card('Valor',num(BTR.valor,2),'R$')}${card('Nº da fatura',BTR.numero)}${card('Emissão',st.btr==='Emissão pendente'?'—':BTR.emissao)}${card('Vencimento',BTR.venc,null,{cls:st.btr==='Atrasado'?'danger':''})}
       ${pago?card('Pago em',BTR.pagoEm,null):''}${st.btr==='Atrasado'?card('Dias em atraso','9','dias',{cls:'danger',nocp:true}):''}</div>`
@@ -909,8 +974,68 @@ function detPhase3(){
       ? `<div class="note-box"><span class="ms f" aria-hidden="true">schedule</span><div><b>Boleto ainda não emitido</b><p>Linha digitável e nosso número aparecem depois da emissão.</p></div></div>`
       : `<div class="linha"><code>${BTR.linha}</code><button class="ib" style="width:44px;height:44px" aria-label="Copiar linha digitável" data-copy="${BTR.linha}"><span class="ms" aria-hidden="true">content_copy</span></button></div>
          <div class="grid">${card('Nosso número',BTR.nosso)}${card('Multa após o vencimento','10','%')}</div>`)
-   + sec('Comunicações')+`<div class="tbl"><table><thead><tr><th>Canal</th><th class="l">Destino</th><th class="l">Status</th><th>Quando</th></tr></thead><tbody>${notif}</tbody></table></div>`;
+   + sec('Comunicações')+`<div class="tbl coms"><table><thead><tr><th>Tipo</th><th class="l">Canal e destino</th><th class="l">Enviado em</th><th class="l">Status</th><th aria-hidden="true"></th></tr></thead><tbody>${notif}</tbody></table></div>`;
 }
+/* comunicações da conta a receber (mais recente no topo) */
+const CM_E='financeiro@padariaestrela.com.br', CM_W='(31) 9 0000-0000';
+function comsData(){
+  const b=STATES[S.st].btr, c=[], E=CM_E, W=CM_W;
+  const two=(tipo,st,qe,qw,tone)=>[{tipo,canal:'E-mail',dest:E,q:qe,st,tone},{tipo,canal:'WhatsApp',dest:W,q:qw,st:st==='Entregue'?'Lido':st,tone}];
+  if(b==='Emissão pendente') return two('Cobrança','Aguardando emissão',null,null);
+  if(S.st==='sem-pdf') return two('Cobrança','Aguardando PDF',null,null);
+  c.push(...two('Cobrança','Entregue','14/03/2025 10:05','14/03/2025 10:07','ok'));
+  c.push({tipo:'Preventiva',canal:'WhatsApp',dest:W,q:'02/04/2025 09:00',st:b==='Aberto'?'Agendada':'Lido',tone:b==='Aberto'?'':'ok'});
+  if(b==='Atrasado') c.push(...two('Aviso de atraso','Entregue','07/04/2025 09:00','07/04/2025 09:00','ok'));
+  if(b==='Liquidado') c.push({tipo:'Confirmação de pagamento',canal:'E-mail',dest:E,q:'03/04/2025 15:42',st:'Entregue',tone:'ok'});
+  return c.reverse();
+}
+function comsRows(){
+  return comsData().map((m,i)=>`<tr class="cm-row" tabindex="0" data-cm="${i}" aria-label="Ver comunicação: ${m.tipo} por ${m.canal}">
+    <td><b class="cm-t">${m.tipo}</b></td>
+    <td class="l"><span class="cm-ch"><span class="ms" aria-hidden="true">${m.canal==='E-mail'?'mail':'chat'}</span>${m.canal}</span><span class="cm-d">${esc(m.dest)}</span></td>
+    <td class="l">${m.q?(m.st==='Agendada'?'<span class="cm-d">Agendada para</span>':'')+m.q.slice(0,5)+' '+m.q.slice(11):'—'}</td>
+    <td class="l"><span class="tag ${m.tone||''}">${m.st}</span></td>
+    <td><span class="ms cm-go" aria-hidden="true">chevron_right</span></td></tr>`).join('');
+}
+/* texto de cada tipo (e-mail e WhatsApp) */
+function comsMsg(m){
+  const v=num(BTR.valor,2), pdf=S.st==='sem-pdf'?null:'fatura-receber-'+BTR.numero+'.pdf';
+  return {
+    'Cobrança':{a:'Sua fatura COGECOM de março/2025 chegou', p:['Olá, Padaria Estrela do Sul.','Sua fatura de energia de 03/2025 já está disponível.','<b>Valor:</b> R$ '+v+'<br><b>Vencimento:</b> '+BTR.venc,'O boleto está em anexo. Se preferir, pague pela linha digitável:<br><code>'+BTR.linha+'</code>'], w:'Olá, Padaria Estrela do Sul! Sua fatura COGECOM de 03/2025 chegou: *R$ '+v+'*, vence em *'+BTR.venc+'*. O boleto vai em anexo.', pdf},
+    'Preventiva':{a:'Sua fatura COGECOM vence em 3 dias', p:['Olá, Padaria Estrela do Sul.','Lembrete: sua fatura de R$ '+v+' vence em '+BTR.venc+'. Se já pagou, desconsidere esta mensagem.'], w:'Oi! Passando para lembrar que sua fatura COGECOM de *R$ '+v+'* vence em *'+BTR.venc+'*. Se já pagou, pode desconsiderar 😊', pdf},
+    'Aviso de atraso':{a:'Sua fatura COGECOM está em atraso', p:['Olá, Padaria Estrela do Sul.','Sua fatura de R$ '+v+' venceu em '+BTR.venc+' e ainda não identificamos o pagamento.','Pague o quanto antes para evitar a suspensão do benefício. Após o vencimento, multa de 10%.'], w:'Olá! Sua fatura COGECOM de *R$ '+v+'* venceu em *'+BTR.venc+'*. Pague o quanto antes para não perder o benefício. O boleto atualizado vai em anexo.', pdf},
+    'Confirmação de pagamento':{a:'Recebemos seu pagamento', p:['Olá, Padaria Estrela do Sul.','Confirmamos o pagamento de R$ '+v+' em '+BTR.pagoEm+'. Obrigado!'], w:'Pagamento de *R$ '+v+'* confirmado. Obrigado!', pdf:null}
+  }[m.tipo];
+}
+function comsTrack(m){
+  if(!m.q) return [['Na fila',m.st==='Aguardando PDF'?'Sai quando o PDF do boleto ficar pronto':'Sai quando o boleto for emitido',false]];
+  if(m.st==='Agendada') return [['Agendada',m.q,true],['Enviada','',false],['Entregue','',false]];
+  const t=m.q.split(' ')[0], hh=m.q.split(' ')[1], plus=n=>{ const [a,b]=hh.split(':').map(Number), x=a*60+b+n; return t+' '+String(Math.floor(x/60)).padStart(2,'0')+':'+String(x%60).padStart(2,'0'); };
+  return [['Enviada',m.q,true],['Entregue',plus(0),true]].concat(m.st==='Lido'?[['Lida',plus(4),true]]:[]);
+}
+function openCom(i){
+  const m=comsData()[i], g=comsMsg(m), mail=m.canal==='E-mail', ov=document.getElementById('cmView');
+  const date=m.q?m.q.split(' ')[0]:'—', time=m.q?m.q.split(' ')[1]:'';
+  const att=g.pdf?`<span class="cm-att"><span class="ms f" aria-hidden="true">picture_as_pdf</span>${g.pdf}</span>`:(m.tipo==='Confirmação de pagamento'?'':`<span class="cm-att off"><span class="ms" aria-hidden="true">hourglass_top</span>PDF do boleto pendente</span>`);
+  const body = mail
+    ? `<div class="cm-mail"><div class="cm-mh"><div><span>De</span>Cobrança COGECOM &lt;cobranca@cogecom.com.br&gt;</div><div><span>Para</span>${esc(m.dest)}</div><div><span>Assunto</span><b>${g.a}</b></div></div><div class="cm-mb">${g.p.map(x=>'<p>'+x+'</p>').join('')}${att}</div></div>`
+    : `<div class="cm-chat"><div class="cm-bub">${g.w.replace(/\*([^*]+)\*/g,'<b>$1</b>')}${att?'<div style="margin-top:8px">'+att+'</div>':''}<span class="cm-tm">${time||'—'} ${m.st==='Lido'?'<span class="ms read" aria-label="Lida">done_all</span>':m.q&&m.st!=='Agendada'?'<span class="ms" aria-label="Entregue">done_all</span>':'<span class="ms" aria-label="Não enviada">schedule</span>'}</span></div></div>`;
+  const tr=comsTrack(m);
+  ov.querySelector('.dlg').innerHTML=`
+    <div class="cm-head"><span class="cm-av" aria-hidden="true">∞</span><div class="cm-who"><b id="cmT">Cobrança COGECOM</b><span><span class="ms" aria-hidden="true">${mail?'mail':'chat'}</span>Comunicação via ${m.canal}</span></div>
+      <span class="cm-date">${date}</span><button class="ib" id="cmX" aria-label="Fechar"><span class="ms" aria-hidden="true">close</span></button></div>
+    <div class="cm-meta"><div><span>Tipo</span><b>${m.tipo}</b></div><div><span>Enviado em</span><b>${m.q?(m.st==='Agendada'?'Agendada · ':'')+m.q:'—'}</b></div><div><span>Status</span><b><span class="tag ${m.tone||''}">${m.st}</span></b></div></div>
+    <div class="cm-body">${body}</div>
+    <ol class="cm-track">${tr.map(x=>`<li class="${x[2]?'on':''}"><i aria-hidden="true"></i><b>${x[0]}</b><span>${x[1]}</span></li>`).join('')}</ol>
+    <div class="ft"><button class="btn outline" id="cmOpen"><span class="ms" aria-hidden="true">forum</span>Abrir em Comunicações</button>${m.q&&m.st!=='Agendada'?'<button class="btn primary" id="cmRe"><span class="ms" aria-hidden="true">send</span>Reenviar</button>':''}</div>`;
+  ov.hidden=false; document.getElementById('cmX').focus();
+  document.getElementById('cmX').onclick=closeCom;
+  document.getElementById('cmOpen').onclick=()=>toast('Abriria Relacionamento com o Cliente › Comunicações','Na conversa com Padaria Estrela do Sul.');
+  const re=document.getElementById('cmRe'); if(re) re.onclick=()=>{ closeCom(); toast(m.tipo+' reenviada por '+m.canal, m.dest); };
+}
+function closeCom(){ document.getElementById('cmView').hidden=true; }
+document.addEventListener('click',e=>{ const r=e.target.closest('.cm-row'); if(r) openCom(+r.dataset.cm); if(e.target.id==='cmView') closeCom(); });
+document.addEventListener('keydown',e=>{ const r=e.target.closest&&e.target.closest('.cm-row'); if(r&&(e.key==='Enter'||e.key===' ')){ e.preventDefault(); openCom(+r.dataset.cm); } if(e.key==='Escape'&&!document.getElementById('cmView').hidden) closeCom(); });
 function renderDet(){
   const c=document.getElementById('content'), st=STATES[S.st];
   document.getElementById('detT').textContent = st.phase===0?'Detalhes':'Detalhes · '+PHASES[S.sel-1].t;
@@ -926,6 +1051,7 @@ function baseFeed(){
   if(st==='falha-calculo') ev.push(['Falha no cálculo','error','c-danger',2,'13/03 10:12']);
   if(p>=2 && st!=='falha-calculo') ev.push(['Estudo calculado','calculate','c-ok',2,'13/03 10:12']);
   if(p>=3){ ev.push(['Faturado','send','c-ok',3,'14/03 09:58']); }
+  if(st==='sem-pdf') ev.push(['Boleto emitido','barcode','c-ok',3,'14/03 10:01']);
   if(['aberto','atrasado','liquidado'].includes(st)) ev.push(['Boleto emitido','barcode','c-ok',3,'14/03 10:01'],['E-mail entregue','mail','c-info',3,'14/03 10:05'],['WhatsApp lido','chat','c-info',3,'14/03 10:07']);
   if(st==='atrasado') ev.push(['Venceu sem pagamento','warning','c-danger',3,'06/04 00:00'],['Lembrete por WhatsApp','chat','c-info',3,'07/04 09:00']);
   if(st==='liquidado') ev.push(['Pagamento confirmado','paid','c-ok',3,'03/04 15:40']);
