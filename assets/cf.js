@@ -170,7 +170,7 @@ const COLS=[
  {k:'est',w:'150px',h:()=>'Estudo',c:H.est},
  {k:'eta',w:'160px',h:()=>'Etapa',c:r=>`<div class="two eta">${H.steps(r)}<span>${fase(r)}</span></div>`},
  {k:'rec',w:'170px',h:()=>'Status',c:H.stat},
- {k:'rev',w:'48px',h:()=>'<span class="msr" title="Revisão manual" aria-label="Revisão manual">flag</span>',c:r=>r.rev?'<span class="rvf" title="Revisão manual" aria-label="Revisão manual"><span class="msr fill">flag</span></span>':''},
+ {k:'rev',w:'48px',h:()=>{ const on=S.sort.k==='rev'; return `<button class="so so-rev${on?' on':''}" data-a="sortby" data-k="rev" title="Ordenar por revisão manual" aria-label="Ordenar por revisão manual"><span class="msr${on?' fill':''}">flag</span></button>`; },c:r=>r.rev?'<span class="rvf" title="Revisão manual" aria-label="Revisão manual"><span class="msr fill">flag</span></span>':''},
  {k:'act',w:'56px',h:()=>'',c:r=>`<button class="more" data-a="rowmenu" data-id="${r.id}" aria-label="Ações de ${r.id}" aria-haspopup="menu"><span class="msr">more_horiz</span></button>`}
 ];
 
@@ -203,7 +203,7 @@ const FLT=[
  {k:'gti',x:1,l:'Grupo de titulares',o:()=>uniq(Object.values(TIT).map(t=>t.grp)).sort(),m:(r,v)=>v.includes(TIT[r.t].grp)}
 ];
 const opts=f=>typeof f.o==='function'?f.o():f.o;
-const SORT={ref:(a,b)=>refN(a.ref)-refN(b.ref)||a.id.localeCompare(b.id),tit:(a,b)=>TIT[a.t].n.localeCompare(TIT[b.t].n,'pt-BR'),val:(a,b)=>valor(a)-valor(b)};
+const SORT={rev:(a,b)=>(a.rev-b.rev)||(refN(a.ref)-refN(b.ref))||a.id.localeCompare(b.id),ref:(a,b)=>refN(a.ref)-refN(b.ref)||a.id.localeCompare(b.id),tit:(a,b)=>TIT[a.t].n.localeCompare(TIT[b.t].n,'pt-BR'),val:(a,b)=>valor(a)-valor(b)};
 function visible(){ const q=S.q.trim().toLowerCase();
   const v=ROWS.filter(r=>{ const t=TIT[r.t], u=UCS[r.uc];
     if(q&&![r.id,r.ref,t.n,t.doc,r.uc,u.leg,u.ap,u.conc,CID[r.uc],r.rec&&r.rec.tit].join(' ').toLowerCase().includes(q)) return false;
@@ -394,7 +394,7 @@ function openPop(anchor,html,opts={}){ closePop(); popEl=document.getElementById
   if(up){ popEl.style.top='auto'; popEl.style.bottom=(innerHeight-r.top+6)+'px'; } else { popEl.style.bottom='auto'; popEl.style.top=(r.bottom+6)+'px'; }
   const f=popEl.querySelector('textarea,input,button'); if(f) f.focus({preventScroll:true}); }
 function closePop(){ if(popEl){ popEl.hidden=true; popEl.innerHTML=''; } if(popAnchor){ popAnchor.classList.remove('open'); popAnchor.setAttribute('aria-expanded','false'); popAnchor=null; } }
-const sortPop=()=>[['ref','Referência'],['tit','Titular'],['val','Valor']].map(([k,l])=>{ const on=S.sort.k===k; return `<button class="opt" data-a="sortby" data-k="${k}" role="menuitemradio" aria-checked="${on}"><span class="grow">${l}</span>${on?`<span class="msr">${S.sort.dir==='asc'?'arrow_upward':'arrow_downward'}</span>`:''}</button>`; }).join('');
+const sortPop=()=>[['ref','Referência'],['tit','Titular'],['val','Valor'],['rev','Revisão manual']].map(([k,l])=>{ const on=S.sort.k===k; return `<button class="opt" data-a="sortby" data-k="${k}" role="menuitemradio" aria-checked="${on}"><span class="grow">${l}</span>${on?`<span class="msr">${S.sort.dir==='asc'?'arrow_upward':'arrow_downward'}</span>`:''}</button>`; }).join('');
 function fltPop(a,f){ const v=S.f[f.k]||[];
   if(f.t==='txt') return openPop(a,`<div class="ph">${f.l}</div><div class="obs"><input class="fin" id="fIn" data-k="${f.k}" inputmode="numeric" placeholder="${esc(f.ph||'')}" value="${esc(v[0]||'')}" aria-label="${f.l}"><div class="row"><button class="b pri sm" data-a="fapply" data-k="${f.k}">Aplicar</button></div></div>`,{w:260});
   if(f.t==='date'){ const iso=v[0]?v[0].split('/').reverse().join('-'):''; return openPop(a,`<div class="ph">${f.l}</div><div class="obs"><input class="fin" type="date" id="fIn" data-k="${f.k}" value="${iso}" aria-label="${f.l}"><div class="row"><button class="b pri sm" data-a="fapply" data-k="${f.k}">Aplicar</button></div></div>`,{w:260}); }
@@ -449,8 +449,8 @@ function onClick(e){
     case 'grupo': e.stopPropagation(); toast('Abriria o '+a.dataset.v); break;
     case 'sortby': { const sk=a.dataset.k; S.sort=S.sort.k===sk?{k:sk,dir:S.sort.dir==='asc'?'desc':'asc'}:{k:sk,dir:sk==='tit'?'asc':'desc'}; const inPop=a.closest('#pop'); refresh(); if(inPop){ const b=document.getElementById('bSort'); popEl.innerHTML=sortPop(); popAnchor=b; b.classList.add('open'); } break; }
     case 'sortmenu': if(popAnchor===a){ closePop(); break; } openPop(a,sortPop(),{alignRight:true,w:200}); break;
-    case 'incmenu': if(popAnchor===a){ closePop(); break; } openPop(a,mi('Importar faturas','upload_file','toast','')+mi('Importar faturas agrupadas','folder_zip','toast','')+mi('Importar faturas por imagem','image','imgimp',''),{alignRight:true,w:260});
-      popEl.querySelectorAll('[data-a="toast"]').forEach((b,i)=>b.dataset.msg=['Abriria a importação de faturas','Abriria a importação de faturas agrupadas'][i]); break;
+    /* Incluir leva ao Leitor de Faturas, já com o envio de faturas aberto */
+    case 'incmenu': location.href='index.html?nova=1'; break;
     case 'imgimp': closePop(); location.href='index.html'; break;
     case 'expmenu': if(popAnchor===a){ closePop(); break; } openPop(a,mi('Exportar lista (CSV)','table_view','toast','')+mi('Baixar relatório de status','summarize','toast',''),{alignRight:true,w:250});
       popEl.querySelectorAll('[data-a="toast"]').forEach((b,i)=>b.dataset.msg=['Exportaria a lista filtrada (CSV)','Baixaria o relatório de status do período'][i]); break;

@@ -744,6 +744,7 @@ function nfSend(){
   step();
 }
 $('#add').onclick=nfOpen;
+if(new URLSearchParams(location.search).get('nova')) setTimeout(nfOpen,0);
 $('#mmenu').onclick=()=>toast('Menu fora do escopo do protótipo.');
 $('#nfOv').addEventListener('click',e=>{ if(e.target.id==='nfOv') nfClose(); });
 $('#nf').addEventListener('click',e=>{

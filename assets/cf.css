@@ -202,3 +202,8 @@
 @keyframes stepFade{0%,100%{opacity:1}50%{opacity:.25}}
 @keyframes stepWave{0%{transform:scale(1);opacity:1}100%{transform:scale(3.4);opacity:0}}
 @media (prefers-reduced-motion:reduce){.fp .steps i.proc,.fp .steps i.wave::after{animation:none}}
+
+/* a onda do erro não pode ser cortada pela célula */
+.fp .tr.row>div.c-eta,.fp .two.eta,.fp .two.eta>.steps{overflow:visible}
+.fp .tr.th .so.so-rev{margin-left:-6px;padding:6px}
+.fp .tr.th .so.so-rev.on{color:var(--alert)}
