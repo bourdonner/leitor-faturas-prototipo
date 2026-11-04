@@ -23,17 +23,19 @@ function asset(f) {
   return s;
 }
 
+// X.html → ?p=X.html (e X.html?a=b → ?p=X.html&a=b)
+const NAV = (h) => h.replace(/(["'`])(faturamento-detalhe|faturamento-usinas|faturamento-pendente|faturamento|detalhe|index)\.html(\?)?/g,
+  (m, q, n, qs) => q + "?p=" + n + ".html" + (qs ? "&" : ""));
 function inline(html) {
-  // CSS e JS locais viram blocos inline
-  html = html.replace(/<link[^>]*href="(assets\/[^"?]+\.css)(\?[^"]*)?"[^>]*>/g, (m, f) => "<style>\n" + asset(f) + "\n</style>");
-  html = html.replace(/<script src="(assets\/[^"?]+\.js)(\?[^"]*)?"><\/script>/g, (m, f) => "<script>\n" + safeScript(asset(f)) + "\n</script>");
-  // imagens locais viram data URI
-  for (const [k, v] of Object.entries(IMG)) html = html.split(k).join(v);
   // links do protótipo que não vão no envio (componentes, versão anterior)
   html = html.replace(/<a class="dlk" href="(interacoes|faturamento-v1|faturamento-pendente-componentes)\.html"[^>]*>[\s\S]*?<\/a>/g, "");
-  // navegação entre as páginas do envio: X.html → ?p=X.html (e X.html?a=b → ?p=X.html&a=b)
-  html = html.replace(/(["'`])(faturamento-detalhe|faturamento-usinas|faturamento-pendente|faturamento|detalhe|index)\.html(\?)?/g,
-    (m, q, n, qs) => q + "?p=" + n + ".html" + (qs ? "&" : ""));
+  // navegação entre as páginas do envio, na página e nos scripts — menos no tour.js, cujas chaves dos passos são nomes de arquivo
+  html = NAV(html);
+  // CSS e JS locais viram blocos inline
+  html = html.replace(/<link[^>]*href="(assets\/[^"?]+\.css)(\?[^"]*)?"[^>]*>/g, (m, f) => "<style>\n" + asset(f) + "\n</style>");
+  html = html.replace(/<script src="(assets\/[^"?]+\.js)(\?[^"]*)?"><\/script>/g, (m, f) => "<script>\n" + safeScript(f === "assets/tour.js" ? asset(f) : NAV(asset(f))) + "\n</script>");
+  // imagens locais viram data URI
+  for (const [k, v] of Object.entries(IMG)) html = html.split(k).join(v);
   return html;
 }
 

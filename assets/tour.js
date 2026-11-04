@@ -259,11 +259,11 @@
       /* "?" de ajuda junto das ações do topo da página, no mesmo estilo dos botões vizinhos */
       var acts = Q('.head .acts'), add = Q('#add'), ha = Q('#headActions') || Q('#actions');
       launch.setAttribute('aria-label', 'Tour guiado desta tela'); launch.removeAttribute('title');
-      if (acts) { launch.className = 'sq tip tr-help'; launch.setAttribute('data-tip', 'Tour guiado'); launch.innerHTML = '<span class="msr">help</span>'; acts.insertBefore(launch, acts.firstChild); }
-      else if (add) { launch.className = 'sqbtn tr-help'; launch.title = 'Tour guiado'; launch.innerHTML = '<span class="msr">help</span>'; add.parentNode.insertBefore(launch, add); }
+      if (acts) { launch.className = 'sq tip tr-help'; launch.setAttribute('data-tip', 'Tour guiado'); launch.innerHTML = '<span class="msr fill">help</span>'; acts.insertBefore(launch, acts.firstChild); }
+      else if (add) { launch.className = 'sqbtn tr-help'; launch.title = 'Tour guiado'; launch.innerHTML = '<span class="msr fill">help</span>'; add.parentNode.insertBefore(launch, add); }
       /* nas telas de detalhe as ações são redesenhadas: o "?" fica ao lado delas, não dentro */
-      else if (ha) { launch.className = 'btn outline tr-help tr-help-ic'; launch.title = 'Tour guiado'; launch.innerHTML = '<span class="ms">help</span>'; ha.parentNode.insertBefore(launch, ha); }
-      else { launch.classList.add('solo'); launch.innerHTML = '<span class="ms">help</span>'; document.body.appendChild(launch); }
+      else if (ha) { launch.className = 'btn outline tr-help tr-help-ic'; launch.title = 'Tour guiado'; launch.innerHTML = '<span class="ms f">help</span>'; ha.parentNode.insertBefore(launch, ha); }
+      else { launch.classList.add('solo'); launch.innerHTML = '<span class="ms f">help</span>'; document.body.appendChild(launch); }
     }
   };
 
