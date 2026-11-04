@@ -242,3 +242,15 @@
 /* o .b.sm tem height fixa, então o 0fr não recolhia: usa max-height e o padding inferior fica só o do card (24px) */
 .fp .cmp .row{display:flex;justify-content:flex-end;max-height:0;overflow:hidden;transition:max-height .2s cubic-bezier(.2,.7,.2,1),opacity .15s}
 .fp .cmp.has .row{max-height:48px}
+
+/* etapas num card de grupo (igual ao Faturamento de Usinas): um cabeçalho e as seções recolhíveis dentro, separadas por uma linha */
+.fp .rs-gc{background:var(--hov2);border-radius:12px;overflow:clip;display:flex;flex-direction:column;flex:none}
+.fp .rs-gc>.rs-card{border-radius:0;background:transparent;overflow:visible}
+.fp .rs-gc>.rs-card+.rs-card{border-top:1px solid var(--s200)}
+.fp .rs-gc .rs-hd{background:var(--hov2)}
+.fp .rs-gc .rs-hd::before{border-radius:0}
+.fp .rs-gtop.gh{display:flex;align-items:center;gap:8px;padding:12px 24px;background:var(--s200);color:var(--ink);font:500 14px/20px Inter,sans-serif;min-width:0}
+.fp .rs-gtop.gh .grow{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500}
+.fp .rs-gtop.gh .ph{width:20px;height:20px;border-radius:6px;background:var(--ink3);color:#fff;display:grid;place-items:center;flex:none}
+.fp .rs-gtop.gh .ph .msr{font-size:12px;color:inherit}
+.fp.dk .rs-gtop.gh .ph{background:var(--ink);color:var(--fg)}

@@ -298,7 +298,9 @@ H.cm=r=>{ const ev=c=>{ const who=c.who?`<span class="who2" data-name="${esc(c.w
   return `<div class="act-p${shut('cm')}" data-fold="cm"><div class="act-h"><span class="eb"><span class="msr fill">forum</span></span><span class="grow">Comentários</span><span class="cap">${r.cm.length||''}</span>${fold('cm','comentários')}</div>${cl('cm',`<div class="act-l evs">${r.cm.map((c,i)=>(i?'<div class="lnk"></div>':'')+ev(c)).join('')}</div>
   <form class="cmp" data-id="${r.id}"><label class="sr" for="cmT" style="position:absolute;left:-9999px">Comentário</label><textarea class="ta" id="cmT" placeholder="Escreva um comentário"></textarea><div class="row"><button class="b pri sm" type="submit">Comentar</button></div></form>`)}</div>`; };
 /* a barra fica fora da rolagem; só os cards rolam, num espaço com cantos de 12px */
-H.rail=r=>H.rbar()+`<div class="rail-sc" id="railSc">${H.head(r)+H.titP(r)+H.ucP(r)+H.fcP(r)+H.estP(r)+H.recP(r)+H.cm(r)}</div>`;
+/* etapas num card só, com o cabeçalho de grupo do Faturamento de Usinas */
+const gcard=(ic,t,...parts)=>`<div class="rs-gc" role="group" aria-label="${t}"><div class="rs-gtop gh"><span class="ph" aria-hidden="true"><span class="msr fill">${ic}</span></span><b class="grow">${t}</b></div>${parts.join('')}</div>`;
+H.rail=r=>H.rbar()+`<div class="rail-sc" id="railSc">${H.head(r)+H.titP(r)+H.ucP(r)+gcard('receipt_long','Etapas do faturamento',H.fcP(r),H.estP(r),H.recP(r))+H.cm(r)}</div>`;
 /* degradê do cabeçalho grudado só aparece quando ele está de fato grudado */
 function markStuck(){ const sc=document.getElementById('railSc'); if(!sc) return; const top=sc.getBoundingClientRect().top;
   sc.querySelectorAll('.rs-hd,.act-h').forEach(h=>{ const box=h.parentElement.getBoundingClientRect(); h.classList.toggle('stuck',box.top<top-0.5&&h.getBoundingClientRect().top<=top+0.5); }); }
