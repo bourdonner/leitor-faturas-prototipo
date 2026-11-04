@@ -154,7 +154,9 @@ H.steps=r=>{ const i=etapa(r);
   const fail=FAIL_MS.includes(r.ms)||(r.rec&&FAIL_REC.includes(r.rec.st)), done=r.ms==='completed_no_bill'||(r.rec&&DONE_REC.includes(r.rec.st));
   /* bolinha da etapa atual: pulsa quando o sistema está processando; solta uma onda quando é erro do sistema */
   const proc=['calculating','billing'].includes(r.ms)||(r.rec&&['Gerando boleto','Processando'].includes(r.rec.st)), err=FAIL_MS.includes(r.ms)||(r.rec&&r.rec.st==='Erro');
-  return `<span class="steps" aria-hidden="true">${[0,1,2].map(k=>{ const cur=k===i&&!done; const cls=i<0?'':k<i||done?'d':k===i?(fail?'e':'c'):''; return `<i class="${cls}${cur&&proc?' proc':''}${cur&&err?' wave':''}"></i>`; }).join('')}</span>`; };
+  /* tag no hover (mesma interação do Faturamento de Usinas): estado em negrito + nome da etapa */
+  const tagOf=(k,cls,cur)=>i<0?['Arquivado','p']:cls==='d'?[k===1?'Concluído':'Concluída','d']:cls===''?[k===1?'Não iniciado':'Não iniciada','p']:[k===0?MS[r.ms][0]:k===1?MS[r.ms][0]:statusTxt(r),cls==='e'?'e':cur&&proc?'w':'c'];
+  return `<span class="steps" aria-hidden="true">${[0,1,2].map(k=>{ const cur=k===i&&!done; const cls=i<0?'':k<i||done?'d':k===i?(fail?'e':'c'):''; const [tg,st]=tagOf(k,cls,cur); return `<i class="${cls}${cur&&proc?' proc':''}${cur&&err?' wave':''}" data-tg="${esc(tg)}" data-td="${['Leitura','Estudo','Conta a receber'][k]}" data-st="${st}"></i>`; }).join('')}</span>`; };
 H.tit=r=>{ const t=TIT[r.t]; return `<div class="ent"><span class="ic ${t.pj?'':'pf'}"><span class="msr fill">${t.pj?'bolt':'person'}</span></span><div class="t"><div>${esc(t.n.toUpperCase())}</div><div class="s">${esc(t.doc)}</div></div>${t.grp?`<button class="grp" data-a="grupo" data-v="${esc(t.grp)}" title="${esc(t.grp)}" aria-label="Abrir ${esc(t.grp)}"><span class="msr fill">groups</span></button>`:''}</div>`; };
 H.ust=u=>{ const s=UST[u.st]; return `<span class="ust ${s[0]}" title="${u.st}" aria-label="${u.st}"><span class="msr fill">${s[1]}</span></span>`; };
 /* UC: número + concessionária (no lugar de cidade e estado) */
@@ -499,6 +501,29 @@ function mountScreen(){
   const hideT=()=>{ bt.hidden=true; };
   const bulkEl=document.getElementById('bulk');
   bulkEl.addEventListener('mouseover',e=>{ const b=e.target.closest('.ico[data-tl]'); b?showT(b):hideT(); });
+  /* etapa: a bolinha vira uma tag ao passar o mouse (mesma interação do Faturamento de Usinas, sobreposta à tabela) */
+  const tblEl=document.getElementById('tbl');
+  const tg=document.createElement('div'); tg.className='stag dt'; tg.setAttribute('aria-hidden','true'); tg.hidden=true; document.getElementById('app').appendChild(tg);
+  let tagFor=null, tagT=0;
+  const showTag=b=>{ if(tagFor===b) return; clearTimeout(tagT); tagFor=b; hideT();
+    const r=b.getBoundingClientRect(), box=tblEl.getBoundingClientRect(), td=b.dataset.td, w=16;
+    tg.className='stag dt st-'+b.dataset.st; tg.style.transition='none';
+    tg.innerHTML=`<span class="tx"><b>${esc(b.dataset.tg)}</b>${td?`<small>${esc(td)}</small>`:''}</span>`;
+    tg.hidden=false; tg.style.top=(r.top+r.height/2)+'px'; tg.style.width='auto'; tg.style.left='0px'; tg.style.right='auto';
+    const full=Math.ceil(tg.scrollWidth)+2, h=22, cx=r.left+r.width/2;
+    tg.style.height=h+'px'; tg.style.marginTop=(-h/2)+'px'; tg.style.minWidth=w+'px';
+    const left=cx-w/2+full>box.right-6;
+    tg.classList.toggle('lt',left);
+    if(left){ tg.style.left='auto'; tg.style.right=(document.documentElement.clientWidth-(cx+w/2))+'px'; } else { tg.style.left=(cx-w/2)+'px'; }
+    tg.style.width=w+'px'; tg.classList.remove('on'); void tg.offsetWidth; tg.style.transition='';
+    tg.style.width=full+'px'; tg.classList.add('on'); };
+  const hideTag=()=>{ if(!tagFor) return; tagFor=null; tg.classList.remove('on'); tg.style.width=tg.style.minWidth; tagT=setTimeout(()=>{ if(!tagFor) tg.hidden=true; },200); };
+  /* as bolinhas têm 8 px: vale a mais próxima do cursor dentro do grupo de etapas */
+  const dotAt=e=>{ const g=e.target.closest&&e.target.closest('.steps'); if(!g) return null; let best=null,bd=1e9;
+    g.querySelectorAll('i[data-tg]').forEach(d=>{ const q=d.getBoundingClientRect(), dx=Math.abs(e.clientX-(q.left+q.width/2)); if(dx<bd){ bd=dx; best=d; } }); return best; };
+  tblEl.addEventListener('mousemove',e=>{ const b=dotAt(e); b?showTag(b):hideTag(); });
+  tblEl.addEventListener('mouseleave',hideTag);
+  document.addEventListener('scroll',e=>{ if(e.target!==document.getElementById('railSc')) hideTag(); },true);
   bulkEl.addEventListener('mouseleave',hideT);
   bulkEl.addEventListener('focusin',e=>{ const b=e.target.closest('.ico[data-tl]'); b?showT(b):hideT(); });
   bulkEl.addEventListener('focusout',hideT);

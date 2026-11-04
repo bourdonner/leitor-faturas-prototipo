@@ -207,3 +207,25 @@
 .fp .tr.row>div.c-eta,.fp .two.eta,.fp .two.eta>.steps{overflow:visible}
 .fp .tr.th .so.so-rev{margin-left:-6px;padding:6px}
 .fp .tr.th .so.so-rev.on{color:var(--alert)}
+
+/* etapa: tag no hover, igual à do Faturamento de Usinas (a bolinha se expande e mostra o estado) */
+.fp .steps{padding:4px 0;cursor:default}
+.fp .stag{position:fixed;z-index:70;display:flex;align-items:center;gap:6px;box-sizing:border-box;overflow:hidden;white-space:nowrap;
+  border-radius:999px;border:1px solid var(--border);background:var(--fg);color:var(--ink);padding:0 10px;pointer-events:none;
+  box-shadow:0 4px 14px rgba(12,10,9,.14);opacity:0;transition:width .18s ease-out,opacity .12s ease-out}
+.fp .stag.on{opacity:1}
+.fp .stag.lt{flex-direction:row-reverse}
+.fp .stag .tx{display:flex;align-items:baseline;gap:6px;opacity:0;transform:translateX(-4px);transition:opacity .16s ease-out .04s,transform .18s ease-out}
+.fp .stag.lt .tx{transform:translateX(4px)}
+.fp .stag.on .tx{opacity:1;transform:none}
+.fp .stag b{font:600 11.5px/16px Inter,sans-serif}
+.fp .stag small{font:500 11px/14px Inter,sans-serif;opacity:.8}
+.fp .stag.st-p{color:var(--mid)}
+.fp .stag.st-w{border-color:#3b82f6;color:#2563eb;background:color-mix(in srgb,#3b82f6 10%,var(--fg))}
+.fp .stag.st-c{border-color:var(--ink3);color:var(--ink)}
+.fp .stag.st-d{border-color:var(--brand);background:var(--brand);color:#fff}
+.fp .stag.st-e{border-color:var(--danger);background:var(--danger);color:#fff}
+.fp.dk .stag{box-shadow:0 4px 14px rgba(0,0,0,.5)}
+.fp.dk .stag.st-d{color:#0c0a09}
+.fp.dk .stag.st-w{color:#93c5fd}
+@media (prefers-reduced-motion:reduce){.fp .stag,.fp .stag .tx{transition:none}}
