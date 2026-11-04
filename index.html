@@ -62,6 +62,27 @@
   .tools{display:flex;gap:24px}
   .field{height:52px;border-radius:8px;background:rgba(245,245,244,.4);border:1px solid var(--s100);padding:4px;display:flex;align-items:center;gap:8px}
   .field.grow{flex:1}
+  /* Ordenar e Colunas (mesmos botões do Contas a Faturar e do Usinas) */
+  .tools .sqb{width:52px;height:52px;flex:none;border-radius:8px;background:rgba(245,245,244,.4);border:1px solid var(--s100);display:grid;place-items:center;color:var(--ink);cursor:pointer;padding:0}
+  .tools .sqb:hover,.tools .sqb.open{background:var(--s100)}
+  .tools .sqb .msr{font-size:20px}
+  .tools .tg{display:flex;gap:8px;flex:none}
+  .lp{position:fixed;z-index:45;width:240px;background:#fff;border:1px solid var(--s100);border-radius:8px;box-shadow:var(--pop);padding:4px;display:flex;flex-direction:column}
+  .lp[hidden]{display:none}
+  .lp .ph{padding:6px 8px 4px;font:600 13px/20px Inter;color:var(--ink)}
+  .lp .lo{display:flex;align-items:center;gap:8px;width:100%;height:36px;padding:0 8px;border-radius:4px;text-align:left;font:400 14px/24px Inter;color:var(--ink2);background:none;border:0;cursor:pointer}
+  .lp .lo:hover,.lp .lo:focus-visible{background:var(--s100);outline:none}
+  .lp .lo .grow{flex:1}
+  .lp .lo .msr{font-size:16px}
+  .lp .lo.fx,.lp .lo[aria-disabled="true"]{color:var(--mid);cursor:default}
+  .lp .lo.fx:hover,.lp .lo[aria-disabled="true"]:hover{background:transparent}
+  .lp .cbx{width:16px;height:16px;border-radius:4px;border:1px solid var(--ink);display:grid;place-items:center;flex:none}
+  .lp .cbx.on{background:var(--ink);color:#fff}
+  .lp .cbx .mss{font-size:12px}
+  .lp .cbx.dis{opacity:.55}
+  .lp .sepl{height:1px;background:var(--s100);margin:4px -4px}
+  /* colunas escondidas (só no desktop; no mobile a tabela tem a ordem própria) */
+  @media (min-width:768px){ .table .tr{grid-template-columns:var(--cols)} .table.h-st .o-st{display:none} .table.h-pend .o-pend{display:none} .table.h-tit .o-tit{display:none} .table.h-uc .o-uc{display:none} .table.h-ref .o-ref{display:none} .table.h-env .o-env{display:none} .table.h-dt .o-dt{display:none} }
   .fbtn{width:44px;height:44px;padding:4px;display:grid;place-items:center}
   .fbtn span{width:36px;height:36px;border-radius:6px;display:grid;place-items:center;color:var(--ink)}
   button.fbtn:hover span{background:var(--s100)}
@@ -296,6 +317,7 @@
     .head .sqbtn{width:56px;height:56px;background:transparent}
     .body{padding:24px;gap:24px}
     .tools{gap:8px}
+    .tools .tg{display:none}
     .tools .field:not(.grow){display:none}
     .body > *{order:2}
     .frow{order:0;margin:0 -24px 0 0;padding-right:24px;flex-wrap:nowrap;overflow-x:auto;gap:8px;scrollbar-width:none}
@@ -424,6 +446,7 @@
 </div>
 <canvas id="camC" hidden></canvas>
 
+<div class="lp" id="lp" role="menu" hidden></div>
 <div class="dd" id="dd" hidden><div class="sec">
   <button data-a="revisar">Revisar fatura</button>
   <button data-a="recusar">Recusar fatura</button>
@@ -494,6 +517,23 @@ function chipHTML(f){
   const shown = vals.slice(0,2), extra = vals.length-shown.length;
   return `<button type="button" class="fchip ${S.fOpen===f.k?'open':''}" data-fk="${f.k}" aria-haspopup="dialog" aria-expanded="${S.fOpen===f.k}"><span class="fl">${f.label}</span><span class="fsep"></span>${shown.map(v=>`<span class="fb">${esc(v)}</span>`).join('')}${extra?`<span class="fx">+${extra}</span>`:''}<span class="msr">expand_more</span></button>`;
 }
+/* ---------- Ordenar e Colunas ---------- */
+const LCOLS=[{k:'st',l:'Situação',w:'200px',fix:1},{k:'pend',l:'Pendências',w:'220px'},{k:'tit',l:'Titular',w:'minmax(220px,1fr)'},{k:'uc',l:'UC',w:'240px'},{k:'ref',l:'Referência',w:'140px'},{k:'env',l:'Enviado por',w:'220px'},{k:'dt',l:'Recebida em',w:'160px'}];
+const HKEY='lf-hidden-cols';
+const HID=new Set((()=>{ try{ return JSON.parse(localStorage.getItem(HKEY)||'[]'); }catch(e){ return []; } })());
+const saveHid=()=>{ try{ localStorage.setItem(HKEY,JSON.stringify([...HID])); }catch(e){} };
+/* se a coluna flexível (Titular) sair, as outras esticam */
+function gridCols(){ const v=LCOLS.filter(c=>!HID.has(c.k)); const fr=v.some(c=>/fr/.test(c.w)); return ['48px',...v.map(c=>fr?c.w:`minmax(${c.w},1fr)`),'64px'].join(' '); }
+const MES={jan:1,fev:2,mar:3,abr:4,mai:5,jun:6,jul:7,ago:8,set:9,out:10,nov:11,dez:12};
+function refKey(r){ const m=String(r||'').toLowerCase().match(/([a-zç]{3})\D*(\d{4})/); return m?(+m[2])*100+(MES[m[1]]||0):0; }
+const LP={k:null};
+const SORTS=[['st','Situação'],['dt','Recebida em'],['tit','Titular'],['ref','Referência']];
+function sortPopHTML(){ return '<div class="ph">Ordenar por</div>'+SORTS.map(([k,l])=>{ const on=S.sort===k; return `<button class="lo" data-so="${k}" role="menuitemradio" aria-checked="${on}"><span class="grow">${l}</span>${on?`<span class="msr">${S.dir>0?'arrow_upward':'arrow_downward'}</span>`:''}</button>`; }).join(''); }
+function colPopHTML(){ return '<div class="ph">Colunas</div>'+LCOLS.map(c=>{ const on=!HID.has(c.k), fx=!!c.fix; return `<button class="lo${fx?' fx':''}" data-co="${c.k}" role="menuitemcheckbox" aria-checked="${on}"${fx?' aria-disabled="true" title="Coluna fixa"':''}><span class="cbx ${on?'on':''}${fx?' dis':''}">${on?'<span class="mss">check</span>':''}</span><span class="grow">${c.l}</span>${fx?'<span class="msr" aria-hidden="true">lock</span>':''}</button>`; }).join('')
+  +`<div class="sepl"></div><button class="lo" data-coreset${HID.size?'':' aria-disabled="true"'}><span class="msr">restart_alt</span><span class="grow">Restaurar padrão</span></button>`; }
+function showLP(){ const p=$('#lp'); if(!LP.k){ p.hidden=true; return; } const b=$(LP.k==='sort'?'#bSort':'#bCols'); if(!b){ p.hidden=true; return; }
+  p.innerHTML=LP.k==='sort'?sortPopHTML():colPopHTML(); p.hidden=false; const r=b.getBoundingClientRect(); p.style.top=(r.bottom+6)+'px'; p.style.left=Math.max(8,r.right-p.offsetWidth)+'px'; }
+function toggleLP(k){ LP.k=LP.k===k?null:k; render(); }
 function toolsHTML(){
   // filtros escondidos continuam valendo: o funil mostra quantos estão ativos
   const nAct = FDEF.filter(f=>f.date?S.dt!=='Qualquer data':S.F[f.k].length).length;
@@ -502,6 +542,7 @@ function toolsHTML(){
     <div class="field grow"><span class="fbtn" aria-hidden="true"><span><span class="msr">search</span></span></span>
       <input id="q" placeholder="Buscar por titular, UC ou nome do arquivo" value="${esc(S.q)}" aria-label="Buscar faturas" autocomplete="off">
       ${funnel('filt','')}</div>
+    <div class="tg"><button type="button" class="sqb${LP.k==='sort'?' open':''}" id="bSort" data-tip="Ordenar" aria-label="Ordenar" aria-haspopup="menu" aria-expanded="${LP.k==='sort'}"><span class="msr">swap_vert</span></button><button type="button" class="sqb${LP.k==='cols'?' open':''}" id="bCols" data-tip="Colunas" aria-label="Mostrar ou ocultar colunas" aria-haspopup="menu" aria-expanded="${LP.k==='cols'}"><span class="msr">view_column</span></button></div>
   </div>
   ${S.showF?`<div class="frow" role="group" aria-label="Filtros">${funnel('filtM','mf')}${FDEF.map(chipHTML).join('')}${fActive()?`<button type="button" class="btn sm sec" id="fclear">Limpar todos</button>`:''}</div>`:''}`;
 }
@@ -517,18 +558,20 @@ function visibleRows(){
   if (S.q){ const q=S.q.toLowerCase(); r=r.filter(x=>(x.tit+' '+x.uc+' '+x.arq).toLowerCase().includes(q)); }
   if (S.sort==='dt') r=r.slice().sort((a,b)=>S.dir*key(a.dt).localeCompare(key(b.dt)));
   if (S.sort==='st') r=r.slice().sort((a,b)=>S.dir*a.st.localeCompare(b.st,'pt'));
+  if (S.sort==='tit') r=r.slice().sort((a,b)=>S.dir*a.tit.localeCompare(b.tit,'pt'));
+  if (S.sort==='ref') r=r.slice().sort((a,b)=>S.dir*(refKey(a.ref)-refKey(b.ref)));
   return r;
 }
 function tableHTML(rows){
   const all = rows.length && rows.every(r=>S.sel.has(r.id));
   const sIco = k => S.sort===k ? (S.dir>0?'arrow_upward':'arrow_downward') : 'import_export';
-  return `<div class="table" role="table" aria-label="Faturas">
+  return `<div class="table ${[...HID].map(k=>'h-'+k).join(' ')}" style="--cols:${gridCols()}" role="table" aria-label="Faturas">
     <div class="tr th" role="row">
       <div class="ck"><span class="cb ${all?'on':''}" id="ckAll" role="checkbox" tabindex="0" aria-checked="${all}" aria-label="Selecionar todas">${all?'<span class="mss">check</span>':''}</span></div>
       <div class="sort o-st"><button class="sbtn ${S.sort==='st'?'on':''}" data-sort="st"><span class="w">Situação</span><span class="msr">${sIco('st')}</span></button></div>
       <div class="o-pend">Pendências</div><div class="o-tit">Titular</div><div class="o-uc">UC</div><div class="o-ref">Referência</div><div class="o-env">Enviado por</div>
       <div class="sort o-dt"><button class="sbtn ${S.sort==='dt'?'on':''}" data-sort="dt"><span class="w">Recebida em</span><span class="msr">${sIco('dt')}</span></button></div>
-      <div class="act"><button class="colbtn" id="colBtn" aria-label="Colunas"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M9.74 3.833v.333H8.22v7.667h3.887v-1.5h.333v1.833H3.167V3.833H9.74zM3.5 11.833h4.38V4.166H3.5v7.667zm8.94-7.813v2h2v.333h-2v2h-.333v-2h-2v-.333h2v-2h.333z" fill="#0C0A09" stroke="#1C1917"/></svg></button></div>
+      <div class="act"></div>
     </div>
     ${rows.map(r=>`<div class="tr row ${S.sel.has(r.id)?'sel':''} ${r.isNew?'new':''}" role="row" data-id="${r.id}" tabindex="0" title="Arquivo: ${esc(r.arq)}">
       <div class="td ck"><span class="cb ${S.sel.has(r.id)?'on':''}" data-ck="${r.id}" role="checkbox" tabindex="0" aria-checked="${S.sel.has(r.id)}" aria-label="Selecionar ${esc(r.tit)}">${S.sel.has(r.id)?'<span class="mss">check</span>':''}</span></div>
@@ -556,6 +599,7 @@ function render(){
   const rows = visibleRows();
   b.innerHTML = toolsHTML() + (rows.length ? tableHTML(rows) : stateHTML('busca'));
   bindTools();
+  showLP();
 }
 function bindTools(){
   const q=$('#q'); if(!q) return;
@@ -602,6 +646,16 @@ $('#dd').addEventListener('click',e=>{ const b=e.target.closest('[data-a]'); if(
   if(a==='recusar') openDlg(r); });
 /* abrir detalhe */
 function open(r){ if(r.demo) location.href='detalhe.html'; else toast('No protótipo, só a fatura da Padaria Estrela do Sul abre o detalhe.'); }
+/* Ordenar e Colunas */
+document.addEventListener('click',e=>{
+  if(e.target.closest('#bSort')){ e.stopPropagation(); toggleLP('sort'); return; }
+  if(e.target.closest('#bCols')){ e.stopPropagation(); toggleLP('cols'); return; }
+  const so=e.target.closest('#lp [data-so]'); if(so){ const k=so.dataset.so; const first=k==='dt'?-1:1; if(S.sort===k) S.dir=-S.dir; else { S.sort=k; S.dir=first; } render(); return; }
+  const co=e.target.closest('#lp [data-co]'); if(co){ const c=LCOLS.find(x=>x.k===co.dataset.co); if(!c||c.fix) return; HID.has(c.k)?HID.delete(c.k):HID.add(c.k); saveHid(); render(); return; }
+  if(e.target.closest('#lp [data-coreset]')){ if(!HID.size) return; HID.clear(); saveHid(); render(); toast('Colunas restauradas para o padrão'); return; }
+  if(LP.k && !e.target.closest('#lp')){ LP.k=null; showLP(); document.querySelectorAll('.tools .sqb.open').forEach(b=>{ b.classList.remove('open'); b.setAttribute('aria-expanded','false'); }); }
+},true);
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&LP.k){ LP.k=null; showLP(); } });
 /* tabela: cliques */
 $('#body').addEventListener('click',e=>{
   const more=e.target.closest('[data-more]'); if(more){ e.stopPropagation(); if(more.classList.contains('open')) closeMenus(); else openRowMenu(more,+more.dataset.more); return; }
@@ -609,7 +663,6 @@ $('#body').addEventListener('click',e=>{
   if(e.target.closest('#ckAll')){ const rows=visibleRows(); const all=rows.every(r=>S.sel.has(r.id)); rows.forEach(r=>all?S.sel.delete(r.id):S.sel.add(r.id)); render(); return; }
   const s=e.target.closest('[data-sort]'); if(s){ const k=s.dataset.sort; const first=k==='dt'?-1:1; if(S.sort===k){ if(S.dir===first) S.dir=-first; else { S.sort=null; S.dir=1; } } else { S.sort=k; S.dir=first; } render(); return; }
   if(e.target.closest('[data-next]')){ toast('Só a primeira página tem dados no protótipo.'); return; }
-  if(e.target.closest('#colBtn')){ toast('Seleção de colunas fora do escopo do protótipo.'); return; }
   const row=e.target.closest('.row'); if(row) open(byId(+row.dataset.id));
 });
 $('#body').addEventListener('keydown',e=>{
