@@ -69,7 +69,9 @@
     var linked = g.subs.filter(function (s) { return s.href; });
     var on = g.subs.some(isOn);
     var main = linked[0];
-    var tag = main ? 'a href="' + main.href + '"' : 'span';
+    /* grupo sem nenhuma página no protótipo: só o ícone apagado, sem painel e sem hover */
+    if (!main) return '<div class="sb-grp"><span class="sb-item off" aria-label="' + esc(g.label) + ' (fora do protótipo)" aria-disabled="true">' + I[g.icon] + '</span></div>';
+    var tag = 'a href="' + main.href + '"';
     var h = '<div class="sb-grp">' +
       '<' + tag + ' class="sb-item' + (on ? ' on' : '') + (main ? '' : ' off') + '" aria-label="' + esc(g.label) + '"' + (on ? ' aria-current="page"' : '') + '>' + I[g.icon] + '</' + (main ? 'a' : 'span') + '>' +
       '<div class="sb-fly" role="menu"><div class="t">' + esc(g.label) + '</div>';
@@ -90,8 +92,8 @@
     'html.sb-open .sidebar{width:256px}' +
     'html.sb-open .sidebar .sb-col{display:none}' +
     'html.sb-open .sidebar .sb-open-nav{display:block}' +
-    'html.sb-open .sidebar .sb-content{overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin}' +
-    'html.sb-open .sidebar .sb-foot{display:flex;align-items:center;gap:8px}' +
+    'html.sb-open .sidebar .sb-content{overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin}' +
+    'html.sb-open .sidebar .sb-foot{display:flex;align-items:center;gap:8px;overflow:hidden;white-space:nowrap}' +
     'html.sb-open .sidebar .sb-user{display:flex;flex-direction:column;min-width:0;font:400 12px/16px Inter,system-ui,sans-serif;color:var(--mid,#78716c)}' +
     '.sidebar .sb-user b{font:500 14px/20px Inter,system-ui,sans-serif;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}' +
     '@media (min-width:768px){.page,.main{transition:margin-left .2s cubic-bezier(.2,.7,.2,1)}html.sb-open .page,html.sb-open .main{margin-left:288px}}' +
@@ -111,11 +113,15 @@
     '.sb-osub a,.sb-osub span{display:block;height:32px;line-height:32px;padding:0 8px;margin-bottom:2px;border-radius:6px;font:400 14px/32px Inter,system-ui,sans-serif;color:var(--ink);text-decoration:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}' +
     '.sb-osub a:hover,.sb-osub a.on{background:var(--fsec,#f5f5f4)}.sb-osub a.on{font-weight:500}' +
     '.sb-osub span.x{color:var(--s400,#a8a29e);cursor:default}' +
-    '.sb-tgl{cursor:pointer;border-radius:6px}';
+    '.sb-tgl{cursor:pointer;border-radius:6px}' +
+    '.sb-orow.dis{cursor:default;color:var(--s400,#a8a29e)}.sb-orow.dis:hover{background:none}' +
+    '.sidebar .sb-grp>.sb-item.off{color:var(--s400,#a8a29e)}.sidebar .sb-grp>.sb-item.off:hover{background:none}';
   document.head.appendChild(ocss);
 
   var ogroup = function (g, i) {
     var on = g.subs.some(isOn);
+    if (!g.subs.some(function (s) { return s.href; }))
+      return '<div class="sb-og dis"><div class="sb-orow dis" aria-disabled="true"><span class="i">' + I[g.icon] + '</span><span class="l">' + esc(g.label) + '</span></div></div>';
     return '<div class="sb-og' + (on ? ' on open' : '') + '"><button type="button" class="sb-orow" aria-expanded="' + on + '">' +
       '<span class="i">' + I[g.icon] + '</span><span class="l">' + esc(g.label) + '</span>' + CHEV + '</button>' +
       '<div class="sb-osub"><div>' + g.subs.map(function (s) {

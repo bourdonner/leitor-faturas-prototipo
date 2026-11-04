@@ -238,3 +238,6 @@
 .fp .cmp .row>*{min-height:0;overflow:hidden;justify-self:end}
 .fp .cmp.has .row{grid-template-rows:1fr;opacity:1}
 .fp .cmp:not(.has){gap:0}
+/* o .b.sm tem height fixa, então o 0fr não recolhia: usa max-height e o padding inferior fica só o do card (24px) */
+.fp .cmp .row{display:flex;justify-content:flex-end;max-height:0;overflow:hidden;transition:max-height .2s cubic-bezier(.2,.7,.2,1),opacity .15s}
+.fp .cmp.has .row{max-height:48px}
