@@ -105,18 +105,27 @@ H.menuTicket=t=>[['Transferir responsável','person_add','resp'],['Devolver à t
   .map(o=>o[0]==='sep'?'<div class="sepl"></div>':`<button class="opt ${o[3]||''}" role="menuitem" data-a="m-${o[2]}" data-tk="${t.id}"><span class="grow">${o[0]}</span><span class="msr">${o[1]}</span></button>`).join('');
 
 /* colunas: prioridade de ocultação (regra 350:32798) — some primeiro quem tem o menor número */
+/* Ordenar e Colunas (iguais ao Contas a Faturar e ao Usinas) */
+S.sort={k:'ab',dir:'desc'};
+const HID_KEY='tk-hidden-cols';
+S.hid=new Set((()=>{ try{ return JSON.parse(localStorage.getItem(HID_KEY)||'[]'); }catch(e){ return []; } })());
+const saveHid=()=>{ try{ localStorage.setItem(HID_KEY,JSON.stringify([...S.hid])); }catch(e){} };
+const canHide=c=>!!c.l&&!c.fix;
+const sortBtn=(k,l)=>{ const on=S.sort.k===k; return `<button class="so${on?' on':''}" data-a="sortby" data-k="${k}" aria-label="Ordenar por ${l}">${l}<span class="msr">${on?(S.sort.dir==='asc'?'arrow_upward':'arrow_downward'):'import_export'}</span></button>`; };
+const dkey=d=>{ const m=String(d||'').match(/(\d{2})\/(\d{2})\/(\d{4})/); return m?m[3]+m[2]+m[1]:''; };
+const SORTK={tk:t=>t.id,sit:t=>t.sit,tent:t=>t.tent,coop:t=>t.coop,ab:t=>dkey(t.aberto)};
 const COLS=[
  {k:'ck',w:'48px',h:()=>{ const v=visible(); const n=v.filter(t=>S.sel.has(t.id)).length; const st=n===0?'':n===v.length?'on':'mid'; return `<button class="cbx ${st}" data-a="selall" role="checkbox" aria-checked="${n===0?'false':n===v.length?'true':'mixed'}" aria-label="Selecionar todos">${st==='on'?'<span class="mss">check</span>':''}</button>`; },
    c:t=>`<button class="cbx ${S.sel.has(t.id)?'on':''}" data-a="sel" data-tk="${t.id}" role="checkbox" aria-checked="${S.sel.has(t.id)}" aria-label="Selecionar ${t.id}">${S.sel.has(t.id)?'<span class="mss">check</span>':''}</button>`},
- {k:'tk',w:'96px',h:()=>'<button class="so">Ticket<span class="msr">import_export</span></button>',c:t=>t.id},
- {k:'sit',w:'176px',h:()=>'<button class="so">Situação<span class="msr">import_export</span></button>',c:t=>H.badge(t.sit,SIT)},
- {k:'tent',w:'148px',hide:6,h:()=>'<button class="so">Tentativa<span class="msr">import_export</span></button>',c:t=>H.dots(t.tent)},
- {k:'coop',w:'minmax(240px,1fr)',h:()=>'Cooperado',c:t=>H.ent(t)},
- {k:'fat',w:'96px',hide:5,h:()=>'Faturas',c:t=>H.faturas(pend(t).length)},
- {k:'resp',w:'140px',hide:4,h:()=>'Responsável',c:t=>t.resp?esc(t.resp):'<span style="color:var(--mid)">—</span>'},
- {k:'cart',w:'140px',hide:1,h:()=>'Carteira',c:t=>esc(t.cart)},
- {k:'sta',w:'124px',hide:3,h:()=>'Status',c:t=>H.badge(t.status,STA)},
- {k:'ab',w:'116px',hide:2,h:()=>'<button class="so">Aberto em<span class="msr">import_export</span></button>',c:t=>t.aberto},
+ {k:'tk',w:'96px',l:'Ticket',fix:1,h:()=>sortBtn('tk','Ticket'),c:t=>t.id},
+ {k:'sit',w:'176px',l:'Situação',h:()=>sortBtn('sit','Situação'),c:t=>H.badge(t.sit,SIT)},
+ {k:'tent',w:'148px',hide:6,l:'Tentativa',h:()=>sortBtn('tent','Tentativa'),c:t=>H.dots(t.tent)},
+ {k:'coop',w:'minmax(240px,1fr)',l:'Cooperado',h:()=>'Cooperado',c:t=>H.ent(t)},
+ {k:'fat',w:'96px',hide:5,l:'Faturas',h:()=>'Faturas',c:t=>H.faturas(pend(t).length)},
+ {k:'resp',w:'140px',hide:4,l:'Responsável',h:()=>'Responsável',c:t=>t.resp?esc(t.resp):'<span style="color:var(--mid)">—</span>'},
+ {k:'cart',w:'140px',hide:1,l:'Carteira',h:()=>'Carteira',c:t=>esc(t.cart)},
+ {k:'sta',w:'124px',hide:3,l:'Status',h:()=>'Status',c:t=>H.badge(t.status,STA)},
+ {k:'ab',w:'116px',hide:2,l:'Aberto em',h:()=>sortBtn('ab','Aberto em'),c:t=>t.aberto},
  {k:'act',w:'56px',h:()=>'',c:t=>`<button class="more" data-a="rowmenu" data-tk="${t.id}" aria-label="Ações do ${t.id}" aria-haspopup="menu"><span class="msr">more_horiz</span></button>`}
 ];
 const FIXW={ck:48,tk:96,sit:176,tent:148,fat:96,resp:140,cart:140,sta:124,ab:116,act:56};
@@ -139,14 +148,15 @@ function visible(){
     if(q && !(t.id+' '+t.coop+' '+t.ucs.join(' ')+' '+t.conc).toLowerCase().includes(q)) return false;
     for(const f of FLT){ const v=S.f[f.k]; if(v&&v.length&&!f.m(t,v)) return false; }
     return true;
-  });
+  }).sort((a,b)=>{ const g=SORTK[S.sort.k]; if(!g) return 0; const x=g(a), y=g(b); const r=typeof x==='number'?x-y:String(x).localeCompare(String(y),'pt'); return S.sort.dir==='asc'?r:-r; });
 }
 H.filters=()=>FLT.map(f=>{ const v=S.f[f.k]||[]; const has=v.length>0;
   return `<button class="flt ${has?'has':''}" data-a="flt" data-k="${f.k}" aria-haspopup="dialog"><span class="lb">${f.l}</span>${has?'<span class="sep"></span>'+(v.length>2?`<span class="chip">${v.length} selecionados</span>`:v.map(x=>`<span class="chip">${esc(x)}</span>`).join(''))+`<span class="x" data-a="fclr" data-k="${f.k}" role="button" aria-label="Limpar ${f.l}"><span class="msr">close</span></span>`:'<span class="msr">expand_more</span>'}</button>`; }).join('')
   + (Object.values(S.f).some(v=>v&&v.length)?'<button class="fclear" data-a="fclrall">Limpar filtros</button>':'');
 
 H.table=(hidden=[])=>{
-  const cols=COLS.filter(c=>!hidden.includes(c.k)); const gt=cols.map(c=>c.w).join(' ');
+  const cols0=COLS.filter(c=>!hidden.includes(c.k)&&!S.hid.has(c.k)); const fr=cols0.some(c=>/fr/.test(c.w));
+  const cols=cols0.map(c=>fr||c.k==='ck'||c.k==='act'?c:{...c,w:`minmax(${c.w},1fr)`}); const gt=cols.map(c=>c.w).join(' ');
   const v=visible();
   const head=`<div class="tr th" role="row" style="grid-template-columns:${gt}">${cols.map(c=>`<div role="columnheader">${c.h()}</div>`).join('')}</div>`;
   const rows=v.map(t=>`<div class="tr row ${S.sel.has(t.id)?'is-sel':''} ${S.railOpen&&S.cur===t.id?'cur':''}" role="row" tabindex="0" data-a="row" data-tk="${t.id}" style="grid-template-columns:${gt}">${cols.map(c=>`<div role="cell">${c.c(t)}</div>`).join('')}</div>`).join('');
@@ -319,7 +329,7 @@ function refresh(){ if(document.getElementById('tbl')){ const v=new Set(visible(
 function setFold(p,c){ p.classList.toggle('closed',c); const b=p.querySelector('[data-a="fold"]'); if(b) b.setAttribute('aria-expanded',String(!c)); }
 
 function hiddenFor(w){ const hide=[]; const order=COLS.filter(c=>c.hide).sort((a,b)=>a.hide-b.hide);
-  const used=()=>COLS.filter(c=>c.k!=='coop'&&!hide.includes(c.k)).reduce((a,c)=>a+FIXW[c.k],0);
+  const used=()=>COLS.filter(c=>c.k!=='coop'&&!hide.includes(c.k)&&!S.hid.has(c.k)).reduce((a,c)=>a+FIXW[c.k],0);
   for(const c of order){ if(w-used()>=240) break; hide.push(c.k); }
   return hide; }
 function mountTable(el){ let hid=[]; const fn=()=>H.table(hid); mount(el,fn);
@@ -337,6 +347,11 @@ function openPop(anchor, html, opts={}){
   if(up){ popEl.style.top='auto'; popEl.style.bottom=(innerHeight-r.top+6)+'px'; } else { popEl.style.bottom='auto'; popEl.style.top=(r.bottom+6)+'px'; }
   const f=popEl.querySelector('input,button'); if(f) f.focus({preventScroll:true});
 }
+const sortPop=()=>'<div class="ph">Ordenar por</div>'+[['ab','Aberto em'],['tk','Ticket'],['sit','Situação'],['tent','Tentativa'],['coop','Cooperado']].map(([k,l])=>{ const on=S.sort.k===k; return `<button class="opt" data-a="sortby" data-k="${k}" role="menuitemradio" aria-checked="${on}"><span class="grow">${l}</span>${on?`<span class="msr">${S.sort.dir==='asc'?'arrow_upward':'arrow_downward'}</span>`:''}</button>`; }).join('');
+const colPop=()=>`<div class="ph">Colunas</div><div role="group" aria-label="Colunas visíveis">${COLS.filter(c=>c.l).map(c=>{ const on=!S.hid.has(c.k), fx=!canHide(c);
+  return `<button class="opt${fx?' fx':''}" data-a="colt" data-k="${c.k}" role="menuitemcheckbox" aria-checked="${on}"${fx?' aria-disabled="true" title="Coluna fixa"':''}><span class="cbx ${on?'on':''}${fx?' dis':''}">${on?'<span class="mss">check</span>':''}</span><span class="grow">${c.l}</span>${fx?'<span class="msr" aria-hidden="true">lock</span>':''}</button>`; }).join('')}</div>
+  <div class="sepl"></div><button class="opt" data-a="colreset"${S.hid.size?'':' aria-disabled="true"'}><span class="msr">restart_alt</span><span class="grow">Restaurar padrão</span></button>`;
+const rePop=(id,html)=>{ const b=document.getElementById(id); popEl.innerHTML=html; popAnchor=b; b.classList.add('open'); b.setAttribute('aria-expanded','true'); };
 function closePop(){ if(popEl){ popEl.hidden=true; popEl.innerHTML=''; } if(popAnchor){ popAnchor.classList.remove('open'); popAnchor.setAttribute('aria-expanded','false'); popAnchor=null; } }
 const respMenu=(scope)=>`<div class="ph">Responsável</div>${PEOPLE.map(p=>`<button class="opt" role="menuitem" data-a="setresp" data-v="${p}" data-scope="${scope}"><span class="grow">${p}</span><span class="msr">person_add</span></button>`).join('')}<div class="sepl"></div><button class="opt" role="menuitem" data-a="setresp" data-v="" data-scope="${scope}"><span class="grow">Remover responsável</span><span class="msr">close</span></button>`;
 const cartMenu=(scope)=>`<div class="ph">Mover para</div>${CARTS.map(p=>`<button class="opt" role="menuitem" data-a="setcart" data-v="${p}" data-scope="${scope}"><span class="grow">${p}</span><span class="msr">swap_horiz</span></button>`).join('')}`;
@@ -489,6 +504,11 @@ function onClick(e){
     case 'fopt': { const f=a.dataset.k, v=a.dataset.v; const cur=S.f[f]||[]; S.f[f]=cur.includes(v)?cur.filter(x=>x!==v):[...cur,v]; const on=S.f[f].includes(v); a.setAttribute('aria-checked',on); const c=a.querySelector('.cbx'); c.classList.toggle('on',on); c.innerHTML=on?'<span class="mss">check</span>':''; refresh(); const nb=document.querySelector(`.flt[data-k="${f}"]`); if(nb){ popAnchor=nb; nb.classList.add('open'); } break; }
     case 'fclr': e.stopPropagation(); S.f[a.dataset.k]=[]; closePop(); refresh(); break;
     case 'fclrall': S.f={}; refresh(); break;
+    case 'sortmenu': if(popAnchor===a){ closePop(); break; } openPop(a,sortPop(),{alignRight:true,w:200}); break;
+    case 'sortby': { const sk=a.dataset.k; S.sort=S.sort.k===sk?{k:sk,dir:S.sort.dir==='asc'?'desc':'asc'}:{k:sk,dir:sk==='ab'?'desc':'asc'}; const inPop=a.closest('.pop'); refresh(); if(inPop) rePop('bSort',sortPop()); break; }
+    case 'colmenu': if(popAnchor===a){ closePop(); break; } openPop(a,colPop(),{alignRight:true,w:240}); break;
+    case 'colt': { e.stopPropagation(); const c=COLS.find(x=>x.k===a.dataset.k); if(!c||!canHide(c)) break; S.hid.has(c.k)?S.hid.delete(c.k):S.hid.add(c.k); saveHid(); refresh(); rePop('bCols',colPop()); break; }
+    case 'colreset': { e.stopPropagation(); if(!S.hid.size) break; S.hid.clear(); saveHid(); refresh(); rePop('bCols',colPop()); toast('Colunas restauradas para o padrão'); break; }
     case 'railclose': S.railOpen=false; refresh(); syncRail(); break;
     case 'fold': { const p=a.closest('[data-fold]'); const c=!p.classList.contains('closed'); folded[p.dataset.fold]=c; setFold(p,c); break; }
     case 'more5': { a.innerHTML='<span class="msr spin">progress_activity</span>Carregando…'; a.disabled=true; setTimeout(()=>{ S.shown[id]=(S.shown[id]||5)+5; refresh(); },450); break; }
