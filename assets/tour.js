@@ -93,14 +93,9 @@
         { sel: '#app .tools .field', title: 'Busca e funil', text: 'Busque por locador, CPF/CNPJ, usina, código, código legado ou concessionária. O funil mostra ou esconde a linha de filtros.' },
         multi(),
         common.sort, common.cols,
-        { sel: '#tbl .tr.row .c-fc', title: 'Etapa da Fatura', place: 'right',
-          text: 'Duas bolinhas: a fatura da concessionária (coleta e leitura) e a conta a pagar à concessionária. Passe o mouse para ver o estado; o tracejado fino indica que a etapa não se aplica (sem configuração ou paga pela usina).',
-          pick: function () { var d = pickRow('#tbl .tr.row .c-fc .si[data-tg]'); return d ? d.closest('.c-fc') : null; },
-          enter: function (el) { var b = QA('.si[data-tg]', el).filter(function (x) { return x.dataset.st !== 'd'; })[0] || Q('.si[data-tg]', el); return wait(150).then(function () { hoverUS(b); }); },
-          leave: unhoverUS, demo: 'hover' },
-        { sel: '#tbl .tr.row .c-loc', title: 'Etapa do Repasse', place: 'left',
-          text: 'Estudo da usina e conta a pagar ao locador. Clicar numa bolinha abre o resumo direto na seção correspondente.',
-          pick: function () { var d = pickRow('#tbl .tr.row .c-loc .si[data-tg]'); return d ? d.closest('.c-loc') : null; },
+        { sel: '#tbl .tr.row .c-fr', title: 'Fatura e Repasse: passe o mouse nos pontos', place: 'right',
+          text: 'Quatro pontos numa coluna só. Antes do divisor, a Fatura: fatura da concessionária (coleta e leitura) e conta a pagar à concessionária. Depois, o Repasse: estudo da usina e conta a pagar ao locador. No hover cada ponto mostra o estado; o tracejado fino indica que a etapa não se aplica. Clicar num ponto abre o resumo direto na seção.',
+          pick: function () { var d = pickRow('#tbl .tr.row .c-fr .si[data-tg]'); return d ? d.closest('.c-fr') : null; },
           enter: function (el) { var b = QA('.si[data-tg]', el).filter(function (x) { return x.dataset.st !== 'd'; })[0] || Q('.si[data-tg]', el); return wait(150).then(function () { hoverUS(b); }); },
           leave: unhoverUS, demo: 'hover' },
         { sel: '#tbl .tr.row .c-uc', title: 'Usina e código', text: 'O código da usina fica abaixo do nome, no mesmo padrão da UC no Contas a Faturar. O ícone mostra se a usina está ativa; o código legado aparece no hover e também entra na busca.' },
@@ -199,14 +194,15 @@
     '@keyframes trTap{0%{opacity:1;transform:scale(.3)}100%{opacity:0;transform:scale(1.8)}}',
     /* o que está em demonstração fica acima do véu */
     'html.tr-active .stag,html.tr-active #pop,html.tr-active .pop,html.tr-active #lp,html.tr-active #fd,html.tr-active .bulk,html.tr-active #bulk{z-index:9600!important}',
-    '.tr-launch{position:fixed;right:20px;bottom:20px;z-index:8500;display:flex;align-items:center;gap:8px;height:40px;padding:0 16px 0 12px;border-radius:999px;border:0;background:#1c1917;color:#fafaf9;font:500 13px/40px Inter,sans-serif;cursor:pointer;',
-    '  box-shadow:0 10px 24px rgba(12,10,9,.25);transition:transform .2s cubic-bezier(.22,.9,.24,1),box-shadow .2s,opacity .3s}',
-    '.tr-launch:hover{transform:translateY(-2px);box-shadow:0 14px 28px rgba(12,10,9,.3)}',
-    '.tr-launch .ms{font-family:"Material Symbols Rounded";font-size:20px;line-height:1;color:#baf743;font-variation-settings:"FILL" 1}',
-    '.tr-launch.new::before{content:"";position:absolute;inset:-4px;border-radius:999px;border:2px solid #baf743;animation:trRing 1.8s ease-out infinite}',
-    '@keyframes trRing{0%{opacity:.9;transform:scale(.92)}100%{opacity:0;transform:scale(1.15)}}',
-    'html.tr-active .tr-launch{opacity:0;pointer-events:none}',
-    '@media (max-width:900px){.tr-launch{display:none}}',
+    /* botão no topo, dentro da pílula do protótipo (ou solto no canto superior, se a página não tiver a pílula) */
+    '.tr-launch{position:relative;display:inline-flex;align-items:center;gap:4px;height:26px;padding:0 10px 0 7px;border-radius:999px;border:0;background:#eefec9;color:#365314;font:600 11px/26px Inter,sans-serif;cursor:pointer;transition:background .15s,transform .15s;white-space:nowrap}',
+    '.tr-launch:hover{background:#d9f99d}.tr-launch:active{transform:scale(.97)}',
+    '.tr-launch .ms{font-family:"Material Symbols Rounded";font-size:15px;line-height:1;font-variation-settings:"FILL" 1}',
+    '.tr-launch.solo{position:fixed;top:14px;right:16px;z-index:8500;box-shadow:0 1px 2px rgba(0,0,0,.08)}',
+    '.tr-launch.new::before{content:"";position:absolute;inset:-3px;border-radius:999px;border:2px solid #84cc16;animation:trRing 1.8s ease-out infinite}',
+    '@keyframes trRing{0%{opacity:.9;transform:scale(.92)}100%{opacity:0;transform:scale(1.18)}}',
+    '.tr-sep{width:1px;height:16px;background:var(--border,#d6d3d1);margin:0 2px}',
+    '@media (max-width:900px){.tr-launch,.tr-sep{display:none}}',
     '@media (prefers-reduced-motion:reduce){.tr-hole,.tr-ring,.tr-card,.tr-body,.tr-cursor,.tr-arrow,.tr-bar i{transition:none!important}.tr-ring,.tr-hero .ic,.tr-hero b,.tr-launch.new::before,.tr-demo::before{animation:none!important}}'
   ].join('\n');
   document.head.appendChild(css);
@@ -221,8 +217,15 @@
   var cursor = document.createElement('div'); cursor.className = 'tr-cursor';
   cursor.innerHTML = '<svg viewBox="0 0 24 24" width="22" height="22"><path d="M5 3l14 8-6.2 1.6L10 19z" fill="#fff" stroke="#1c1917" stroke-width="1.6" stroke-linejoin="round"/></svg>';
   var launch = document.createElement('button'); launch.className = 'tr-launch'; launch.type = 'button';
-  launch.innerHTML = '<span class="ms">explore</span>Tour guiado'; launch.setAttribute('aria-label', 'Abrir o tour guiado desta tela');
-  var mount = function () { document.body.appendChild(root); document.body.appendChild(cursor); document.body.appendChild(launch); };
+  launch.innerHTML = '<span class="ms">explore</span>Tour'; launch.setAttribute('aria-label', 'Iniciar o tour guiado desta tela'); launch.title = 'Iniciar o tour guiado de novo';
+  var mount = function () {
+    if (!root.isConnected) { document.body.appendChild(root); document.body.appendChild(cursor); }
+    if (!launch.isConnected) {
+      var pill = Q('.proto');
+      if (pill) { var sep = document.createElement('span'); sep.className = 'tr-sep'; pill.insertBefore(launch, pill.firstChild); pill.insertBefore(sep, launch.nextSibling); }
+      else { launch.classList.add('solo'); document.body.appendChild(launch); }
+    }
+  };
 
   var hole = Q('.tr-hole', root), ring = Q('.tr-ring', root), card = Q('.tr-card', root), body = Q('.tr-body', root),
       bar = Q('.tr-bar i', root), dotsEl = Q('.tr-dots', root), prevB = Q('[data-t=prev]', root), nextB = Q('[data-t=next]', root), hero = Q('.tr-hero', root);
@@ -329,11 +332,12 @@
   };
 
   var open = function () {
-    if (!root.isConnected) mount();
+    mount();
     build(); idx = -1;
     document.documentElement.classList.add('tr-active');
     root.hidden = false; void root.offsetWidth; root.classList.add('on');
     launch.classList.remove('new');
+    try { localStorage.setItem(KEY, '1'); } catch (e) {}
     go(0); cancelAnimationFrame(raf); raf = requestAnimationFrame(follow);
   };
   var close = function (done) {
