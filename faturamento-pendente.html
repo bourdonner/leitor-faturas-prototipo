@@ -65,6 +65,47 @@
     .proto{top:auto;bottom:12px;right:12px;left:12px;justify-content:center;flex-wrap:wrap}
     .tools{gap:8px}
   }
+  /* resumo no padrão do Contas a Faturar e do Usinas */
+  .rail-sc{display:flex;flex-direction:column;gap:12px}
+  .rail-sc>*{flex:none}
+  .fp .pnl.rc{padding:0;gap:0;overflow:clip}
+  .fp .pnl.rc>.bd{padding:0 24px 24px}
+  .fp .pnl.rc.closed>.rs-hd{padding-bottom:24px}
+  .fp .pnl .rs-hd{display:flex;align-items:center;gap:12px;padding:24px}
+  .fp .pnl .rs-hd .eb,.fp .act-h .eb{width:30px;height:30px;border-radius:50%;background:var(--ink);color:var(--fg);display:grid;place-items:center;flex:none}
+  .fp .pnl .rs-hd .eb .msr,.fp .act-h .eb .msr{font-size:18px}
+  .fp .pnl .rs-hd .t{flex:1;min-width:0;display:flex;flex-direction:column}
+  .fp .pnl .rs-hd .t b{font:700 16px/24px Inter,sans-serif;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .fp .pnl .rs-hd.sm .t b{font-size:14px}
+  .fp .pnl .rs-hd .cap{letter-spacing:.4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .fp .pnl .rs-hd .ib .msr{font-size:16px}
+  .fp .pnl.closed .chev,.fp .act-p.closed .chev{transform:rotate(180deg)}
+  .fp .chev{transition:transform .28s cubic-bezier(.2,.7,.2,1)}
+  .fp .act-p{border-radius:12px;overflow:clip}
+  .fp .act-p .act-h{padding:24px 24px 16px;gap:12px;font-size:14px;line-height:24px}
+  .fp .act-p .act-l{padding:0 24px 16px}
+  .fp .act-p.closed .act-h{padding-bottom:24px}
+  /* cabeçalhos grudam no topo do resumo até a seção acabar, com degradê embaixo */
+  .fp .pnl .rs-hd,.fp .act-p .act-h{position:sticky;top:0;z-index:1;background:var(--fg)}
+  .fp .pnl .rs-hd::before,.fp .act-p .act-h::before{content:"";position:absolute;inset:0;background:var(--hov2);border-radius:12px 12px 0 0;z-index:-1}
+  .fp .pnl .rs-hd::after,.fp .act-p .act-h::after{content:"";position:absolute;left:0;right:0;top:100%;height:20px;background:linear-gradient(var(--hov2),transparent);pointer-events:none;opacity:0;transition:opacity .12s}
+  .fp .pnl .rs-hd.stuck::after,.fp .act-p .act-h.stuck::after{opacity:1}
+  /* desktop: a página não rola; a tabela e o resumo rolam cada um no seu espaço (igual ao Contas a Faturar) */
+  @media (min-width:901px){
+    body{overflow:hidden}
+    .page{height:100vh;box-sizing:border-box;min-height:0}
+    .card{min-height:0}
+    .work{flex:1;min-height:0;align-items:stretch}
+    .work .lst{min-height:0}
+    #vList{flex:1;min-height:0;display:flex;flex-direction:column}
+    #vKan:not([hidden]){flex:1;min-height:0;overflow:auto}
+    .tblw{flex:1;min-height:0;display:flex;flex-direction:column;overflow:visible}
+    .fp .tbl{flex:0 1 auto;min-height:0;overflow:auto;overscroll-behavior:contain}
+    .fp .tbl .tr.th{position:sticky;top:0;z-index:2;background:var(--fg)}
+    .fp .rail{position:static;min-height:0;display:flex;flex-direction:column;gap:12px}
+    .rail>.rbar{flex:none}
+    .rail-sc{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;border-radius:12px}
+  }
 </style>
 <script src="assets/toast.js"></script>
 </head>

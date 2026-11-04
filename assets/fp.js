@@ -194,26 +194,26 @@ H.indicators=()=>{
 
 /* resumo */
 H.rbar=()=>`<div class="rbar"><span class="msr">article_shortcut</span><span class="grow">Resumo do ticket</span><button class="ib" data-a="railclose" aria-label="Fechar resumo"><span class="msr">right_panel_close</span></button></div>`;
-H.pnlHead=(key,ttl,cap,pre)=>`<div class="ph2"><div class="grow">${pre||''}<div class="ttl">${ttl}</div>${cap?`<div class="cap">${cap}</div>`:''}</div><button class="ib" data-a="fold" data-k="${key}" aria-label="Recolher ${ttl}" aria-expanded="true"><span class="msr chev">expand_less</span></button></div>`;
+H.pnlHead=(key,ttl,cap,pre,ic)=>`<div class="rs-hd sm"><span class="eb"><span class="msr fill">${ic||'description'}</span></span><div class="t">${pre||''}<b>${ttl}</b>${cap?`<span class="cap">${cap}</span>`:''}</div><button class="ib" data-a="fold" data-k="${key}" aria-label="Recolher ${ttl}" aria-expanded="true"><span class="msr chev">expand_less</span></button></div>`;
 H.ticket=t=>`<div class="pnl" data-tk="${t.id}"><div class="tkhead"><span class="ttl" style="flex:none">${t.id}</span>${H.badge(t.status,STA)}<span style="flex:1"></span><button class="more" data-a="tkmenu" data-tk="${t.id}" aria-label="Ações do ticket" aria-haspopup="menu"><span class="msr">more_horiz</span></button></div><div class="cap" style="font-size:14px;line-height:20px">Aberto em ${t.aberto} · ${t.fat.length?H.faturas(t.fat.length):'sem faturas'}</div></div>`;
 H.demCard=t=>t.dem?`<div class="pnl dem"><b>Demissão solicitada</b><button class="b danger full" data-a="toast" data-msg="Abriria o cancelamento na SPEC de Cancelamento">Ver cancelamento</button></div>`:'';
 H.coop=t=>{ const it=(ic,l,v,act,cl)=>`<div class="it"><span class="ci ${cl||''}"><span class="msr fill">${ic}</span></span><div class="grow"><div class="cap">${l}</div><div class="v">${v}</div></div>${act||''}</div>`;
   const sit=t.dem?'Demissão solicitada':t.sit; const ok=t.status==='Resolvido';
-  return `<div class="pnl tight" data-fold="coop"><div class="ph2" style="padding:0 4px 4px"><span class="who" style="padding:0;flex:1;min-width:0"><span class="av"><span class="msr fill">${t.pj?'work':'person'}</span></span><span style="min-width:0"><span class="nm" style="display:block">${esc(title(t.coop))}</span><span class="cap">Titular</span></span></span><button class="ib" data-a="toast" data-msg="Abriria o cadastro do cooperado" aria-label="Abrir cadastro"><span class="msr">open_in_new</span></button><button class="ib" data-a="fold" data-k="coop" aria-label="Recolher cooperado" aria-expanded="true"><span class="msr chev">expand_less</span></button></div>
+  return `<div class="pnl rc" data-fold="coop"><div class="rs-hd"><span class="eb"><span class="msr fill">${t.pj?'work':'person'}</span></span><div class="t"><b>${esc(title(t.coop))}</b><span class="cap">Titular</span></div><button class="ib" data-a="toast" data-msg="Abriria o cadastro do cooperado" aria-label="Abrir cadastro"><span class="msr">open_in_new</span></button><button class="ib" data-a="fold" data-k="coop" aria-label="Recolher cooperado" aria-expanded="true"><span class="msr chev">expand_less</span></button></div>
   <div class="bd">${it(ok?'check':'hourglass_top','Situação',esc(sit),'',ok?'ok':'')}${it('badge',t.pj?'CNPJ':'CPF',t.doc,`<button class="ib" data-a="copy" data-v="${t.doc}" aria-label="Copiar ${t.pj?'CNPJ':'CPF'}"><span class="msr">content_copy</span></button>`)}${it(t.herd?'mail':'groups','Carteira',esc(t.cart)+(t.herd?` · antes ${esc(t.herd.replace('Carteira ',''))}`:''),'<button class="ib" data-a="toast" data-msg="Abriria a carteira" aria-label="Abrir carteira"><span class="msr">open_in_new</span></button>')}${it('id_card','Responsável',t.resp?esc(t.resp):'Sem responsável')}</div></div>`; };
 H.fatCard=(t,f)=>f.lida
   ?`<div class="ev"><span class="i c-ok"><span class="msr fill">check</span></span><div class="n">${f.comp}</div><div class="d">UC ${f.uc} · Fatura lida</div></div>`
   :`<div class="ev hv" tabindex="0" aria-label="${f.comp}, UC ${f.uc}, ${f.mot}. Leitura prevista ${f.prev}, ${f.late} dias em atraso"><span class="i c-alert"><span class="msr fill">hourglass_top</span></span>${closed(t)?'':`<button class="act2" data-a="up1" data-tk="${t.id}" data-f="${f.id}" aria-label="Enviar fatura ${f.comp}"><span class="msr">upload</span></button>`}<div class="n">${f.comp}</div><div class="d">UC ${f.uc} · ${f.mot}</div><div class="dif"><span class="k">Leitura prevista ${f.prev}</span><span class="late">${f.late} dias em atraso</span></div></div>`;
 H.faturasPnl=t=>{ const n=t.fat.length; const L=n-pend(t).length; const sh=Math.min(n,S.shown[t.id]||5); const rest=n-sh; const ucs=[...new Set(t.fat.map(f=>f.uc))].length;
-  if(!n) return `<div class="pnl" data-fold="fat">${H.pnlHead('fat','Nenhuma fatura pendente','Todas as faturas foram recebidas')}</div>`;
+  if(!n) return `<div class="pnl rc" data-fold="fat">${H.pnlHead('fat','Nenhuma fatura pendente','Todas as faturas foram recebidas','','receipt_long')}</div>`;
   const ttl=L?`${L} de ${n} faturas lidas`:n2(n,'fatura pendente','faturas pendentes');
-  return `<div class="pnl" data-fold="fat">${H.pnlHead('fat',ttl,H.ucs(ucs)+' · '+t.conc)}<div class="bd"><div class="evs gap">${t.fat.slice(0,sh).map(f=>H.fatCard(t,f)).join('')}</div>
+  return `<div class="pnl rc" data-fold="fat">${H.pnlHead('fat',ttl,H.ucs(ucs)+' · '+t.conc,'','receipt_long')}<div class="bd"><div class="evs gap">${t.fat.slice(0,sh).map(f=>H.fatCard(t,f)).join('')}</div>
   ${rest>0?`<button class="b gh" data-a="more5" data-tk="${t.id}">Carregar mais ${Math.min(5,rest)} · ${rest===1?'falta 1':'faltam '+rest}<span class="msr">expand_more</span></button>`:''}
   ${closed(t)?'':`<button class="b out full" data-a="imp" data-tk="${t.id}">Importar faturas</button>`}</div></div>`; };
 H.tentPnl=t=>{ if(closed(t)||t.dem) return '';
   const lim=t.tent>=S.cfg.lim; const p=pend(t).length, L=t.fat.length-p;
   const cap=t.herd?`${t.tent} de 7 realizadas · herdadas da ${t.herd}`:lim?'7 de 7 realizadas · limite atingido':t.tent?`${t.tent} de 7 realizadas · `+(L?`faltam ${n2(p,'fatura','faturas')}`:'última há 2 dias'):'Nenhuma tentativa registrada';
-  return `<div class="pnl" data-fold="tent">${H.pnlHead('tent','Tentativas de contato',cap,t.herd?'<span class="bdg b-alert" style="margin-bottom:6px">Herdado</span>':'')}<div class="bd">${H.dots(t.tent)}
+  return `<div class="pnl rc" data-fold="tent">${H.pnlHead('tent','Tentativas de contato',cap,t.herd?'<span class="bdg b-alert" style="margin-bottom:6px;align-self:flex-start">Herdado</span>':'','call')}<div class="bd">${H.dots(t.tent)}
   ${lim?`<button class="b pri full" disabled>Registrar tentativa</button><button class="b out full" data-a="dem" data-tk="${t.id}">Solicitar demissão</button>`
        :`<button class="b pri full" data-a="tent" data-tk="${t.id}">Registrar tentativa</button><button class="b out full" disabled>Solicitar demissão</button><div class="cap" style="text-align:center">Libera na 7ª tentativa sem retorno</div>`}</div></div>`; };
 H.ev=(t,e,i)=>{ const who=e.who?`<span class="who2" data-name="${esc(e.who)}">${ini(e.who)}</span>`:'<span class="who2 sys" data-name="Sistema"><span class="msr fill">bolt</span></span>';
@@ -221,8 +221,8 @@ H.ev=(t,e,i)=>{ const who=e.who?`<span class="who2" data-name="${esc(e.who)}">${
   if(e.from) dif=`<div class="dif"><span class="o ${e.from==='Sem responsável'?'none':''}">${esc(e.from)}</span><span class="msr">arrow_forward</span><span class="t">${esc(e.to)}</span></div>`;
   else if(e.ev) dif=`<div class="dif"><button class="b out" data-a="evid" data-tk="${t.id}" data-i="${i}"><span class="msr">visibility</span>Ver evidência</button>${t.hist.findIndex(x=>x.ev)===i&&!closed(t)?`<button class="b gh" data-a="undo-tent" data-tk="${t.id}"><span class="msr">undo</span>Desfazer</button>`:''}</div>`;
   return `<div class="ev ${dif?'hv':''} ${e.isNew?'new':''}" ${dif?'tabindex="0"':''}><span class="i ${e.c}"><span class="msr fill">${e.ic}</span></span>${who}<div class="n">${esc(e.t)}</div><div class="d">${e.d}</div>${dif}</div>`; };
-H.hist=t=>`<div class="act-p" data-fold="hist"><div class="act-h"><span class="grow">Histórico de tentativas</span><button class="ib w" data-a="fold" data-k="hist" aria-label="Minimizar histórico" aria-expanded="true"><span class="msr">close_fullscreen</span></button></div><div class="act-l evs">${t.hist.map((e,i)=>(i?'<div class="lnk"></div>':'')+H.ev(t,e,i)).join('')}</div></div>`;
-H.rail=t=>H.rbar()+H.ticket(t)+H.demCard(t)+H.coop(t)+H.faturasPnl(t)+H.tentPnl(t)+H.hist(t);
+H.hist=t=>`<div class="act-p" data-fold="hist"><div class="act-h"><span class="eb"><span class="msr fill">history</span></span><span class="grow">Histórico de tentativas</span><button class="ib" data-a="fold" data-k="hist" aria-label="Recolher histórico" aria-expanded="true"><span class="msr chev">expand_less</span></button></div><div class="act-l evs">${t.hist.map((e,i)=>(i?'<div class="lnk"></div>':'')+H.ev(t,e,i)).join('')}</div></div>`;
+H.rail=t=>H.rbar()+`<div class="rail-sc" id="railSc">${H.ticket(t)+H.demCard(t)+H.coop(t)+H.faturasPnl(t)+H.tentPnl(t)+H.hist(t)}</div>`;
 
 /* ---------- modais ---------- */
 const sel=(id,opts,ph)=>`<select class="sel" id="${id}">${ph?`<option value="" selected disabled>${ph}</option>`:''}${opts.map(o=>`<option>${o}</option>`).join('')}</select>`;
@@ -324,7 +324,10 @@ const mounts=[]; // {el, fn}
 const folded={};
 function mount(el,fn){ mounts.push({el,fn}); paint(el,fn); }
 function paint(el,fn){ el.innerHTML=fn(); el.querySelectorAll('[data-fold]').forEach(p=>{ if(folded[p.dataset.fold]) setFold(p,true); }); }
-function refresh(){ if(document.getElementById('tbl')){ const v=new Set(visible().map(t=>t.id)); [...S.sel].forEach(id=>{ if(!v.has(id)) S.sel.delete(id); }); }
+function markStuck(){ const sc=document.getElementById('railSc'); if(!sc) return; const top=sc.getBoundingClientRect().top;
+  sc.querySelectorAll('.rs-hd,.act-h').forEach(h=>{ const box=h.parentElement.getBoundingClientRect(); h.classList.toggle('stuck',box.top<top-0.5&&h.getBoundingClientRect().top<=top+0.5); }); }
+function refresh(){ const sc0=document.getElementById('railSc'), st0=sc0?sc0.scrollTop:0, cur0=S.cur; refresh0(); const sc1=document.getElementById('railSc'); if(sc1&&S.cur===cur0) sc1.scrollTop=st0; markStuck(); }
+function refresh0(){ if(document.getElementById('tbl')){ const v=new Set(visible().map(t=>t.id)); [...S.sel].forEach(id=>{ if(!v.has(id)) S.sel.delete(id); }); }
   mounts.forEach(m=>{ if(document.contains(m.el)) paint(m.el,m.fn); }); updateBulk(); }
 function setFold(p,c){ p.classList.toggle('closed',c); const b=p.querySelector('[data-a="fold"]'); if(b) b.setAttribute('aria-expanded',String(!c)); }
 
@@ -548,6 +551,7 @@ function wireCommon(){
   if(wireCommon.done) return; wireCommon.done=1;
   const root=document.querySelector('[data-fp-root]'); if(root&&!document.getElementById('ovTent')) root.insertAdjacentHTML('beforeend','<div class="pop" id="pop" hidden role="menu"></div>'+MODALS);
   document.addEventListener('click',onClick);
+  document.addEventListener('scroll',e=>{ if(e.target.id==='railSc') markStuck(); },true);
   document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ if(popEl&&!popEl.hidden){ const a=popAnchor; closePop(); a&&a.focus(); return; } const o=document.querySelector('.ov.on'); if(o) closeOv(o); }
     if((e.key==='Enter'||e.key===' ')&&e.target.matches('.tr.row,.kc')){ e.preventDefault(); e.target.click(); } });
   document.addEventListener('input',e=>{ if(e.target.matches('[data-a="fsearch"]')){ const q=e.target.value.toLowerCase(); popEl.querySelectorAll('.opt').forEach(o=>o.hidden=!o.textContent.toLowerCase().includes(q)); }
