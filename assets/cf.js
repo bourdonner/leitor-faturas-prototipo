@@ -519,7 +519,7 @@ function mountScreen(){
     tg.style.width=full+'px'; tg.classList.add('on'); };
   const hideTag=()=>{ if(!tagFor) return; tagFor=null; tg.classList.remove('on'); tg.style.width=tg.style.minWidth; tagT=setTimeout(()=>{ if(!tagFor) tg.hidden=true; },200); };
   /* as bolinhas têm 8 px: vale a mais próxima do cursor dentro do grupo de etapas */
-  const dotAt=e=>{ const g=e.target.closest&&e.target.closest('.steps'); if(!g) return null; let best=null,bd=1e9;
+  const dotAt=e=>{ const c=e.target.closest&&e.target.closest('.eta'); const g=c&&c.querySelector('.steps'); if(!g) return null; let best=null,bd=1e9;
     g.querySelectorAll('i[data-tg]').forEach(d=>{ const q=d.getBoundingClientRect(), dx=Math.abs(e.clientX-(q.left+q.width/2)); if(dx<bd){ bd=dx; best=d; } }); return best; };
   tblEl.addEventListener('mousemove',e=>{ const b=dotAt(e); b?showTag(b):hideTag(); });
   tblEl.addEventListener('mouseleave',hideTag);
