@@ -167,13 +167,13 @@ const sortBtn=(k,l)=>{ const on=S.sort.k===k; return `<button class="so${on?' on
 const COLS=[
  {k:'ck',w:'48px',h:()=>{ const v=visible(); const n=v.filter(r=>S.sel.has(r.id)).length; const st=n===0?'':n===v.length?'on':'mid'; return `<button class="cbx ${st}" data-a="selall" role="checkbox" aria-checked="${n===0?'false':n===v.length?'true':'mixed'}" aria-label="Selecionar todos">${st==='on'?'<span class="mss">check</span>':''}</button>`; },
    c:r=>`<button class="cbx ${S.sel.has(r.id)?'on':''}" data-a="sel" data-id="${r.id}" role="checkbox" aria-checked="${S.sel.has(r.id)}" aria-label="Selecionar ${r.id}">${S.sel.has(r.id)?'<span class="mss">check</span>':''}</button>`},
- {k:'ref',w:'110px',h:()=>sortBtn('ref','Ref.'),c:r=>r.ref},
- {k:'tit',w:'minmax(240px,1fr)',h:()=>sortBtn('tit','Titular'),c:H.tit,cel:1},
- {k:'uc',w:'minmax(220px,1fr)',h:()=>'Unidade consumidora',c:H.uc,cel:1},
- {k:'est',w:'150px',h:()=>'Estudo',c:H.est},
- {k:'eta',w:'160px',h:()=>'Etapa',c:r=>`<div class="two eta">${H.steps(r)}<span>${fase(r)}</span></div>`},
- {k:'rec',w:'170px',h:()=>'Status',c:H.stat},
- {k:'rev',w:'48px',h:()=>{ const on=S.sort.k==='rev'; return `<button class="so so-rev${on?' on':''}" data-a="sortby" data-k="rev" title="Ordenar por revisão manual" aria-label="Ordenar por revisão manual"><span class="msr${on?' fill':''}">flag</span></button>`; },c:r=>r.rev?'<span class="rvf" title="Revisão manual" aria-label="Revisão manual"><span class="msr fill">flag</span></span>':''},
+ {k:'ref',w:'110px',l:'Ref.',fix:1,h:()=>sortBtn('ref','Ref.'),c:r=>r.ref},
+ {k:'tit',w:'minmax(240px,1fr)',l:'Titular',h:()=>sortBtn('tit','Titular'),c:H.tit,cel:1},
+ {k:'uc',w:'minmax(220px,1fr)',l:'Unidade consumidora',h:()=>'Unidade consumidora',c:H.uc,cel:1},
+ {k:'est',w:'150px',l:'Estudo',h:()=>'Estudo',c:H.est},
+ {k:'eta',w:'160px',l:'Etapa',h:()=>'Etapa',c:r=>`<div class="two eta">${H.steps(r)}<span>${fase(r)}</span></div>`},
+ {k:'rec',w:'170px',l:'Status',h:()=>'Status',c:H.stat},
+ {k:'rev',w:'48px',l:'Revisão manual',h:()=>{ const on=S.sort.k==='rev'; return `<button class="so so-rev${on?' on':''}" data-a="sortby" data-k="rev" title="Ordenar por revisão manual" aria-label="Ordenar por revisão manual"><span class="msr${on?' fill':''}">flag</span></button>`; },c:r=>r.rev?'<span class="rvf" title="Revisão manual" aria-label="Revisão manual"><span class="msr fill">flag</span></span>':''},
  {k:'act',w:'56px',h:()=>'',c:r=>`<button class="more" data-a="rowmenu" data-id="${r.id}" aria-label="Ações de ${r.id}" aria-haspopup="menu"><span class="msr">more_horiz</span></button>`}
 ];
 
@@ -217,9 +217,15 @@ H.filters=()=>FLT.filter(f=>!f.x||S.xf.has(f.k)).map(f=>{ const v=S.f[f.k]||[]; 
   return `<button class="flt ${has?'has':''}" data-a="flt" data-k="${f.k}" aria-haspopup="dialog"><span class="lb">${f.l}</span>${has?'<span class="sep"></span>'+v.slice(0,2).map(x=>`<span class="chip">${esc(x)}</span>`).join('')+(v.length>2?`<span class="exc">+${v.length-2}</span>`:'')+`<span class="x" data-a="fclr" data-k="${f.k}" role="button" aria-label="Limpar ${f.l}"><span class="msr">close</span></span>`:'<span class="msr">expand_more</span>'}</button>`; }).join('')
   +(FLT.some(f=>f.x&&!S.xf.has(f.k))?'<button class="flt more-f" data-a="morefl" aria-haspopup="menu"><span class="msr">add</span><span class="lb">Mais filtros</span></button>':'')
   +(Object.values(S.f).some(v=>v&&v.length)?'<button class="fclear" data-a="fclrall">Limpar filtros</button>':'');
-H.table=()=>{ const gt=COLS.map(c=>c.w).join(' '); const v=visible();
-  const head=`<div class="tr th" role="row" style="grid-template-columns:${gt}">${COLS.map(c=>`<div role="columnheader" class="c-${c.k}">${c.h()}</div>`).join('')}</div>`;
-  const rows=v.map(r=>`<div class="tr row ${S.sel.has(r.id)?'is-sel':''} ${S.railOpen&&S.cur===r.id?'cur':''}" role="row" tabindex="0" data-a="row" data-id="${r.id}" style="grid-template-columns:${gt}">${COLS.map(c=>`<div role="cell" class="c-${c.k}${c.cel?' cel':''}">${c.c(r)}</div>`).join('')}</div>`).join('');
+/* colunas visíveis (botão Colunas, como no Faturamento de Usinas); a escolha fica salva no navegador */
+const HID_KEY='cf-v2-hidden-cols';
+S.hid=new Set((()=>{ try{ return JSON.parse(localStorage.getItem(HID_KEY)||'[]'); }catch(e){ return []; } })());
+const saveHid=()=>{ try{ localStorage.setItem(HID_KEY,JSON.stringify([...S.hid])); }catch(e){} };
+const canHide=c=>!!c.l&&!c.fix;
+const VC=()=>{ const v=COLS.filter(c=>!S.hid.has(c.k)); const hasFr=v.some(c=>/fr/.test(c.w)); return v.map(c=>hasFr||c.k==='ck'||c.k==='act'||c.k==='rev'?c:{...c,w:`minmax(${c.w},1fr)`}); };
+H.table=()=>{ const vc=VC(); const gt=vc.map(c=>c.w).join(' '); const v=visible();
+  const head=`<div class="tr th" role="row" style="grid-template-columns:${gt}">${vc.map(c=>`<div role="columnheader" class="c-${c.k}">${c.h()}</div>`).join('')}</div>`;
+  const rows=v.map(r=>`<div class="tr row ${S.sel.has(r.id)?'is-sel':''} ${S.railOpen&&S.cur===r.id?'cur':''}" role="row" tabindex="0" data-a="row" data-id="${r.id}" style="grid-template-columns:${gt}">${vc.map(c=>`<div role="cell" class="c-${c.k}${c.cel?' cel':''}">${c.c(r)}</div>`).join('')}</div>`).join('');
   return head+(rows||'<div class="empty">Nenhum faturamento com esses filtros.</div>'); };
 
 /* ---------- resumo ---------- */
@@ -399,6 +405,11 @@ function openPop(anchor,html,opts={}){ closePop(); popEl=document.getElementById
   if(up){ popEl.style.top='auto'; popEl.style.bottom=(innerHeight-r.top+6)+'px'; } else { popEl.style.bottom='auto'; popEl.style.top=(r.bottom+6)+'px'; }
   const f=popEl.querySelector('textarea,input,button'); if(f) f.focus({preventScroll:true}); }
 function closePop(){ if(popEl){ popEl.hidden=true; popEl.innerHTML=''; } if(popAnchor){ popAnchor.classList.remove('open'); popAnchor.setAttribute('aria-expanded','false'); popAnchor=null; } }
+const colPop=()=>`<div class="ph">Colunas</div><div role="group" aria-label="Colunas visíveis">${COLS.filter(c=>c.l).map(c=>{ const on=!S.hid.has(c.k), fx=!canHide(c);
+  return `<button class="opt${fx?' fx':''}" data-a="colt" data-k="${c.k}" role="menuitemcheckbox" aria-checked="${on}"${fx?' aria-disabled="true" title="Coluna fixa"':''}><span class="cbx ${on?'on':''}${fx?' dis':''}">${on?'<span class="mss">check</span>':''}</span><span class="grow">${c.l}</span>${fx?'<span class="msr" aria-hidden="true">lock</span>':''}</button>`; }).join('')}</div>
+  <div class="sepl"></div><button class="opt" data-a="colreset"${S.hid.size?'':' aria-disabled="true"'}><span class="msr">restart_alt</span><span class="grow">Restaurar padrão</span></button>`;
+const reCol=()=>{ const b=document.getElementById('bCols'); const f=document.activeElement&&document.activeElement.dataset?document.activeElement.dataset.k||document.activeElement.dataset.a:null; popEl.innerHTML=colPop(); popAnchor=b; b.classList.add('open'); b.setAttribute('aria-expanded','true');
+  const el=f&&(popEl.querySelector(`[data-k="${f}"]`)||popEl.querySelector(`[data-a="${f}"]`)); (el||popEl.querySelector('button')).focus({preventScroll:true}); };
 const sortPop=()=>[['ref','Referência'],['tit','Titular'],['val','Valor'],['rev','Revisão manual']].map(([k,l])=>{ const on=S.sort.k===k; return `<button class="opt" data-a="sortby" data-k="${k}" role="menuitemradio" aria-checked="${on}"><span class="grow">${l}</span>${on?`<span class="msr">${S.sort.dir==='asc'?'arrow_upward':'arrow_downward'}</span>`:''}</button>`; }).join('');
 function fltPop(a,f){ const v=S.f[f.k]||[];
   if(f.t==='txt') return openPop(a,`<div class="ph">${f.l}</div><div class="obs"><input class="fin" id="fIn" data-k="${f.k}" inputmode="numeric" placeholder="${esc(f.ph||'')}" value="${esc(v[0]||'')}" aria-label="${f.l}"><div class="row"><button class="b pri sm" data-a="fapply" data-k="${f.k}">Aplicar</button></div></div>`,{w:260});
@@ -453,6 +464,9 @@ function onClick(e){
     case 'popclose': closePop(); break;
     case 'grupo': e.stopPropagation(); toast('Abriria o '+a.dataset.v); break;
     case 'sortby': { const sk=a.dataset.k; S.sort=S.sort.k===sk?{k:sk,dir:S.sort.dir==='asc'?'desc':'asc'}:{k:sk,dir:sk==='tit'?'asc':'desc'}; const inPop=a.closest('#pop'); refresh(); if(inPop){ const b=document.getElementById('bSort'); popEl.innerHTML=sortPop(); popAnchor=b; b.classList.add('open'); } break; }
+    case 'colmenu': if(popAnchor===a){ closePop(); break; } openPop(a,colPop(),{alignRight:true,w:240}); break;
+    case 'colt': { e.stopPropagation(); const c=COLS.find(x=>x.k===a.dataset.k); if(!c||!canHide(c)) break; S.hid.has(c.k)?S.hid.delete(c.k):S.hid.add(c.k); saveHid(); refresh(); reCol(); break; }
+    case 'colreset': { e.stopPropagation(); if(!S.hid.size) break; S.hid.clear(); saveHid(); refresh(); reCol(); toast('Colunas restauradas para o padrão'); break; }
     case 'sortmenu': if(popAnchor===a){ closePop(); break; } openPop(a,sortPop(),{alignRight:true,w:200}); break;
     /* Incluir leva ao Leitor de Faturas, já com o envio de faturas aberto */
     case 'incmenu': location.href='index.html?nova=1'; break;
