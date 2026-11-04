@@ -116,6 +116,43 @@
           enter: function (el) { if (el.getAttribute('aria-expanded') !== 'true') click(el); return wait(240); },
           leave: function (el) { if (el && el.getAttribute('aria-expanded') === 'true') click(el); }, also: '#fd' }
       ] },
+    'faturamento-detalhe.html': {
+      name: 'Detalhamento do faturamento', icon: 'receipt_long',
+      intro: 'Veja como conferir um faturamento etapa por etapa e agir sobre ele sem sair desta tela.',
+      steps: [
+        { sel: '#phbar', title: 'Navegue pelas etapas', place: 'top',
+          text: 'Escolha uma etapa para ver a prévia e os detalhes dela juntos. Etapas que o faturamento ainda não alcançou ficam bloqueadas.' },
+        { sel: '#actions', title: 'Siga para o próximo passo', place: 'bottom',
+          text: 'As ações do faturamento ficam aqui. O botão principal é sempre o próximo passo do fluxo; as outras estão no menu, agrupadas por etapa.' },
+        { sel: '.ialert', title: 'Resolva divergências', place: 'right',
+          text: 'Quando dois dados não batem, o aviso aparece logo abaixo do título da seção e diz qual valor vale ou o que precisa ser feito.' },
+        { sel: '#acts .ev', title: 'Veja o que mudou', place: 'left', demo: 'hover',
+          text: 'Passe o mouse num registro de edição para ver o valor anterior e o novo.',
+          pick: function () { return QA('#acts .ev').filter(function (e) { return e.querySelector('.fromto'); })[0] || null; },
+          enter: function (el) { reveal(el, 'center'); el.focus({ preventScroll: true }); return wait(250); },
+          leave: function (el) { if (el) el.blur(); } },
+        { sel: '.tbl.coms', title: 'Reveja o que foi enviado', place: 'right',
+          text: 'Clique numa comunicação para ver a mensagem exatamente como o cliente recebeu, com canal, destino e status de entrega.',
+          enter: function (el) { reveal(el, 'center'); return wait(300); } },
+        { sel: '#tabbar', title: 'Monte seu espaço de trabalho', place: 'top',
+          text: 'Abra ou minimize os painéis de prévia, detalhes e atividade para deixar à vista só o que você precisa.' }
+      ] },
+    'detalhe.html': {
+      name: 'Detalhe da fatura', icon: 'electric_meter',
+      intro: 'Veja como revisar a leitura de uma fatura até ela estar pronta para faturar.',
+      steps: [
+        { sel: '#idbWrap', title: 'Comece pela unidade consumidora', place: 'bottom',
+          text: 'Confirme a qual UC esta fatura pertence. As pendências da leitura só são liberadas depois disso.' },
+        { sel: '#tbPend', title: 'Resolva as pendências', place: 'top',
+          text: 'Aqui ficam os campos que precisam de revisão. Se uma pendência estiver fora da tela, um marcador na borda aponta para ela.' },
+        { sel: '#pDet .card', title: 'Corrija um valor no próprio card', place: 'left',
+          text: 'Clique no lápis para editar. Com o campo vazio, Tab preenche com o valor sugerido; depois, passe o mouse para ver o valor anterior.',
+          pick: function () { var e = QA('#pDet .card .edit').filter(visible)[0]; return e ? e.closest('.card') : null; } },
+        { sel: '#tabbar', title: 'Monte seu espaço de trabalho', place: 'top',
+          text: 'Abra ou minimize os painéis Fatura, Detalhes e Atividade. Quando falta espaço, os detalhes ficam à vista primeiro.' },
+        { sel: '#reExt', title: 'Leia a fatura de novo', place: 'bottom',
+          text: 'Se a leitura veio com erro, peça uma nova extração do arquivo. São até duas tentativas.' }
+      ] },
     'faturamento-pendente.html': {
       name: 'Tickets · Faturamento Pendente', icon: 'confirmation_number',
       intro: 'Veja como acompanhar as faturas que ainda não chegaram.',
@@ -132,7 +169,7 @@
   /* ---------- estilos ---------- */
   var css = document.createElement('style');
   css.textContent = [
-    '.tr-root{position:fixed;inset:0;z-index:9000;pointer-events:none;font:400 14px/21px Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}',
+    '.tr-root{position:fixed;inset:0;z-index:2147483000;pointer-events:none;font:400 14px/21px Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}',
     '.tr-root[hidden]{display:none}',
     '.tr-veil{position:fixed;inset:0;background:rgba(12,10,9,0);transition:background .35s ease;pointer-events:auto}',
     '.tr-root.on .tr-veil{background:rgba(12,10,9,.55)}',
@@ -181,13 +218,13 @@
     '.tr-bar{display:none!important}',
     '@keyframes trFloat{50%{transform:translateY(-4px) rotate(-3deg)}}',
     '@keyframes trBubble{0%{transform:translateY(0) scale(.6);opacity:0}25%{opacity:1}80%{opacity:.6}100%{transform:translateY(-96px) scale(1);opacity:0}}',
-    '.tr-cursor{position:fixed;width:22px;height:22px;z-index:9700;pointer-events:none;opacity:0;transition:left .7s cubic-bezier(.22,.9,.24,1),top .7s cubic-bezier(.22,.9,.24,1),opacity .3s;filter:drop-shadow(0 2px 3px rgba(0,0,0,.35))}',
+    '.tr-cursor{position:fixed;width:22px;height:22px;z-index:2147483600;pointer-events:none;opacity:0;transition:left .7s cubic-bezier(.22,.9,.24,1),top .7s cubic-bezier(.22,.9,.24,1),opacity .3s;filter:drop-shadow(0 2px 3px rgba(0,0,0,.35))}',
     '.tr-cursor.on{opacity:1}',
     '.tr-cursor::after{content:"";position:absolute;left:-10px;top:-10px;width:20px;height:20px;border-radius:50%;border:2px solid #baf743;opacity:0}',
     '.tr-cursor.tap::after{animation:trTap .7s ease-out}',
     '@keyframes trTap{0%{opacity:1;transform:scale(.3)}100%{opacity:0;transform:scale(1.8)}}',
     /* o que está em demonstração fica acima do véu */
-    'html.tr-active .stag,html.tr-active .dtc,html.tr-active #pop,html.tr-active .pop,html.tr-active #lp,html.tr-active #fd,html.tr-active .bulk,html.tr-active #bulk{z-index:9600!important}',
+    'html.tr-active .stag,html.tr-active .dtc,html.tr-active #pop,html.tr-active .pop,html.tr-active #lp,html.tr-active #fd,html.tr-active .bulk,html.tr-active #bulk{z-index:2147483100!important}',
     /* botão no topo, dentro da pílula do protótipo (ou solto no canto superior, se a página não tiver a pílula) */
     '.tr-launch{position:relative;display:inline-flex;align-items:center;gap:4px;height:26px;padding:0 10px 0 7px;border-radius:999px;border:0;background:#eefec9;color:#365314;font:600 11px/26px Inter,sans-serif;cursor:pointer;transition:background .15s,transform .15s;white-space:nowrap}',
     '.tr-launch:hover{background:#d9f99d}.tr-launch:active{transform:scale(.97)}',
