@@ -19,6 +19,11 @@
   var click = function (el) { if (el) el.click(); };
   var popOpen = function () { var p = Q('#pop'); return p && !p.hidden; };
   var closePop = function (anchor) { if (popOpen() && anchor) anchor.click(); var p = Q('#pop'); if (p && !p.hidden) { document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true })); } };
+  /* rola só a caixa rolável mais próxima do alvo (resumo, tabela); scrollIntoView arrastava a página inteira */
+  var scrollBox = function (el) { var p = el && el.parentElement; while (p && p !== document.body && p !== document.documentElement) { var cs = getComputedStyle(p); if (/(auto|scroll)/.test(cs.overflowY) && p.scrollHeight > p.clientHeight + 1) return p; p = p.parentElement; } return null; };
+  var reveal = function (el, block) { var box = scrollBox(el); if (!box) return; var b = box.getBoundingClientRect(), r = el.getBoundingClientRect();
+    if (block !== 'start' && r.top >= b.top && r.bottom <= b.bottom) return;
+    box.scrollTop += block === 'start' ? (r.top - b.top - 8) : ((r.top + r.height / 2) - (b.top + b.height / 2)); };
   var visible = function (el) { if (!el) return false; var r = el.getBoundingClientRect(); return r.width > 0 && r.height > 0 && getComputedStyle(el).visibility !== 'hidden'; };
   /* linha com uma etapa interessante (falha > atenção > em andamento) */
   var pickRow = function (dotSel) {
@@ -42,8 +47,8 @@
   var common = {
     sidebar: { sel: '.sb-tgl', pad: 6, title: 'Barra lateral aberta ou recolhida',
       text: 'Este ícone abre e recolhe a barra lateral, como no style guide. A escolha fica salva. Recolhida, passe o mouse nos ícones para ver os submenus; só os grupos com telas no protótipo são clicáveis.' },
-    rbarFold: { sel: '#rail .rbar', title: 'Resumo da linha selecionada',
-      text: 'Clique numa linha para ver o resumo aqui. O botão à direita recolhe ou expande todas as seções de uma vez; cada seção também tem o próprio chevron. O resumo rola sozinho e os cabeçalhos ficam presos no topo enquanto você lê.' },
+    rbarFold: { sel: '#rail .rbar', title: 'Foque no que importa',
+      text: 'Recolha ou expanda todas as seções do resumo de uma vez e deixe à vista só o que você precisa conferir.' },
     sort: { sel: '#bSort', title: 'Ordenar', place: 'bottom',
       text: 'Escolha o critério de ordenação. Clicar de novo no mesmo critério inverte a ordem (a seta mostra o sentido).',
       enter: function (el) { if (!popOpen()) click(el); return wait(220); }, leave: function (el) { closePop(el); } },
@@ -54,8 +59,8 @@
   var multi = function (title) {
     /* a linha de filtros pode começar escondida (funil): o passo abre e, ao sair, devolve como estava */
     var openedRow = false, chip = function () { return Q('#frow .flt:not(.more-f)'); };
-    return { sel: '#frow .flt:not(.more-f)', title: title || 'Filtros de seleção múltipla', place: 'bottom',
-      text: 'Cada filtro aceita várias opções ao mesmo tempo: marque quantas quiser e o chip mostra as escolhidas. O × no chip limpa aquele filtro, “Limpar filtros” limpa todos e “Mais filtros” traz os filtros extras.',
+    return { sel: '#frow .flt:not(.more-f)', title: title || 'Filtre por mais de um valor', place: 'bottom',
+      text: 'Marque várias opções no mesmo filtro para ver, por exemplo, dois status ou duas concessionárias de uma vez.',
       pick: function () { var c = chip(); if (!c || !visible(c)) { var b = Q('#bFlt'); if (b && !openedRow) { b.click(); openedRow = true; } c = chip(); } return c; },
       refind: chip,
       enter: function (el) { return wait(260).then(function () { var c = chip(); if (c && !popOpen()) click(c); return wait(240); }); },
@@ -71,52 +76,54 @@
   var STEPS = {
     'faturamento.html': {
       name: 'Contas a Faturar', icon: 'badge',
-      intro: 'Só o que não fica óbvio na primeira olhada: os filtros de seleção múltipla, o hover das etapas, o duplo clique e o resumo.',
+      intro: 'Veja como acompanhar cada faturamento, da leitura da fatura até a conta a receber.',
       steps: [
         multi(),
-        { sel: '#tbl .tr.row .c-eta', title: 'Etapa: passe o mouse nas bolinhas', place: 'right',
-          text: 'As 3 bolinhas são Leitura, Estudo e Conta a receber: verde concluída, escura atual, vermelha com falha (com uma onda), piscando quando o sistema está processando. No hover a bolinha vira uma tag com a etapa e o estado, por exemplo “Estudo Concluído”.',
+        { sel: '#tbl .tr.row .c-eta', title: 'Acompanhe cada etapa', place: 'right',
+          text: 'Os pontos são as etapas do faturamento: leitura, estudo e conta a receber. Passe o mouse sobre um ponto para saber em que pé ele está.',
           pick: function () { var d = pickRow('#tbl .tr.row .c-eta .steps i[data-tg]'); return d ? d.closest('.c-eta') : null; },
           enter: function (el) { var d = pickRow('#tbl .tr.row .c-eta .steps i[data-tg]'); var dots = QA('.steps i[data-tg]', el); var dd = dots.filter(function (x) { return x.dataset.st === 'e' || x.dataset.st === 'c' || x.dataset.st === 'w'; })[0] || dots[1] || d; return wait(150).then(function () { hoverCF(dd); }); },
           leave: unhoverCF, demo: 'hover' },
-        { sel: '#tbl .tr.th .so-rev', pad: 8, title: 'Revisão manual', text: 'A bandeira laranja marca faturamentos em revisão manual. Clique na bandeira do cabeçalho para trazer esses primeiro.' },
-        { sel: '#tbl .tr.row.cur, #tbl .tr.row', title: 'Clique e duplo clique', text: 'Um clique seleciona a linha e atualiza o resumo. Duplo clique abre o detalhamento do faturamento.' },
+        { sel: '#tbl .tr.th .so-rev', pad: 8, title: 'Priorize as revisões', text: 'Clique na bandeira para trazer primeiro os faturamentos que aguardam revisão manual.' },
+        { sel: '#tbl .tr.row.cur, #tbl .tr.row', title: 'Veja os detalhes sem sair da lista', text: 'Clique numa linha para ver o resumo ao lado. Para abrir o detalhamento completo, dê um duplo clique.' },
         common.rbarFold,
-        { sel: '#rail .rs-gc', title: 'Etapas do faturamento', place: 'left', text: 'Fatura da concessionária, Estudo e Conta a receber ficam juntos num card só, cada um com o seu chevron para recolher. Destaques importantes (faturamento manual, rateio) continuam visíveis mesmo recolhidos.',
-          enter: function (el) { el.scrollIntoView({ block: 'start' }); return wait(450); } }
+        { sel: '#rail .rs-gc', title: 'Confira de ponta a ponta', place: 'left', text: 'Fatura da concessionária, estudo e conta a receber ficam juntos para você conferir o faturamento inteiro num lugar só.',
+          enter: function (el) { reveal(el, 'start'); return wait(350); } }
       ] },
     'faturamento-usinas.html': {
       name: 'Faturamento de Usinas', icon: 'wind_power',
-      intro: 'Só o que não fica óbvio na primeira olhada: as duas datas, os filtros de seleção múltipla, os 4 pontos de Fatura e Repasse e o resumo.',
+      intro: 'Veja como acompanhar cada medição, da fatura da concessionária até o repasse ao locador.',
       steps: [
         multi(),
-        { sel: '#tbl .tr.th .c-ref', pad: 6, title: 'Fechamento × conta da concessionária', place: 'bottom',
-          text: 'A data da primeira coluna é a referência de fechamento: o mês usado no faturamento por compensação, sempre preenchido. A referência da conta da concessionária serve só para a coleta e aparece embaixo do nome da concessionária (“Conta abr/2025”). Algumas concessionárias usam o mês seguinte ao da produção, por isso as duas podem diferir.' },
-        { sel: '#tbl .tr.row .c-fr', title: 'Fatura e Repasse: passe o mouse nos pontos', place: 'right',
-          text: 'Quatro pontos numa coluna só. Antes do divisor, a Fatura: fatura da concessionária (coleta e leitura) e conta a pagar à concessionária. Depois, o Repasse: estudo da usina e conta a pagar ao locador. No hover cada ponto mostra o estado; o tracejado fino indica que a etapa não se aplica. Clicar num ponto abre o resumo direto na seção.',
+        { sel: '#tbl .tr.row .dthv', pad: 6, title: 'Saiba de qual mês é cada data', place: 'right', demo: 'hover',
+          text: 'Passe o mouse na data de fechamento para comparar com a referência da conta da concessionária e entender o que cada uma significa.',
+          enter: function (el) { return wait(150).then(function () { if (window.__dtc) window.__dtc.show(el); return wait(200); }); },
+          leave: function () { if (window.__dtc) window.__dtc.hide(); } },
+        { sel: '#tbl .tr.row .c-fr', title: 'Acompanhe fatura e repasse', place: 'right',
+          text: 'Os dois primeiros pontos mostram a fatura da concessionária; os dois últimos, o repasse ao locador. Passe o mouse para ver o andamento de cada um.',
           pick: function () { var d = pickRow('#tbl .tr.row .c-fr .si[data-tg]'); return d ? d.closest('.c-fr') : null; },
           enter: function (el) { var b = QA('.si[data-tg]', el).filter(function (x) { return x.dataset.st !== 'd'; })[0] || Q('.si[data-tg]', el); return wait(150).then(function () { hoverUS(b); }); },
           leave: unhoverUS, demo: 'hover' },
         common.rbarFold,
-        { sel: '#rail .rs-gc', title: 'Etapas da Fatura e do Repasse', place: 'left', text: 'Cada trilha é um card com um cabeçalho e as duas seções dentro, cada uma recolhível pelo próprio chevron.',
-          enter: function (el) { el.scrollIntoView({ block: 'start' }); return wait(450); } }
+        { sel: '#rail .rs-gc', title: 'Confira de ponta a ponta', place: 'left', text: 'As etapas da fatura e do repasse ficam agrupadas no resumo para você conferir a medição inteira num lugar só.',
+          enter: function (el) { reveal(el, 'start'); return wait(350); } }
       ] },
     'index.html': {
       name: 'Leitor de Faturas', icon: 'electric_meter',
-      intro: 'O detalhe que não fica óbvio nesta tela: os filtros de seleção múltipla.',
+      intro: 'Uma dica rápida para encontrar as faturas que você procura.',
       steps: [
-        { sel: '.frow .fchip', title: 'Filtros de seleção múltipla', place: 'bottom', text: 'Cada filtro abre uma lista com busca e caixas de seleção: marque várias opções. O chip mostra as escolhidas e “Limpar todos” zera tudo. “Recebida em” aceita um período no calendário.',
+        { sel: '.frow .fchip', title: 'Filtre por mais de um valor', place: 'bottom', text: 'Marque várias opções no mesmo filtro para ver, por exemplo, faturas de duas concessionárias de uma vez. Em “Recebida em”, escolha um período.',
           enter: function (el) { if (el.getAttribute('aria-expanded') !== 'true') click(el); return wait(240); },
           leave: function (el) { if (el && el.getAttribute('aria-expanded') === 'true') click(el); }, also: '#fd' }
       ] },
     'faturamento-pendente.html': {
       name: 'Tickets · Faturamento Pendente', icon: 'confirmation_number',
-      intro: 'Só o que não fica óbvio na primeira olhada: filtros de seleção múltipla, kanban por tentativas e o resumo.',
+      intro: 'Veja como acompanhar as faturas que ainda não chegaram.',
       steps: [
         multi(),
-        { sel: '#bView', title: 'Lista ou kanban', place: 'bottom', text: 'Alterne para o kanban por tentativas: arraste um ticket para a próxima coluna para registrar a tentativa.' },
-        { sel: '#tbl .tr.row .dots', title: 'Tentativas de contato', place: 'right', text: 'Cada ponto é uma tentativa; ao chegar a 7 sem retorno, libera “Solicitar demissão” no resumo.' },
-        { sel: '#rail .rbar', title: 'Resumo do ticket', text: 'O resumo rola sozinho, com os cabeçalhos presos no topo: cooperado, faturas pendentes, tentativas e histórico. Cada seção recolhe pelo chevron.' }
+        { sel: '#bView', title: 'Registre tentativas arrastando', place: 'bottom', text: 'No kanban, arraste um ticket para a próxima coluna para registrar uma nova tentativa de contato.' },
+        { sel: '#tbl .tr.row .dots', title: 'Saiba quando escalar', place: 'right', text: 'Cada ponto é uma tentativa de contato. Depois da 7ª sem retorno, você já pode pedir a demissão do cooperado.' },
+        { sel: '#rail .rbar', title: 'Tenha o histórico à mão', text: 'Cooperado, faturas pendentes, tentativas e histórico do ticket selecionado ficam reunidos no resumo.' },
       ] }
   };
   var DEF = STEPS[page];
@@ -177,7 +184,7 @@
     '.tr-cursor.tap::after{animation:trTap .7s ease-out}',
     '@keyframes trTap{0%{opacity:1;transform:scale(.3)}100%{opacity:0;transform:scale(1.8)}}',
     /* o que está em demonstração fica acima do véu */
-    'html.tr-active .stag,html.tr-active #pop,html.tr-active .pop,html.tr-active #lp,html.tr-active #fd,html.tr-active .bulk,html.tr-active #bulk{z-index:9600!important}',
+    'html.tr-active .stag,html.tr-active .dtc,html.tr-active #pop,html.tr-active .pop,html.tr-active #lp,html.tr-active #fd,html.tr-active .bulk,html.tr-active #bulk{z-index:9600!important}',
     /* botão no topo, dentro da pílula do protótipo (ou solto no canto superior, se a página não tiver a pílula) */
     '.tr-launch{position:relative;display:inline-flex;align-items:center;gap:4px;height:26px;padding:0 10px 0 7px;border-radius:999px;border:0;background:#eefec9;color:#365314;font:600 11px/26px Inter,sans-serif;cursor:pointer;transition:background .15s,transform .15s;white-space:nowrap}',
     '.tr-launch:hover{background:#d9f99d}.tr-launch:active{transform:scale(.97)}',
@@ -217,9 +224,9 @@
   var steps = [], idx = -1, curEl = null, curStep = null, raf = 0, busy = false;
 
   var build = function () {
-    steps = [{ center: true, title: 'Tour · ' + DEF.name, text: DEF.intro + ' Leva menos de um minuto.' }]
+    steps = [{ center: true, title: DEF.name, text: DEF.intro }]
       .concat(DEF.steps.filter(function (s) { return true; }))
-      .concat([{ center: true, end: true, title: 'Pronto!', text: 'Quando quiser rever, use o botão “Tour” no topo da tela. As outras telas do protótipo também têm o seu tour.' }]);
+      .concat([{ center: true, end: true, title: 'Tudo pronto!', text: 'Para rever estas dicas, clique em “Tour” no topo da tela.' }]);
   };
   var resolve = function (s) {
     if (s.center) return null;
@@ -238,12 +245,14 @@
     }
     card.classList.remove('center'); root.classList.add('spot');
     var r = curEl.getBoundingClientRect(), pad = s.pad != null ? s.pad : 8;
+    /* dentro de uma área rolável (resumo), o destaque fica só na parte visível */
+    var bx = scrollBox(curEl); if (bx) { var bb = bx.getBoundingClientRect(); var t0 = Math.max(r.top, bb.top), b0 = Math.min(r.bottom, bb.bottom); if (b0 > t0) r = { left: r.left, right: r.right, width: r.width, top: t0, bottom: b0, height: b0 - t0 }; }
     var x = r.left - pad, y = r.top - pad, w = r.width + pad * 2, h = r.height + pad * 2;
     var rad = Math.min(14, h / 2);
     hole.style.left = x + 'px'; hole.style.top = y + 'px'; hole.style.width = w + 'px'; hole.style.height = h + 'px'; hole.style.borderRadius = rad + 'px';
     ring.style.left = (x - 3) + 'px'; ring.style.top = (y - 3) + 'px'; ring.style.width = (w + 6) + 'px'; ring.style.height = (h + 6) + 'px'; ring.style.borderRadius = (rad + 3) + 'px';
     /* o card desvia do alvo e do que a demonstração abriu (menu, tag, lista de filtros) */
-    if (s.enter) { ['#pop', '#lp', '#fd', '.stag.on'].forEach(function (q) { var o = Q(q); if (o && !o.hidden && visible(o)) { var b = o.getBoundingClientRect(); var nx = Math.min(x, b.left - 6), ny = Math.min(y, b.top - 6); w = Math.max(x + w, b.right + 6) - nx; h = Math.max(y + h, b.bottom + 6) - ny; x = nx; y = ny; } }); }
+    if (s.enter) { ['#pop', '#lp', '#fd', '.stag.on', '.dtc.on'].forEach(function (q) { var o = Q(q); if (o && !o.hidden && visible(o)) { var b = o.getBoundingClientRect(); var nx = Math.min(x, b.left - 6), ny = Math.min(y, b.top - 6); w = Math.max(x + w, b.right + 6) - nx; h = Math.max(y + h, b.bottom + 6) - ny; x = nx; y = ny; } }); }
     /* lado do card: o pedido, se couber; senão o que tiver mais espaço */
     var space = { bottom: vh - (y + h), top: y, right: vw - (x + w), left: x };
     var fits = { bottom: space.bottom > ch + 24, top: space.top > ch + 24, right: space.right > cw + 24, left: space.left > cw + 24 };
@@ -271,7 +280,7 @@
 
   var renderBody = function (s, i) {
     var n = steps.length - 2;
-    var kick = s.center ? (s.end ? 'Fim do tour' : 'Bem-vindo') : ('Passo ' + i + ' de ' + n);
+    var kick = s.center ? (s.end ? 'Fim' : 'Dicas rápidas') : (i + ' de ' + n);
     body.innerHTML = '<div class="tr-k">' + kick + (s.demo ? ' <span class="tr-demo">demonstração ao vivo</span>' : '') + '</div>' +
       '<h3 class="tr-t">' + s.title + '</h3><p class="tr-x">' + s.text + '</p>';
     dotsEl.innerHTML = steps.map(function (_, k) { return '<i class="' + (k === i ? 'on' : k < i ? 'd' : '') + '"></i>'; }).join('');
@@ -307,7 +316,7 @@
       var p = Promise.resolve();
       if (el) {
         var rr = el.getBoundingClientRect();
-        if (rr.top < 60 || rr.bottom > innerHeight - 40) el.scrollIntoView({ block: 'center' });
+        if (rr.top < 60 || rr.bottom > innerHeight - 40) reveal(el, 'center');
         if (s.enter) p = Promise.resolve(s.enter(el)).catch(function () {});
       }
       p.then(function () { place(); if (s.demo === 'hover' || s.enter) moveCursor(s.demo === 'hover' ? (Q('.steps i[data-tg],.si[data-tg]', el) || el) : el); busy = false; nextB.focus({ preventScroll: true }); });
@@ -315,7 +324,9 @@
     if (first || reduce) swap(); else { body.classList.add('out'); setTimeout(swap, 180); }
   };
 
+  var pageY = 0;
   var open = function () {
+    pageY = (document.scrollingElement || document.documentElement).scrollTop;
     mount();
     build(); idx = -1;
     document.documentElement.classList.add('tr-active');
@@ -325,6 +336,7 @@
     go(0); cancelAnimationFrame(raf); raf = requestAnimationFrame(follow);
   };
   var close = function (done) {
+    var se = document.scrollingElement || document.documentElement; if (se.scrollTop !== pageY) se.scrollTop = pageY;
     leaveCur(); cancelAnimationFrame(raf);
     root.classList.remove('on', 'spot');
     setTimeout(function () { root.hidden = true; document.documentElement.classList.remove('tr-active'); }, 320);
