@@ -52,9 +52,14 @@
       enter: function (el) { if (!popOpen()) click(el); return wait(220); }, leave: function (el) { closePop(el); } },
   };
   var multi = function (title) {
+    /* a linha de filtros pode começar escondida (funil): o passo abre e, ao sair, devolve como estava */
+    var openedRow = false, chip = function () { return Q('#frow .flt:not(.more-f)'); };
     return { sel: '#frow .flt:not(.more-f)', title: title || 'Filtros de seleção múltipla', place: 'bottom',
       text: 'Cada filtro aceita várias opções ao mesmo tempo: marque quantas quiser e o chip mostra as escolhidas. O × no chip limpa aquele filtro, “Limpar filtros” limpa todos e “Mais filtros” traz os filtros extras.',
-      enter: function (el) { if (!popOpen()) click(el); return wait(240); }, leave: function (el) { closePop(el); } };
+      pick: function () { var c = chip(); if (!c || !visible(c)) { var b = Q('#bFlt'); if (b && !openedRow) { b.click(); openedRow = true; } c = chip(); } return c; },
+      refind: chip,
+      enter: function (el) { return wait(260).then(function () { var c = chip(); if (c && !popOpen()) click(c); return wait(240); }); },
+      leave: function () { closePop(chip()); if (openedRow) { var b = Q('#bFlt'); if (b) b.click(); openedRow = false; } } };
   };
   var bulk = { sel: '#tbl .tr.row [data-a="sel"]', pad: 8, title: 'Ações em lote',
     text: 'Marque uma ou mais linhas: aparece uma barra embaixo com as ações que valem para todas as selecionadas. Ações que não servem para algum item ficam desabilitadas e explicam o motivo no hover.',
@@ -66,73 +71,50 @@
   var STEPS = {
     'faturamento.html': {
       name: 'Contas a Faturar', icon: 'badge',
-      intro: 'Um tour rápido pelos detalhes que não ficam óbvios na primeira olhada: o hover das etapas, os filtros de seleção múltipla, as ações em lote e o resumo.',
+      intro: 'Só o que não fica óbvio na primeira olhada: os filtros de seleção múltipla, o hover das etapas, o duplo clique e o resumo.',
       steps: [
-        { sel: '#app .tools .field', title: 'Busca e funil', text: 'Busque por titular, CPF/CNPJ, UC, código legado ou concessionária. O funil mostra ou esconde a linha de filtros; com filtros ativos e a linha escondida, ele ganha um ponto.' },
         multi(),
-        common.sort, common.cols,
         { sel: '#tbl .tr.row .c-eta', title: 'Etapa: passe o mouse nas bolinhas', place: 'right',
           text: 'As 3 bolinhas são Leitura, Estudo e Conta a receber: verde concluída, escura atual, vermelha com falha (com uma onda), piscando quando o sistema está processando. No hover a bolinha vira uma tag com a etapa e o estado, por exemplo “Estudo Concluído”.',
           pick: function () { var d = pickRow('#tbl .tr.row .c-eta .steps i[data-tg]'); return d ? d.closest('.c-eta') : null; },
           enter: function (el) { var d = pickRow('#tbl .tr.row .c-eta .steps i[data-tg]'); var dots = QA('.steps i[data-tg]', el); var dd = dots.filter(function (x) { return x.dataset.st === 'e' || x.dataset.st === 'c' || x.dataset.st === 'w'; })[0] || dots[1] || d; return wait(150).then(function () { hoverCF(dd); }); },
           leave: unhoverCF, demo: 'hover' },
         { sel: '#tbl .tr.th .so-rev', pad: 8, title: 'Revisão manual', text: 'A bandeira laranja marca faturamentos em revisão manual. Clique na bandeira do cabeçalho para trazer esses primeiro.' },
-        bulk,
         { sel: '#tbl .tr.row.cur, #tbl .tr.row', title: 'Clique e duplo clique', text: 'Um clique seleciona a linha e atualiza o resumo. Duplo clique abre o detalhamento do faturamento.' },
         common.rbarFold,
         { sel: '#rail .rs-gc', title: 'Etapas do faturamento', place: 'left', text: 'Fatura da concessionária, Estudo e Conta a receber ficam juntos num card só, cada um com o seu chevron para recolher. Destaques importantes (faturamento manual, rateio) continuam visíveis mesmo recolhidos.',
-          enter: function (el) { el.scrollIntoView({ block: 'start' }); return wait(450); } },
-        { sel: '#rail .act-p', title: 'Comentários', place: 'left', text: 'Histórico de comentários da linha. O botão “Comentar” só aparece quando há texto no campo.',
-          enter: function (el) { el.scrollIntoView({ block: 'center' }); return wait(450); } },
-        common.sidebar
+          enter: function (el) { el.scrollIntoView({ block: 'start' }); return wait(450); } }
       ] },
     'faturamento-usinas.html': {
       name: 'Faturamento de Usinas', icon: 'wind_power',
-      intro: 'Os pontos-chave da medição de usinas: as duas trilhas de etapas (Fatura e Repasse), o hover das bolinhas e os filtros.',
+      intro: 'Só o que não fica óbvio na primeira olhada: os filtros de seleção múltipla, os 4 pontos de Fatura e Repasse e o resumo.',
       steps: [
-        { sel: '#app .tools .field', title: 'Busca e funil', text: 'Busque por locador, CPF/CNPJ, usina, código, código legado ou concessionária. O funil mostra ou esconde a linha de filtros.' },
         multi(),
-        common.sort, common.cols,
         { sel: '#tbl .tr.row .c-fr', title: 'Fatura e Repasse: passe o mouse nos pontos', place: 'right',
           text: 'Quatro pontos numa coluna só. Antes do divisor, a Fatura: fatura da concessionária (coleta e leitura) e conta a pagar à concessionária. Depois, o Repasse: estudo da usina e conta a pagar ao locador. No hover cada ponto mostra o estado; o tracejado fino indica que a etapa não se aplica. Clicar num ponto abre o resumo direto na seção.',
           pick: function () { var d = pickRow('#tbl .tr.row .c-fr .si[data-tg]'); return d ? d.closest('.c-fr') : null; },
           enter: function (el) { var b = QA('.si[data-tg]', el).filter(function (x) { return x.dataset.st !== 'd'; })[0] || Q('.si[data-tg]', el); return wait(150).then(function () { hoverUS(b); }); },
           leave: unhoverUS, demo: 'hover' },
-        { sel: '#tbl .tr.row .c-uc', title: 'Usina e código', text: 'O código da usina fica abaixo do nome, no mesmo padrão da UC no Contas a Faturar. O ícone mostra se a usina está ativa; o código legado aparece no hover e também entra na busca.' },
-        bulk,
         common.rbarFold,
         { sel: '#rail .rs-gc', title: 'Etapas da Fatura e do Repasse', place: 'left', text: 'Cada trilha é um card com um cabeçalho e as duas seções dentro, cada uma recolhível pelo próprio chevron.',
-          enter: function (el) { el.scrollIntoView({ block: 'start' }); return wait(450); } },
-        common.sidebar
+          enter: function (el) { el.scrollIntoView({ block: 'start' }); return wait(450); } }
       ] },
     'index.html': {
       name: 'Leitor de Faturas', icon: 'electric_meter',
-      intro: 'Como encontrar e revisar as faturas enviadas para leitura.',
+      intro: 'O detalhe que não fica óbvio nesta tela: os filtros de seleção múltipla.',
       steps: [
-        { sel: '.tools .field.grow', title: 'Busca e filtros', text: 'Busque por titular, UC ou nome do arquivo. O funil verde mostra ou esconde os filtros; escondidos, eles continuam valendo e o funil mostra quantos estão ativos.' },
         { sel: '.frow .fchip', title: 'Filtros de seleção múltipla', place: 'bottom', text: 'Cada filtro abre uma lista com busca e caixas de seleção: marque várias opções. O chip mostra as escolhidas e “Limpar todos” zera tudo. “Recebida em” aceita um período no calendário.',
           enter: function (el) { if (el.getAttribute('aria-expanded') !== 'true') click(el); return wait(240); },
-          leave: function (el) { if (el && el.getAttribute('aria-expanded') === 'true') click(el); }, also: '#fd' },
-        { sel: '#bSort', title: 'Ordenar', place: 'bottom', text: 'Ordene por situação, data de recebimento, titular ou referência. Clicar de novo inverte a ordem.',
-          enter: function (el) { if (!(Q('#lp') && !Q('#lp').hidden)) click(el); return wait(220); }, leave: function (el) { if (Q('#lp') && !Q('#lp').hidden) click(el); }, also: '#lp' },
-        { sel: '#bCols', title: 'Colunas visíveis', place: 'bottom', text: 'Mostre ou esconda colunas. Situação é fixa; a escolha fica salva neste navegador.',
-          enter: function (el) { if (!(Q('#lp') && !Q('#lp').hidden)) click(el); return wait(220); }, leave: function (el) { if (Q('#lp') && !Q('#lp').hidden) click(el); }, also: '#lp' },
-        { sel: '#add', title: 'Nova fatura', place: 'left', text: 'Envie novas faturas para leitura: arquivos PDF ou fotos tiradas pela câmera (no celular).' },
-        { sel: '.table .tr.row', title: 'Abrir uma fatura', text: 'Clique na linha para abrir o detalhe da leitura. No protótipo, a fatura da Padaria Estrela do Sul é a que tem o detalhe completo.' },
-        common.sidebar
+          leave: function (el) { if (el && el.getAttribute('aria-expanded') === 'true') click(el); }, also: '#fd' }
       ] },
     'faturamento-pendente.html': {
       name: 'Tickets · Faturamento Pendente', icon: 'confirmation_number',
-      intro: 'Como acompanhar as faturas que não chegaram: tentativas, kanban e histórico.',
+      intro: 'Só o que não fica óbvio na primeira olhada: filtros de seleção múltipla, kanban por tentativas e o resumo.',
       steps: [
-        { sel: '#app .tools .field', title: 'Busca e funil', text: 'Busque por ticket, cooperado, instalação ou concessionária. O funil mostra ou esconde os filtros.' },
         multi(),
-        common.sort, common.cols,
         { sel: '#bView', title: 'Lista ou kanban', place: 'bottom', text: 'Alterne para o kanban por tentativas: arraste um ticket para a próxima coluna para registrar a tentativa.' },
         { sel: '#tbl .tr.row .dots', title: 'Tentativas de contato', place: 'right', text: 'Cada ponto é uma tentativa; ao chegar a 7 sem retorno, libera “Solicitar demissão” no resumo.' },
-        bulk,
-        { sel: '#rail .rbar', title: 'Resumo do ticket', text: 'O resumo rola sozinho, com os cabeçalhos presos no topo: cooperado, faturas pendentes, tentativas e histórico. Cada seção recolhe pelo chevron.' },
-        common.sidebar
+        { sel: '#rail .rbar', title: 'Resumo do ticket', text: 'O resumo rola sozinho, com os cabeçalhos presos no topo: cooperado, faturas pendentes, tentativas e histórico. Cada seção recolhe pelo chevron.' }
       ] }
   };
   var DEF = STEPS[page];
@@ -235,7 +217,7 @@
   var build = function () {
     steps = [{ center: true, title: 'Tour · ' + DEF.name, text: DEF.intro + ' Leva menos de um minuto.' }]
       .concat(DEF.steps.filter(function (s) { return true; }))
-      .concat([{ center: true, end: true, title: 'Pronto!', text: 'Quando quiser rever, use o botão “Tour guiado” no canto da tela. As outras telas do protótipo também têm o seu tour.' }]);
+      .concat([{ center: true, end: true, title: 'Pronto!', text: 'Quando quiser rever, use o botão “Tour” no topo da tela. As outras telas do protótipo também têm o seu tour.' }]);
   };
   var resolve = function (s) {
     if (s.center) return null;
