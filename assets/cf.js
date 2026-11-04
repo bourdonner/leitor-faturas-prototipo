@@ -295,7 +295,7 @@ H.recP=r=>{ const c=r.rec;
     +(c.st==='Sem cobrança'?'':IT({ic:'event',cls:c.st==='Atrasado'?'dg':'',l:'Vencimento',v:c.ven||'—'}))); };
 H.cm=r=>{ const ev=c=>{ const who=c.who?`<span class="who2" data-name="${esc(c.who)}">${ini(c.who)}</span>`:'<span class="who2 sys" data-name="Sistema"><span class="msr fill">bolt</span></span>';
     return `<div class="ev ${c.isNew?'new':''}"><span class="i ${c.sys?(c.t.includes('revis')?'c-alert':'c-def'):'c-edit'}"><span class="msr fill">${c.sys?(c.t.includes('revis')?'flag':'bolt'):'chat'}</span></span>${who}<div class="n">${esc(c.t)}</div><div class="d">${c.d}</div></div>`; };
-  return `<div class="act-p${shut('cm')}" data-fold="cm"><div class="act-h"><span class="grow">Comentários</span><span class="cap">${r.cm.length||''}</span>${fold('cm','comentários')}</div>${cl('cm',`<div class="act-l evs">${r.cm.map((c,i)=>(i?'<div class="lnk"></div>':'')+ev(c)).join('')}</div>
+  return `<div class="act-p${shut('cm')}" data-fold="cm"><div class="act-h"><span class="eb"><span class="msr fill">forum</span></span><span class="grow">Comentários</span><span class="cap">${r.cm.length||''}</span>${fold('cm','comentários')}</div>${cl('cm',`<div class="act-l evs">${r.cm.map((c,i)=>(i?'<div class="lnk"></div>':'')+ev(c)).join('')}</div>
   <form class="cmp" data-id="${r.id}"><label class="sr" for="cmT" style="position:absolute;left:-9999px">Comentário</label><textarea class="ta" id="cmT" placeholder="Escreva um comentário"></textarea><div class="row"><button class="b pri sm" type="submit">Comentar</button></div></form>`)}</div>`; };
 /* a barra fica fora da rolagem; só os cards rolam, num espaço com cantos de 12px */
 H.rail=r=>H.rbar()+`<div class="rail-sc" id="railSc">${H.head(r)+H.titP(r)+H.ucP(r)+H.fcP(r)+H.estP(r)+H.recP(r)+H.cm(r)}</div>`;
@@ -532,7 +532,7 @@ function mountScreen(){
   document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ if(popEl&&!popEl.hidden){ const a=popAnchor; closePop(); a&&a.focus(); return; } if(S.dw) closeDw(); }
     if(e.key==='Enter'&&e.target.id==='fIn'){ e.preventDefault(); applyTxt(e.target.dataset.k); return; }
     if((e.key==='Enter'||e.key===' ')&&e.target.matches('.tr.row')){ e.preventDefault(); e.target.click(); } });
-  document.addEventListener('input',e=>{ if(e.target.matches('[data-a="fsearch"]')){ const q=e.target.value.toLowerCase(); popEl.querySelectorAll('.opt').forEach(o=>o.hidden=!o.textContent.toLowerCase().includes(q)); } });
+  document.addEventListener('input',e=>{ if(e.target.matches('.cmp .ta')) e.target.closest('.cmp').classList.toggle('has',!!e.target.value.trim()); if(e.target.matches('[data-a="fsearch"]')){ const q=e.target.value.toLowerCase(); popEl.querySelectorAll('.opt').forEach(o=>o.hidden=!o.textContent.toLowerCase().includes(q)); } });
   document.addEventListener('submit',e=>{ const f=e.target.closest('.cmp'); if(!f) return; e.preventDefault(); const ta=f.querySelector('textarea'); const t=ta.value.trim(); if(!t){ ta.focus(); return; }
     row(f.dataset.id).cm.push({who:ME,t,d:NOW,isNew:1}); ta.value=''; refresh(); toast('Comentário adicionado'); });
   document.getElementById('bRail').onclick=()=>{ S.railOpen=!S.railOpen; refresh(); };

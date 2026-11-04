@@ -229,3 +229,11 @@
 .fp.dk .stag.st-d{color:#0c0a09}
 .fp.dk .stag.st-w{color:#93c5fd}
 @media (prefers-reduced-motion:reduce){.fp .stag,.fp .stag .tx{transition:none}}
+
+/* comentários: ícone no cabeçalho como nos outros cards; o botão Comentar só aparece com texto */
+.fp .act-h .eb{width:30px;height:30px;border-radius:50%;background:var(--ink);color:var(--fg);display:grid;place-items:center;flex:none}
+.fp .act-h .eb .msr{font-size:18px}
+.fp .cmp .row{display:grid;grid-template-rows:0fr;opacity:0;transition:grid-template-rows .2s cubic-bezier(.2,.7,.2,1),opacity .15s}
+.fp .cmp .row>*{min-height:0;overflow:hidden;justify-self:end}
+.fp .cmp.has .row{grid-template-rows:1fr;opacity:1}
+.fp .cmp:not(.has){gap:0}
