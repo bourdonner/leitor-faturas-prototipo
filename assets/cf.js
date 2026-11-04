@@ -238,8 +238,13 @@ const fold=(k,ttl)=>`<button class="ib" data-a="fold" data-k="${k}" aria-label="
 const shut=k=>S.fold.has(k)?' closed':'';
 const kv=rows=>`<div class="kvl">${rows.map(x=>`<div><span>${x[0]}</span><b class="${x[2]||''}">${x[1]}</b></div>`).join('')}</div>`;
 const cl=(k,inner)=>`<div class="rs-cl"${S.fold.has(k)?' inert':''}><div class="rs-in">${inner}</div></div>`;
+/* estado da etapa para o ícone do cabeçalho: mesma regra dos pontos da coluna Etapa (H.steps) */
+function EBS(r,k){ const K={fc:0,est:1,rec:2}[k], i=etapa(r); if(i<0) return 'p';
+  const fail=FAIL_MS.includes(r.ms)||(r.rec&&FAIL_REC.includes(r.rec.st)), done=r.ms==='completed_no_bill'||(r.rec&&DONE_REC.includes(r.rec.st));
+  const proc=['calculating','billing'].includes(r.ms)||(r.rec&&['Gerando boleto','Processando'].includes(r.rec.st)), err=FAIL_MS.includes(r.ms)||(r.rec&&r.rec.st==='Erro');
+  if(K<i||done) return 'd'; if(K>i) return 'p'; return fail?('e'+(err?' wv':'')):('c'+(proc?' pr':'')); }
 const card=(k,h,body,keep)=>{ const main=keep&&body.endsWith(keep)?body.slice(0,-keep.length):body;
-  return `<section class="rs-card${shut(k)}" data-fold="${k}" aria-label="${esc(h.t)}"><div class="rs-hd${h.big?'':' sm'}"><span class="eb${h.off?' off':''}"><span class="msr fill">${h.ic}</span></span><div class="t"><b>${esc(h.t)}</b>${h.d?`<span class="cap">${esc(h.d)}</span>`:''}</div>${h.open||''}${fold(k,h.t.toLowerCase())}</div><div class="rs-bd${keep?' keep':''}">${main?cl(k,main):''}${keep||''}</div></section>`; };
+  return `<section class="rs-card${shut(k)}" data-fold="${k}" aria-label="${esc(h.t)}"><div class="rs-hd${h.big?'':' sm'}"><span class="eb${h.off?' off':''}${h.st?' st-'+h.st:''}"><span class="msr fill">${h.ic}</span></span><div class="t"><b>${esc(h.t)}</b>${h.d?`<span class="cap">${esc(h.d)}</span>`:''}</div>${h.open||''}${fold(k,h.t.toLowerCase())}</div><div class="rs-bd${keep?' keep':''}">${main?cl(k,main):''}${keep||''}</div></section>`; };
 H.rbar=()=>{ const all=FOLDS.every(k=>!S.fold.has(k)); return `<div class="rbar"><span class="msr">article_shortcut</span><span class="grow">Resumo do faturamento</span><button class="ib tip" data-a="foldall" data-tip="${all?'Recolher tudo':'Expandir tudo'}" aria-label="${all?'Recolher todas as seções':'Expandir todas as seções'}"><span class="msr">${all?'unfold_less':'unfold_more'}</span></button></div>`; };
 /* topo: faixa "Revisão manual" (se pedida) + fatura de ref. com status e ações */
 H.head=r=>`<section class="rs-card rs-fat">${r.rev?'<div class="rs-rev" role="status"><span class="grow">Revisão manual</span><span class="msr fill">flag</span></div>':''}
@@ -261,7 +266,7 @@ H.ucP=r=>{ const u=UCS[r.uc]; const s=UCI[UST[u.st][0]];
     +IT({ic:'energy_savings_leaf',l:'Modalidade',v:esc(u.mod)})
     +two(IT({cpt:1,l:'Painéis solares',v:u.sol?'Sim':'Não'}),IT({cpt:1,l:'Economia garantida',v:u.eg?pct(u.eg):'Não tem'}))+dst, dst); };
 H.fcP=r=>{ const u=UCS[r.uc], f=r.fc||{inj:0,cons:0,val:0}, x=FCX(r)||{}, na=!r.fc||r.lei.st!=='Processado'?'na':'';
-  return card('fc',{ic:'receipt_long',t:'Fatura da concessionária',off:!!na},
+  return card('fc',{st:EBS(r,'fc'),ic:'receipt_long',t:'Fatura da concessionária',off:!!na},
     (r.hip?IT({ic:'cloud_sync',cls:'bl',l:'Origem',v:'Via Hipatia'}):'')
     +IT({ic:'event',l:'Data da leitura',v:r.lei.dt||'—',tone:na})
     +(u.ger==='Produção solar'?IT({ic:'solar_power',cls:'al',l:'Produção solar',v:kwh(Math.round(f.inj*1.08)),tone:na}):'')
@@ -278,7 +283,7 @@ H.estP=r=>{ const e=r.est, ok=e.val!=null, na=ok?'':'na', pos=ok?'':'na', x=FCX(
   const st=e.st==='Em cálculo'?IT({ic:'progress_activity',cls:'bl',spin:1,l:'Status',v:'Calculando o estudo'})
     :e.st==='Falha no cálculo'?IT({ic:'block',cls:'dg',l:'Falha no cálculo',v:esc((r.cm.find(c=>c.sys)||{}).t||'Não foi possível calcular')})
     :e.st==='Aguardando'?IT({ic:'hourglass_empty',cls:'gr',l:'Status',v:'Aguardando a fatura da concessionária'}):'';
-  return card('est',{ic:'calculate',t:'Estudo',off:!ok},
+  return card('est',{st:EBS(r,'est'),ic:'calculate',t:'Estudo',off:!ok},
     st+two(IT({cpt:1,l:'Valor projetado',v:brl(proj),tone:na}),IT({cpt:1,l:'Valor total',v:brl(e.val),tone:na}))
     +IT({ic:'sync_alt',l:'Taxa de compensação',v:ok&&r.fc?pct(Math.round(x.comp/r.fc.cons*1000)/10):'—',tone:na})
     +IT({ic:'flag',cls:'al',l:'Bandeira tarifária amarela',v:brl(amb),x:'12 dias',tone:na})
@@ -288,7 +293,7 @@ H.estP=r=>{ const e=r.est, ok=e.val!=null, na=ok?'':'na', pos=ok?'':'na', x=FCX(
     +(e.st==='Falha no cálculo'?'<button class="b sec full" data-a="genstudy" data-id="'+r.id+'">Gerar estudo</button>':'')); };
 H.recP=r=>{ const c=r.rec;
   if(!c){ const w={billing:{ic:'progress_activity',cls:'bl',spin:1,v:'Faturando'},billing_failed:{ic:'block',cls:'dg',v:esc((r.cm.find(x=>x.sys)||{}).t||'Falha ao faturar')},calculated:{ic:'hourglass_empty',cls:'gr',v:'Aguardando faturar'},from_hipatia:{ic:'cloud_sync',cls:'bl',v:'Faturado pela Hipatia'},archived:{ic:'archive',cls:'gr',v:'Faturamento arquivado'}}[r.ms]||{ic:'hourglass_empty',cls:'gr',v:'Aguardando estudo'};
-    return card('rec',{ic:'request_quote',t:'Conta a receber',off:1},IT({...w,l:'Status'})+IT({ic:'event',l:'Vencimento',tone:'na'})
+    return card('rec',{st:EBS(r,'rec'),ic:'request_quote',t:'Conta a receber',off:1},IT({...w,l:'Status'})+IT({ic:'event',l:'Vencimento',tone:'na'})
       +(r.ms==='billing_failed'?'<button class="b sec full" data-a="bill" data-id="'+r.id+'">Faturar de novo</button>':'')); }
   const ST={'Emissão pendente':{ic:'pending_actions',cls:'al',v:'Emissão pendente'},'Gerando boleto':{ic:'progress_activity',cls:'bl',spin:1,v:'O boleto está sendo gerado'},
     'Novo':{ic:'fiber_new',cls:'gr',v:'Conta a receber criada'},'Processando':{ic:'progress_activity',cls:'bl',spin:1,v:'Processando'},'Agrupado':{ic:'groups',cls:'gr',v:'Agrupada no ciclo do grupo'},
@@ -296,7 +301,7 @@ H.recP=r=>{ const c=r.rec;
     'Cancelado':{ic:'cancel',cls:'gr',v:'Recebimento cancelado'},'Erro':{ic:'error',cls:'dg',v:'Erro na emissão'},'Refaturamento':{ic:'replay',cls:'al',v:'Em refaturamento'},
     'Aberto':{ic:'attach_money',v:'Aguardando pagamento'},'Atrasado':{ic:'attach_money',cls:'dg',v:'Fatura atrasada',x:c.ven?'vencida há '+n2(dias(c.ven),'dia','dias'):''},
     'Liquidado':{ic:'check',cls:'ok',v:'Fatura paga',x:PAGO[r.id]},'Sem cobrança':{ic:'do_not_disturb_on',v:'Faturamento sem cobrança'}}[c.st];
-  return card('rec',{ic:'request_quote',t:'Conta a receber'},IT({...ST,l:'Status'})
+  return card('rec',{st:EBS(r,'rec'),ic:'request_quote',t:'Conta a receber'},IT({...ST,l:'Status'})
     +(c.tit?IT({ic:'tag',l:'Nº do título',v:c.tit,act:cp(c.tit,'número do título')}):'')
     +(c.st==='Sem cobrança'?'':IT({ic:'event',cls:c.st==='Atrasado'?'dg':'',l:'Vencimento',v:c.ven||'—'}))); };
 H.cm=r=>{ const ev=c=>{ const who=c.who?`<span class="who2" data-name="${esc(c.who)}">${ini(c.who)}</span>`:'<span class="who2 sys" data-name="Sistema"><span class="msr fill">bolt</span></span>';
