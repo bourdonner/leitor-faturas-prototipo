@@ -87,9 +87,11 @@
       ] },
     'faturamento-usinas.html': {
       name: 'Faturamento de Usinas', icon: 'wind_power',
-      intro: 'Só o que não fica óbvio na primeira olhada: os filtros de seleção múltipla, os 4 pontos de Fatura e Repasse e o resumo.',
+      intro: 'Só o que não fica óbvio na primeira olhada: as duas datas, os filtros de seleção múltipla, os 4 pontos de Fatura e Repasse e o resumo.',
       steps: [
         multi(),
+        { sel: '#tbl .tr.th .c-ref', pad: 6, title: 'Fechamento × conta da concessionária', place: 'bottom',
+          text: 'A data da primeira coluna é a referência de fechamento: o mês usado no faturamento por compensação, sempre preenchido. A referência da conta da concessionária serve só para a coleta e aparece embaixo do nome da concessionária (“Conta abr/2025”). Algumas concessionárias usam o mês seguinte ao da produção, por isso as duas podem diferir.' },
         { sel: '#tbl .tr.row .c-fr', title: 'Fatura e Repasse: passe o mouse nos pontos', place: 'right',
           text: 'Quatro pontos numa coluna só. Antes do divisor, a Fatura: fatura da concessionária (coleta e leitura) e conta a pagar à concessionária. Depois, o Repasse: estudo da usina e conta a pagar ao locador. No hover cada ponto mostra o estado; o tracejado fino indica que a etapa não se aplica. Clicar num ponto abre o resumo direto na seção.',
           pick: function () { var d = pickRow('#tbl .tr.row .c-fr .si[data-tg]'); return d ? d.closest('.c-fr') : null; },
