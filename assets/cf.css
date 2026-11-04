@@ -220,7 +220,8 @@
 .fp .stag.lt .tx{transform:translateX(4px)}
 .fp .stag.on .tx{opacity:1;transform:none}
 .fp .stag b{font:600 11.5px/16px Inter,sans-serif}
-.fp .stag small{font:500 11px/14px Inter,sans-serif;opacity:.8}
+.fp .stag small{font:500 11.5px/16px Inter,sans-serif;opacity:.85}
+.fp .stag .tx{gap:4px}
 .fp .stag.st-p{color:var(--mid)}
 .fp .stag.st-w{border-color:#3b82f6;color:#2563eb;background:color-mix(in srgb,#3b82f6 10%,var(--fg))}
 .fp .stag.st-c{border-color:var(--ink3);color:var(--ink)}

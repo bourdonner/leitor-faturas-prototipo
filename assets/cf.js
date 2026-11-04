@@ -154,9 +154,9 @@ H.steps=r=>{ const i=etapa(r);
   const fail=FAIL_MS.includes(r.ms)||(r.rec&&FAIL_REC.includes(r.rec.st)), done=r.ms==='completed_no_bill'||(r.rec&&DONE_REC.includes(r.rec.st));
   /* bolinha da etapa atual: pulsa quando o sistema está processando; solta uma onda quando é erro do sistema */
   const proc=['calculating','billing'].includes(r.ms)||(r.rec&&['Gerando boleto','Processando'].includes(r.rec.st)), err=FAIL_MS.includes(r.ms)||(r.rec&&r.rec.st==='Erro');
-  /* tag no hover (mesma interação do Faturamento de Usinas): estado em negrito + nome da etapa */
+  /* tag no hover (mesma interação do Faturamento de Usinas): etapa em negrito + estado, ex.: "Estudo Concluído" */
   const tagOf=(k,cls,cur)=>i<0?['Arquivado','p']:cls==='d'?[k===1?'Concluído':'Concluída','d']:cls===''?[k===1?'Não iniciado':'Não iniciada','p']:[k===0?MS[r.ms][0]:k===1?MS[r.ms][0]:statusTxt(r),cls==='e'?'e':cur&&proc?'w':'c'];
-  return `<span class="steps" aria-hidden="true">${[0,1,2].map(k=>{ const cur=k===i&&!done; const cls=i<0?'':k<i||done?'d':k===i?(fail?'e':'c'):''; const [tg,st]=tagOf(k,cls,cur); return `<i class="${cls}${cur&&proc?' proc':''}${cur&&err?' wave':''}" data-tg="${esc(tg)}" data-td="${['Leitura','Estudo','Conta a receber'][k]}" data-st="${st}"></i>`; }).join('')}</span>`; };
+  return `<span class="steps" aria-hidden="true">${[0,1,2].map(k=>{ const cur=k===i&&!done; const cls=i<0?'':k<i||done?'d':k===i?(fail?'e':'c'):''; const [tg,st]=tagOf(k,cls,cur); return `<i class="${cls}${cur&&proc?' proc':''}${cur&&err?' wave':''}" data-tg="${['Leitura','Estudo','Conta a receber'][k]}" data-td="${esc(tg)}" data-st="${st}"></i>`; }).join('')}</span>`; };
 H.tit=r=>{ const t=TIT[r.t]; return `<div class="ent"><span class="ic ${t.pj?'':'pf'}"><span class="msr fill">${t.pj?'bolt':'person'}</span></span><div class="t"><div>${esc(t.n.toUpperCase())}</div><div class="s">${esc(t.doc)}</div></div>${t.grp?`<button class="grp" data-a="grupo" data-v="${esc(t.grp)}" title="${esc(t.grp)}" aria-label="Abrir ${esc(t.grp)}"><span class="msr fill">groups</span></button>`:''}</div>`; };
 H.ust=u=>{ const s=UST[u.st]; return `<span class="ust ${s[0]}" title="${u.st}" aria-label="${u.st}"><span class="msr fill">${s[1]}</span></span>`; };
 /* UC: número + concessionária (no lugar de cidade e estado) */
