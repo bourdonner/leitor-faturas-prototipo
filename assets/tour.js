@@ -230,10 +230,14 @@
     '.tr-launch:hover{background:#d9f99d}.tr-launch:active{transform:scale(.97)}',
     '.tr-launch .ms{font-family:"Material Symbols Rounded";font-size:15px;line-height:1;font-variation-settings:"FILL" 1}',
     '.tr-launch.solo{position:fixed;top:14px;right:16px;z-index:8500;box-shadow:0 1px 2px rgba(0,0,0,.08)}',
+    '.tr-help{position:relative}',
+    '.tr-help .msr,.tr-help .ms{font-size:20px}',
+    '.tr-help-ic{width:36px;height:36px;padding:0!important;justify-content:center;flex:none;margin-right:-8px}',
+    '.tr-help.new::before{content:"";position:absolute;inset:-4px;border-radius:12px;border:2px solid #84cc16;animation:trRing 1.8s ease-out infinite;pointer-events:none}',
     '.tr-launch.new::before{content:"";position:absolute;inset:-3px;border-radius:999px;border:2px solid #84cc16;animation:trRing 1.8s ease-out infinite}',
     '@keyframes trRing{0%{opacity:.9;transform:scale(.92)}100%{opacity:0;transform:scale(1.18)}}',
     '.tr-sep{width:1px;height:16px;background:var(--border,#d6d3d1);margin:0 2px}',
-    '@media (max-width:900px){.tr-launch,.tr-sep{display:none}}',
+    '@media (max-width:900px){.tr-launch,.tr-sep,.tr-help{display:none!important}}',
     '@media (prefers-reduced-motion:reduce){.tr-hole,.tr-ring,.tr-card,.tr-body,.tr-cursor,.tr-arrow,.tr-bar i{transition:none!important}.tr-ring,.tr-hero .ic,.tr-hero b,.tr-launch.new::before,.tr-demo::before{animation:none!important}}'
   ].join('\n');
   document.head.appendChild(css);
@@ -252,9 +256,14 @@
   var mount = function () {
     if (!root.isConnected) { document.body.appendChild(root); document.body.appendChild(cursor); }
     if (!launch.isConnected) {
-      var pill = Q('.proto');
-      if (pill) { var sep = document.createElement('span'); sep.className = 'tr-sep'; pill.insertBefore(launch, pill.firstChild); pill.insertBefore(sep, launch.nextSibling); }
-      else { launch.classList.add('solo'); document.body.appendChild(launch); }
+      /* "?" de ajuda junto das ações do topo da página, no mesmo estilo dos botões vizinhos */
+      var acts = Q('.head .acts'), add = Q('#add'), ha = Q('#headActions') || Q('#actions');
+      launch.setAttribute('aria-label', 'Tour guiado desta tela'); launch.removeAttribute('title');
+      if (acts) { launch.className = 'sq tip tr-help'; launch.setAttribute('data-tip', 'Tour guiado'); launch.innerHTML = '<span class="msr">help</span>'; acts.insertBefore(launch, acts.firstChild); }
+      else if (add) { launch.className = 'sqbtn tr-help'; launch.title = 'Tour guiado'; launch.innerHTML = '<span class="msr">help</span>'; add.parentNode.insertBefore(launch, add); }
+      /* nas telas de detalhe as ações são redesenhadas: o "?" fica ao lado delas, não dentro */
+      else if (ha) { launch.className = 'btn outline tr-help tr-help-ic'; launch.title = 'Tour guiado'; launch.innerHTML = '<span class="ms">help</span>'; ha.parentNode.insertBefore(launch, ha); }
+      else { launch.classList.add('solo'); launch.innerHTML = '<span class="ms">help</span>'; document.body.appendChild(launch); }
     }
   };
 
@@ -266,7 +275,7 @@
   var build = function () {
     steps = [{ center: true, title: DEF.name, text: DEF.intro }]
       .concat(DEF.steps.filter(function (s) { return true; }))
-      .concat([{ center: true, end: true, title: 'Tudo pronto!', text: 'Para rever estas dicas, clique em “Tour” no topo da tela.' }]);
+      .concat([{ center: true, end: true, title: 'Tudo pronto!', text: 'Para rever estas dicas, clique no “?” no topo da tela.' }]);
   };
   var resolve = function (s) {
     if (s.center) return null;
