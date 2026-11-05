@@ -192,7 +192,7 @@
 @media (prefers-reduced-motion:reduce){.fp .rs-cl,.fp .rs-bd,.fp .act-p .act-h,.fp .chev{transition:none}}
 
 /* funil da busca: ponto quando há filtro ativo e a linha está escondida */
-.fp #bFlt{position:relative}
+.fp #bFlt{position:relative}.fp #bFlt .fn{display:none}.fp #bFlt.dot{width:auto;display:inline-flex;align-items:center;gap:6px;padding:0 6px 0 10px}.fp #bFlt.dot .fn{display:inline;font:400 12px/16px Inter,sans-serif;color:var(--mid);white-space:nowrap}
 .fp #bFlt.dot::after{content:"";position:absolute;top:6px;right:6px;width:8px;height:8px;border-radius:999px;background:var(--brand);box-shadow:0 0 0 2px var(--sec)}
 
 /* etapa: processando = fade in/out; erro do sistema = onda na cor do alerta (3%) saindo da bolinha */

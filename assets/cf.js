@@ -396,7 +396,7 @@ function refresh(){ const v=new Set(visible().map(r=>r.id)); [...S.sel].forEach(
 /* linha de filtros: escondida por padrão; o funil mostra o estado e avisa quando há filtro ativo escondido */
 function syncFlt(){ const b=document.getElementById('bFlt'); if(!b) return; document.getElementById('frow').hidden=!S.fltOpen;
   b.setAttribute('aria-pressed',String(S.fltOpen)); b.querySelector('.msr').classList.toggle('fill',S.fltOpen);
-  const n=Object.values(S.f).filter(v=>v&&v.length).length; b.classList.toggle('dot',!S.fltOpen&&n>0);
+  const n=Object.values(S.f).filter(v=>v&&v.length).length; b.classList.toggle('dot',!S.fltOpen&&n>0); let fl=b.querySelector('.fn'); if(!fl){ fl=document.createElement('span'); fl.className='fn'; fl.setAttribute('aria-hidden','true'); b.prepend(fl); } fl.textContent=n?n+(n>1?' filtros':' filtro'):'';
   b.setAttribute('aria-label',(S.fltOpen?'Esconder filtros':'Mostrar filtros')+(n?` (${n} ativo${n>1?'s':''})`:'')); }
 function updateBulk(){ const b=document.getElementById('bulk'); const n=S.sel.size; b.classList.toggle('on',n>0); document.getElementById('bulkN').textContent=n2(n,'selecionado','selecionados'); document.getElementById('bulkA').innerHTML=n?H.bulk():''; }
 function syncRail(){ const r=document.getElementById('rail'); r.classList.toggle('off',!S.railOpen); r.inert=!S.railOpen; r.setAttribute('aria-hidden',!S.railOpen); const b=document.getElementById('bRail'); b.classList.toggle('on',S.railOpen); b.setAttribute('aria-pressed',S.railOpen);
