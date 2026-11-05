@@ -244,7 +244,7 @@ function EBS(r,k){ const K={fc:0,est:1,rec:2}[k], i=etapa(r); if(i<0) return 'p'
   const proc=['calculating','billing'].includes(r.ms)||(r.rec&&['Gerando boleto','Processando'].includes(r.rec.st)), err=FAIL_MS.includes(r.ms)||(r.rec&&r.rec.st==='Erro');
   if(K<i||done) return 'd'; if(K>i) return 'p'; return fail?('e'+(err?' wv':'')):('c'+(proc?' pr':'')); }
 const card=(k,h,body,keep)=>{ const main=keep&&body.endsWith(keep)?body.slice(0,-keep.length):body;
-  return `<section class="rs-card${shut(k)}" data-fold="${k}" aria-label="${esc(h.t)}"><div class="rs-hd${h.big?'':' sm'}"><span class="eb${h.off?' off':''}${h.st?' st-'+h.st:''}"><span class="msr fill">${h.ic}</span></span><div class="t"><b>${esc(h.t)}</b>${h.d?`<span class="cap">${esc(h.d)}</span>`:''}</div>${h.open||''}${fold(k,h.t.toLowerCase())}</div><div class="rs-bd${keep?' keep':''}">${main?cl(k,main):''}${keep||''}</div></section>`; };
+  return `<section class="rs-card${shut(k)}" data-fold="${k}" aria-label="${esc(h.t)}"><div class="rs-hd${h.big?'':' sm'}"><span class="eb${h.off?' off':''}${h.st?' st-'+h.st:''}"><span class="msr fill">${h.ic}</span></span><div class="t"><b>${esc(h.t)}</b>${h.d?`<span class="cap">${h.ds?`<span class="cap-l">${esc(h.d)}</span><span class="cap-s">${esc(h.ds)}</span>`:esc(h.d)}</span>`:''}</div>${h.open||''}${fold(k,h.t.toLowerCase())}</div><div class="rs-bd${keep?' keep':''}">${main?cl(k,main):''}${keep||''}</div></section>`; };
 H.rbar=()=>{ const all=FOLDS.every(k=>!S.fold.has(k)); return `<div class="rbar"><span class="msr">article_shortcut</span><span class="grow">Resumo do faturamento</span><button class="ib tip" data-a="foldall" data-tip="${all?'Recolher tudo':'Expandir tudo'}" aria-label="${all?'Recolher todas as seções':'Expandir todas as seções'}"><span class="msr">${all?'unfold_less':'unfold_more'}</span></button></div>`; };
 /* topo: faixa "Revisão manual" (se pedida) + fatura de ref. com status e ações */
 H.head=r=>`<section class="rs-card rs-fat">${r.rev?'<div class="rs-rev" role="status"><span class="grow">Revisão manual</span><span class="msr fill">flag</span></div>':''}
@@ -259,7 +259,7 @@ H.titP=r=>{ const t=TIT[r.t];
 const UCI={on:['check','ok'],off:['power_off','al'],can:['block','dg']};
 H.ucP=r=>{ const u=UCS[r.uc]; const s=UCI[UST[u.st][0]];
   const dst=(u.rat?IT({dst:1,ic:'call_split',cls:'al',l:'Rateio externo',v:'Ativo'}):'')+(u.man?IT({dst:1,ic:'edit_note',cls:'al',l:'Faturamento manual',v:u.mm?esc(u.mm):'Ativo'}):'');
-  return card('uc',{ic:'electric_meter',t:r.uc,d:'Unidade consumidora'+(u.ap?' · '+u.ap:''),big:1,open:`<button class="ib" data-a="ucdw" data-id="${r.id}" aria-label="Detalhes e configurações da UC"><span class="msr">open_in_new</span></button>`},
+  return card('uc',{ic:'electric_meter',t:r.uc,d:'Unidade consumidora'+(u.ap?' · '+u.ap:''),ds:'UC'+(u.ap?' · '+u.ap:''),big:1,open:`<button class="ib" data-a="ucdw" data-id="${r.id}" aria-label="Detalhes e configurações da UC"><span class="msr">open_in_new</span></button>`},
     IT({ic:s[0],cls:s[1],l:'Status',v:u.st})
     +IT({ic:'electrical_services',l:'Distribuidora',v:esc(u.conc),act:lk('Abriria a distribuidora '+u.conc,'Abrir distribuidora')})
     +IT({ic:'offline_bolt',l:'Saldo máximo',v:u.saldo+' meses',act:`<button class="ib" data-a="ucdw" data-id="${r.id}" aria-label="Ver configurações de saldo"><span class="msr">open_in_new</span></button>`})

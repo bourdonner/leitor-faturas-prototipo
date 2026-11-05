@@ -15,6 +15,8 @@
 .fp.fp [data-fold].closed>.rs-hd .t b{font-size:14px;line-height:24px;flex:0 1 auto;min-width:0}
 .fp.fp [data-fold].closed>.rs-hd .t .cap{display:block;flex:0 0 auto;max-width:65%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px;line-height:24px;letter-spacing:0}
 .fp.fp [data-fold].closed>.rs-hd .t .cap::before{content:"";display:inline-block;vertical-align:middle;width:4px;height:4px;margin:0 8px 2px 0;border-radius:50%;background:currentColor}
+.fp .rs-hd .cap-s,.fp.fp [data-fold].closed>.rs-hd .cap-l{display:none}
+.fp.fp [data-fold].closed>.rs-hd .cap-s{display:inline}
 .fp.fp [data-fold].closed>.rs-hd>.ib:not([data-a*="fold"]){display:none}
 .fp.fp [data-fold].closed>.act-h{font-size:14px}
 .fp.fp [data-fold].closed>.rs-bd.keep{padding:0 16px 12px}
