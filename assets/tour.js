@@ -86,7 +86,7 @@
           leave: unhoverCF, demo: 'hover' },
         { sel: '#pop', title: 'Ícone, texto ou oculta', place: 'left',
           pick: function () { var b = Q('#bCols'); if (b && !popOpen()) click(b); return popOpen() ? Q('#pop') : null; },
-          text: 'Cada coluna pode aparecer completa, só com o ícone ou oculta. O olho mostra ou esconde a coluna. Em UC, titular, grupo e carteira, o switch “Só ícone” deixa só o ícone, e o nome abre ao passar o mouse. “Restaurar padrão” volta ao original.',
+          text: 'Cada coluna pode aparecer completa, só com o ícone ou oculta. O olho mostra ou esconde a coluna. Em UC, titular, grupo e carteira, o seletor à direita alterna entre só ícone e ícone com texto; com só ícone, o nome abre ao passar o mouse. “Restaurar padrão” volta ao original.',
           enter: function () { return wait(220); }, leave: function () { closePop(Q('#bCols')); } },
         { sel: '#tbl .tr.th .so-rev', pad: 8, title: 'Priorize as revisões', text: 'Clique na bandeira para trazer primeiro os faturamentos que aguardam revisão manual.' },
         { sel: '#tbl .tr.row.cur, #tbl .tr.row', title: 'Veja os detalhes sem sair da lista', text: 'Clique numa linha para ver o resumo ao lado. Para abrir o detalhamento completo, dê um duplo clique.' },

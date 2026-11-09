@@ -441,15 +441,15 @@ function openPop(anchor,html,opts={}){ closePop(); popEl=document.getElementById
   if(up){ popEl.style.top='auto'; popEl.style.bottom=(innerHeight-r.top+6)+'px'; } else { popEl.style.bottom='auto'; popEl.style.top=(r.bottom+6)+'px'; }
   const f=popEl.querySelector('textarea,input,button'); if(f) f.focus({preventScroll:true}); }
 function closePop(){ if(popEl){ popEl.hidden=true; popEl.innerHTML=''; } if(popAnchor){ popAnchor.classList.remove('open'); popAnchor.setAttribute('aria-expanded','false'); popAnchor=null; } }
-const colPop=()=>`<div class="ph">Colunas</div><div class="cmn">Só ícone: a coluna mostra o ícone e o nome abre ao passar o mouse.</div>
+const colPop=()=>`<div class="ph">Colunas</div><div class="cmn">Com ícone, a coluna mostra só o ícone e o nome abre ao passar o mouse.</div>
   ${COLS.filter(c=>c.l).map(c=>{ const fx=!canHide(c), vis=!S.cm.h.includes(c.k), ic=S.cm.i.includes(c.k);
   const eye=fx?'<span class="vis fx" title="Coluna fixa"><span class="msr fill" aria-hidden="true">lock</span></span>'
     :`<button type="button" class="vis${vis?'':' off'}" data-a="colv" data-k="${c.k}" aria-pressed="${vis}" aria-label="${vis?'Ocultar':'Mostrar'} ${c.l}" title="${vis?'Ocultar':'Mostrar'}"><span class="msr fill">${vis?'visibility':'visibility_off'}</span></button>`;
-  const sw=c.cp?`<label class="sw${ic?' on':''}${vis?'':' dis'}" title="Só ícone"><input type="checkbox" role="switch" data-a="colsw" data-k="${c.k}" aria-label="${c.l}: só ícone"${ic?' checked':''}${vis?'':' disabled'}><i></i></label>`:'';
+  const sw=c.cp?`<div class="seg" role="radiogroup" aria-label="${c.l}: exibição">${[['icon','interests','Só ícone'],['full','text_fields','Ícone e texto']].map(([m,i,t])=>{ const on=(m==='icon')===ic; return `<button type="button" class="sg${on?' on':''}" role="radio" aria-checked="${on}" data-a="colsw" data-k="${c.k}" data-m="${m}" title="${t}" aria-label="${t}"${vis?'':' disabled'}><span class="msr fill">${i}</span></button>`; }).join('')}</div>`:'';
   return `<div class="cmr${vis?'':' off'}">${eye}<span class="grow">${c.l}</span>${sw}</div>`; }).join('')}
   <div class="sepl"></div><button class="opt" data-a="colreset"${cmIsDef()?' aria-disabled="true"':''}><span class="msr fill">restart_alt</span><span class="grow">Restaurar padrão</span></button>`;
 const reCol=()=>{ const b=document.getElementById('bCols'); const ae=document.activeElement, d=ae&&ae.dataset?ae.dataset:{}; popEl.innerHTML=colPop(); popAnchor=b; b.classList.add('open'); b.setAttribute('aria-expanded','true');
-  const el=d.a&&d.k?popEl.querySelector(`[data-a="${d.a}"][data-k="${d.k}"]`):d.a?popEl.querySelector(`[data-a="${d.a}"]`):null; (el||popEl.querySelector('button,input')).focus({preventScroll:true}); };
+  const el=d.a&&d.k?popEl.querySelector(`[data-a="${d.a}"][data-k="${d.k}"]${d.m?`[data-m="${d.m}"]`:''}`):d.a?popEl.querySelector(`[data-a="${d.a}"]`):null; (el||popEl.querySelector('button,input')).focus({preventScroll:true}); };
 const sortPop=()=>[['ref','Referência'],['tit','Titular'],['val','Valor'],['rev','Revisão manual']].map(([k,l])=>{ const on=S.sort.k===k; return `<button class="opt" data-a="sortby" data-k="${k}" role="menuitemradio" aria-checked="${on}"><span class="grow">${l}</span>${on?`<span class="msr">${S.sort.dir==='asc'?'arrow_upward':'arrow_downward'}</span>`:''}</button>`; }).join('');
 function fltPop(a,f){ const v=S.f[f.k]||[];
   if(f.t==='txt') return openPop(a,`<div class="ph">${f.l}</div><div class="obs"><input class="fin" id="fIn" data-k="${f.k}" inputmode="numeric" placeholder="${esc(f.ph||'')}" value="${esc(v[0]||'')}" aria-label="${f.l}"><div class="row"><button class="b pri sm" data-a="fapply" data-k="${f.k}">Aplicar</button></div></div>`,{w:260});
@@ -508,7 +508,7 @@ function onClick(e){
     case 'sortby': { const sk=a.dataset.k; S.sort=S.sort.k===sk?{k:sk,dir:S.sort.dir==='asc'?'desc':'asc'}:{k:sk,dir:sk==='tit'?'asc':'desc'}; const inPop=a.closest('#pop'); refresh(); if(inPop){ const b=document.getElementById('bSort'); popEl.innerHTML=sortPop(); popAnchor=b; b.classList.add('open'); } break; }
     case 'colmenu': if(popAnchor===a){ closePop(); break; } openPop(a,colPop(),{alignRight:true,w:280}); break;
     case 'colv': { e.stopPropagation(); const c=COLS.find(x=>x.k===a.dataset.k); if(!c||!canHide(c)) break; S.cm.h=tog(S.cm.h,c.k); saveCm(); refresh(); reCol(); break; }
-    case 'colsw': { e.stopPropagation(); const c=COLS.find(x=>x.k===a.dataset.k); if(!c||!c.cp||S.cm.h.includes(c.k)) break; S.cm.i=tog(S.cm.i,c.k); saveCm(); refresh(); reCol(); break; }
+    case 'colsw': { e.stopPropagation(); const c=COLS.find(x=>x.k===a.dataset.k); if(!c||!c.cp||S.cm.h.includes(c.k)||(a.dataset.m==='icon')===S.cm.i.includes(c.k)) break; S.cm.i=tog(S.cm.i,c.k); saveCm(); refresh(); reCol(); break; }
     case 'colreset': { e.stopPropagation(); if(cmIsDef()) break; S.cm=cmDef(); saveCm(); refresh(); reCol(); toast('Colunas restauradas para o padrão'); break; }
     case 'sortmenu': if(popAnchor===a){ closePop(); break; } openPop(a,sortPop(),{alignRight:true,w:200}); break;
     /* Incluir leva ao Leitor de Faturas, já com o envio de faturas aberto */
