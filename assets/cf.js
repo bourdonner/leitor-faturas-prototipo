@@ -417,6 +417,15 @@ const obsPop=(ids,on)=>`<div class="ph">${on?'Arquivar':'Desarquivar'} ${n2(ids.
 /* ---------- montagem ---------- */
 const mounts=[];
 function mount(el,fn){ mounts.push({el,fn}); el.innerHTML=fn(); }
+/* carregamento (troca de página ou de tamanho da página): a tabela fica com os dados antigos esmaecidos, uma barra corre sob o cabeçalho
+   e um aviso fica no meio da área visível (não no meio da tabela inteira, que com 500 linhas some da tela). Só aparece se demorar mais de 300 ms. */
+S.ld=0;
+function withLoading(fn){ const id=++S.ld, n=S.ps, w=document.querySelector('#vList .tblw'), tb=document.getElementById('tbl');
+  const show=setTimeout(()=>{ if(S.ld!==id||!w) return; let o=w.querySelector('.ldg'); if(!o){ o=document.createElement('div'); o.className='ldg'; o.setAttribute('role','status'); w.appendChild(o); }
+    const th=tb&&tb.querySelector('.tr.th'); o.style.top=(th?th.getBoundingClientRect().bottom-w.getBoundingClientRect().top:0)+'px';
+    o.innerHTML='<i class="ldb" aria-hidden="true"></i><span class="ldp"><span class="msr spin" aria-hidden="true">progress_activity</span>Carregando faturamentos<span class="ldn">'+n+' por página</span></span>';
+    document.body.classList.add('cf-ld'); if(tb) tb.setAttribute('aria-busy','true'); },300);
+  setTimeout(()=>{ if(S.ld!==id) return; clearTimeout(show); fn(); const o=w&&w.querySelector('.ldg'); if(o) o.remove(); document.body.classList.remove('cf-ld'); if(tb) tb.removeAttribute('aria-busy'); },400+n*3); }
 function refresh(){ const v=new Set(visible().map(r=>r.id)); [...S.sel].forEach(id=>{ if(!v.has(id)) S.sel.delete(id); });
   const ta=document.getElementById('cmT'); const draft=ta?ta.value:'';
   const sc0=document.getElementById('railSc'), st0=sc0?sc0.scrollTop:0, cur0=S.cur;
@@ -503,7 +512,7 @@ function onClick(e){
     case 'archgo': case 'unarchgo': { const ids=a.dataset.ids.split(','); const obs=(document.getElementById('obsT')||{}).value||''; closePop(); setArchived(ids,k==='archgo',obs.trim()); if(S.sel.size){ S.sel.clear(); refresh(); } break; }
     case 'popclose': closePop(); break;
     case 'grupo': e.stopPropagation(); toast('Abriria o '+a.dataset.v); break;
-    case 'pg': { e.stopPropagation(); const tp=pages(visible().length); S.pg={first:1,prev:S.pg-1,next:S.pg+1,last:tp}[a.dataset.k]; S.pg=Math.max(1,Math.min(tp,S.pg)); refresh(); const t=document.getElementById('tbl'); if(t) t.scrollTop=0; break; }
+    case 'pg': { e.stopPropagation(); const tp=pages(visible().length); S.pg={first:1,prev:S.pg-1,next:S.pg+1,last:tp}[a.dataset.k]; S.pg=Math.max(1,Math.min(tp,S.pg)); withLoading(()=>{ refresh(); const t=document.getElementById('tbl'); if(t) t.scrollTop=0; }); break; }
     case 'ps': return;
     case 'sortby': { const sk=a.dataset.k; S.sort=S.sort.k===sk?{k:sk,dir:S.sort.dir==='asc'?'desc':'asc'}:{k:sk,dir:sk==='tit'?'asc':'desc'}; const inPop=a.closest('#pop'); refresh(); if(inPop){ const b=document.getElementById('bSort'); popEl.innerHTML=sortPop(); popAnchor=b; b.classList.add('open'); } break; }
     case 'colmenu': if(popAnchor===a){ closePop(); break; } openPop(a,colPop(),{alignRight:true,w:280}); break;
@@ -553,7 +562,7 @@ function mountScreen(){
   mount(document.getElementById('count'),()=>{ const v=visible().length; return '<span class="d-only">'+n2(v,'faturamento','faturamentos')+(v!==ROWS.length?` de ${ROWS.length}`:'')+' · Selecione linhas para ações em lote</span><span class="m-only">'+S.sel.size+' de '+pageRows(visible()).length+' linhas selecionadas</span>'; });
   mount(document.getElementById('pag'),H.pag);
   mount(document.getElementById('mpag'),()=>{ const tp=pages(visible().length); return `<button class="b out sm" data-a="pg" data-k="prev"${S.pg<=1?' disabled':''}>Anterior</button><button class="b out sm" data-a="pg" data-k="next"${S.pg>=tp?' disabled':''}>Próximo</button>`; });
-  document.addEventListener('change',e=>{ if(e.target.matches('select[data-a="ps"]')){ S.ps=+e.target.value; refresh(); } });
+  document.addEventListener('change',e=>{ if(e.target.matches('select[data-a="ps"]')){ const v=+e.target.value; S.ps=v; withLoading(()=>{ refresh(); const t=document.getElementById('tbl'); if(t) t.scrollTop=0; }); } });
   /* pílula das colunas compactas (titular, grupo, carteira): abre no hover ou no foco, ao lado do ícone */
   const pil=document.createElement('div'); pil.className='rvl'; pil.setAttribute('role','tooltip'); pil.hidden=true; document.getElementById('app').appendChild(pil);
   const showP=b=>{ pil.innerHTML='<b>'+esc(b.dataset.rl)+'</b><span>'+esc(b.dataset.rv)+'</span>'; pil.hidden=false; const r=b.getBoundingClientRect();

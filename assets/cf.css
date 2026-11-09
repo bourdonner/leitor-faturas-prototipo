@@ -326,3 +326,16 @@
 .fp .pop .sg:focus-visible{outline:2px solid var(--brand);outline-offset:1px}
 .fp .one .tx{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
 .fp .one .tx.mu{color:var(--mid)}
+
+/* carregamento: dados antigos esmaecidos, barra sob o cabeçalho e aviso no centro da área visível */
+.fp #vList .tblw{position:relative}
+.fp .ldg{position:absolute;left:0;right:0;bottom:0;z-index:6;display:grid;place-items:center;background:color-mix(in srgb,var(--fg) 55%,transparent);animation:ldIn .2s ease;cursor:progress}
+.fp .ldb{position:absolute;top:0;left:0;right:0;height:2px;overflow:hidden;background:color-mix(in srgb,var(--brand) 18%,transparent)}
+.fp .ldb::after{content:'';position:absolute;top:0;bottom:0;left:-30%;width:30%;border-radius:2px;background:var(--brand);animation:ldBar 1.1s ease-in-out infinite}
+.fp .ldp{display:inline-flex;align-items:center;gap:8px;padding:8px 16px 8px 12px;border-radius:999px;background:var(--fg);border:1px solid var(--fsec);box-shadow:var(--pop);font:500 13px/20px Inter;color:var(--ink)}
+.fp .ldp .msr{font-size:18px;color:var(--brand)}
+.fp .ldp .ldn{color:var(--mid);font-weight:400;padding-left:8px;border-left:1px solid var(--s200)}
+.cf-ld #pag,.cf-ld #mpag{opacity:.5;pointer-events:none}
+@keyframes ldBar{0%{left:-30%}100%{left:100%}}
+@keyframes ldIn{from{opacity:0}}
+@media (prefers-reduced-motion:reduce){.fp .ldb::after{animation:none;left:0;width:100%}.fp .ldg{animation:none}}
