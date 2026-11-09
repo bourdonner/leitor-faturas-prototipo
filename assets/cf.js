@@ -441,7 +441,7 @@ function openPop(anchor,html,opts={}){ closePop(); popEl=document.getElementById
   if(up){ popEl.style.top='auto'; popEl.style.bottom=(innerHeight-r.top+6)+'px'; } else { popEl.style.bottom='auto'; popEl.style.top=(r.bottom+6)+'px'; }
   const f=popEl.querySelector('textarea,input,button'); if(f) f.focus({preventScroll:true}); }
 function closePop(){ if(popEl){ popEl.hidden=true; popEl.innerHTML=''; } if(popAnchor){ popAnchor.classList.remove('open'); popAnchor.setAttribute('aria-expanded','false'); popAnchor=null; } }
-const colPop=()=>`<div class="ph">Colunas</div><div class="cmn">Com ícone, a coluna mostra só o ícone e o nome abre ao passar o mouse.</div>
+const colPop=()=>`<div class="ph">Colunas</div><div class="cmn">Escolha aqui quais colunas aparecem na tabela e como cada uma é exibida.</div>
   ${COLS.filter(c=>c.l).map(c=>{ const fx=!canHide(c), vis=!S.cm.h.includes(c.k), ic=S.cm.i.includes(c.k);
   const eye=fx?'<span class="vis fx" title="Coluna fixa"><span class="msr fill" aria-hidden="true">lock</span></span>'
     :`<button type="button" class="vis${vis?'':' off'}" data-a="colv" data-k="${c.k}" aria-pressed="${vis}" aria-label="${vis?'Ocultar':'Mostrar'} ${c.l}" title="${vis?'Ocultar':'Mostrar'}"><span class="msr fill">${vis?'visibility':'visibility_off'}</span></button>`;
