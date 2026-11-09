@@ -87,7 +87,7 @@
         { sel: '#tbl .tr.th .so-rev', pad: 8, title: 'Priorize as revisões', text: 'Clique na bandeira para trazer primeiro os faturamentos que aguardam revisão manual.' },
         { sel: '#tbl .tr.row.cur, #tbl .tr.row', title: 'Veja os detalhes sem sair da lista', text: 'Clique numa linha para ver o resumo ao lado. Para abrir o detalhamento completo, dê um duplo clique.' },
         common.rbarFold,
-        { sel: '#rail .rs-gc', title: 'Confira de ponta a ponta', place: 'left', text: 'Fatura da concessionária, estudo e conta a receber ficam juntos para você conferir o faturamento inteiro num lugar só.',
+        { sel: '#rail [data-fold="fc"]', title: 'Uma área por etapa', place: 'left', text: 'Fatura da concessionária, estudo e conta a receber têm cada uma o seu card. O ícone de cada card repete o estado da etapa.',
           enter: function (el) { reveal(el, 'start'); return wait(350); } }
       ] },
     'faturamento-usinas.html': {

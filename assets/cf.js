@@ -157,21 +157,29 @@ H.steps=r=>{ const i=etapa(r);
   /* tag no hover (mesma interação do Faturamento de Usinas): etapa em negrito + estado, ex.: "Estudo Concluído" */
   const tagOf=(k,cls,cur)=>i<0?['Arquivado','p']:cls==='d'?[k===1?'Concluído':'Concluída','d']:cls===''?[k===1?'Não iniciado':'Não iniciada','p']:[k===0?MS[r.ms][0]:k===1?MS[r.ms][0]:statusTxt(r),cls==='e'?'e':cur&&proc?'w':'c'];
   return `<span class="steps" aria-hidden="true">${[0,1,2].map(k=>{ const cur=k===i&&!done; const cls=i<0?'':k<i||done?'d':k===i?(fail?'e':'c'):''; const [tg,st]=tagOf(k,cls,cur); return `<i class="${cls}${cur&&proc?' proc':''}${cur&&err?' wave':''}" data-tg="${['Leitura','Estudo','Conta a receber'][k]}" data-td="${esc(tg)}" data-st="${st}"></i>`; }).join('')}</span>`; };
-H.tit=r=>{ const t=TIT[r.t]; return `<div class="ent"><span class="ic ${t.pj?'':'pf'}"><span class="msr fill">${t.pj?'bolt':'person'}</span></span><div class="t"><div>${esc(t.n.toUpperCase())}</div><div class="s">${esc(t.doc)}</div></div>${t.grp?`<button class="grp" data-a="grupo" data-v="${esc(t.grp)}" title="${esc(t.grp)}" aria-label="Abrir ${esc(t.grp)}"><span class="msr fill">groups</span></button>`:''}</div>`; };
+/* stg (09/11): titular, grupo e carteira viram colunas compactas, só com o ícone; no hover abre uma pílula "Rótulo valor" */
+const rvi=(lbl,val,ic,cls)=>`<button class="rvi" type="button" data-rl="${esc(lbl)}" data-rv="${esc(val)}" aria-label="${esc(lbl)}: ${esc(val)}"><span class="ci2 ${cls}"><span class="msr fill">${ic}</span></span></button>`;
+H.tit=r=>{ const t=TIT[r.t]; return rvi('Titular',`${t.n} · ${t.pj?'Pessoa jurídica':'Pessoa física'} · ${t.reg?'Aguardando ativação':'Ativo'}`,t.pj?'domain':'person',t.reg?'al':'ok'); };
+H.grp=r=>{ const g=TIT[r.t].grp; return g?rvi('Grupo',g,'groups','bl'):rvi('Grupo','Sem grupo','group_off','no'); };
+H.cart=r=>{ const c=TIT[r.t].cart; return c?rvi('Carteira',c,'account_balance_wallet','dk'):rvi('Carteira','Sem carteira','account_balance_wallet','no'); };
+const colIc=(ic,l)=>`<span class="cih" title="${l}" aria-label="${l}"><span class="msr">${ic}</span></span>`;
 H.ust=u=>{ const s=UST[u.st]; return `<span class="ust ${s[0]}" title="${u.st}" aria-label="${u.st}"><span class="msr fill">${s[1]}</span></span>`; };
 /* UC: número + concessionária (no lugar de cidade e estado) */
-H.uc=r=>`<div class="ent">${H.ust(UCS[r.uc])}<div class="t"><div>${r.uc}</div><div class="s">${esc(UCS[r.uc].conc)}</div></div></div>`;
+H.uc=r=>`<div class="one">${H.ust(UCS[r.uc])}<span>${r.uc}</span></div>`;
 H.est=r=>H.badge(r.est.st,EST);
 const sortBtn=(k,l)=>{ const on=S.sort.k===k; return `<button class="so${on?' on':''}" data-a="sortby" data-k="${k}" aria-label="Ordenar por ${l}">${l}<span class="msr">${on?(S.sort.dir==='asc'?'arrow_upward':'arrow_downward'):'import_export'}</span></button>`; };
 
 const COLS=[
- {k:'ck',w:'48px',h:()=>{ const v=visible(); const n=v.filter(r=>S.sel.has(r.id)).length; const st=n===0?'':n===v.length?'on':'mid'; return `<button class="cbx ${st}" data-a="selall" role="checkbox" aria-checked="${n===0?'false':n===v.length?'true':'mixed'}" aria-label="Selecionar todos">${st==='on'?'<span class="mss">check</span>':''}</button>`; },
+ {k:'ck',w:'48px',h:()=>{ const v=pageRows(visible()); const n=v.filter(r=>S.sel.has(r.id)).length; const st=n===0?'':n===v.length?'on':'mid'; return `<button class="cbx ${st}" data-a="selall" role="checkbox" aria-checked="${n===0?'false':n===v.length?'true':'mixed'}" aria-label="Selecionar todos">${st==='on'?'<span class="mss">check</span>':''}</button>`; },
    c:r=>`<button class="cbx ${S.sel.has(r.id)?'on':''}" data-a="sel" data-id="${r.id}" role="checkbox" aria-checked="${S.sel.has(r.id)}" aria-label="Selecionar ${r.id}">${S.sel.has(r.id)?'<span class="mss">check</span>':''}</button>`},
  {k:'ref',w:'110px',l:'Ref.',fix:1,h:()=>sortBtn('ref','Ref.'),c:r=>r.ref},
- {k:'tit',w:'minmax(240px,1fr)',l:'Titular',h:()=>sortBtn('tit','Titular'),c:H.tit,cel:1},
- {k:'uc',w:'minmax(220px,1fr)',l:'Unidade consumidora',h:()=>'Unidade consumidora',c:H.uc,cel:1},
+ {k:'uc',w:'minmax(170px,1fr)',l:'Unidade consumidora',h:()=>'Unidade consumidora',c:H.uc},
+ {k:'tit',w:'56px',l:'Titular',h:()=>colIc('person','Titular'),c:H.tit},
+ {k:'grp',w:'56px',l:'Grupo',h:()=>colIc('groups','Grupo'),c:H.grp},
+ {k:'cart',w:'56px',l:'Carteira',h:()=>colIc('account_balance_wallet','Carteira'),c:H.cart},
+ {k:'conc',w:'minmax(140px,1fr)',l:'Concessionária',h:()=>'Concessionária',c:r=>esc(UCS[r.uc].conc)},
  {k:'est',w:'150px',l:'Estudo',h:()=>'Estudo',c:H.est},
- {k:'eta',w:'160px',l:'Etapa',h:()=>'Etapa',c:r=>`<div class="two eta">${H.steps(r)}<span>${fase(r)}</span></div>`},
+ {k:'eta',w:'120px',l:'Etapa',h:()=>'Etapa',c:r=>`<div class="eta" aria-label="Etapa ${fase(r)}">${H.steps(r)}</div>`},
  {k:'rec',w:'170px',l:'Status',h:()=>'Status',c:H.stat},
  {k:'rev',w:'48px',l:'Revisão manual',h:()=>{ const on=S.sort.k==='rev'; return `<button class="so so-rev${on?' on':''}" data-a="sortby" data-k="rev" title="Ordenar por revisão manual" aria-label="Ordenar por revisão manual"><span class="msr${on?' fill':''}">flag</span></button>`; },c:r=>r.rev?'<span class="rvf" title="Revisão manual" aria-label="Revisão manual"><span class="msr fill">flag</span></span>':''},
  {k:'act',w:'56px',h:()=>'',c:r=>`<button class="more" data-a="rowmenu" data-id="${r.id}" aria-label="Ações de ${r.id}" aria-haspopup="menu"><span class="msr">more_horiz</span></button>`}
@@ -222,8 +230,19 @@ const HID_KEY='cf-v2-hidden-cols';
 S.hid=new Set((()=>{ try{ return JSON.parse(localStorage.getItem(HID_KEY)||'[]'); }catch(e){ return []; } })());
 const saveHid=()=>{ try{ localStorage.setItem(HID_KEY,JSON.stringify([...S.hid])); }catch(e){} };
 const canHide=c=>!!c.l&&!c.fix;
-const VC=()=>{ const v=COLS.filter(c=>!S.hid.has(c.k)); const hasFr=v.some(c=>/fr/.test(c.w)); return v.map(c=>hasFr||c.k==='ck'||c.k==='act'||c.k==='rev'?c:{...c,w:`minmax(${c.w},1fr)`}); };
-H.table=()=>{ const vc=VC(); const gt=vc.map(c=>c.w).join(' '); const v=visible();
+const VC=()=>{ const v=COLS.filter(c=>!S.hid.has(c.k)); const hasFr=v.some(c=>/fr/.test(c.w)); return v.map(c=>hasFr||['ck','act','rev','tit','grp','cart'].includes(c.k)?c:{...c,w:`minmax(${c.w},1fr)`}); };
+/* paginação (stg 09/11): 50 por página, opções de 10 a 500; busca, filtro e ordem voltam para a página 1 */
+const PS_OPTS=[10,20,30,50,100,200,300,500];
+S.pg=1; S.ps=50; S.pgSig='';
+const pages=n=>Math.max(1,Math.ceil(n/S.ps));
+function pageRows(v){ const sig=JSON.stringify([S.q,S.f,S.sort,S.ps]); if(sig!==S.pgSig){ S.pg=1; S.pgSig=sig; } S.pg=Math.min(S.pg,pages(v.length)); return v.slice((S.pg-1)*S.ps,S.pg*S.ps); }
+H.pag=()=>{ const n=visible().length, tp=pages(n), a=S.pg<=1, z=S.pg>=tp;
+  const pb=(k,ic,l,dis)=>`<button class="pgb" data-a="pg" data-k="${k}" aria-label="${l}"${dis?' disabled':''}><span class="msr">${ic}</span></button>`;
+  return `<label class="pgs">Resultados por página<select data-a="ps" aria-label="Resultados por página">${PS_OPTS.map(o=>`<option${o===S.ps?' selected':''}>${o}</option>`).join('')}</select></label>`
+   +pb('first','first_page','Primeira página',a)+pb('prev','chevron_left','Página anterior',a)
+   +`<span class="pgn" aria-live="polite">Página ${S.pg} de ${tp}</span>`
+   +pb('next','chevron_right','Próxima página',z)+pb('last','last_page','Última página',z); };
+H.table=()=>{ const vc=VC(); const gt=vc.map(c=>c.w).join(' '); const v=pageRows(visible());
   const head=`<div class="tr th" role="row" style="grid-template-columns:${gt}">${vc.map(c=>`<div role="columnheader" class="c-${c.k}">${c.h()}</div>`).join('')}</div>`;
   const rows=v.map(r=>`<div class="tr row ${S.sel.has(r.id)?'is-sel':''} ${S.railOpen&&S.cur===r.id?'cur':''}" role="row" tabindex="0" data-a="row" data-id="${r.id}" style="grid-template-columns:${gt}">${vc.map(c=>`<div role="cell" class="c-${c.k}${c.cel?' cel':''}">${c.c(r)}</div>`).join('')}</div>`).join('');
   return head+(rows||'<div class="empty">Nenhum faturamento com esses filtros.</div>'); };
@@ -311,7 +330,7 @@ H.cm=r=>{ const ev=c=>{ const who=c.who?`<span class="who2" data-name="${esc(c.w
 /* a barra fica fora da rolagem; só os cards rolam, num espaço com cantos de 12px */
 /* etapas num card só, com o cabeçalho de grupo do Faturamento de Usinas */
 const gcard=(ic,t,...parts)=>`<div class="rs-gc" role="group" aria-label="${t}"><div class="rs-gtop gh"><span class="ph" aria-hidden="true"><span class="msr fill">${ic}</span></span><b class="grow">${t}</b></div>${parts.join('')}</div>`;
-H.rail=r=>H.rbar()+`<div class="rail-sc" id="railSc">${H.head(r)+H.titP(r)+H.ucP(r)+gcard('receipt_long','Etapas do faturamento',H.fcP(r),H.estP(r),H.recP(r))+H.cm(r)}</div>`;
+H.rail=r=>H.rbar()+`<div class="rail-sc" id="railSc">${H.head(r)+H.titP(r)+H.ucP(r)+H.fcP(r)+H.estP(r)+H.recP(r)+H.cm(r)}</div>`;
 /* degradê do cabeçalho grudado só aparece quando ele está de fato grudado */
 function markStuck(){ const sc=document.getElementById('railSc'); if(!sc) return; const top=sc.getBoundingClientRect().top;
   sc.querySelectorAll('.rs-hd,.act-h').forEach(h=>{ const box=h.parentElement.getBoundingClientRect(); h.classList.toggle('stuck',box.top<top-0.5&&h.getBoundingClientRect().top<=top+0.5); }); }
@@ -442,7 +461,7 @@ function onClick(e){
     /* duplo clique abre o detalhamento: o 1º clique redesenha a tabela, então o dblclick nativo não chega na linha; compara id e tempo */
     case 'row': { if(matchMedia('(max-width:767px)').matches){ location.href='faturamento-detalhe.html?estado='+row(id).e; break; } const t=Date.now(); if(lastRow.id===id&&t-lastRow.t<450){ lastRow={id:null,t:0}; location.href='faturamento-detalhe.html?estado='+row(id).e; break; } lastRow={id,t}; S.cur=id; S.railOpen=true; refresh(); break; }
     case 'sel': e.stopPropagation(); S.sel.has(id)?S.sel.delete(id):S.sel.add(id); refresh(); break;
-    case 'selall': { const v=visible(); const al=v.every(x=>S.sel.has(x.id)); v.forEach(x=>al?S.sel.delete(x.id):S.sel.add(x.id)); refresh(); break; }
+    case 'selall': { const v=pageRows(visible()); const al=v.every(x=>S.sel.has(x.id)); v.forEach(x=>al?S.sel.delete(x.id):S.sel.add(x.id)); refresh(); break; }
     case 'rowmenu': e.stopPropagation(); if(popAnchor===a){ closePop(); break; } openPop(a,H.menu(r),{alignRight:true,w:270}); break;
     case 'revon': closePop(); setRev([id],true); break;
     case 'revoff': closePop(); setRev([id],false); break;
@@ -468,6 +487,8 @@ function onClick(e){
     case 'archgo': case 'unarchgo': { const ids=a.dataset.ids.split(','); const obs=(document.getElementById('obsT')||{}).value||''; closePop(); setArchived(ids,k==='archgo',obs.trim()); if(S.sel.size){ S.sel.clear(); refresh(); } break; }
     case 'popclose': closePop(); break;
     case 'grupo': e.stopPropagation(); toast('Abriria o '+a.dataset.v); break;
+    case 'pg': { e.stopPropagation(); const tp=pages(visible().length); S.pg={first:1,prev:S.pg-1,next:S.pg+1,last:tp}[a.dataset.k]; S.pg=Math.max(1,Math.min(tp,S.pg)); refresh(); const t=document.getElementById('tbl'); if(t) t.scrollTop=0; break; }
+    case 'ps': return;
     case 'sortby': { const sk=a.dataset.k; S.sort=S.sort.k===sk?{k:sk,dir:S.sort.dir==='asc'?'desc':'asc'}:{k:sk,dir:sk==='tit'?'asc':'desc'}; const inPop=a.closest('#pop'); refresh(); if(inPop){ const b=document.getElementById('bSort'); popEl.innerHTML=sortPop(); popAnchor=b; b.classList.add('open'); } break; }
     case 'colmenu': if(popAnchor===a){ closePop(); break; } openPop(a,colPop(),{alignRight:true,w:240}); break;
     case 'colt': { e.stopPropagation(); const c=COLS.find(x=>x.k===a.dataset.k); if(!c||!canHide(c)) break; S.hid.has(c.k)?S.hid.delete(c.k):S.hid.add(c.k); saveHid(); refresh(); reCol(); break; }
@@ -512,7 +533,20 @@ function mountScreen(){
   mount(document.getElementById('frow'),H.filters);
   mount(document.getElementById('tbl'),H.table);
   mount(document.getElementById('rail'),()=>H.rail(row(S.cur)||ROWS[0]));
-  mount(document.getElementById('count'),()=>{ const v=visible().length; return '<span class="d-only">'+n2(v,'faturamento','faturamentos')+(v!==ROWS.length?` de ${ROWS.length}`:'')+'</span><span class="m-only">'+S.sel.size+' de '+v+' linhas selecionadas</span>'; });
+  mount(document.getElementById('count'),()=>{ const v=visible().length; return '<span class="d-only">'+n2(v,'faturamento','faturamentos')+(v!==ROWS.length?` de ${ROWS.length}`:'')+' · Selecione linhas para ações em lote</span><span class="m-only">'+S.sel.size+' de '+pageRows(visible()).length+' linhas selecionadas</span>'; });
+  mount(document.getElementById('pag'),H.pag);
+  mount(document.getElementById('mpag'),()=>{ const tp=pages(visible().length); return `<button class="b out sm" data-a="pg" data-k="prev"${S.pg<=1?' disabled':''}>Anterior</button><button class="b out sm" data-a="pg" data-k="next"${S.pg>=tp?' disabled':''}>Próximo</button>`; });
+  document.addEventListener('change',e=>{ if(e.target.matches('select[data-a="ps"]')){ S.ps=+e.target.value; refresh(); } });
+  /* pílula das colunas compactas (titular, grupo, carteira): abre no hover ou no foco, ao lado do ícone */
+  const pil=document.createElement('div'); pil.className='rvl'; pil.setAttribute('role','tooltip'); pil.hidden=true; document.getElementById('app').appendChild(pil);
+  const showP=b=>{ pil.innerHTML='<b>'+esc(b.dataset.rl)+'</b><span>'+esc(b.dataset.rv)+'</span>'; pil.hidden=false; const r=b.getBoundingClientRect();
+    const right=r.right+8+pil.offsetWidth<innerWidth-8; pil.style.left=(right?r.right+4:r.left-4-pil.offsetWidth)+'px'; pil.style.top=(r.top+r.height/2-pil.offsetHeight/2)+'px'; pil.dataset.dir=right?'r':'l'; };
+  const hideP=()=>{ pil.hidden=true; };
+  const tblP=document.getElementById('tbl');
+  tblP.addEventListener('mouseover',e=>{ const b=e.target.closest('.rvi'); b?showP(b):hideP(); });
+  tblP.addEventListener('mouseleave',hideP); tblP.addEventListener('scroll',hideP,true);
+  tblP.addEventListener('focusin',e=>{ const b=e.target.closest('.rvi'); if(b) showP(b); }); tblP.addEventListener('focusout',hideP);
+  window.__rvl={show:showP,hide:hideP};
   document.addEventListener('click',onClick);
   document.addEventListener('scroll',e=>{ if(e.target.id==='railSc') markStuck(); },true);
   document.getElementById('bulk').addEventListener('click',onBulk);
