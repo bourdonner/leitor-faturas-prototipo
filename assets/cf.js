@@ -231,16 +231,16 @@ H.filters=()=>FLT.filter(f=>!f.x||S.xf.has(f.k)).map(f=>{ const v=S.f[f.k]||[]; 
   return `<button class="flt ${has?'has':''}" data-a="flt" data-k="${f.k}" aria-haspopup="dialog"><span class="lb">${f.l}</span>${has?'<span class="sep"></span>'+v.slice(0,2).map(x=>`<span class="chip">${esc(x)}</span>`).join('')+(v.length>2?`<span class="exc">+${v.length-2}</span>`:'')+`<span class="x" data-a="fclr" data-k="${f.k}" role="button" aria-label="Limpar ${f.l}"><span class="msr">close</span></span>`:'<span class="msr">expand_more</span>'}</button>`; }).join('')
   +(FLT.some(f=>f.x&&!S.xf.has(f.k))?'<button class="flt more-f" data-a="morefl" aria-haspopup="menu"><span class="msr">add</span><span class="lb">Mais filtros</span></button>':'')
   +(Object.values(S.f).some(v=>v&&v.length)?'<button class="fclear" data-a="fclrall">Limpar filtros</button>':'');
-/* colunas (botão Colunas): cada uma pode ser "com ícone" (só as que têm ícone), "completa" ou "oculta".
-   Padrão do stg: UC completa; titular, grupo e carteira com ícone. A escolha fica salva no navegador. */
-const COL_KEY='cf-v3-cols', CM_DEF={tit:'icon',grp:'icon',cart:'icon'};
-S.cm=(()=>{ try{ const o=JSON.parse(localStorage.getItem(COL_KEY)||'null'); if(o&&typeof o==='object') return o; }catch(e){}
-  /* migra a versão anterior (só ocultas) */
-  const m={...CM_DEF}; try{ JSON.parse(localStorage.getItem('cf-v2-hidden-cols')||'[]').forEach(k=>{ m[k]='hidden'; }); }catch(e){} return m; })();
+/* colunas (botão Colunas): olho à esquerda mostra/oculta; switch à direita (só UC, titular, grupo e carteira) deixa só o ícone.
+   Padrão do stg: tudo visível; titular, grupo e carteira só com ícone. A escolha fica salva no navegador. */
+const COL_KEY='cf-v4-cols', IC_DEF=['tit','grp','cart'];
+const cmDef=()=>({h:[],i:[...IC_DEF]});
+S.cm=(()=>{ try{ const o=JSON.parse(localStorage.getItem(COL_KEY)||'null'); if(o&&Array.isArray(o.h)&&Array.isArray(o.i)) return o; }catch(e){} return cmDef(); })();
 const saveCm=()=>{ try{ localStorage.setItem(COL_KEY,JSON.stringify(S.cm)); }catch(e){} };
-const cmode=k=>S.cm[k]||CM_DEF[k]||'full';
+const tog=(a,k)=>a.includes(k)?a.filter(x=>x!==k):[...a,k];
+const cmode=k=>S.cm.h.includes(k)?'hidden':S.cm.i.includes(k)?'icon':'full';
 const canHide=c=>!!c.l&&!c.fix;
-const cmIsDef=()=>COLS.filter(canHide).every(c=>cmode(c.k)===(CM_DEF[c.k]||'full'));
+const cmIsDef=()=>{ const d=cmDef(), same=(a,b)=>a.length===b.length&&a.every(x=>b.includes(x)); return same(S.cm.h,d.h)&&same(S.cm.i,d.i); };
 const VC=()=>{ const v=COLS.filter(c=>cmode(c.k)!=='hidden').map(c=>c.cp&&cmode(c.k)==='icon'?{...c,w:'56px',h:c.ih,c:c.ic,nar:1}:c);
   const hasFr=v.some(c=>/fr/.test(c.w)); return v.map(c=>hasFr||c.nar||['ck','act','rev'].includes(c.k)?c:{...c,w:`minmax(${c.w},1fr)`}); };
 /* paginação (stg 09/11): 50 por página, opções de 10 a 500; busca, filtro e ordem voltam para a página 1 */
@@ -441,15 +441,15 @@ function openPop(anchor,html,opts={}){ closePop(); popEl=document.getElementById
   if(up){ popEl.style.top='auto'; popEl.style.bottom=(innerHeight-r.top+6)+'px'; } else { popEl.style.bottom='auto'; popEl.style.top=(r.bottom+6)+'px'; }
   const f=popEl.querySelector('textarea,input,button'); if(f) f.focus({preventScroll:true}); }
 function closePop(){ if(popEl){ popEl.hidden=true; popEl.innerHTML=''; } if(popAnchor){ popAnchor.classList.remove('open'); popAnchor.setAttribute('aria-expanded','false'); popAnchor=null; } }
-const CMS=[['icon','interests','Com ícone'],['full','text_fields','Completa'],['hidden','visibility_off','Oculta']];
-const colPop=()=>`<div class="ph">Colunas</div><div class="cmn">Com ícone, a coluna mostra só o ícone e o nome abre ao passar o mouse.</div>
-  <div class="cml" aria-hidden="true">${CMS.map(([m,ic,t])=>`<span><span class="msr fill">${ic}</span>${t}</span>`).join('')}</div>
-  ${COLS.filter(c=>c.l).map(c=>{ const fx=!canHide(c), md=cmode(c.k);
-  return `<div class="cmr"><span class="grow">${c.l}</span>${fx?'<span class="fxl" title="Coluna fixa"><span class="msr fill" aria-hidden="true">lock</span>Fixa</span>':`<div class="seg" role="radiogroup" aria-label="Exibição de ${c.l}">${CMS.map(([m,ic,t])=>{ const dis=m==='icon'&&!c.cp, on=md===m;
-    return `<button type="button" class="sg${on?' on':''}" role="radio" aria-checked="${on}" data-a="colm" data-k="${c.k}" data-m="${m}" title="${dis?'Sem versão com ícone':t}" aria-label="${t}"${dis?' disabled':''} tabindex="${on?0:-1}"><span class="msr fill">${ic}</span></button>`; }).join('')}</div>`}</div>`; }).join('')}
+const colPop=()=>`<div class="ph">Colunas</div><div class="cmn">Só ícone: a coluna mostra o ícone e o nome abre ao passar o mouse.</div>
+  ${COLS.filter(c=>c.l).map(c=>{ const fx=!canHide(c), vis=!S.cm.h.includes(c.k), ic=S.cm.i.includes(c.k);
+  const eye=fx?'<span class="vis fx" title="Coluna fixa"><span class="msr fill" aria-hidden="true">lock</span></span>'
+    :`<button type="button" class="vis${vis?'':' off'}" data-a="colv" data-k="${c.k}" aria-pressed="${vis}" aria-label="${vis?'Ocultar':'Mostrar'} ${c.l}" title="${vis?'Ocultar':'Mostrar'}"><span class="msr fill">${vis?'visibility':'visibility_off'}</span></button>`;
+  const sw=c.cp?`<label class="sw${ic?' on':''}${vis?'':' dis'}" title="Só ícone"><input type="checkbox" role="switch" data-a="colsw" data-k="${c.k}" aria-label="${c.l}: só ícone"${ic?' checked':''}${vis?'':' disabled'}><i></i></label>`:'';
+  return `<div class="cmr${vis?'':' off'}">${eye}<span class="grow">${c.l}</span>${sw}</div>`; }).join('')}
   <div class="sepl"></div><button class="opt" data-a="colreset"${cmIsDef()?' aria-disabled="true"':''}><span class="msr fill">restart_alt</span><span class="grow">Restaurar padrão</span></button>`;
 const reCol=()=>{ const b=document.getElementById('bCols'); const ae=document.activeElement, d=ae&&ae.dataset?ae.dataset:{}; popEl.innerHTML=colPop(); popAnchor=b; b.classList.add('open'); b.setAttribute('aria-expanded','true');
-  const el=d.a==='colm'?popEl.querySelector(`.sg[data-k="${d.k}"].on`):d.a?popEl.querySelector(`[data-a="${d.a}"]`):null; (el||popEl.querySelector('.sg.on,button')).focus({preventScroll:true}); };
+  const el=d.a&&d.k?popEl.querySelector(`[data-a="${d.a}"][data-k="${d.k}"]`):d.a?popEl.querySelector(`[data-a="${d.a}"]`):null; (el||popEl.querySelector('button,input')).focus({preventScroll:true}); };
 const sortPop=()=>[['ref','Referência'],['tit','Titular'],['val','Valor'],['rev','Revisão manual']].map(([k,l])=>{ const on=S.sort.k===k; return `<button class="opt" data-a="sortby" data-k="${k}" role="menuitemradio" aria-checked="${on}"><span class="grow">${l}</span>${on?`<span class="msr">${S.sort.dir==='asc'?'arrow_upward':'arrow_downward'}</span>`:''}</button>`; }).join('');
 function fltPop(a,f){ const v=S.f[f.k]||[];
   if(f.t==='txt') return openPop(a,`<div class="ph">${f.l}</div><div class="obs"><input class="fin" id="fIn" data-k="${f.k}" inputmode="numeric" placeholder="${esc(f.ph||'')}" value="${esc(v[0]||'')}" aria-label="${f.l}"><div class="row"><button class="b pri sm" data-a="fapply" data-k="${f.k}">Aplicar</button></div></div>`,{w:260});
@@ -506,9 +506,10 @@ function onClick(e){
     case 'pg': { e.stopPropagation(); const tp=pages(visible().length); S.pg={first:1,prev:S.pg-1,next:S.pg+1,last:tp}[a.dataset.k]; S.pg=Math.max(1,Math.min(tp,S.pg)); refresh(); const t=document.getElementById('tbl'); if(t) t.scrollTop=0; break; }
     case 'ps': return;
     case 'sortby': { const sk=a.dataset.k; S.sort=S.sort.k===sk?{k:sk,dir:S.sort.dir==='asc'?'desc':'asc'}:{k:sk,dir:sk==='tit'?'asc':'desc'}; const inPop=a.closest('#pop'); refresh(); if(inPop){ const b=document.getElementById('bSort'); popEl.innerHTML=sortPop(); popAnchor=b; b.classList.add('open'); } break; }
-    case 'colmenu': if(popAnchor===a){ closePop(); break; } openPop(a,colPop(),{alignRight:true,w:320}); { const f=popEl.querySelector('.sg.on'); if(f) f.focus({preventScroll:true}); } break;
-    case 'colm': { e.stopPropagation(); const c=COLS.find(x=>x.k===a.dataset.k), m=a.dataset.m; if(!c||!canHide(c)||(m==='icon'&&!c.cp)||cmode(c.k)===m) break; S.cm[c.k]=m; saveCm(); refresh(); reCol(); break; }
-    case 'colreset': { e.stopPropagation(); if(cmIsDef()) break; S.cm={...CM_DEF}; saveCm(); refresh(); reCol(); toast('Colunas restauradas para o padrão'); break; }
+    case 'colmenu': if(popAnchor===a){ closePop(); break; } openPop(a,colPop(),{alignRight:true,w:280}); break;
+    case 'colv': { e.stopPropagation(); const c=COLS.find(x=>x.k===a.dataset.k); if(!c||!canHide(c)) break; S.cm.h=tog(S.cm.h,c.k); saveCm(); refresh(); reCol(); break; }
+    case 'colsw': { e.stopPropagation(); const c=COLS.find(x=>x.k===a.dataset.k); if(!c||!c.cp||S.cm.h.includes(c.k)) break; S.cm.i=tog(S.cm.i,c.k); saveCm(); refresh(); reCol(); break; }
+    case 'colreset': { e.stopPropagation(); if(cmIsDef()) break; S.cm=cmDef(); saveCm(); refresh(); reCol(); toast('Colunas restauradas para o padrão'); break; }
     case 'sortmenu': if(popAnchor===a){ closePop(); break; } openPop(a,sortPop(),{alignRight:true,w:200}); break;
     /* Incluir leva ao Leitor de Faturas, já com o envio de faturas aberto */
     case 'incmenu': location.href='index.html?nova=1'; break;
@@ -600,7 +601,6 @@ function mountScreen(){
   bulkEl.addEventListener('focusout',hideT);
   bulkEl.addEventListener('click',hideT);
   document.getElementById('dwOv').addEventListener('click',closeDw);
-  document.addEventListener('keydown',e=>{ const sg=e.target.closest&&e.target.closest('.sg'); if(sg&&['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key)){ e.preventDefault(); const all=[...sg.parentNode.querySelectorAll('.sg:not(:disabled)')]; const i=all.indexOf(sg)+(e.key==='ArrowLeft'||e.key==='ArrowUp'?-1:1); const n=all[(i+all.length)%all.length]; if(n){ n.focus(); n.click(); } return; } });
   document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ if(popEl&&!popEl.hidden){ const a=popAnchor; closePop(); a&&a.focus(); return; } if(S.dw) closeDw(); }
     if(e.key==='Enter'&&e.target.id==='fIn'){ e.preventDefault(); applyTxt(e.target.dataset.k); return; }
     if((e.key==='Enter'||e.key===' ')&&e.target.matches('.tr.row')){ e.preventDefault(); e.target.click(); } });
