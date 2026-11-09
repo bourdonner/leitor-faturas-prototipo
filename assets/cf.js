@@ -421,9 +421,9 @@ function mount(el,fn){ mounts.push({el,fn}); el.innerHTML=fn(); }
    e um aviso fica no meio da área visível (não no meio da tabela inteira, que com 500 linhas some da tela). Só aparece se demorar mais de 300 ms. */
 S.ld=0;
 function withLoading(fn){ const id=++S.ld, n=S.ps, w=document.querySelector('#vList .tblw'), tb=document.getElementById('tbl');
-  const show=setTimeout(()=>{ if(S.ld!==id||!w) return; let o=w.querySelector('.ldg'); if(!o){ o=document.createElement('div'); o.className='ldg'; o.setAttribute('role','status'); w.appendChild(o); }
+  const show=setTimeout(()=>{ if(S.ld!==id||!w) return; let o=w.querySelector('.ldg'); if(!o){ o=document.createElement('div'); o.className='ldg'; o.setAttribute('role','status'); o.setAttribute('aria-label','Carregando faturamentos'); w.appendChild(o); }
     const th=tb&&tb.querySelector('.tr.th'); o.style.top=(th?th.getBoundingClientRect().bottom-w.getBoundingClientRect().top:0)+'px';
-    o.innerHTML='<i class="ldb" aria-hidden="true"></i><span class="ldp"><span class="msr spin" aria-hidden="true">progress_activity</span>Carregando faturamentos<span class="ldn">'+n+' por página</span></span>';
+    const lg=document.querySelector('.sb-brand svg'); o.innerHTML='<i class="ldb" aria-hidden="true"></i><span class="ldp"><span class="ldl" aria-hidden="true">'+(lg?lg.outerHTML:'')+'</span>Carregando faturamentos</span>';
     document.body.classList.add('cf-ld'); if(tb) tb.setAttribute('aria-busy','true'); },300);
   setTimeout(()=>{ if(S.ld!==id) return; clearTimeout(show); fn(); const o=w&&w.querySelector('.ldg'); if(o) o.remove(); document.body.classList.remove('cf-ld'); if(tb) tb.removeAttribute('aria-busy'); },400+n*3); }
 function refresh(){ const v=new Set(visible().map(r=>r.id)); [...S.sel].forEach(id=>{ if(!v.has(id)) S.sel.delete(id); });
